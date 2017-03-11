@@ -1,0 +1,4 @@
+﻿public %ReturnType% %MethodName%(%Arguments%)
+{
+	%Content%
+}
