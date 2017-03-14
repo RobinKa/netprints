@@ -18,6 +18,8 @@ namespace NetPrints.Graph
         public double PositionX { get; set; }
         public double PositionY { get; set; }
 
+        public string Name { get; set; }
+
         public bool IsPure
         {
             get
@@ -36,6 +38,8 @@ namespace NetPrints.Graph
         {
             Method = method;
             method.Nodes.Add(this);
+
+            Name = NetPrintsUtil.GetUniqueName(GetType().Name, method.Nodes.Select(n => n.Name).ToList());
         }
 
         protected void AddInputDataPin(string pinName, Type pinType)
