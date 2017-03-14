@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="150" x:Name="nodeWindow">
+             d:DesignHeight="120" d:DesignWidth="220" x:Name="nodeWindow">
 
     <Grid>
         <Rectangle Stroke="#CC505050" StrokeThickness="3" RadiusX="4" RadiusY="4" Fill="#AA303030">
@@ -14,13 +14,13 @@
             </Rectangle.Effect>
         </Rectangle>
 
-        <Grid>
+        <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label x:Name="nodeLabel" Content="{Binding FallbackValue=Node, ElementName=nodeWindow, Path=NodeVM.Name}" HorizontalContentAlignment="Center" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" VerticalAlignment="Bottom" BorderThickness="0">
+            <Label x:Name="nodeLabel" Content="{Binding FallbackValue=Node, ElementName=nodeWindow, Path=NodeVM.Name}" Padding="0" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                 <Label.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
                 </Label.Effect>
@@ -32,21 +32,41 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <ItemsControl x:Name="inputDataPinList" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <local:PinControl Pin="{Binding}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <StackPanel>
+                    <ItemsControl x:Name="inputExecPinList" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:PinControl Pin="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                <ItemsControl x:Name="outputDataPinList" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <local:PinControl Pin="{Binding}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    <ItemsControl x:Name="inputDataPinList" Margin="0,5,0,0" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:PinControl Pin="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <ItemsControl x:Name="outputExecPinList" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:PinControl Pin="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <ItemsControl x:Name="outputDataPinList" Margin="0,5,0,0" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:PinControl Pin="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </Grid>
         </Grid>
     </Grid>

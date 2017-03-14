@@ -61,7 +61,9 @@ namespace NetPrintsEditor.Controls
             this.nodeVM = nodeVM;
             
             InitializeComponent();
-            
+
+            inputExecPinList.ItemsSource = nodeVM.InputExecPins;
+            outputExecPinList.ItemsSource = nodeVM.OutputExecPins;
             inputDataPinList.ItemsSource = nodeVM.InputDataPins;
             outputDataPinList.ItemsSource = nodeVM.OutputDataPins;
 

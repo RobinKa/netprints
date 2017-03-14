@@ -137,6 +137,7 @@ namespace NetPrintsEditor.Controls
                     grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
                     ellipse.SetValue(Grid.ColumnProperty, 0);
                     label.SetValue(Grid.ColumnProperty, 1);
+                    label.HorizontalContentAlignment = HorizontalAlignment.Left;
                 }
                 else
                 {
@@ -144,7 +145,31 @@ namespace NetPrintsEditor.Controls
                     grid.ColumnDefinitions[1].Width = new GridLength(20, GridUnitType.Pixel);
                     ellipse.SetValue(Grid.ColumnProperty, 1);
                     label.SetValue(Grid.ColumnProperty, 0);
+                    label.HorizontalContentAlignment = HorizontalAlignment.Right;
                 }
+
+                Color newColor = Color.FromArgb(0xFF, 0xFF, 0x00, 0x00);
+
+                if (Pin is NodeInputDataPin)
+                {
+                    newColor = Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF);
+                }
+                else if(Pin is NodeOutputDataPin)
+                {
+                    newColor = Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF);
+                }
+                else if(Pin is NodeInputExecPin)
+                {
+                    newColor = Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0);
+                }
+                else if(Pin is NodeOutputExecPin)
+                {
+                    newColor = Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0);
+                }
+
+                SolidColorBrush brush = new SolidColorBrush(newColor);
+                ellipse.Fill = brush;
+                cable.Stroke = brush;
             }
         }
 

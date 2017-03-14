@@ -7,16 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="100" x:Name="pinWindow">
     <Canvas x:Name="canvas" Height="20" MouseLeftButtonDown="Canvas_MouseLeftButtonDown">
-        <Grid x:Name="grid" Width="100">
+        <Grid x:Name="grid" Width="110">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Ellipse Grid.Column="0" x:Name="ellipse" Width="20" Height="20" Fill="#FFE0E0E0" Stroke="#AA000000" MouseMove="OnEllipseMouseMove" DragOver="OnEllipseDragOver" Drop="OnEllipseDrop" AllowDrop="True" />
-            <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
+            <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         </Grid>
-        
-        <Path x:Name="cable" Stroke="#CCC0C0C0" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+
+        <Path x:Name="cable" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>

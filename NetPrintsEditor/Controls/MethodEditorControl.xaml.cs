@@ -26,9 +26,8 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class MethodEditorControl : UserControl
     {
-        private const double GridCellSize = 20;
-        private const int NodeControlWidth = 200;
-        private const int NodeControlHeight = 120;
+        public const double GridCellSize = 20;
+        public const int NodeControlWidth = 220;
 
         public Method Method
         {
@@ -74,7 +73,6 @@ namespace NetPrintsEditor.Controls
         {
             NodeControl nodeControl = new NodeControl(new NodeVM(node));
             nodeControl.Width = NodeControlWidth;
-            nodeControl.Height = NodeControlHeight;
 
             nodeControls.Add(nodeControl);
 
