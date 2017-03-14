@@ -42,6 +42,11 @@ namespace NetPrints.Graph
             Name = NetPrintsUtil.GetUniqueName(GetType().Name, method.Nodes.Select(n => n.Name).ToList());
         }
 
+        public override string ToString()
+        {
+            return GraphUtil.SplitCamelCase(Name);
+        }
+
         protected void AddInputDataPin(string pinName, Type pinType)
         {
             InputDataPins.Add(new NodeInputDataPin(this, pinName, pinType));

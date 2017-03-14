@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NetPrints.Graph
 {
     public static class GraphUtil
     {
+        public static string SplitCamelCase(string input)
+        {
+            return Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+        }
+
         public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, bool swapped=false)
         {
             return (pinA is NodeInputExecPin && pinB is NodeOutputExecPin) ||
-                (pinA is NodeInputDataPin && pinB is NodeOutputDataPin) ||
+                (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB 
+                && (datA.PinType == datB.PinType || datB.PinType.IsSubclassOf(datA.PinType))) ||
                 (!swapped && CanConnectNodePins(pinB, pinA, true));
         }
 

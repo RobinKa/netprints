@@ -42,5 +42,10 @@ namespace NetPrints.Graph
                 AddOutputDataPin(outputType.Name, outputType);
             }
         }
+
+        public override string ToString()
+        {
+            return $"Call Static {Method.Name}";
+        }
     }
 }

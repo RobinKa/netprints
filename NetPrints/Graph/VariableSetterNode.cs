@@ -22,5 +22,10 @@ namespace NetPrints.Graph
 
             AddInputDataPin("NewValue", variableType);
         }
+
+        public override string ToString()
+        {
+            return $"Set {VariableName}";
+        }
     }
 }

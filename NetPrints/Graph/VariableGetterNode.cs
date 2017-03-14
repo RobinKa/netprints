@@ -13,5 +13,10 @@ namespace NetPrints.Graph
             : base(method, variableName, variableType)
         {
         }
+
+        public override string ToString()
+        {
+            return $"Get {VariableName}";
+        }
     }
 }

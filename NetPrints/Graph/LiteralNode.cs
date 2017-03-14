@@ -43,5 +43,10 @@ namespace NetPrints.Graph
 
             AddOutputDataPin("Value", literalType);
         }
+
+        public override string ToString()
+        {
+            return $"{LiteralType.Name}";
+        }
     }
 }

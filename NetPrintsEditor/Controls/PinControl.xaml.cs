@@ -215,6 +215,7 @@ namespace NetPrintsEditor.Controls
                 if(GraphUtil.CanConnectNodePins(draggingPinControl.Pin, Pin))
                 {
                     e.Effects = DragDropEffects.Link;
+                    e.Handled = true;
                 }
             }
         }

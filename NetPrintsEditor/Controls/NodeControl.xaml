@@ -20,7 +20,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label x:Name="nodeLabel" Content="{Binding FallbackValue=Node, ElementName=nodeWindow, Path=NodeVM.Name}" Padding="0" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
+            <Label x:Name="nodeLabel" Content="{Binding FallbackValue=Node, ElementName=nodeWindow, Path=NodeVM.Node}" Padding="0" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                 <Label.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
                 </Label.Effect>

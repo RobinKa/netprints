@@ -6,7 +6,17 @@
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800" x:Name="methodEditorWindow">
-    <Grid ClipToBounds="True">
+    <Grid ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <ContextMenu.Template>
+                    <ControlTemplate>
+                        <local:SearchableComboBox x:Name="contextMenuSearch" Width="250" Height="300"/>
+                    </ControlTemplate>
+                </ContextMenu.Template>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
         <AdornerDecorator>
             <Canvas x:Name="canvas">
                 <Canvas.Background>

@@ -18,6 +18,8 @@ using NetPrints.Translator;
 using NetPrintsEditor.Adorners;
 using NetPrintsEditor.ViewModels;
 using NetPrintsEditor.Commands;
+using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace NetPrintsEditor.Controls
 {
@@ -63,7 +65,7 @@ namespace NetPrintsEditor.Controls
         public static DependencyProperty MethodProperty = DependencyProperty.Register("Method", typeof(Method), typeof(MethodEditorControl));
 
         private List<NodeControl> nodeControls = new List<NodeControl>();
-        
+
         public MethodEditorControl()
         {
             InitializeComponent();
@@ -91,6 +93,46 @@ namespace NetPrintsEditor.Controls
             };
 
             AdornerLayer.GetAdornerLayer(nodeControl)?.Add(dragAdorner);
+        }
+
+        private void OnGridDrop(object sender, DragEventArgs e)
+        {
+            if (Method != null && e.Data.GetDataPresent(typeof(Variable)))
+            {
+                Point mousePosition = e.GetPosition(canvas);
+
+                Variable variable = e.Data.GetData(typeof(Variable)) as Variable;
+                VariableGetterNode node = new VariableGetterNode(Method, variable.Name, variable.VariableType);
+                node.PositionX = mousePosition.X;
+                node.PositionY = mousePosition.Y;
+                CreateNodeControl(node);
+            }
+            else if(e.Data.GetDataPresent(typeof(PinControl)))
+            {
+                PinControl pinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
+
+                if (pinControl.Pin is NodeOutputDataPin odp)
+                {
+                    MethodInfo[] methods = odp.PinType.GetMethods();
+                    // TODO: Set context menu list to methods
+                }
+            }
+        }
+
+        private void OnDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.None;
+
+            if (Method != null && e.Data.GetDataPresent(typeof(Variable)))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+            }
+            else if(e.Data.GetDataPresent(typeof(PinControl)))
+            {
+                e.Effects = DragDropEffects.Link;
+                e.Handled = true;
+            }
         }
     }
 }

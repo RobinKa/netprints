@@ -51,6 +51,14 @@ namespace NetPrintsEditor
             methodEditor.Method = methodList.SelectedItem as Method;
         }
 
+        private void OnVariableListMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && attributeList.SelectedValue != null)
+            {
+                DragDrop.DoDragDrop(attributeList, attributeList.SelectedValue, DragDropEffects.Copy);
+            }
+        }
+
         #region Commands
         // Add Method
 
@@ -62,14 +70,14 @@ namespace NetPrintsEditor
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Method newMethod = new Method(e.Parameter as string);
-            newMethod.ArgumentTypes.Add(typeof(TextBox));
+            newMethod.ArgumentTypes.Add(typeof(ListBox));
             newMethod.ArgumentTypes.Add(typeof(string));
             newMethod.ArgumentTypes.Add(typeof(int));
-            newMethod.ReturnTypes.Add(typeof(bool));
-            newMethod.ReturnTypes.Add(typeof(System.IO.StreamReader));
+            newMethod.ReturnTypes.Add(typeof(int));
+            newMethod.ReturnTypes.Add(typeof(Control));
             newMethod.EntryNode.PositionX = 100;
             newMethod.EntryNode.PositionY = 100;
-            newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 200;
+            newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 400;
             newMethod.ReturnNode.PositionY = newMethod.EntryNode.PositionY;
             Class.Methods.Add(newMethod);
             //methodEditor.Method = newMethod;

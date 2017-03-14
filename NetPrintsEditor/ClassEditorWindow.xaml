@@ -27,6 +27,12 @@
             <Setter Property="BorderBrush" Value="#FF444444"/>
         </Style>
 
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#FF333333" />
+            <Setter Property="Foreground" Value="#FFEEEEEE" />
+            <Setter Property="BorderBrush" Value="#FF444444"/>
+        </Style>
+
         <Style TargetType="ListView">
             <Setter Property="Background" Value="#FF404040" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
@@ -36,8 +42,39 @@
             <Setter Property="Foreground" Value="#FFEEEEEE" />
         </Style>
 
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FFEEEEEE" />
+        </Style>
+
         <Style TargetType="GridSplitter">
             <Setter Property="Background" Value="#FF444444" />
+        </Style>
+
+        <ControlTemplate x:Key="SelectedTemplate" TargetType="ListViewItem">
+            <Border MouseMove="OnVariableListMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF3A3A3A" Background="#FF555555" Margin="1">
+                <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />
+            </Border>
+        </ControlTemplate>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border MouseMove="OnVariableListMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF444444" Background="#FF333333" Margin="1" >
+                            <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="true" />
+                        <Condition Property="Selector.IsSelectionActive" Value="true" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
+                </MultiTrigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
     
@@ -53,13 +90,14 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
+                <RowDefinition Height="5"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
-                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
 
                 <ListView x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}" MouseDoubleClick="OnMethodListDoubleClick">
@@ -70,35 +108,33 @@
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" />
+                <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" FontWeight="Bold" />
             </Grid>
 
-            <Grid Grid.Row="1">
+            <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+            
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
-                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
 
                 <ListView x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Label Content="{Binding Name}"/>
+                            <Label Content="{Binding Name}" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" />
+                <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" FontWeight="Bold" />
             </Grid>
         </Grid>
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-        <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2">
-            
-        </Controls:MethodEditorControl>
+        <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2"/>
 
         <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
-        
-        
     </Grid>
 </Window>
