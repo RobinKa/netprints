@@ -32,6 +32,30 @@ namespace NetPrintsEditor.Controls
 
         private NodeVM nodeVM;
 
+        public PinControl FindPinControl(NodePin pin)
+        {
+            var a = inputDataPinList.ItemContainerGenerator.ContainerFromItem(pin);
+            if(a == null)
+            {
+                a = outputDataPinList.ItemContainerGenerator.ContainerFromItem(pin);
+                if(a == null)
+                {
+                    return null;
+                }
+            }
+
+            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(a); i++)
+            {
+                var v = VisualTreeHelper.GetChild(a, i);
+                if(v is PinControl pc && pc.Pin == pin)
+                {
+                    return pc;
+                }
+            }
+
+            return null;
+        }
+
         public NodeControl(NodeVM nodeVM)
         {
             this.nodeVM = nodeVM;

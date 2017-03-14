@@ -110,6 +110,7 @@ namespace NetPrintsEditor
         }
 
         // Move node
+
         private void CommandSetNodePosition_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = e.Parameter is SetNodePositionParameters p && FindNodeVMFromSetNodePositionParameters(p) != null;
@@ -145,6 +146,35 @@ namespace NetPrintsEditor
             }
 
             return nodeVM;
+        }
+
+        // Connect pins
+
+        private void CommandConnectPins_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA, cp.PinB)
+                && FindPinControlFromPin(cp.PinA) != null && FindPinControlFromPin(cp.PinB) != null;
+        }
+
+        private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            ConnectPinsParameters cp = e.Parameter as ConnectPinsParameters;
+
+            GraphUtil.ConnectNodePins(cp.PinA, cp.PinB);
+        }
+
+        private PinControl FindPinControlFromPin(NodePin pin)
+        {
+            foreach(NodeControl nodeControl in methodEditor.NodeControls)
+            {
+                PinControl pc = nodeControl.FindPinControl(pin);
+                if(pc != null)
+                {
+                    return pc;
+                }
+            }
+
+            return null;
         }
 
         #endregion

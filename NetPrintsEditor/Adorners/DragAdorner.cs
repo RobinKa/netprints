@@ -14,45 +14,61 @@ namespace NetPrintsEditor.Adorners
     public class DragAdorner : Adorner
     {
         private bool dragging = false;
-        private Point dragLastPosition;
+        private Point dragStartMousePosition;
+        private Point dragStartElementPosition;
 
         public event EventHandler OnDragStart;
         public event EventHandler OnDragEnd;
 
-        public DragAdorner(UIElement adornedElement)
+        public double CellSize
+        {
+            get;
+            set;
+        }
+
+        public DragAdorner(UIElement adornedElement, double cellSize)
             : base(adornedElement)
         {
             adornedElement.MouseLeftButtonDown += AdornedElement_MouseLeftButtonDown;
             adornedElement.MouseLeftButtonUp += AdornedElement_MouseLeftButtonUp;
             adornedElement.MouseMove += AdornedElement_MouseMove;
+
+            CellSize = cellSize;
         }
 
         private void AdornedElement_MouseMove(object sender, MouseEventArgs e)
         {
             if (dragging)
             {
-                Point newPosition = e.GetPosition(null);
+                Point mousePosition = e.GetPosition(null);
 
-                var offset = newPosition - dragLastPosition;
+                Vector offset = mousePosition - dragStartMousePosition;
 
-                var transform = AdornedElement.RenderTransform as TranslateTransform;
-                if (transform == null)
-                {
-                    transform = new TranslateTransform();
-                    AdornedElement.RenderTransform = transform;
-                }
+                TranslateTransform transform = AdornedElement.RenderTransform as TranslateTransform;
+                
+                transform.X = dragStartElementPosition.X + offset.X;
+                transform.Y = dragStartElementPosition.Y + offset.Y;
 
-                transform.X += offset.X;
-                transform.Y += offset.Y;
+                transform.X -= transform.X % CellSize;
+                transform.Y -= transform.Y % CellSize;
 
-                dragLastPosition = newPosition;
+                AdornedElement.InvalidateVisual();
             }
         }
 
         private void AdornedElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             dragging = true;
-            dragLastPosition = e.GetPosition(null);
+
+            TranslateTransform transform = AdornedElement.RenderTransform as TranslateTransform;
+            if (transform == null)
+            {
+                transform = new TranslateTransform();
+                AdornedElement.RenderTransform = transform;
+            }
+
+            dragStartElementPosition = new Point(transform.X, transform.Y);
+            dragStartMousePosition = e.GetPosition(null);
 
             AdornedElement.CaptureMouse();
             e.Handled = true;
@@ -62,12 +78,15 @@ namespace NetPrintsEditor.Adorners
 
         private void AdornedElement_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            dragging = false;
+            if (dragging)
+            {
+                dragging = false;
 
-            AdornedElement.ReleaseMouseCapture();
-            e.Handled = true;
+                AdornedElement.ReleaseMouseCapture();
+                e.Handled = true;
 
-            OnDragEnd?.Invoke(this, new EventArgs());
+                OnDragEnd?.Invoke(this, new EventArgs());
+            }
         }
     }
 }

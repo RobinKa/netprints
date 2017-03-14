@@ -26,6 +26,8 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class MethodEditorControl : UserControl
     {
+        private const double GridCellSize = 20;
+
         public Method Method
         {
             get
@@ -35,7 +37,7 @@ namespace NetPrintsEditor.Controls
             set
             {
                 SetValue(MethodProperty, value);
-
+                
                 // Remove previous node controls
                 foreach (NodeControl control in nodeControls)
                 {
@@ -60,7 +62,7 @@ namespace NetPrintsEditor.Controls
         public static DependencyProperty MethodProperty = DependencyProperty.Register("Method", typeof(Method), typeof(MethodEditorControl));
 
         private List<NodeControl> nodeControls = new List<NodeControl>();
-
+        
         public MethodEditorControl()
         {
             InitializeComponent();
@@ -69,14 +71,14 @@ namespace NetPrintsEditor.Controls
         private void CreateNodeControl(Node node)
         {
             NodeControl nodeControl = new NodeControl(new NodeVM(node));
-            nodeControl.Width = 150;
+            nodeControl.Width = 160;
             nodeControl.Height = 100;
 
             nodeControls.Add(nodeControl);
 
             canvas.Children.Add(nodeControl);
 
-            DragAdorner dragAdorner = new DragAdorner(nodeControl);
+            DragAdorner dragAdorner = new DragAdorner(nodeControl, GridCellSize);
 
             // Make set node position command when dragging is done
             dragAdorner.OnDragEnd += (sender, e) =>

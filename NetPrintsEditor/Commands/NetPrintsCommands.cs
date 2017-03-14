@@ -16,6 +16,8 @@ namespace NetPrintsEditor.Commands
         public static readonly RoutedUICommand AddAttribute = new RoutedUICommand(nameof(AddAttribute), nameof(AddAttribute), typeof(NetPrintsCommands));
         public static readonly RoutedUICommand RemoveAttribute = new RoutedUICommand(nameof(RemoveAttribute), nameof(RemoveAttribute), typeof(NetPrintsCommands));
         public static readonly RoutedUICommand SetNodePosition = new RoutedUICommand(nameof(SetNodePosition), nameof(SetNodePosition), typeof(NetPrintsCommands));
+        public static readonly RoutedUICommand ConnectPins = new RoutedUICommand(nameof(ConnectPins), nameof(ConnectPins), typeof(NetPrintsCommands));
+        public static readonly RoutedUICommand DoNothing = new RoutedUICommand(nameof(DoNothing), nameof(DoNothing), typeof(NetPrintsCommands));
 
         public class SetNodePositionParameters
         {
@@ -29,6 +31,12 @@ namespace NetPrintsEditor.Commands
                 NewPositionX = newPositionX;
                 NewPositionY = newPositionY;
             }
+        }
+
+        public class ConnectPinsParameters
+        {
+            public NodePin PinA;
+            public NodePin PinB;
         }
 
         public delegate Tuple<ICommand, object> MakeUndoCommandDelegate(object parameters);
@@ -54,7 +62,8 @@ namespace NetPrintsEditor.Commands
 
                     return null;
                 }
-            }
+            },
+            { ConnectPins, (p) => new Tuple<ICommand, object>(DoNothing, p) },
         };
     }
 }

@@ -14,6 +14,7 @@
         <CommandBinding Command="cmds:NetPrintsCommands.AddAttribute" CanExecute="CommandAddAttribute_CanExecute" Executed="CommandAddAttribute_Execute"/>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveAttribute" CanExecute="CommandRemoveAttribute_CanExecute" Executed="CommandRemoveAttribute_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.ConnectPins" CanExecute="CommandConnectPins_CanExecute" Executed="CommandConnectPins_Execute" />
 
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />

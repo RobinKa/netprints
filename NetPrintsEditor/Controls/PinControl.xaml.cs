@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NetPrints.Graph;
+using NetPrintsEditor.Commands;
+using System.ComponentModel;
 
 namespace NetPrintsEditor.Controls
 {
@@ -21,8 +23,97 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class PinControl : UserControl
     {
+        private const double SplineAlpha = 0.5;
+
+        public static readonly DependencyProperty StartPointProperty =
+            DependencyProperty.Register(nameof(StartPoint), typeof(Point), typeof(PinControl));
+
+        public static readonly DependencyProperty AnchorPointProperty =
+            DependencyProperty.Register(nameof(AnchorPoint), typeof(Point), typeof(PinControl));
+
+        public static readonly DependencyProperty ControlPoint1Property =
+            DependencyProperty.Register(nameof(ControlPoint1), typeof(Point), typeof(PinControl));
+
+        public static readonly DependencyProperty ControlPoint2Property =
+           DependencyProperty.Register(nameof(ControlPoint2), typeof(Point), typeof(PinControl));
+
+        public static readonly DependencyProperty ConnectedPinProperty =
+           DependencyProperty.Register(nameof(ConnectedPin), typeof(PinControl), typeof(PinControl));
+
+        public PinControl ConnectedPin
+        {
+            get
+            {
+                return (PinControl)GetValue(ConnectedPinProperty);
+            }
+            set
+            {
+                if(ConnectedPin != null)
+                {
+                    value.LayoutUpdated -= OnLayoutUpdated;
+                }
+
+                SetValue(ConnectedPinProperty, value);
+
+                if (value != null)
+                {
+                    value.LayoutUpdated += OnLayoutUpdated;
+                    value.InvalidateVisual();
+                }
+
+                InvalidateVisual();
+            }
+        }
+
+        private void OnLayoutUpdated(object sender, EventArgs e)
+        {
+            StartPoint = ellipse.TransformToVisual(canvas).Transform(new Point(
+                    ellipse.RenderSize.Width / 2, ellipse.RenderSize.Height / 2));
+
+            if (ConnectedPin != null)
+            {
+                AnchorPoint = ConnectedPin.ellipse.TransformToVisual(canvas).Transform(new Point(
+                    ConnectedPin.ellipse.RenderSize.Width / 2, ConnectedPin.ellipse.RenderSize.Height / 2));
+            }
+            else
+            {
+                AnchorPoint = StartPoint;
+            }
+
+            ControlPoint1 = new Point((1 - SplineAlpha) * AnchorPoint.X, 0);
+            ControlPoint2 = new Point(SplineAlpha * AnchorPoint.X, AnchorPoint.Y);
+
+            cable.Visibility = ConnectedPin != null ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        public Point StartPoint
+        {
+            get => (Point)GetValue(StartPointProperty);
+            set => SetValue(StartPointProperty, value);
+        }
+
+        public Point AnchorPoint
+        {
+            get => (Point)GetValue(AnchorPointProperty);
+            set => SetValue(AnchorPointProperty, value);
+        }
+
+        public Point ControlPoint1
+        {
+            get => (Point)GetValue(ControlPoint1Property);
+            set => SetValue(ControlPoint1Property, value);
+        }
+
+        public Point ControlPoint2
+        {
+            get => (Point)GetValue(ControlPoint2Property);
+            set => SetValue(ControlPoint2Property, value);
+        }
+
         public static readonly DependencyProperty PinProperty =
             DependencyProperty.Register("Pin", typeof(NodePin), typeof(PinControl));
+
+        
 
         public NodePin Pin
         {
@@ -30,53 +121,62 @@ namespace NetPrintsEditor.Controls
             set => SetValue(PinProperty, value);
         }
 
-        /*public Point CableTarget
-        {
-            get
-            {
-                return curve.Points.Last();
-            }
-            set
-            {
-                curve.Points[1] = new Point((curve.Points[0].X + value.X) / 2, curve.Points[0].Y);
-                curve.Points[2] = new Point(curve.Points[1].X, (curve.Points[0].Y + value.Y) / 2);
-                curve.Points[3] = value;
-            }
-        }
-
-        public bool CableVisible
-        {
-            get
-            {
-                return cable.IsVisible;
-            }
-            set
-            {
-                cable.Visibility = value ? Visibility.Visible : Visibility.Hidden;
-            }
-        }*/
-
         public PinControl()
         {
             InitializeComponent();
+            LayoutUpdated += OnLayoutUpdated;
         }
 
-        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void OnEllipseMouseMove(object sender, MouseEventArgs e)
         {
-            //CableVisible = true;
+            if(sender is Ellipse el && e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragDrop.DoDragDrop(el, this, DragDropEffects.Link);
+            }
+        }
 
-            //CaptureMouse();
+        private void OnEllipseDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(PinControl)))
+            {
+                PinControl droppedPinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
+
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.ConnectPins, new NetPrintsCommands.ConnectPinsParameters()
+                {
+                    PinA = droppedPinControl.Pin,
+                    PinB = Pin
+                });
+
+                if(Pin is NodeInputDataPin || Pin is NodeOutputExecPin)
+                {
+                    ConnectedPin = droppedPinControl;
+                }
+                else
+                {
+                    droppedPinControl.ConnectedPin = this;
+                }
+            }
+        }
+
+        private void OnEllipseDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.None;
+
+            if (e.Data.GetDataPresent(typeof(PinControl)))
+            {
+                PinControl draggingPinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
+                
+                if(GraphUtil.CanConnectNodePins(draggingPinControl.Pin, Pin))
+                {
+                    e.Effects = DragDropEffects.Link;
+                }
+            }
+        }
+
+        // Needed so dragging doesnt happen
+        private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
             e.Handled = true;
         }
-        /*
-        public void ConnectToPinControl(PinControl other)
-        {
-            CableVisible = other != null;
-
-            if(other != null)
-            {
-                CableTarget = TranslatePoint(other.RenderTransformOrigin, other);
-            }
-        }*/
     }
 }

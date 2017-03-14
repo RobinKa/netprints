@@ -6,16 +6,28 @@
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="10" d:DesignWidth="30" x:Name="pinWindow">
-    <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
-        <!-- <Path x:Name="cable" Stroke="Black" StrokeThickness="3">
+    <Canvas x:Name="canvas" MouseLeftButtonDown="Canvas_MouseLeftButtonDown">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Ellipse x:Name="ellipse" Width="10" Height="10" Fill="#FF6464C5" Stroke="Black" MouseMove="OnEllipseMouseMove" DragOver="OnEllipseDragOver" Drop="OnEllipseDrop" AllowDrop="True" />
+            <Label x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="8" FontWeight="Bold" Grid.Column="1" VerticalContentAlignment="Center" />
+        </Grid>
+        
+        <Path x:Name="cable" Stroke="Black" StrokeThickness="2" IsHitTestVisible="False">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
                         <PathFigureCollection>
-                            <PathFigure StartPoint="15,15">
+                            <PathFigure StartPoint="{Binding ElementName=pinWindow, Path=StartPoint}">
                                 <PathFigure.Segments>
                                     <PathSegmentCollection>
-                                        <PolyBezierSegment x:Name="curve" Points="15,15 100,0 100,100 200,200" />
+                                        <BezierSegment 
+                                            Point1="{Binding ElementName=pinWindow, Path=ControlPoint1}" 
+                                            Point2="{Binding ElementName=pinWindow, Path=ControlPoint2}" 
+                                            Point3="{Binding ElementName=pinWindow, Path=AnchorPoint}" />
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>
@@ -23,15 +35,6 @@
                     </PathGeometry.Figures>
                 </PathGeometry>
             </Path.Data>
-        </Path>-->
-
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Ellipse Width="10" Height="10" Fill="#FF6464C5" Stroke="Black"/>
-            <Label x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="8" FontWeight="Bold" Grid.Column="1" VerticalContentAlignment="Center" />
-        </Grid>
-    </Grid>
+        </Path>
+    </Canvas>
 </UserControl>
