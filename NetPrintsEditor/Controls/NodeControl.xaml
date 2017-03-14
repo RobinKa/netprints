@@ -8,7 +8,7 @@
              d:DesignHeight="100" d:DesignWidth="150" x:Name="nodeWindow">
 
     <Grid>
-        <Rectangle Fill="#FFD2D2D2" Stroke="Black" StrokeThickness="2" RadiusX="4" RadiusY="4">
+        <Rectangle Stroke="#CC505050" StrokeThickness="3" RadiusX="4" RadiusY="4" Fill="#AA303030">
             <Rectangle.Effect>
                 <DropShadowEffect/>
             </Rectangle.Effect>
@@ -16,20 +16,23 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="24"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label x:Name="nodeLabel" Content="{Binding FallbackValue=Node, ElementName=nodeWindow, Path=NodeVM.Name}" HorizontalContentAlignment="Center" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="11"/>
+            <Label x:Name="nodeLabel" Content="{Binding FallbackValue=Node, ElementName=nodeWindow, Path=NodeVM.Name}" HorizontalContentAlignment="Center" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" VerticalAlignment="Bottom" BorderThickness="0">
+                <Label.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
+                </Label.Effect>
+            </Label>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <ItemsControl x:Name="inputDataPinList" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000" Grid.Row="1">
+                <ItemsControl x:Name="inputDataPinList" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:PinControl Pin="{Binding}" />
@@ -37,7 +40,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <ItemsControl x:Name="outputDataPinList" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" Grid.Column="2" Grid.Row="1">
+                <ItemsControl x:Name="outputDataPinList" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:PinControl Pin="{Binding}" />

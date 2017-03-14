@@ -62,9 +62,11 @@ namespace NetPrintsEditor
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Method newMethod = new Method(e.Parameter as string);
+            newMethod.ArgumentTypes.Add(typeof(TextBox));
+            newMethod.ArgumentTypes.Add(typeof(string));
             newMethod.ArgumentTypes.Add(typeof(int));
-            newMethod.ArgumentTypes.Add(typeof(int));
-            newMethod.ReturnTypes.Add(typeof(string));
+            newMethod.ReturnTypes.Add(typeof(bool));
+            newMethod.ReturnTypes.Add(typeof(System.IO.StreamReader));
             newMethod.EntryNode.PositionX = 100;
             newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 200;

@@ -57,15 +57,8 @@
     </ApplicationDefinition>
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
-    <Compile Include="Controls\ConnectionLine.xaml.cs">
-      <DependentUpon>ConnectionLine.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModels\MethodVM.cs" />
     <Compile Include="ViewModels\NodeVM.cs" />
-    <Page Include="Controls\ConnectionLine.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\MethodEditorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

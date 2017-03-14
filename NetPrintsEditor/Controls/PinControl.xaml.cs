@@ -70,7 +70,7 @@ namespace NetPrintsEditor.Controls
             StartPoint = ellipse.TransformToVisual(canvas).Transform(new Point(
                     ellipse.RenderSize.Width / 2, ellipse.RenderSize.Height / 2));
 
-            if (ConnectedPin != null)
+            if (ConnectedPin != null && ConnectedPin.ellipse.FindCommonVisualAncestor(canvas) != null)
             {
                 AnchorPoint = ConnectedPin.ellipse.TransformToVisual(canvas).Transform(new Point(
                     ConnectedPin.ellipse.RenderSize.Width / 2, ConnectedPin.ellipse.RenderSize.Height / 2));
@@ -112,9 +112,7 @@ namespace NetPrintsEditor.Controls
 
         public static readonly DependencyProperty PinProperty =
             DependencyProperty.Register("Pin", typeof(NodePin), typeof(PinControl));
-
         
-
         public NodePin Pin
         {
             get => GetValue(PinProperty) as NodePin;
@@ -125,6 +123,29 @@ namespace NetPrintsEditor.Controls
         {
             InitializeComponent();
             LayoutUpdated += OnLayoutUpdated;
+        }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if(e.Property == PinProperty)
+            {
+                if(Pin is NodeInputDataPin || Pin is NodeInputExecPin)
+                {
+                    grid.ColumnDefinitions[0].Width = new GridLength(20, GridUnitType.Pixel);
+                    grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
+                    ellipse.SetValue(Grid.ColumnProperty, 0);
+                    label.SetValue(Grid.ColumnProperty, 1);
+                }
+                else
+                {
+                    grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+                    grid.ColumnDefinitions[1].Width = new GridLength(20, GridUnitType.Pixel);
+                    ellipse.SetValue(Grid.ColumnProperty, 1);
+                    label.SetValue(Grid.ColumnProperty, 0);
+                }
+            }
         }
 
         private void OnEllipseMouseMove(object sender, MouseEventArgs e)

@@ -7,7 +7,7 @@
         xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
         xmlns:Controls="clr-namespace:NetPrintsEditor.Controls" x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280" x:Name="classWindow">
+        Title="MainWindow" Height="720" Width="1280" Background="#FF404040" x:Name="classWindow">
     <Window.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
@@ -19,6 +19,27 @@
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
     </Window.CommandBindings>
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#FF333333" />
+            <Setter Property="Foreground" Value="#FFEEEEEE" />
+            <Setter Property="BorderBrush" Value="#FF444444"/>
+        </Style>
+
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="#FF404040" />
+            <Setter Property="BorderBrush" Value="#FF444444"/>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="#FFEEEEEE" />
+        </Style>
+
+        <Style TargetType="GridSplitter">
+            <Setter Property="Background" Value="#FF444444" />
+        </Style>
+    </Window.Resources>
     
     <Grid>
         <Grid.ColumnDefinitions>

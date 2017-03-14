@@ -26,6 +26,6 @@
             </Canvas>
         </AdornerDecorator>
 
-        <Label Content="{Binding ElementName=methodEditorWindow, Path=Method.Name}" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="32" VerticalContentAlignment="Bottom" IsHitTestVisible="False" Background="Transparent" Foreground="#CC000000" />
+        <Label Content="{Binding ElementName=methodEditorWindow, Path=Method.Name}" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="32" VerticalContentAlignment="Bottom" IsHitTestVisible="False" Background="Transparent" Foreground="#CCEEEEEE" />
     </Grid>
 </UserControl>
