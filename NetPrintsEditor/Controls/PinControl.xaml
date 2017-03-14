@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="NetPrintsEditor.Controls.PinControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NetPrintsEditor.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="10" d:DesignWidth="30" x:Name="pinWindow">
+    <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+        <!-- <Path x:Name="cable" Stroke="Black" StrokeThickness="3">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure StartPoint="15,15">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                        <PolyBezierSegment x:Name="curve" Points="15,15 100,0 100,100 200,200" />
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>-->
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Ellipse Width="10" Height="10" Fill="#FF6464C5" Stroke="Black"/>
+            <Label x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="8" FontWeight="Bold" Grid.Column="1" VerticalContentAlignment="Center" />
+        </Grid>
+    </Grid>
+</UserControl>
