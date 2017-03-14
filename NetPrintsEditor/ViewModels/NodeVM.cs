@@ -17,6 +17,19 @@ namespace NetPrintsEditor.ViewModels
     public class NodeVM
     {
         // Wrapped attributes of Node
+        public string Name
+        {
+            get => node.Name;
+            set
+            {
+                if (node.Name != value)
+                {
+                    node.Name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ObservableCollection<NodeInputDataPin> InputDataPins { get => node.InputDataPins; }
         public ObservableCollection<NodeOutputDataPin> OutputDataPins { get => node.OutputDataPins; }
         public ObservableCollection<NodeInputExecPin> InputExecPins { get => node.InputExecPins; }
@@ -40,11 +53,6 @@ namespace NetPrintsEditor.ViewModels
         public Method Method
         {
             get => node.Method;
-        }
-
-        public string Name
-        {
-            get => node.GetType().Name;
         }
 
         public double PositionX

@@ -23,18 +23,11 @@ namespace NetPrintsEditor.Commands
             public double NewPositionX;
             public double NewPositionY;
 
-            // Store names to find the node if it doesnt exist anymore after undoing
-            public string MethodName;
-            public string NodeName;
-
             public SetNodePositionParameters(NodeVM node, double newPositionX, double newPositionY)
             {
                 Node = node;
                 NewPositionX = newPositionX;
                 NewPositionY = newPositionY;
-
-                MethodName = node.Method.Name;
-                NodeName = node.ToString();
             }
         }
 

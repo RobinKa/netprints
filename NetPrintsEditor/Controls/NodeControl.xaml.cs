@@ -53,21 +53,5 @@ namespace NetPrintsEditor.Controls
                 RenderTransform = new TranslateTransform(nodeVM.PositionX, nodeVM.PositionY);
             }
         }
-
-        // Move node command
-        private void CommandSetNodePosition_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = e.Parameter is SetNodePositionParameters p && (p.Node == nodeVM || (p.MethodName == nodeVM.Method.Name && p.NodeName == nodeVM.Name));
-        }
-
-        private void CommandSetNodePosition_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            SetNodePositionParameters p = e.Parameter as SetNodePositionParameters;
-            if (p.Node != null)
-            {
-                p.Node.PositionX = p.NewPositionX;
-                p.Node.PositionY = p.NewPositionY;
-            }
-        }
     }
 }

@@ -65,9 +65,12 @@ namespace NetPrintsEditor
             newMethod.ArgumentTypes.Add(typeof(int));
             newMethod.ArgumentTypes.Add(typeof(int));
             newMethod.ReturnTypes.Add(typeof(string));
+            newMethod.EntryNode.PositionX = 100;
+            newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 200;
+            newMethod.ReturnNode.PositionY = newMethod.EntryNode.PositionY;
             Class.Methods.Add(newMethod);
-            methodEditor.Method = newMethod;
+            //methodEditor.Method = newMethod;
         }
 
         // Remove Method
@@ -104,6 +107,44 @@ namespace NetPrintsEditor
         private void CommandRemoveAttribute_Execute(object sender, ExecutedRoutedEventArgs e)
         {
             Class.Attributes.Remove(Class.Attributes.First(m => m.Name == e.Parameter as string));
+        }
+
+        // Move node
+        private void CommandSetNodePosition_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is SetNodePositionParameters p && FindNodeVMFromSetNodePositionParameters(p) != null;
+        }
+
+        private void CommandSetNodePosition_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            SetNodePositionParameters p = e.Parameter as SetNodePositionParameters;
+            NodeVM nodeVM = FindNodeVMFromSetNodePositionParameters(p);
+            nodeVM.PositionX = p.NewPositionX;
+            nodeVM.PositionY = p.NewPositionY;
+        }
+
+        public NodeVM FindNodeVMFromSetNodePositionParameters(SetNodePositionParameters p)
+        {
+            // Find open existing
+            NodeVM nodeVM = methodEditor.NodeControls.FirstOrDefault(c => c.NodeVM.Node == p.Node.Node)?.NodeVM;
+
+            // Find open by name
+            if(nodeVM == null)
+            {
+                nodeVM = methodEditor.NodeControls.FirstOrDefault(c => c.NodeVM.Method.Name == p.Node.Method.Name && c.NodeVM.Name == p.Node.Name)?.NodeVM;
+            }
+            
+            // Find closed by name
+            if(nodeVM == null)
+            {
+                Node node = Class.Methods.FirstOrDefault(m => m.Name == p.Node.Method.Name)?.Nodes.FirstOrDefault(n => n.Name == p.Node.Name);
+                if(node != null)
+                {
+                    nodeVM = new NodeVM(node);
+                }
+            }
+
+            return nodeVM;
         }
 
         #endregion

@@ -3,15 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="150" x:Name="nodeWindow">
 
-    <UserControl.CommandBindings>
-        <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
-    </UserControl.CommandBindings>
-    
     <Grid>
         <Rectangle Fill="#FFD2D2D2" Stroke="Black" StrokeThickness="2" RadiusX="4" RadiusY="4">
             <Rectangle.Effect>

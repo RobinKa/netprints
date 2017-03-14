@@ -52,6 +52,11 @@ namespace NetPrintsEditor.Controls
             }
         }
 
+        public List<NodeControl> NodeControls
+        {
+            get => nodeControls;
+        }
+
         public static DependencyProperty MethodProperty = DependencyProperty.Register("Method", typeof(Method), typeof(MethodEditorControl));
 
         private List<NodeControl> nodeControls = new List<NodeControl>();
