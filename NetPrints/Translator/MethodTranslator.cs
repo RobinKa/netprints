@@ -169,7 +169,11 @@ namespace NetPrints.Translator
             // Write return type
             if (method.ReturnTypes.Count() > 1)
             {
-                builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
+                // Tuple<Types..> (won't be needed in the future)
+                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes.Select(t => t.FullName)) + ">";
+                builder.Append(returnType + " ");
+
+                //builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
             }
             else if (method.ReturnTypes.Count() == 1)
             {
@@ -444,7 +448,10 @@ namespace NetPrints.Translator
             else
             {
                 var returnValues = node.InputDataPins.Select(pin => GetPinIncomingValue(pin));
-                builder.AppendLine($"return ({string.Join(",", returnValues)});");
+
+                // Tuple<Types..> (won't be needed in the future)
+                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", node.InputDataPins.Select(pin => pin.PinType.FullName)) + ">";
+                builder.AppendLine($"return new {returnType}({string.Join(",", returnValues)});");
             }
         }
 

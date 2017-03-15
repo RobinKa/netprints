@@ -1,4 +1,5 @@
-﻿using NetPrints.Graph;
+﻿using NetPrints.Core;
+using NetPrints.Graph;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,8 @@ namespace NetPrintsEditor.Commands
         public static readonly RoutedUICommand SetNodePosition = new RoutedUICommand(nameof(SetNodePosition), nameof(SetNodePosition), typeof(NetPrintsCommands));
         public static readonly RoutedUICommand ConnectPins = new RoutedUICommand(nameof(ConnectPins), nameof(ConnectPins), typeof(NetPrintsCommands));
         public static readonly RoutedUICommand DoNothing = new RoutedUICommand(nameof(DoNothing), nameof(DoNothing), typeof(NetPrintsCommands));
-
+        public static readonly RoutedUICommand AddNode = new RoutedUICommand(nameof(AddNode), nameof(AddNode), typeof(NetPrintsCommands));
+        
         public class SetNodePositionParameters
         {
             public NodeVM Node;
@@ -30,6 +32,38 @@ namespace NetPrintsEditor.Commands
                 Node = node;
                 NewPositionX = newPositionX;
                 NewPositionY = newPositionY;
+            }
+        }
+
+        public class AddNodeParameters
+        {
+            public Type NodeType;
+            public Method Method;
+            public double PositionX;
+            public double PositionY;
+            public object[] ConstructorParameters;
+
+            public AddNodeParameters(Type nodeType, Method method, double posX, double posY, params object[] constructorParameters)
+            {
+                if(!nodeType.IsSubclassOf(typeof(Node)) || nodeType.IsAbstract)
+                {
+                    throw new ArgumentException("Invalid type for node");
+                }
+
+                Type[] constructorParamTypes = (new Type[] { typeof(Method) }).Concat
+                    (constructorParameters.Select(p => p.GetType()))
+                    .ToArray();
+
+                if (nodeType.GetConstructor(constructorParamTypes) == null)
+                {
+                    throw new ArgumentException("Invalid parameters for constructor of node");
+                }
+
+                NodeType = nodeType;
+                Method = method;
+                PositionX = posX;
+                PositionY = posY;
+                ConstructorParameters = constructorParameters;
             }
         }
 
@@ -64,6 +98,7 @@ namespace NetPrintsEditor.Commands
                 }
             },
             { ConnectPins, (p) => new Tuple<ICommand, object>(DoNothing, p) },
+            { AddNode, (p) => new Tuple<ICommand, object>(DoNothing, p) },
         };
     }
 }

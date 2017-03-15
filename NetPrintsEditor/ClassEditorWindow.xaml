@@ -15,6 +15,7 @@
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveAttribute" CanExecute="CommandRemoveAttribute_CanExecute" Executed="CommandRemoveAttribute_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.ConnectPins" CanExecute="CommandConnectPins_CanExecute" Executed="CommandConnectPins_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddNode" CanExecute="CommandAddNode_CanExecute" Executed="CommandAddNode_Executed"/>
 
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
@@ -25,12 +26,14 @@
             <Setter Property="Background" Value="#FF333333" />
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
+            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
         </Style>
 
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="#FF333333" />
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
+            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
         </Style>
 
         <Style TargetType="ListView">
@@ -40,10 +43,12 @@
 
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="#FFEEEEEE" />
+            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
         </Style>
 
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#FFEEEEEE" />
+            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
         </Style>
 
         <Style TargetType="GridSplitter">
@@ -51,7 +56,7 @@
         </Style>
 
         <ControlTemplate x:Key="SelectedTemplate" TargetType="ListViewItem">
-            <Border MouseMove="OnVariableListMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF3A3A3A" Background="#FF555555" Margin="1">
+            <Border MouseMove="OnListItemMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF3A3A3A" Background="#FF555555" Margin="1">
                 <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />
             </Border>
         </ControlTemplate>
@@ -60,7 +65,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListViewItem">
-                        <Border MouseMove="OnVariableListMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF444444" Background="#FF333333" Margin="1" >
+                        <Border MouseMove="OnListItemMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF444444" Background="#FF333333" Margin="1" >
                             <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />
                         </Border>
                     </ControlTemplate>
@@ -77,64 +82,79 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition/>
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="200"/>
-        </Grid.ColumnDefinitions>
 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="5"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="compileButton" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClick"/>
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
 
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
-                    <RowDefinition Height="30"/>
-                </Grid.RowDefinitions>
-
-                <ListView x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}" MouseDoubleClick="OnMethodListDoubleClick">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Label Content="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-
-                <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" FontWeight="Bold" />
-            </Grid>
-
-            <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
-            
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
+                    <RowDefinition Height="5"/>
                     <RowDefinition/>
-                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
 
-                <ListView x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Label Content="{Binding Name}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
 
-                <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" FontWeight="Bold" />
+                    <ListView x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}" MouseDoubleClick="OnMethodListDoubleClick">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" FontWeight="Bold" />
+                </Grid>
+
+                <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+            
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+
+                    <ListView x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Name}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" FontWeight="Bold" />
+                </Grid>
             </Grid>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+            <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2"/>
+
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
         </Grid>
-
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-
-        <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2"/>
-
-        <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
     </Grid>
 </Window>

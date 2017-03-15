@@ -34,19 +34,28 @@ namespace NetPrintsEditor.Controls
 
         public PinControl FindPinControl(NodePin pin)
         {
-            var a = inputDataPinList.ItemContainerGenerator.ContainerFromItem(pin);
-            if(a == null)
+            ItemsControl[] pinLists = new ItemsControl[]
             {
-                a = outputDataPinList.ItemContainerGenerator.ContainerFromItem(pin);
-                if(a == null)
-                {
-                    return null;
-                }
+                inputDataPinList, outputDataPinList,
+                inputExecPinList, outputExecPinList
+            };
+
+            DependencyObject foundItem = null;
+            foreach(ItemsControl pinList in pinLists)
+            {
+                foundItem = pinList.ItemContainerGenerator.ContainerFromItem(pin);
+                if (foundItem != null)
+                    break;
             }
 
-            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(a); i++)
+            if(foundItem == null)
             {
-                var v = VisualTreeHelper.GetChild(a, i);
+                return null;
+            }
+
+            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(foundItem); i++)
+            {
+                var v = VisualTreeHelper.GetChild(foundItem, i);
                 if(v is PinControl pc && pc.Pin == pin)
                 {
                     return pc;

@@ -45,7 +45,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"Call Static {Method.Name}";
+            return $"Call Static {ClassName} {MethodName}";
         }
     }
 }

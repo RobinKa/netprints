@@ -1,7 +1,13 @@
-﻿using System;
+﻿using NetPrints.Graph;
+using NetPrintsEditor.Commands;
+using NetPrintsEditor.Converters;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,21 +28,22 @@ namespace NetPrintsEditor.Controls
     public partial class SearchableComboBox : UserControl
     {
         public delegate void ItemSelectedHandler(object sender, string item);
-
-        public event ItemSelectedHandler OnItemSelected;
-
+        
         public static DependencyProperty ItemsProperty = DependencyProperty.Register(
             nameof(Items), typeof(IEnumerable), typeof(SearchableComboBox));
 
+        private MethodInfoConverter methodInfoConverter;
+
         public IEnumerable Items
         {
-            get => searchList.ItemsSource;
+            get => GetValue(ItemsProperty) as IEnumerable;
             set
             {
-                searchList.ItemsSource = value;
-                if (CollectionViewSource.GetDefaultView(searchList.ItemsSource) is CollectionView view)
+                SetValue(ItemsProperty, value);
+
+                if (searchList.Items.CanFilter)
                 {
-                    view.Filter = Filter;
+                    searchList.Items.Filter = Filter;
                 }
             }
         }
@@ -44,6 +51,13 @@ namespace NetPrintsEditor.Controls
         public SearchableComboBox()
         {
             InitializeComponent();
+
+            methodInfoConverter = new MethodInfoConverter();
+            
+            if(searchList.Items.CanFilter)
+            {
+                searchList.Items.Filter = Filter;
+            }
         }
 
         private bool Filter(object item)
@@ -52,13 +66,11 @@ namespace NetPrintsEditor.Controls
             {
                 return true;
             }
+            
+            string itemText = methodInfoConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture) as string;
 
-            if (item is string s)
-            {
-                return s.IndexOf(searchText.Text, StringComparison.OrdinalIgnoreCase) >= 0;
-            }
-
-            return false;
+            return searchText.Text.Split(' ').All(searchTerm =>
+                itemText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
@@ -71,7 +83,24 @@ namespace NetPrintsEditor.Controls
 
         private void OnListItemSelected(object sender, MouseButtonEventArgs e)
         {
-            OnItemSelected?.Invoke(sender, searchList.SelectedItem?.ToString());
+            if (searchList.SelectedItem != null && searchList.SelectedItem is MethodInfo methodInfo)
+            {
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                (
+                    typeof(CallStaticFunctionNode),
+                    null,
+                    0,
+                    0,
+                    methodInfo.DeclaringType.ToString(),
+                    methodInfo.Name,
+                    methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(),
+                    methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
+                ));
+
+                //CallStaticFunctionNode(Method method, string className, string methodName, 
+                //    IEnumerable<Type> inputTypes, IEnumerable<Type> outputTypes)
+                
+            }
         }
     }
 }

@@ -20,6 +20,10 @@ using NetPrintsEditor.Controls;
 using NetPrintsEditor.Adorners;
 using NetPrintsEditor.Commands;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
+using NetPrints.Translator;
+using System.IO;
+using System.CodeDom.Compiler;
+using System.Threading;
 
 namespace NetPrintsEditor
 {
@@ -43,6 +47,9 @@ namespace NetPrintsEditor
             InitializeComponent();
 
             Class cls = new Class();
+            cls.SuperType = typeof(object);
+            cls.Namespace = "TestName.Space";
+            cls.Name = "TestClass";
             Class = new ClassVM(cls);
         }
 
@@ -51,12 +58,42 @@ namespace NetPrintsEditor
             methodEditor.Method = methodList.SelectedItem as Method;
         }
 
-        private void OnVariableListMouseMove(object sender, MouseEventArgs e)
+        private void OnListItemMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && attributeList.SelectedValue != null)
+            if (e.LeftButton == MouseButtonState.Pressed && sender is Border b && b.DataContext != null)
             {
-                DragDrop.DoDragDrop(attributeList, attributeList.SelectedValue, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(b, b.DataContext, DragDropEffects.Copy);
             }
+        }
+
+        private void OnCompileButtonClick(object sender, RoutedEventArgs e)
+        {
+            compileButton.Content = "...";
+
+            // Translate the class to C#
+            ClassTranslator classTranslator = new ClassTranslator();
+            string fullClassName = $"{Class.Namespace}.{Class.Name}";
+            string code = classTranslator.TranslateClass(Class.Class);
+
+            // Compile in another thread
+            new Thread(() =>
+            {
+                if (!Directory.Exists("Compiled"))
+                {
+                    Directory.CreateDirectory("Compiled");
+                }
+
+                File.WriteAllText($"Compiled/{fullClassName}.txt", code);
+
+                CompilerResults results = CompilerUtil.CompileStringToLibrary(code, $"Compiled/{fullClassName}.dll");
+
+                File.WriteAllText($"Compiled/{fullClassName}_errors.txt", string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
+
+                compileButton.Dispatcher.Invoke(() =>
+                {
+                    compileButton.Content = "Compile";
+                });
+            }).Start();
         }
 
         #region Commands
@@ -70,11 +107,12 @@ namespace NetPrintsEditor
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Method newMethod = new Method(e.Parameter as string);
-            newMethod.ArgumentTypes.Add(typeof(ListBox));
+            newMethod.Modifiers = MethodModifiers.Public;
+            newMethod.ArgumentTypes.Add(typeof(Stream));
             newMethod.ArgumentTypes.Add(typeof(string));
             newMethod.ArgumentTypes.Add(typeof(int));
             newMethod.ReturnTypes.Add(typeof(int));
-            newMethod.ReturnTypes.Add(typeof(Control));
+            newMethod.ReturnTypes.Add(typeof(object));
             newMethod.EntryNode.PositionX = 100;
             newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 400;
@@ -162,6 +200,12 @@ namespace NetPrintsEditor
 
         private void CommandConnectPins_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+            ConnectPinsParameters xcp = e.Parameter as ConnectPinsParameters;
+            bool xcanConnect = GraphUtil.CanConnectNodePins(xcp.PinA, xcp.PinB);
+            var xcA = FindPinControlFromPin(xcp.PinA);
+            var xcB = FindPinControlFromPin(xcp.PinB);
+
+            
             e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA, cp.PinB)
                 && FindPinControlFromPin(cp.PinA) != null && FindPinControlFromPin(cp.PinB) != null;
         }
@@ -185,6 +229,26 @@ namespace NetPrintsEditor
             }
 
             return null;
+        }
+
+        // Add node
+
+        private void CommandAddNode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is AddNodeParameters p && (p.Method != null || methodEditor.Method != null);
+        }
+
+        private void CommandAddNode_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            AddNodeParameters p = e.Parameter as AddNodeParameters;
+
+            if (p.Method == null)
+                p.Method = methodEditor.Method;
+
+            object[] parameters = new object[] { p.Method }.Union(p.ConstructorParameters).ToArray();
+            Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
+
+            methodEditor.CreateNodeControl(node);
         }
 
         #endregion

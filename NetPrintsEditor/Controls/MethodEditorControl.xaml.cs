@@ -29,7 +29,6 @@ namespace NetPrintsEditor.Controls
     public partial class MethodEditorControl : UserControl
     {
         public const double GridCellSize = 20;
-        public const int NodeControlWidth = 220;
 
         public Method Method
         {
@@ -62,20 +61,32 @@ namespace NetPrintsEditor.Controls
             get => nodeControls;
         }
 
-        public static DependencyProperty MethodProperty = DependencyProperty.Register("Method", typeof(Method), typeof(MethodEditorControl));
+        public static DependencyProperty MethodProperty = DependencyProperty.Register(
+            nameof(Method), typeof(Method), typeof(MethodEditorControl));
 
         private List<NodeControl> nodeControls = new List<NodeControl>();
 
+        public DependencyProperty SuggestedFunctionsProperty = DependencyProperty.Register(
+            nameof(SuggestedFunctions), typeof(ObservableCollection<MethodInfo>), typeof(MethodEditorControl));
+
+        public ObservableCollection<MethodInfo> SuggestedFunctions
+        {
+            get => (ObservableCollection<MethodInfo>)GetValue(SuggestedFunctionsProperty);
+            set => SetValue(SuggestedFunctionsProperty, value);
+        }
+
         public MethodEditorControl()
         {
+            SuggestedFunctions = new ObservableCollection<MethodInfo>(ReflectionUtil.GetStaticFunctions());
             InitializeComponent();
         }
 
-        private void CreateNodeControl(Node node)
+        public void CreateNodeControl(Node node)
         {
-            NodeControl nodeControl = new NodeControl(new NodeVM(node));
-            nodeControl.Width = NodeControlWidth;
+            grid.ContextMenu.IsOpen = false;
 
+            NodeControl nodeControl = new NodeControl(new NodeVM(node));
+            
             nodeControls.Add(nodeControl);
 
             canvas.Children.Add(nodeControl);

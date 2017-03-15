@@ -59,9 +59,12 @@
     </ApplicationDefinition>
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
+    <Compile Include="CompilerUtil.cs" />
     <Compile Include="Controls\SearchableComboBox.xaml.cs">
       <DependentUpon>SearchableComboBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\MethodInfoConverter.cs" />
+    <Compile Include="ReflectionUtil.cs" />
     <Compile Include="ViewModels\MethodVM.cs" />
     <Compile Include="ViewModels\NodeVM.cs" />
     <Page Include="Controls\MethodEditorControl.xaml">

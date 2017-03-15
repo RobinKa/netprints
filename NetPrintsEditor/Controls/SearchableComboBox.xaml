@@ -4,8 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
+             xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" x:Name="ctrl">
+    <UserControl.Resources>
+        <converters:MethodInfoConverter x:Key="converter" />
+    </UserControl.Resources>
+    
     <Border BorderBrush="#FF222222" BorderThickness="2">
         <Grid>
             <Grid.RowDefinitions>
@@ -15,12 +20,24 @@
 
             <TextBox x:Name="searchText" TextChanged="OnSearchTextChanged" />
 
-            <ListView x:Name="searchList" Grid.Row="1">
+            <ListView x:Name="searchList" Grid.Row="1" ItemsSource="{Binding ElementName=ctrl, Path=Items}" FontFamily="Lucida Sans Unicode" Foreground="#FFC9C9C9">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
                     </Style>
                 </ListView.ItemContainerStyle>
+
+                <ListView.View>
+                    <GridView>
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+
+                        <GridViewColumn DisplayMemberBinding="{Binding Converter={StaticResource converter}}"/>
+                    </GridView>
+                </ListView.View>
             </ListView>
         </Grid>
     </Border>
