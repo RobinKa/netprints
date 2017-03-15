@@ -87,6 +87,11 @@ namespace NetPrints.Translator
             return pins.Select(pin => GetOrCreatePinName(pin)).ToList();
         }
 
+        private IEnumerable<string> GetPinIncomingValues(IEnumerable<NodeInputDataPin> pins)
+        {
+            return pins.Select(pin => GetPinIncomingValue(pin)).ToList();
+        }
+
         private string GetOrCreateTypedPinName(NodeOutputDataPin pin)
         {
             string pinName = GetOrCreatePinName(pin);
@@ -330,6 +335,8 @@ namespace NetPrints.Translator
         
         public void TranslateCallMethodNode(CallMethodNode node)
         {
+            string temporaryReturnName = null;
+
             // Translate all the pure nodes this node depends on in
             // the correct order
             TranslateDependentPureNodes(node);
@@ -343,9 +350,11 @@ namespace NetPrints.Translator
             }
             else if (node.OutputDataPins.Count > 1)
             {
-                var returnNames = GetOrCreatePinNames(node.OutputDataPins);
+                temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
 
-                builder.Append($"({string.Join(",", returnNames)}) = ");
+                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.FullName));
+                
+                builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
             // Write target
@@ -361,9 +370,19 @@ namespace NetPrints.Translator
             }
 
             // Write function call with arguments
-            var argumentNames = GetOrCreatePinNames(node.ArgumentPins.Select(pin => pin.IncomingPin));
+            var argumentNames = GetPinIncomingValues(node.ArgumentPins);
 
             builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
+
+            // Assign the real variables from the temporary tuple
+            if(node.OutputDataPins.Count > 1)
+            {
+                var returnNames = GetOrCreatePinNames(node.OutputDataPins);
+                for(int i = 0; i < returnNames.Count(); i++)
+                {
+                    builder.AppendLine($"{returnNames.ElementAt(i)} = {temporaryReturnName}.Item{i+1};");
+                }
+            }
 
             // Go to the next state
             WriteGotoOutputPin(node.OutputExecPins[0]);
@@ -371,6 +390,8 @@ namespace NetPrints.Translator
 
         public void TranslateCallStaticFunctionNode(CallStaticFunctionNode node)
         {
+            string temporaryReturnName = null;
+
             // Translate all the pure nodes this node depends on in
             // the correct order
             TranslateDependentPureNodes(node);
@@ -384,9 +405,11 @@ namespace NetPrints.Translator
             }
             else if (node.OutputDataPins.Count > 1)
             {
-                var returnNames = GetOrCreatePinNames(node.OutputDataPins);
+                temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
 
-                builder.Append($"({string.Join(",", returnNames)}) = ");
+                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.FullName));
+
+                builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
             // Write class name / target
@@ -396,9 +419,19 @@ namespace NetPrints.Translator
             }
 
             // Write function call with arguments
-            var argumentNames = GetOrCreatePinNames(node.ArgumentPins.Select(pin => pin.IncomingPin));
+            var argumentNames = GetPinIncomingValues(node.ArgumentPins);
 
             builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
+
+            // Assign the real variables from the temporary tuple
+            if (node.OutputDataPins.Count > 1)
+            {
+                var returnNames = GetOrCreatePinNames(node.OutputDataPins);
+                for (int i = 0; i < returnNames.Count(); i++)
+                {
+                    builder.AppendLine($"{returnNames.ElementAt(i)} = {temporaryReturnName}.Item{i + 1};");
+                }
+            }
 
             // Go to the next state
             WriteGotoOutputPin(node.OutputExecPins[0]);

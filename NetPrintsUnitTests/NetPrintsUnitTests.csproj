@@ -47,9 +47,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="TestName.Space.TestClass">
-      <HintPath>..\NetPrintsEditor\bin\Debug\Compiled\TestName.Space.TestClass.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassTranslatorTests.cs" />

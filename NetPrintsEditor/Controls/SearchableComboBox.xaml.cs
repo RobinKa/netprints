@@ -102,5 +102,11 @@ namespace NetPrintsEditor.Controls
                 
             }
         }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            searchText.Clear();
+            searchText.Focus();
+        }
     }
 }

@@ -10,7 +10,28 @@ namespace NetPrints.Translator
 {
     public static class TranslatorUtil
     {
-        public const string NAME_PREFIX = "var";
+        public const string VariablePrefix = "var";
+        public const string TemporaryVariablePrefix = "temp";
+
+        private static Random random = new Random();
+
+        private const int TemporaryVariableNameLength = 16;
+
+        public static string GetTemporaryVariableName()
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyz";
+
+            string name = TemporaryVariablePrefix;
+            int additionalLength = TemporaryVariableNameLength - name.Length;
+            if(additionalLength > 0)
+            {
+                string addition = new string(Enumerable.Repeat(chars, additionalLength).Select(s => s[random.Next(s.Length)]).ToArray());
+                addition = addition.First().ToString().ToUpper() + string.Join("", addition.Skip(1));
+                name += addition;
+            }
+
+            return name;
+        }
 
         public static string GetUniqueVariableName(string name, IList<string> names)
         {
@@ -18,7 +39,7 @@ namespace NetPrints.Translator
 
             while(true)
             {
-                string uniqueName = i == 1 ? $"{NAME_PREFIX}{name}" : $"{NAME_PREFIX}{name}{i}";
+                string uniqueName = i == 1 ? $"{VariablePrefix}{name}" : $"{VariablePrefix}{name}{i}";
 
                 if (!names.Contains(uniqueName))
                 {

@@ -12,7 +12,7 @@ namespace NetPrintsEditor
         public static IEnumerable<MethodInfo> GetStaticFunctions()
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
-                a.GetTypes().SelectMany(t =>
+                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
                     t.GetMethods(BindingFlags.Static | BindingFlags.Public)
             ));
         }

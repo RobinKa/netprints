@@ -128,6 +128,16 @@ namespace NetPrintsEditor.Controls
                     // TODO: Set context menu list to methods
                 }
             }
+            if (Method != null && e.Data.GetDataPresent(typeof(Method)))
+            {
+                Point mousePosition = e.GetPosition(canvas);
+
+                Method method = e.Data.GetData(typeof(Method)) as Method;
+                CallMethodNode node = new CallMethodNode(Method, method.Name, method.ArgumentTypes, method.ReturnTypes);
+                node.PositionX = mousePosition.X;
+                node.PositionY = mousePosition.Y;
+                CreateNodeControl(node);
+            }
         }
 
         private void OnDragOver(object sender, DragEventArgs e)
@@ -142,6 +152,11 @@ namespace NetPrintsEditor.Controls
             else if(e.Data.GetDataPresent(typeof(PinControl)))
             {
                 e.Effects = DragDropEffects.Link;
+                e.Handled = true;
+            }
+            else if(Method != null && e.Data.GetDataPresent(typeof(Method)))
+            {
+                e.Effects = DragDropEffects.Copy;
                 e.Handled = true;
             }
         }
