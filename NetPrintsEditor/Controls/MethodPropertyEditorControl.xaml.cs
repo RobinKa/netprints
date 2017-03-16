@@ -34,5 +34,15 @@ namespace NetPrintsEditor.Controls
         {
             InitializeComponent();
         }
+
+        private void OnAddArgumentTypeClick(object sender, RoutedEventArgs e)
+        {
+            Method.ArgumentTypes.Add(typeof(object));
+        }
+
+        private void OnAddReturnTypeClick(object sender, RoutedEventArgs e)
+        {
+            Method.ReturnTypes.Add(typeof(object));
+        }
     }
 }

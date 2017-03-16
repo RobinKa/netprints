@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetPrintsEditor"
         xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
-        xmlns:Controls="clr-namespace:NetPrintsEditor.Controls" x:Class="NetPrintsEditor.ClassEditorWindow"
+        xmlns:Controls="clr-namespace:NetPrintsEditor.Controls"
+    xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="1280" Background="#FF404040" x:Name="classWindow">
     <Window.CommandBindings>
@@ -22,47 +23,6 @@
     </Window.CommandBindings>
 
     <Window.Resources>
-        <Style TargetType="Button">
-            <Setter Property="Background" Value="#FF333333" />
-            <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
-        </Style>
-
-        <Style TargetType="TextBox">
-            <Setter Property="Background" Value="#FF333333" />
-            <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-
-        <Style TargetType="CheckBox">
-            <Setter Property="Background" Value="#FF333333" />
-            <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
-        </Style>
-
-        <Style TargetType="ListView">
-            <Setter Property="Background" Value="#FF404040" />
-            <Setter Property="BorderBrush" Value="#FF444444"/>
-        </Style>
-
-        <Style TargetType="Label">
-            <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
-        </Style>
-
-        <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
-        </Style>
-
-        <Style TargetType="GridSplitter">
-            <Setter Property="Background" Value="#FF444444" />
-        </Style>
-
         <ControlTemplate x:Key="SelectedTemplate" TargetType="ListViewItem">
             <Border MouseMove="OnListItemMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF3A3A3A" Background="#FF555555" Margin="1">
                 <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />

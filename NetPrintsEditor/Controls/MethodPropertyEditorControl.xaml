@@ -6,43 +6,81 @@
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              xmlns:npc="clr-namespace:NetPrints.Core;assembly=NetPrints"
              xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
+             xmlns:npe="clr-namespace:NetPrintsEditor"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" x:Name="wnd">
     <UserControl.Resources>
         <converters:MethodModifierConverter x:Key="methodModifierConverter" />
     </UserControl.Resources>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.5*"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        
-        <Label Content="Name" />
-        <TextBox Grid.Column="1" x:Name="methodName" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay}" />
-        
-        <Label Grid.Row="1" Content="Modifiers" />
-        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="methodIsPublic" Content="Public" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Public}}" VerticalContentAlignment="Center" />
 
-        <Label Grid.Row="2" Content="Protected" />
-        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="methodIsProtected" Content="Protected" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Protected}}" VerticalContentAlignment="Center" />
-
-        <Label Grid.Row="3" Content="Sealed" />
-        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="methodIsSealed" Content="Sealed" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Sealed}}" VerticalContentAlignment="Center" />
-
-        <Label Grid.Row="4" Content="Abstract" />
-        <CheckBox Grid.Row="4" Grid.Column="1" x:Name="methodIsAbstract" Content="Abstract" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
+    <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
         
-        <Label Grid.Row="5" Content="Static" />
-        <CheckBox Grid.Row="5" Grid.Column="1" x:Name="methodIsStatic" Content="Static" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
-    </Grid>
+            <Label Content="Name" />
+            <TextBox Grid.Column="1" x:Name="methodName" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        
+            <Label Grid.Row="1" Content="Public" />
+            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="methodIsPublic" Content="Public" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Public}}" VerticalContentAlignment="Center" />
+
+            <Label Grid.Row="2" Content="Protected" />
+            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="methodIsProtected" Content="Protected" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Protected}}" VerticalContentAlignment="Center" />
+
+            <Label Grid.Row="3" Content="Sealed" />
+            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="methodIsSealed" Content="Sealed" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Sealed}}" VerticalContentAlignment="Center" />
+
+            <Label Grid.Row="4" Content="Abstract" />
+            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="methodIsAbstract" Content="Abstract" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
+        
+            <Label Grid.Row="5" Content="Static" />
+            <CheckBox Grid.Row="5" Grid.Column="1" x:Name="methodIsStatic" Content="Static" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
+        </Grid>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Label Content="Argument Types" HorizontalContentAlignment="Stretch" />
+                <Button Content="+" Width="30" HorizontalAlignment="Right" Click="OnAddArgumentTypeClick"/>
+            </Grid>
+            
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=wnd, Path=Method.ArgumentTypes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ComboBox Text="{Binding FullName, Mode=OneWay}" ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" SelectedItem="{Binding Mode=OneWay}" Style="{DynamicResource ComboBoxStyle1}" HorizontalContentAlignment="Stretch"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Grid Grid.Row="2">
+                <Label Content="Return Types" HorizontalContentAlignment="Stretch" />
+                <Button Content="+" Width="30" HorizontalAlignment="Right" Click="OnAddReturnTypeClick" />
+            </Grid>
+            
+            <ItemsControl Grid.Row="3" ItemsSource="{Binding ElementName=wnd, Path=Method.ReturnTypes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ComboBox Text="{Binding FullName, Mode=OneWay}" ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" SelectedItem="{Binding Mode=OneWay}" Style="{DynamicResource ComboBoxStyle1}" HorizontalContentAlignment="Stretch"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </StackPanel>
 </UserControl>
