@@ -241,12 +241,19 @@ namespace NetPrintsEditor
         private void CommandAddNode_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AddNodeParameters p = e.Parameter as AddNodeParameters;
-
+            
             if (p.Method == null)
+            {
                 p.Method = methodEditor.Method;
+                Point mouseLoc = Mouse.GetPosition(methodEditor.canvas);
+                p.PositionX = mouseLoc.X;
+                p.PositionY = mouseLoc.Y;
+            }
 
             object[] parameters = new object[] { p.Method }.Union(p.ConstructorParameters).ToArray();
             Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
+            node.PositionX = p.PositionX;
+            node.PositionY = p.PositionY;
 
             methodEditor.CreateNodeControl(node);
         }
@@ -280,5 +287,28 @@ namespace NetPrintsEditor
             undoRedoStack.DoCommand(NetPrintsCommands.AddAttribute, uniqueName);
         }
         #endregion
+
+        private void OnVariableSelected(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListViewItem item && item.DataContext is Variable v)
+            {
+                viewerTabControl.SelectedIndex = 1;
+                variableViewer.Variable = v;
+            }
+        }
+
+        private void OnMethodSelected(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListViewItem item && item.DataContext is Method m)
+            {
+                viewerTabControl.SelectedIndex = 2;
+                methodViewer.Method = m;
+            }
+        }
+
+        private void OnMethodEditorClicked(object sender, MouseButtonEventArgs e)
+        {
+            viewerTabControl.SelectedItem = 0;
+        }
     }
 }

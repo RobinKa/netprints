@@ -34,6 +34,14 @@
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Background" Value="#FF333333" />
+            <Setter Property="Foreground" Value="#FFEEEEEE" />
+            <Setter Property="BorderBrush" Value="#FF444444"/>
+            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
         </Style>
 
         <Style TargetType="ListView">
@@ -61,7 +69,7 @@
             </Border>
         </ControlTemplate>
 
-        <Style TargetType="ListViewItem">
+        <Style TargetType="ListViewItem" x:Key="DefaultListViewItemStyle">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListViewItem">
@@ -96,14 +104,14 @@
 
             <Button x:Name="compileButton" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClick"/>
         </Grid>
-        
+
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition/>
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
             <Grid>
@@ -125,13 +133,19 @@
                                 <Label Content="{Binding Name}"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>
+
+                        <ListView.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMethodSelected" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                     </ListView>
 
-                    <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" FontWeight="Bold" />
+                    <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
                 </Grid>
 
                 <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
-            
+
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -144,17 +158,42 @@
                                 <Label Content="{Binding Name}" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
+
+                        <ListView.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnVariableSelected" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                     </ListView>
 
-                    <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" FontWeight="Bold" />
+                    <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" />
                 </Grid>
             </Grid>
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-            <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2"/>
+            <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2" />
 
             <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+
+            <TabControl x:Name="viewerTabControl" Grid.Column="5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                    </Style>
+                </TabControl.ItemContainerStyle>
+
+                <TabItem>
+                </TabItem>
+                
+                <TabItem>
+                    <Controls:VariableEditorControl x:Name="variableViewer" />
+                </TabItem>
+
+                <TabItem>
+                    <Controls:MethodPropertyEditorControl x:Name="methodViewer" />
+                </TabItem>
+            </TabControl>
         </Grid>
     </Grid>
 </Window>

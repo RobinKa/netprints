@@ -5,6 +5,7 @@ using NetPrints.Graph;
 
 namespace NetPrints.Core
 {
+    [Flags]
     public enum MethodModifiers
     {
         Private = 0,

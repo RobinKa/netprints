@@ -83,7 +83,7 @@ namespace NetPrintsEditor.Controls
 
         private void OnListItemSelected(object sender, MouseButtonEventArgs e)
         {
-            if (searchList.SelectedItem != null && searchList.SelectedItem is MethodInfo methodInfo)
+            if (sender is ListViewItem item && item.DataContext is MethodInfo methodInfo)
             {
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (

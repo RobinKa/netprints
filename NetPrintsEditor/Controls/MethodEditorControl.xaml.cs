@@ -66,7 +66,7 @@ namespace NetPrintsEditor.Controls
 
         private List<NodeControl> nodeControls = new List<NodeControl>();
 
-        public DependencyProperty SuggestedFunctionsProperty = DependencyProperty.Register(
+        public static DependencyProperty SuggestedFunctionsProperty = DependencyProperty.Register(
             nameof(SuggestedFunctions), typeof(ObservableCollection<MethodInfo>), typeof(MethodEditorControl));
 
         public ObservableCollection<MethodInfo> SuggestedFunctions
@@ -106,17 +106,63 @@ namespace NetPrintsEditor.Controls
             AdornerLayer.GetAdornerLayer(nodeControl)?.Add(dragAdorner);
         }
 
+        public void ShowVariableGetSet(Variable variable, Point position)
+        {
+            variableGetSet.Visibility = Visibility.Visible;
+            variableGetSet.Tag = new object[] { variable, position };
+
+            variableSetButton.Tag = variableGetSet.Tag;
+            variableGetButton.Tag = variableGetSet.Tag;
+            
+            Canvas.SetLeft(variableGetSet, position.X - variableGetSet.Width / 2);
+            Canvas.SetTop(variableGetSet, position.Y - variableGetSet.Height / 2);
+        }
+
+        public void HideVariableGetSet()
+        {
+            variableGetSet.Visibility = Visibility.Hidden;
+        }
+
+        private void OnVariableSetClicked(object sender, RoutedEventArgs e)
+        {
+            if(sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is Variable v && o[1] is Point pos)
+            {
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                (
+                    typeof(VariableSetterNode), Method, pos.X, pos.Y,
+                    v.Name, v.VariableType
+                ));
+            }
+
+            HideVariableGetSet();
+        }
+
+        private void OnVariableGetClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is Variable v && o[1] is Point pos)
+            {
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                (
+                    typeof(VariableGetterNode), Method, pos.X, pos.Y,
+                    v.Name, v.VariableType
+                ));
+            }
+
+            HideVariableGetSet();
+        }
+
+        private void OnVariableGetSetMouseLeave(object sender, MouseEventArgs e)
+        {
+            HideVariableGetSet();
+        }
+
         private void OnGridDrop(object sender, DragEventArgs e)
         {
             if (Method != null && e.Data.GetDataPresent(typeof(Variable)))
             {
-                Point mousePosition = e.GetPosition(canvas);
-
                 Variable variable = e.Data.GetData(typeof(Variable)) as Variable;
-                VariableGetterNode node = new VariableGetterNode(Method, variable.Name, variable.VariableType);
-                node.PositionX = mousePosition.X;
-                node.PositionY = mousePosition.Y;
-                CreateNodeControl(node);
+                
+                ShowVariableGetSet(variable, e.GetPosition(variableGetSetCanvas));
             }
             else if(e.Data.GetDataPresent(typeof(PinControl)))
             {
@@ -131,12 +177,13 @@ namespace NetPrintsEditor.Controls
             if (Method != null && e.Data.GetDataPresent(typeof(Method)))
             {
                 Point mousePosition = e.GetPosition(canvas);
-
                 Method method = e.Data.GetData(typeof(Method)) as Method;
-                CallMethodNode node = new CallMethodNode(Method, method.Name, method.ArgumentTypes, method.ReturnTypes);
-                node.PositionX = mousePosition.X;
-                node.PositionY = mousePosition.Y;
-                CreateNodeControl(node);
+
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                (
+                    typeof(CallMethodNode), Method, mousePosition.X, mousePosition.Y,
+                    method.Name, method.ArgumentTypes, method.ReturnTypes
+                ));
             }
         }
 

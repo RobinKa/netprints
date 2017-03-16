@@ -60,16 +60,26 @@
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
     <Compile Include="CompilerUtil.cs" />
+    <Compile Include="Controls\MethodEditorControl.xaml.cs">
+      <DependentUpon>MethodEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SearchableComboBox.xaml.cs">
       <DependentUpon>SearchableComboBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MethodPropertyEditorControl.xaml.cs">
+      <DependentUpon>MethodPropertyEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VariableEditorControl.xaml.cs">
+      <DependentUpon>VariableEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\MethodInfoConverter.cs" />
+    <Compile Include="Converters\MethodModifierConverter.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="ViewModels\MethodVM.cs" />
     <Compile Include="ViewModels\NodeVM.cs" />
     <Page Include="Controls\MethodEditorControl.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\NodeControl.xaml">
       <SubType>Designer</SubType>
@@ -88,9 +98,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\MethodEditorControl.xaml.cs">
-      <DependentUpon>MethodEditorControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\NodeControl.xaml.cs">
       <DependentUpon>NodeControl.xaml</DependentUpon>
     </Compile>
@@ -102,6 +109,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Controls\SearchableComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MethodPropertyEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\VariableEditorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
