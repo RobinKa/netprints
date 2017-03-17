@@ -83,11 +83,14 @@
 
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <ListView x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}" MouseDoubleClick="OnMethodListDoubleClick">
+                    <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
+                    
+                    <ListView Grid.Row="1" x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}" MouseDoubleClick="OnMethodListDoubleClick">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Label Content="{Binding Name}"/>
@@ -101,18 +104,21 @@
                         </ListView.ItemContainerStyle>
                     </ListView>
 
-                    <Button Grid.Row="1" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
+                    <Button Grid.Row="2" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
                 </Grid>
 
                 <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <ListView x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
+                    <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
+                    
+                    <ListView Grid.Row="1" x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Label Content="{Binding Name}" />
@@ -126,7 +132,7 @@
                         </ListView.ItemContainerStyle>
                     </ListView>
 
-                    <Button Grid.Row="1" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" />
+                    <Button Grid.Row="2" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" />
                 </Grid>
             </Grid>
 
