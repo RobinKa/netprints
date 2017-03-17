@@ -148,12 +148,13 @@ namespace NetPrints.Translator
             {
                 builder.Append("protected ");
             }
-            else
+            else if (method.Modifiers.HasFlag(MethodModifiers.Public))
             {
-                if (method.Modifiers.HasFlag(MethodModifiers.Public))
-                {
-                    builder.Append("public ");
-                }
+                builder.Append("public ");
+            }
+            else if(method.Modifiers.HasFlag(MethodModifiers.Internal))
+            {
+                builder.Append("internal ");
             }
 
             if(method.Modifiers.HasFlag(MethodModifiers.Static))
@@ -169,6 +170,15 @@ namespace NetPrints.Translator
             if(method.Modifiers.HasFlag(MethodModifiers.Sealed))
             {
                 builder.Append("sealed ");
+            }
+
+            if(method.Modifiers.HasFlag(MethodModifiers.Override))
+            {
+                builder.Append("override ");
+            }
+            else if(method.Modifiers.HasFlag(MethodModifiers.Virtual))
+            {
+                builder.Append("virtual ");
             }
 
             // Write return type

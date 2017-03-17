@@ -11,9 +11,12 @@ namespace NetPrints.Core
         Private = 0,
         Public = 1,
         Protected = 2,
-        Sealed = 4,
-        Abstract = 8,
-        Static = 16,
+        Internal = 4,
+        Sealed = 8,
+        Abstract = 16,
+        Static = 32,
+        Virtual = 64,
+        Override = 128,
     }
 
     public class Method
