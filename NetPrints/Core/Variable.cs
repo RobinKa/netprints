@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace NetPrints.Core
@@ -17,20 +18,24 @@ namespace NetPrints.Core
         New = 64,
     }
 
+    [DataContract]
     public class Variable
     {
+        [DataMember]
         public Type VariableType
         {
             get;
             set;
         }
 
+        [DataMember]
         public string Name
         {
             get;
             set;
         }
 
+        [DataMember]
         public VariableModifiers Modifiers
         {
             get;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace NetPrints.Core
 {
@@ -23,6 +24,20 @@ namespace NetPrints.Core
 
                 i++;
             }
+        }
+
+        public static Type GetTypeFromFullName(string fullName)
+        {
+            foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type t = assembly.GetType(fullName);
+                if (t != null)
+                {
+                    return t;
+                }
+            }
+
+            return null;
         }
     }
 }

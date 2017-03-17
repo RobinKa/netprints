@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
+    [DataContract]
     public class EntryNode : Node
     {
         public NodeOutputExecPin InitialExecutionPin

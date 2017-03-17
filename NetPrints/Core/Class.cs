@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace NetPrints.Core
@@ -16,15 +17,25 @@ namespace NetPrints.Core
         Static = 32,
     }
 
+    [DataContract]
     public class Class
     {
-        public ObservableCollection<Variable> Attributes { get; private set; } = new ObservableCollection<Variable>();
-        public ObservableCollection<Method> Methods { get; private set; } = new ObservableCollection<Method>();
+        [DataMember]
+        public ObservableCollection<Variable> Attributes { get; set; } = new ObservableCollection<Variable>();
 
-        public Type SuperType { get; set; }
+        [DataMember]
+        public ObservableCollection<Method> Methods { get; set; } = new ObservableCollection<Method>();
+
+        [DataMember]
+        public Type SuperType { get; set; } = typeof(object);
+
+        [DataMember]
         public string Namespace { get; set; }
+
+        [DataMember]
         public string Name { get; set; }
 
+        [DataMember]
         public ClassModifiers Modifiers { get; set; } = ClassModifiers.Internal;
 
         public Class()

@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,6 +68,8 @@
     <Compile Include="Graph\VariableNode.cs" />
     <Compile Include="Graph\VariableSetterNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\SerializationHelper.cs" />
+    <Compile Include="Serialization\TypeReplacementSurrogate.cs" />
     <Compile Include="Translator\ClassTranslator.cs" />
     <Compile Include="Translator\MethodTranslator.cs" />
     <Compile Include="Translator\TranslatorUtil.cs" />

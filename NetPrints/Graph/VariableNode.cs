@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
+    [DataContract]
     public class VariableNode : Node
     {
         public NodeInputDataPin TargetPin
@@ -19,6 +21,7 @@ namespace NetPrints.Graph
             get { return OutputDataPins[0]; }
         }
 
+        [DataMember]
         public string VariableName { get; private set; }
 
         public VariableNode(Method method, string variableName, Type variableType)

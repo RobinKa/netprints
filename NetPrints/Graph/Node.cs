@@ -2,22 +2,43 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
+    [DataContract]
+    [KnownType(typeof(CallMethodNode))]
+    [KnownType(typeof(CallStaticFunctionNode))]
+    [KnownType(typeof(EntryNode))]
+    [KnownType(typeof(ForLoopNode))]
+    [KnownType(typeof(IfElseNode))]
+    [KnownType(typeof(LiteralNode))]
+    [KnownType(typeof(ReturnNode))]
+    [KnownType(typeof(VariableGetterNode))]
+    [KnownType(typeof(VariableSetterNode))]
     public abstract class Node
     {
-        public ObservableCollection<NodeInputDataPin> InputDataPins { get; } = new ObservableCollection<NodeInputDataPin>();
-        public ObservableCollection<NodeOutputDataPin> OutputDataPins { get; } = new ObservableCollection<NodeOutputDataPin>();
+        [DataMember]
+        public ObservableCollection<NodeInputDataPin> InputDataPins { get; private set; } = new ObservableCollection<NodeInputDataPin>();
 
-        public ObservableCollection<NodeInputExecPin> InputExecPins { get; } = new ObservableCollection<NodeInputExecPin>();
-        public ObservableCollection<NodeOutputExecPin> OutputExecPins { get; } = new ObservableCollection<NodeOutputExecPin>();
+        [DataMember]
+        public ObservableCollection<NodeOutputDataPin> OutputDataPins { get; private set; } = new ObservableCollection<NodeOutputDataPin>();
 
+        [DataMember]
+        public ObservableCollection<NodeInputExecPin> InputExecPins { get; private set; } = new ObservableCollection<NodeInputExecPin>();
+
+        [DataMember]
+        public ObservableCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableCollection<NodeOutputExecPin>();
+
+        [DataMember]
         public double PositionX { get; set; }
+
+        [DataMember]
         public double PositionY { get; set; }
 
+        [DataMember]
         public string Name { get; set; }
 
         public bool IsPure
@@ -28,6 +49,7 @@ namespace NetPrints.Graph
             }
         }
 
+        [DataMember]
         public Method Method
         {
             get;

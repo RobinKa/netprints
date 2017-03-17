@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
+    [DataContract]
     public class LiteralNode : Node
     {
         public NodeOutputDataPin ValuePin
@@ -14,8 +16,10 @@ namespace NetPrints.Graph
             get { return OutputDataPins[0]; }
         }
 
+        [DataMember]
         public Type LiteralType { get; private set; }
 
+        [DataMember]
         public object Value
         {
             get
