@@ -24,6 +24,7 @@ using NetPrints.Translator;
 using System.IO;
 using System.CodeDom.Compiler;
 using System.Threading;
+using System.Diagnostics;
 
 namespace NetPrintsEditor
 {
@@ -94,6 +95,41 @@ namespace NetPrintsEditor
                 {
                     compileButton.Content = "Compile";
                 });
+            }).Start();
+        }
+
+        private void OnRunButtonClicked(object sender, RoutedEventArgs e)
+        {
+            runButton.Content = "...";
+
+            // Translate the class to C#
+            ClassTranslator classTranslator = new ClassTranslator();
+            string fullClassName = $"{Class.Namespace}.{Class.Name}";
+            string code = classTranslator.TranslateClass(Class.Class);
+
+            // Compile in another thread
+            new Thread(() =>
+            {
+                if (!Directory.Exists("Compiled"))
+                {
+                    Directory.CreateDirectory("Compiled");
+                }
+
+                File.WriteAllText($"Compiled/{fullClassName}.txt", code);
+
+                CompilerResults results = CompilerUtil.CompileStringToExecutable(code, $"Compiled/{fullClassName}.exe");
+
+                File.WriteAllText($"Compiled/{fullClassName}_errors.txt", string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
+                
+                runButton.Dispatcher.Invoke(() =>
+                {
+                    runButton.Content = "Run";
+                });
+                
+                if (!results.Errors.HasErrors)
+                {
+                    Process.Start(System.IO.Path.Combine(Environment.CurrentDirectory, results.PathToAssembly));
+                }
             }).Start();
         }
 

@@ -25,5 +25,23 @@ namespace NetPrintsEditor
 
             return results;
         }
+
+        public static CompilerResults CompileStringToExecutable(string sourceCode, string outputPath)
+        {
+            CSharpCodeProvider csc = new CSharpCodeProvider();
+
+            CompilerParameters parameters = new CompilerParameters(new string[]
+            {
+                "mscorlib.dll",
+                "System.dll",
+                "System.Core.dll",
+            }, outputPath, true);
+
+            parameters.GenerateExecutable = true;
+
+            CompilerResults results = csc.CompileAssemblyFromSource(parameters, sourceCode);
+
+            return results;
+        }
     }
 }
