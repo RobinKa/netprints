@@ -12,7 +12,7 @@ namespace NetPrints.Translator
         private const string CLASS_TEMPLATE =
             @"namespace %Namespace%
             {
-                public class %ClassName% : %SuperType%
+                %ClassModifiers%class %ClassName% : %SuperType%
                 {
                     %Content%
                 }
@@ -41,8 +41,31 @@ namespace NetPrints.Translator
                 content.AppendLine(TranslateMethod(m));
             }
 
+            StringBuilder modifiers = new StringBuilder();
+
+            if (c.Modifiers.HasFlag(ClassModifiers.Public))
+            {
+                modifiers.Append("public ");
+            }
+
+            if (c.Modifiers.HasFlag(ClassModifiers.Static))
+            {
+                modifiers.Append("static ");
+            }
+
+            if(c.Modifiers.HasFlag(ClassModifiers.Abstract))
+            {
+                modifiers.Append("abstract ");
+            }
+
+            if (c.Modifiers.HasFlag(ClassModifiers.Sealed))
+            {
+                modifiers.Append("sealed ");
+            }
+
             return CLASS_TEMPLATE
                 .Replace("%Namespace%", c.Namespace)
+                .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
                 .Replace("%SuperType%", c.SuperType.FullName)
                 .Replace("%Content%", content.ToString());
