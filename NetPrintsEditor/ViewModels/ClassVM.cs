@@ -9,6 +9,7 @@ using System.ComponentModel;
 using NetPrints.Core;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.IO;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -35,7 +36,13 @@ namespace NetPrintsEditor.ViewModels
             {
                 cls.Namespace = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(StoragePath));
             }
+        }
+
+        public string StoragePath
+        {
+            get => $"{Namespace}.{Name}.xml";
         }
 
         public string Name
@@ -45,6 +52,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 cls.Name = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(StoragePath));
             }
         }
 
