@@ -43,5 +43,10 @@ namespace NetPrints.Graph
         {
             SetArgumentTypes(Method.ArgumentTypes);
         }
+
+        public override string ToString()
+        {
+            return $"{Method.Name} Entry";
+        }
     }
 }
