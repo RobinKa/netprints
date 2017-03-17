@@ -14,6 +14,8 @@
     </UserControl.Resources>
 
     <StackPanel>
+        <Label Content="{Binding ElementName=wnd, Path=Method.Name}" FontSize="24px" HorizontalContentAlignment="Center" />
+
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -27,24 +29,24 @@
                 <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-        
-            <Label Content="Name" />
-            <TextBox Grid.Column="1" x:Name="methodName" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Grid.Row="0" Content="Name" />
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="methodName" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         
             <Label Grid.Row="1" Content="Public" />
-            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="methodIsPublic" Content="Public" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Public}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="methodIsPublic" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Public}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="2" Content="Protected" />
-            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="methodIsProtected" Content="Protected" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Protected}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="methodIsProtected" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Protected}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="3" Content="Sealed" />
-            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="methodIsSealed" Content="Sealed" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Sealed}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="methodIsSealed" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Sealed}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="4" Content="Abstract" />
-            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="methodIsAbstract" Content="Abstract" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="methodIsAbstract" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
         
             <Label Grid.Row="5" Content="Static" />
-            <CheckBox Grid.Row="5" Grid.Column="1" x:Name="methodIsStatic" Content="Static" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="5" Grid.Column="1" x:Name="methodIsStatic" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
         </Grid>
 
         <Grid>
@@ -57,27 +59,59 @@
             </Grid.RowDefinitions>
 
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
                 <Label Content="Argument Types" HorizontalContentAlignment="Stretch" />
-                <Button Content="+" Width="30" HorizontalAlignment="Right" Click="OnAddArgumentTypeClick"/>
+                <Button Grid.Column="1" Content="+" HorizontalAlignment="Stretch" Click="OnAddArgumentTypeClick"/>
             </Grid>
-            
+
             <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=wnd, Path=Method.ArgumentTypes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ComboBox Text="{Binding FullName, Mode=OneWay}" ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" SelectedItem="{Binding Mode=OneWay}" Style="{DynamicResource ComboBoxStyle1}" HorizontalContentAlignment="Stretch"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Text="{Binding FullName, Mode=OneWay}" 
+                                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" 
+                                      Style="{DynamicResource ComboBoxStyle1}" 
+                                      HorizontalContentAlignment="Stretch" 
+                                      SelectionChanged="OnArgumentTypeChanged">
+                            </ComboBox>
+                            <Button Grid.Column="1" Content="-" HorizontalAlignment="Stretch" Click="OnRemoveArgumentTypeClick"/>
+                        </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
             <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
                 <Label Content="Return Types" HorizontalContentAlignment="Stretch" />
-                <Button Content="+" Width="30" HorizontalAlignment="Right" Click="OnAddReturnTypeClick" />
+                <Button Grid.Column="1" Content="+" HorizontalAlignment="Stretch" Click="OnAddReturnTypeClick" />
             </Grid>
-            
+
             <ItemsControl Grid.Row="3" ItemsSource="{Binding ElementName=wnd, Path=Method.ReturnTypes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ComboBox Text="{Binding FullName, Mode=OneWay}" ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" SelectedItem="{Binding Mode=OneWay}" Style="{DynamicResource ComboBoxStyle1}" HorizontalContentAlignment="Stretch"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Text="{Binding FullName, Mode=OneWay}" 
+                                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" 
+                                      Style="{DynamicResource ComboBoxStyle1}" 
+                                      HorizontalContentAlignment="Stretch" 
+                                      SelectionChanged="OnReturnTypeChanged">
+                            </ComboBox>
+                            <Button Grid.Column="1" Content="-" HorizontalAlignment="Stretch" Click="OnRemoveReturnTypeClick"/>
+                        </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

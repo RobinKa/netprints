@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using NetPrintsEditor.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,62 @@ namespace NetPrintsEditor.Controls
         private void OnAddReturnTypeClick(object sender, RoutedEventArgs e)
         {
             Method.ReturnTypes.Add(typeof(object));
+        }
+
+        private int GetControlIndex(Control c, int childIndex)
+        {
+            var grid = VisualTreeHelper.GetParent(c);
+            var presenter = VisualTreeHelper.GetParent(grid);
+            var stackPanel = VisualTreeHelper.GetParent(presenter);
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(stackPanel); i++)
+            {
+                if (VisualTreeHelper.GetChild(VisualTreeHelper.GetChild(VisualTreeHelper.GetChild(
+                    stackPanel, i), 0), childIndex) == c)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private void OnArgumentTypeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Find index of combobox and set the type
+            if(sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is Type newType)
+            {
+                int index = GetControlIndex(box, 0);
+                Method.ArgumentTypes[index] = newType;
+            }
+        }
+
+        private void OnReturnTypeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Find index of combobox and set the type
+            if (sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is Type newType)
+            {
+                int index = GetControlIndex(box, 0);
+                Method.ReturnTypes[index] = newType;
+            }
+        }
+
+        private void OnRemoveArgumentTypeClick(object sender, RoutedEventArgs e)
+        {
+            if(sender is Button b)
+            {
+                int index = GetControlIndex(b, 1);
+                Method.ArgumentTypes.RemoveAt(index);
+            }
+        }
+
+        private void OnRemoveReturnTypeClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button b)
+            {
+                int index = GetControlIndex(b, 1);
+                Method.ReturnTypes.RemoveAt(index);
+            }
         }
     }
 }
