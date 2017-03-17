@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Runtime.Serialization;
 using NetPrints.Graph;
 using NetPrints.Core;
 using NetPrintsEditor.ViewModels;
 using NetPrintsEditor.Controls;
-using NetPrintsEditor.Adorners;
 using NetPrintsEditor.Commands;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
 using NetPrints.Translator;
@@ -25,6 +15,9 @@ using System.IO;
 using System.CodeDom.Compiler;
 using System.Threading;
 using System.Diagnostics;
+using System.Reflection;
+using NetPrints.Serialization;
+using System.Collections.Generic;
 
 namespace NetPrintsEditor
 {
@@ -43,15 +36,19 @@ namespace NetPrintsEditor
 
         private UndoRedoStack undoRedoStack = UndoRedoStack.Instance;
 
-        public ClassEditorWindow()
+        private string previousStoragePath = null;
+
+        public ClassEditorWindow(ClassVM cls)
         {
             InitializeComponent();
 
-            Class cls = new Class();
-            cls.SuperType = typeof(object);
-            cls.Namespace = "TestName.Space";
-            cls.Name = "TestClass";
-            Class = new ClassVM(cls);
+            Class = cls;
+
+            if(File.Exists(Class.StoragePath))
+            {
+                previousStoragePath = Class.StoragePath;
+            }
+
             classViewer.Class = Class;
         }
 
@@ -143,12 +140,16 @@ namespace NetPrintsEditor
 
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Method newMethod = new Method(e.Parameter as string);
-            newMethod.Class = Class.Class;
+            Method newMethod = new Method(e.Parameter as string)
+            {
+                Class = Class.Class,
+            };
+
             newMethod.EntryNode.PositionX = 100;
             newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 400;
             newMethod.ReturnNode.PositionY = newMethod.EntryNode.PositionY;
+
             Class.Methods.Add(newMethod);
             //methodEditor.Method = newMethod;
         }
@@ -348,6 +349,19 @@ namespace NetPrintsEditor
         {
             viewerTabControl.SelectedIndex = 0;
             classViewer.Class = Class;
+        }
+
+        private void OnSaveButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SerializationHelper.SaveClass(Class.Class, Class.StoragePath);
+
+            // Delete old save file if different path and exists
+            if(previousStoragePath != null && previousStoragePath != Class.StoragePath && File.Exists(previousStoragePath))
+            {
+                File.Delete(previousStoragePath);
+            }
+
+            previousStoragePath = Class.StoragePath;
         }
     }
 }

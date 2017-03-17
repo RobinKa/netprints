@@ -3,12 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NetPrintsEditor"
         xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
         xmlns:Controls="clr-namespace:NetPrintsEditor.Controls"
-    xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="NetPrintsEditor.ClassEditorWindow"
+        x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280" Background="#FF404040" x:Name="classWindow">
+        Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
+        Height="720" Width="1280"
+        Background="#FF404040"
+        x:Name="classWindow">
     <Window.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
@@ -61,12 +63,14 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <Button x:Name="compileButton" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClick"/>
             <Button Grid.Column="1" x:Name="runButton" Margin="5" Content="Run" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnRunButtonClicked" />
             <Button Grid.Column="2" x:Name="classPropertiesButton" Margin="5" Content="Class" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnClassPropertiesClicked" />
+            <Button Grid.Column="3" x:Name="saveButton" Margin="5" Content="Save" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnSaveButtonClicked" />
         </Grid>
 
         <Grid Grid.Row="1">

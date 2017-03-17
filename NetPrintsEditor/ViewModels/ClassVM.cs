@@ -40,11 +40,6 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public string StoragePath
-        {
-            get => $"{Namespace}.{Name}.xml";
-        }
-
         public string Name
         {
             get => cls.Name;
@@ -77,6 +72,11 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public string StoragePath
+        {
+            get => $"{Namespace}.{Name}.xml";
         }
 
         private Class cls;
