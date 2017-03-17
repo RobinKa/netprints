@@ -29,6 +29,26 @@ namespace NetPrintsEditor.ViewModels
 
         public ObservableCollection<Node> Nodes { get => method.Nodes; }
 
+        public ObservableCollection<Type> ArgumentTypes
+        {
+            get => method.ArgumentTypes;
+        }
+
+        public ObservableCollection<Type> ReturnTypes
+        {
+            get => method.ReturnTypes;
+        }
+
+        public MethodModifiers Modifiers
+        {
+            get => method.Modifiers;
+            set
+            {
+                method.Modifiers = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Method Method
         {
             get => method;
