@@ -59,10 +59,12 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <Button x:Name="compileButton" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClick"/>
+            <Button Grid.Column="1" x:Name="classPropertiesButton" Margin="5" Content="Class" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnClassPropertiesClicked" />
         </Grid>
 
         <Grid Grid.Row="1">
@@ -150,6 +152,7 @@
                 </TabControl.ItemContainerStyle>
 
                 <TabItem>
+                    <Controls:ClassPropertyEditorControl x:Name="classViewer" />
                 </TabItem>
                 
                 <TabItem>

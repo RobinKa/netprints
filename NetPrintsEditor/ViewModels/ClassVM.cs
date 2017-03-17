@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.ComponentModel;
 using NetPrints.Core;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -16,9 +17,46 @@ namespace NetPrintsEditor.ViewModels
         // Wrapped attributes of Class
         public ObservableCollection<Variable> Attributes { get => cls.Attributes; }
         public ObservableCollection<Method> Methods { get => cls.Methods; }
-        public Type SuperType { get => cls.SuperType; set => cls.SuperType = value; }
-        public string Namespace { get => cls.Namespace; set => cls.Namespace = value; }
-        public string Name { get => cls.Name; set => cls.Name = value; }
+
+        public Type SuperType
+        {
+            get => cls.SuperType;
+            set
+            {
+                cls.SuperType = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Namespace
+        {
+            get => cls.Namespace;
+            set
+            {
+                cls.Namespace = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Name
+        {
+            get => cls.Name;
+            set
+            {
+                cls.Name = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ClassModifiers Modifiers
+        {
+            get => cls.Modifiers;
+            set
+            {
+                cls.Modifiers = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Class Class
         {

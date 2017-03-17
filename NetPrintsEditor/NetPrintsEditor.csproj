@@ -70,10 +70,14 @@
     <Compile Include="Controls\MethodPropertyEditorControl.xaml.cs">
       <DependentUpon>MethodPropertyEditorControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ClassPropertyEditorControl.xaml.cs">
+      <DependentUpon>ClassPropertyEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\VariableEditorControl.xaml.cs">
       <DependentUpon>VariableEditorControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\MethodInfoConverter.cs" />
+    <Compile Include="Converters\ClassModifierConverter.cs" />
     <Compile Include="Converters\VariableModifierConverter.cs" />
     <Compile Include="Converters\MethodModifierConverter.cs" />
     <Compile Include="ReflectionUtil.cs" />
@@ -115,6 +119,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\MethodPropertyEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ClassPropertyEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

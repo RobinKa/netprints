@@ -51,6 +51,7 @@ namespace NetPrintsEditor
             cls.Namespace = "TestName.Space";
             cls.Name = "TestClass";
             Class = new ClassVM(cls);
+            classViewer.Class = Class;
         }
 
         private void OnMethodListDoubleClick(object sender, MouseButtonEventArgs e)
@@ -302,7 +303,14 @@ namespace NetPrintsEditor
 
         private void OnMethodEditorClicked(object sender, MouseButtonEventArgs e)
         {
-            viewerTabControl.SelectedItem = 0;
+            viewerTabControl.SelectedIndex = 0;
+            classViewer.Class = Class;
+        }
+
+        private void OnClassPropertiesClicked(object sender, RoutedEventArgs e)
+        {
+            viewerTabControl.SelectedIndex = 0;
+            classViewer.Class = Class;
         }
     }
 }
