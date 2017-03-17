@@ -1,5 +1,6 @@
 ﻿using NetPrints.Core;
 using NetPrintsEditor.Converters;
+using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,11 @@ namespace NetPrintsEditor.Controls
     public partial class MethodPropertyEditorControl : UserControl
     {
         public static DependencyProperty MethodProperty = DependencyProperty.Register(
-            nameof(Method), typeof(Method), typeof(MethodPropertyEditorControl));
+            nameof(Method), typeof(MethodVM), typeof(MethodPropertyEditorControl));
 
-        public Method Method
+        public MethodVM Method
         {
-            get => GetValue(MethodProperty) as Method;
+            get => GetValue(MethodProperty) as MethodVM;
             set => SetValue(MethodProperty, value);
         }
 

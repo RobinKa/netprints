@@ -334,7 +334,7 @@ namespace NetPrintsEditor
             if (sender is ListViewItem item && item.DataContext is Method m)
             {
                 viewerTabControl.SelectedIndex = 2;
-                methodViewer.Method = m;
+                methodViewer.Method = new MethodVM(m);
             }
         }
 
