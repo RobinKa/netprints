@@ -33,8 +33,6 @@ namespace NetPrintsEditor.Controls
         public VariableEditorControl()
         {
             InitializeComponent();
-
-            variableType.ItemsSource = ReflectionUtil.GetNonStaticTypes();
         }
     }
 }

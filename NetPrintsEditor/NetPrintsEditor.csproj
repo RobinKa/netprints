@@ -74,6 +74,7 @@
       <DependentUpon>VariableEditorControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\MethodInfoConverter.cs" />
+    <Compile Include="Converters\VariableModifierConverter.cs" />
     <Compile Include="Converters\MethodModifierConverter.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="ViewModels\MethodVM.cs" />

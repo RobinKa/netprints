@@ -18,7 +18,7 @@ namespace NetPrints.Translator
                 }
             }";
 
-        private const string VARIABLE_TEMPLATE = "public %VariableType% %VariableName% { get; set; }";
+        private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName% { get; set; }";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
         
@@ -50,7 +50,43 @@ namespace NetPrints.Translator
 
         public string TranslateVariable(Variable variable)
         {
+            StringBuilder modifiers = new StringBuilder();
+            
+            if (variable.Modifiers.HasFlag(VariableModifiers.Protected))
+            {
+                modifiers.Append("protected ");
+            }
+            else if (variable.Modifiers.HasFlag(VariableModifiers.Public))
+            {
+                modifiers.Append("public ");
+            }
+            else if (variable.Modifiers.HasFlag(VariableModifiers.Internal))
+            {
+                modifiers.Append("internal ");
+            }
+
+            if (variable.Modifiers.HasFlag(VariableModifiers.Static))
+            {
+                modifiers.Append("static ");
+            }
+
+            if (variable.Modifiers.HasFlag(VariableModifiers.ReadOnly))
+            {
+                modifiers.Append("readonly ");
+            }
+
+            if (variable.Modifiers.HasFlag(VariableModifiers.New))
+            {
+                modifiers.Append("new ");
+            }
+
+            if (variable.Modifiers.HasFlag(VariableModifiers.Const))
+            {
+                modifiers.Append("const ");
+            }
+
             return VARIABLE_TEMPLATE
+                .Replace("%VariableModifiers%", modifiers.ToString())
                 .Replace("%VariableType%", variable.VariableType.FullName)
                 .Replace("%VariableName%", variable.Name);
         }
