@@ -30,6 +30,7 @@ namespace NetPrints.Tests
 
             // Create method
             stringLengthMethod = new Method("StringLength");
+            stringLengthMethod.Class = cls;
             stringLengthMethod.Modifiers = MethodModifiers.Public;
             stringLengthMethod.ArgumentTypes.AddRange(argumentTypes);
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
@@ -57,6 +58,7 @@ namespace NetPrints.Tests
             };
 
             mainMethod = new Method("Main");
+            mainMethod.Class = cls;
             mainMethod.Modifiers = MethodModifiers.Static;
             mainMethod.ArgumentTypes.AddRange(argumentTypes);
             mainMethod.ReturnTypes.AddRange(returnTypes);

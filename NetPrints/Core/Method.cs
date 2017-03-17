@@ -63,6 +63,12 @@ namespace NetPrints.Core
             set;
         } = MethodModifiers.Private;
 
+        public Class Class
+        {
+            get;
+            set;
+        }
+
         public Method(string name)
         {
             Name = name;

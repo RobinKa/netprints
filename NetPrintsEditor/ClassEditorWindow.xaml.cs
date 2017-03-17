@@ -108,6 +108,7 @@ namespace NetPrintsEditor
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Method newMethod = new Method(e.Parameter as string);
+            newMethod.Class = Class.Class;
             newMethod.EntryNode.PositionX = 100;
             newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 400;

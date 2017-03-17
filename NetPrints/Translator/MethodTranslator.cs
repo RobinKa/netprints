@@ -422,10 +422,14 @@ namespace NetPrints.Translator
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
-            // Write class name / target
+            // Write class name / target, default to own class name
             if (node.ClassName != null)
             {
                 builder.Append($"{node.ClassName}.");
+            }
+            else
+            {
+                builder.Append($"{method.Class.Name}.");
             }
 
             // Write function call with arguments
