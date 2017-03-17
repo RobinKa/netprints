@@ -88,6 +88,7 @@
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
                             <ComboBox Text="{Binding FullName, Mode=OneWay}" 
+                                      SelectedItem="{Binding Mode=OneWay}"
                                       ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" 
                                       Style="{DynamicResource ComboBoxStyle1}" 
                                       HorizontalContentAlignment="Stretch" 
@@ -117,6 +118,7 @@
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
                             <ComboBox Text="{Binding FullName, Mode=OneWay}" 
+                                      SelectedItem="{Binding Mode=OneWay}"
                                       ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" 
                                       Style="{DynamicResource ComboBoxStyle1}" 
                                       HorizontalContentAlignment="Stretch" 
