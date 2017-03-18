@@ -185,6 +185,8 @@ namespace NetPrintsEditor.Controls
         {
             if (e.Data.GetDataPresent(typeof(PinControl)))
             {
+                // Another pin was dropped on this pin, link it
+
                 PinControl droppedPinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.ConnectPins, new NetPrintsCommands.ConnectPinsParameters()
@@ -201,6 +203,8 @@ namespace NetPrintsEditor.Controls
                 {
                     droppedPinControl.ConnectedPin = this;
                 }
+
+                e.Handled = true;
             }
         }
 
@@ -210,6 +214,8 @@ namespace NetPrintsEditor.Controls
 
             if (e.Data.GetDataPresent(typeof(PinControl)))
             {
+                // Another pin is being hovered over this one, see if it can be linked to this pin
+
                 PinControl draggingPinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
                 
                 if(GraphUtil.CanConnectNodePins(draggingPinControl.Pin, Pin))

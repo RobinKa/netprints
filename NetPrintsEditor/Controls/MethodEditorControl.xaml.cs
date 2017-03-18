@@ -20,6 +20,7 @@ using NetPrintsEditor.ViewModels;
 using NetPrintsEditor.Commands;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using NetPrints.Extensions;
 
 namespace NetPrintsEditor.Controls
 {
@@ -77,7 +78,6 @@ namespace NetPrintsEditor.Controls
 
         public MethodEditorControl()
         {
-            SuggestedFunctions = new ObservableCollection<MethodInfo>(ReflectionUtil.GetStaticFunctions());
             InitializeComponent();
         }
 
@@ -163,15 +163,33 @@ namespace NetPrintsEditor.Controls
                 Variable variable = e.Data.GetData(typeof(Variable)) as Variable;
                 
                 ShowVariableGetSet(variable, e.GetPosition(variableGetSetCanvas));
+
+                e.Handled = true;
             }
             else if(e.Data.GetDataPresent(typeof(PinControl)))
             {
+                // Show all relevant methods for the type of the pin if its a data pin
+
                 PinControl pinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
 
-                if (pinControl.Pin is NodeOutputDataPin odp)
+                if (pinControl.Pin is NodeDataPin dataPin)
                 {
-                    MethodInfo[] methods = odp.PinType.GetMethods();
-                    // TODO: Set context menu list to methods
+                    if (dataPin is NodeOutputDataPin odp)
+                    {
+                        SuggestedFunctions = new ObservableCollection<MethodInfo>(
+                            ReflectionUtil.GetPublicMethodsForType(odp.PinType));
+                    }
+                    else if (dataPin is NodeInputDataPin idp)
+                    {
+                        SuggestedFunctions = new ObservableCollection<MethodInfo>(
+                            ReflectionUtil.GetStaticFunctionsWithReturnType(idp.PinType));
+                    }
+
+                    // Open the context menu
+                    grid.ContextMenu.PlacementTarget = grid;
+                    grid.ContextMenu.IsOpen = true;
+
+                    e.Handled = true;
                 }
             }
             if (Method != null && e.Data.GetDataPresent(typeof(Method)))
@@ -184,6 +202,8 @@ namespace NetPrintsEditor.Controls
                     typeof(CallMethodNode), Method, mousePosition.X, mousePosition.Y,
                     method.Name, method.ArgumentTypes, method.ReturnTypes
                 ));
+
+                e.Handled = true;
             }
         }
 
@@ -206,6 +226,11 @@ namespace NetPrintsEditor.Controls
                 e.Effects = DragDropEffects.Copy;
                 e.Handled = true;
             }
+        }
+
+        private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            SuggestedFunctions = new ObservableCollection<MethodInfo>(ReflectionUtil.GetStaticFunctions());
         }
     }
 }

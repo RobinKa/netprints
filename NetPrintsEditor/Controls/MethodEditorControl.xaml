@@ -6,10 +6,9 @@
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800" x:Name="methodEditorWindow">
-    <Grid x:Name="grid" ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop" Tag="{Binding ElementName=methodEditorWindow}">
+    <Grid x:Name="grid" ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop" Tag="{Binding ElementName=methodEditorWindow}" ContextMenuOpening="OnContextMenuOpening">
         <Grid.ContextMenu>
             <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-
                 <ContextMenu.Template>
                     <ControlTemplate>
                         <local:SearchableComboBox Items="{Binding SuggestedFunctions}"

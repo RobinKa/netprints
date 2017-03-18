@@ -27,12 +27,14 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class SearchableComboBox : UserControl
     {
-        public delegate void ItemSelectedHandler(object sender, string item);
+        //public delegate void ItemSelectedHandler(object sender, object item);
         
         public static DependencyProperty ItemsProperty = DependencyProperty.Register(
             nameof(Items), typeof(IEnumerable), typeof(SearchableComboBox));
 
         private MethodInfoConverter methodInfoConverter;
+
+        //public event ItemSelectedHandler OnItemSelected;
 
         public IEnumerable Items
         {
@@ -83,23 +85,50 @@ namespace NetPrintsEditor.Controls
 
         private void OnListItemSelected(object sender, MouseButtonEventArgs e)
         {
+            /*if (sender is ListViewItem item)
+            {
+                OnItemSelected?.Invoke(item, item.DataContext);
+            }*/
+
             if (sender is ListViewItem item && item.DataContext is MethodInfo methodInfo)
             {
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                (
-                    typeof(CallStaticFunctionNode),
-                    null,
-                    0,
-                    0,
-                    methodInfo.DeclaringType.ToString(),
-                    methodInfo.Name,
-                    methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(),
-                    methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
-                ));
+                if (methodInfo.IsStatic)
+                {
+                    //CallStaticFunctionNode(Method method, string className, string methodName, 
+                    //    IEnumerable<Type> inputTypes, IEnumerable<Type> outputTypes)
 
-                //CallStaticFunctionNode(Method method, string className, string methodName, 
-                //    IEnumerable<Type> inputTypes, IEnumerable<Type> outputTypes)
-                
+                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                    (
+                        typeof(CallStaticFunctionNode),
+                        null,
+                        0,
+                        0,
+
+                        // Parameters
+                        methodInfo.DeclaringType.ToString(),
+                        methodInfo.Name,
+                        methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(),
+                        methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
+                    ));
+                }
+                else
+                {
+                    //CallMethodNode(Method method, string methodName, IEnumerable<Type> inputTypes, 
+                    //    IEnumerable<Type> outputTypes)
+
+                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                    (
+                        typeof(CallMethodNode),
+                        null,
+                        0,
+                        0,
+
+                        // Parameters
+                        methodInfo.Name,
+                        methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(),
+                        methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
+                    ));
+                }
             }
         }
 

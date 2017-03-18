@@ -26,18 +26,6 @@
                         <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
                     </Style>
                 </ListView.ItemContainerStyle>
-
-                <ListView.View>
-                    <GridView>
-                        <GridView.ColumnHeaderContainerStyle>
-                            <Style TargetType="GridViewColumnHeader">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </Style>
-                        </GridView.ColumnHeaderContainerStyle>
-
-                        <GridViewColumn DisplayMemberBinding="{Binding Converter={StaticResource converter}}"/>
-                    </GridView>
-                </ListView.View>
             </ListView>
         </Grid>
     </Border>
