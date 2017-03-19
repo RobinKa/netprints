@@ -15,10 +15,21 @@
         <Grid x:Name="grid" Width="110">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Canvas x:Name="connector" Grid.Column="0" Width="20" Height="20">
-                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="#FFE0E0E0" Stroke="#AA000000" MouseMove="OnEllipseMouseMove" DragOver="OnEllipseDragOver" Drop="OnEllipseDrop" AllowDrop="True" />
+                <Ellipse x:Name="ellipse" Width="20" Height="20" MouseMove="OnEllipseMouseMove" DragOver="OnEllipseDragOver" Drop="OnEllipseDrop" AllowDrop="True" StrokeThickness="3">
+                    <Ellipse.Style>
+                        <Style TargetType="{x:Type Ellipse}">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Stroke" Value="White" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
                 <Path x:Name="cable" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsConnected, Converter={StaticResource ResourceKey=BoolToVis}}" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                     <Path.Data>
                         <PathGeometry>
@@ -41,6 +52,9 @@
                 </Path>
             </Canvas>
             <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
+            <TextBox Grid.Column="2" 
+                     Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
+                     Visibility="{Binding ElementName=pinWindow, Path=Pin.IsUsingUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}"/>
         </Grid>
 
         
