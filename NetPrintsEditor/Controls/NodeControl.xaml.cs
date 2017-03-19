@@ -17,6 +17,7 @@ using NetPrints.Graph;
 using NetPrintsEditor.ViewModels;
 using NetPrintsEditor.Commands;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
+using System.Threading;
 
 namespace NetPrintsEditor.Controls
 {
@@ -25,12 +26,14 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class NodeControl : UserControl
     {
-        public NodeVM NodeVM
-        {
-            get => nodeVM;
-        }
+        public static DependencyProperty NodeProperty = DependencyProperty.Register(
+            nameof(NetPrints.Graph.Node), typeof(NodeVM), typeof(NodeControl));
 
-        private NodeVM nodeVM;
+        public NodeVM Node
+        {
+            get => GetValue(NodeProperty) as NodeVM;
+            set => SetValue(NodeProperty, value);
+        }
 
         public PinControl FindPinControl(NodePin pin)
         {
@@ -65,28 +68,61 @@ namespace NetPrintsEditor.Controls
             return null;
         }
 
-        public NodeControl(NodeVM nodeVM)
+        public NodeControl()
         {
-            this.nodeVM = nodeVM;
-            
             InitializeComponent();
-
-            inputExecPinList.ItemsSource = nodeVM.InputExecPins;
-            outputExecPinList.ItemsSource = nodeVM.OutputExecPins;
-            inputDataPinList.ItemsSource = nodeVM.InputDataPins;
-            outputDataPinList.ItemsSource = nodeVM.OutputDataPins;
-
-            nodeVM.PropertyChanged += OnNodePropertyChanged;
-
-            RenderTransform = new TranslateTransform(nodeVM.PositionX, nodeVM.PositionY);
         }
 
-        private void OnNodePropertyChanged(object sender, PropertyChangedEventArgs e)
+        #region Dragging
+        private bool dragging = false;
+        private Point dragStartMousePosition;
+        private Point dragStartElementPosition;
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            if(e.PropertyName == nameof(NodeVM.PositionX) || e.PropertyName == nameof(NodeVM.PositionY))
+            base.OnMouseLeftButtonDown(e);
+
+            dragging = true;
+
+            dragStartElementPosition = new Point(Node.PositionX, Node.PositionY);
+            dragStartMousePosition = e.GetPosition(null);
+
+            CaptureMouse();
+            e.Handled = true;
+        }
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonUp(e);
+
+            if (dragging)
             {
-                RenderTransform = new TranslateTransform(nodeVM.PositionX, nodeVM.PositionY);
+                dragging = false;
+
+                ReleaseMouseCapture();
+                e.Handled = true;
             }
         }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (dragging)
+            {
+                Point mousePosition = e.GetPosition(null);
+
+                Vector offset = mousePosition - dragStartMousePosition;
+                
+                Node.PositionX = dragStartElementPosition.X + offset.X;
+                Node.PositionY = dragStartElementPosition.Y + offset.Y;
+
+                Node.PositionX -= Node.PositionX % MethodEditorControl.GridCellSize;
+                Node.PositionY -= Node.PositionY % MethodEditorControl.GridCellSize;
+
+                InvalidateVisual();
+            }
+        }
+        #endregion
     }
 }

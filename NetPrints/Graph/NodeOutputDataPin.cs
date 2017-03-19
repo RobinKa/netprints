@@ -11,7 +11,7 @@ namespace NetPrints.Graph
     public class NodeOutputDataPin : NodeDataPin
     {
         [DataMember]
-        public IList<NodeInputDataPin> OutgoingPins { get; private set; } = new List<NodeInputDataPin>();
+        public List<NodeInputDataPin> OutgoingPins { get; private set; } = new List<NodeInputDataPin>();
 
         public NodeOutputDataPin(Node node, string name, Type pinType)
             : base(node, name, pinType)

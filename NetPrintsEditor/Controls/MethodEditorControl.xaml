@@ -4,8 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
+             xmlns:converter="clr-namespace:NetPrintsEditor.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800" x:Name="methodEditorWindow">
+    <UserControl.Resources>
+        <converter:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
+    </UserControl.Resources>
+
     <Grid x:Name="grid" ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop" Tag="{Binding ElementName=methodEditorWindow}" ContextMenuOpening="OnContextMenuOpening">
         <Grid.ContextMenu>
             <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
@@ -18,24 +23,34 @@
             </ContextMenu>
         </Grid.ContextMenu>
 
-        <AdornerDecorator>
-            <Canvas x:Name="canvas">
-                <Canvas.Background>
-                    <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
-                        <DrawingBrush.Drawing>
-                            <GeometryDrawing>
-                                <GeometryDrawing.Geometry>
-                                    <RectangleGeometry Rect="0,0,50,50"/>
-                                </GeometryDrawing.Geometry>
-                                <GeometryDrawing.Pen>
-                                    <Pen Brush="Gray" Thickness="1"/>
-                                </GeometryDrawing.Pen>
-                            </GeometryDrawing>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Canvas.Background>
-            </Canvas>
-        </AdornerDecorator>
+        <ItemsControl x:Name="nodeList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.Nodes}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas>
+                        <Canvas.Background>
+                            <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
+                                <DrawingBrush.Drawing>
+                                    <GeometryDrawing>
+                                        <GeometryDrawing.Geometry>
+                                            <RectangleGeometry Rect="0,0,50,50"/>
+                                        </GeometryDrawing.Geometry>
+                                        <GeometryDrawing.Pen>
+                                            <Pen Brush="Gray" Thickness="1"/>
+                                        </GeometryDrawing.Pen>
+                                    </GeometryDrawing>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Canvas.Background>
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:NodeControl Node="{Binding Converter={StaticResource modelToViewModelConverter}}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <Canvas x:Name="variableGetSetCanvas">
             <Canvas.Effect>

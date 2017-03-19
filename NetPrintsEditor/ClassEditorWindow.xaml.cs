@@ -149,6 +149,7 @@ namespace NetPrintsEditor
             newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 400;
             newMethod.ReturnNode.PositionY = newMethod.EntryNode.PositionY;
+            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.ReturnNode.ReturnPin);
 
             Class.Methods.Add(newMethod);
             //methodEditor.Method = newMethod;
@@ -194,7 +195,8 @@ namespace NetPrintsEditor
 
         private void CommandSetNodePosition_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is SetNodePositionParameters p && FindNodeVMFromSetNodePositionParameters(p) != null;
+            e.CanExecute = e.Parameter is SetNodePositionParameters p && 
+                FindNodeVMFromSetNodePositionParameters(p) != null;
         }
 
         private void CommandSetNodePosition_Execute(object sender, ExecutedRoutedEventArgs e)
@@ -206,27 +208,20 @@ namespace NetPrintsEditor
         }
 
         public NodeVM FindNodeVMFromSetNodePositionParameters(SetNodePositionParameters p)
-        {
-            // Find open existing
-            NodeVM nodeVM = methodEditor.NodeControls.FirstOrDefault(c => c.NodeVM.Node == p.Node.Node)?.NodeVM;
-
-            // Find open by name
-            if(nodeVM == null)
+        {            
+            if(p.Node != null)
             {
-                nodeVM = methodEditor.NodeControls.FirstOrDefault(c => c.NodeVM.Method.Name == p.Node.Method.Name && c.NodeVM.Name == p.Node.Name)?.NodeVM;
+                return p.Node;
             }
-            
+
             // Find closed by name
-            if(nodeVM == null)
+            Node node = Class.Methods.FirstOrDefault(m => m.Name == p.Node.Method.Name)?.Nodes.FirstOrDefault(n => n.Name == p.Node.Name);
+            if(node != null)
             {
-                Node node = Class.Methods.FirstOrDefault(m => m.Name == p.Node.Method.Name)?.Nodes.FirstOrDefault(n => n.Name == p.Node.Name);
-                if(node != null)
-                {
-                    nodeVM = new NodeVM(node);
-                }
+                return new NodeVM(node);
             }
 
-            return nodeVM;
+            return null;
         }
 
         // Connect pins
@@ -235,12 +230,8 @@ namespace NetPrintsEditor
         {
             ConnectPinsParameters xcp = e.Parameter as ConnectPinsParameters;
             bool xcanConnect = GraphUtil.CanConnectNodePins(xcp.PinA, xcp.PinB);
-            var xcA = FindPinControlFromPin(xcp.PinA);
-            var xcB = FindPinControlFromPin(xcp.PinB);
-
             
-            e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA, cp.PinB)
-                && FindPinControlFromPin(cp.PinA) != null && FindPinControlFromPin(cp.PinB) != null;
+            e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA, cp.PinB);
         }
 
         private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)
@@ -248,20 +239,6 @@ namespace NetPrintsEditor
             ConnectPinsParameters cp = e.Parameter as ConnectPinsParameters;
 
             GraphUtil.ConnectNodePins(cp.PinA, cp.PinB);
-        }
-
-        private PinControl FindPinControlFromPin(NodePin pin)
-        {
-            foreach(NodeControl nodeControl in methodEditor.NodeControls)
-            {
-                PinControl pc = nodeControl.FindPinControl(pin);
-                if(pc != null)
-                {
-                    return pc;
-                }
-            }
-
-            return null;
         }
 
         // Add node
@@ -278,7 +255,7 @@ namespace NetPrintsEditor
             if (p.Method == null)
             {
                 p.Method = methodEditor.Method;
-                Point mouseLoc = Mouse.GetPosition(methodEditor.canvas);
+                Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow);
                 p.PositionX = mouseLoc.X;
                 p.PositionY = mouseLoc.Y;
             }
@@ -287,8 +264,6 @@ namespace NetPrintsEditor
             Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
             node.PositionX = p.PositionX;
             node.PositionY = p.PositionY;
-
-            methodEditor.CreateNodeControl(node);
         }
 
         #endregion

@@ -63,7 +63,7 @@ namespace NetPrints.Graph
 
             Name = NetPrintsUtil.GetUniqueName(GetType().Name, method.Nodes.Select(n => n.Name).ToList());
         }
-
+        
         public override string ToString()
         {
             return GraphUtil.SplitCamelCase(Name);

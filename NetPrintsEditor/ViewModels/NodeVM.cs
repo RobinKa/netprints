@@ -14,7 +14,7 @@ using NetPrints.Core;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class NodeVM
+    public class NodeVM : INotifyPropertyChanged
     {
         // Wrapped attributes of Node
         public string Name

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class MethodVM
+    public class MethodVM : INotifyPropertyChanged
     {
         public string Name
         {

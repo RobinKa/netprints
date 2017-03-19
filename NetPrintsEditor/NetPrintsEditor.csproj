@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Converters\MethodInfoConverter.cs" />
     <Compile Include="Converters\ClassModifierConverter.cs" />
+    <Compile Include="Converters\ModelToViewModelConverter.cs" />
     <Compile Include="Converters\VariableModifierConverter.cs" />
     <Compile Include="Converters\MethodModifierConverter.cs" />
     <Compile Include="MainEditorWindow.xaml.cs">

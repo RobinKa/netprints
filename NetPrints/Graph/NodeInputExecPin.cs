@@ -11,7 +11,7 @@ namespace NetPrints.Graph
     public class NodeInputExecPin : NodeExecPin
     {
         [DataMember]
-        public IList<NodeOutputExecPin> IncomingPins { get; private set; } = new List<NodeOutputExecPin>();
+        public List<NodeOutputExecPin> IncomingPins { get; private set; } = new List<NodeOutputExecPin>();
 
         public NodeInputExecPin(Node node, string name)
             : base(node, name)

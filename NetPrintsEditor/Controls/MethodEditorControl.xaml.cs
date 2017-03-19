@@ -33,40 +33,13 @@ namespace NetPrintsEditor.Controls
 
         public Method Method
         {
-            get
-            {
-                return GetValue(MethodProperty) as Method;
-            }
-            set
-            {
-                SetValue(MethodProperty, value);
-                
-                // Remove previous node controls
-                foreach (NodeControl control in nodeControls)
-                {
-                    canvas.Children.Remove(control);
-                }
-
-                nodeControls.Clear();
-
-                // Create node controls for method nodes
-                foreach(Node node in value.Nodes)
-                {
-                    CreateNodeControl(node);
-                }
-            }
-        }
-
-        public List<NodeControl> NodeControls
-        {
-            get => nodeControls;
+            get => GetValue(MethodProperty) as Method;
+            set => SetValue(MethodProperty, value);
         }
 
         public static DependencyProperty MethodProperty = DependencyProperty.Register(
             nameof(Method), typeof(Method), typeof(MethodEditorControl));
-
-        private List<NodeControl> nodeControls = new List<NodeControl>();
-
+        
         public static DependencyProperty SuggestedFunctionsProperty = DependencyProperty.Register(
             nameof(SuggestedFunctions), typeof(ObservableCollection<MethodInfo>), typeof(MethodEditorControl));
 
@@ -81,30 +54,81 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        public void CreateNodeControl(Node node)
+        #region Hack: Initialize Visual Node Connections
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
-            grid.ContextMenu.IsOpen = false;
+            base.OnPropertyChanged(e);
 
-            NodeControl nodeControl = new NodeControl(new NodeVM(node));
-            
-            nodeControls.Add(nodeControl);
-
-            canvas.Children.Add(nodeControl);
-
-            DragAdorner dragAdorner = new DragAdorner(nodeControl, GridCellSize);
-
-            // Make set node position command when dragging is done
-            dragAdorner.OnDragEnd += (sender, e) =>
+            if(e.Property == MethodProperty)
             {
-                if (nodeControl.RenderTransform is TranslateTransform t)
-                {
-                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SetNodePosition,
-                        new NetPrintsCommands.SetNodePositionParameters(nodeControl.NodeVM, t.X, t.Y));
-                }
-            };
-
-            AdornerLayer.GetAdornerLayer(nodeControl)?.Add(dragAdorner);
+                InitializeVisualNodeConnections();
+            }
         }
+
+        private NodeControl FindNodeControl(Node node)
+        {
+            // NodeList -> ... -> Canvas -> ... -> NodeControl
+
+            var nodeCanvas = 
+                VisualTreeHelper.GetChild(
+                VisualTreeHelper.GetChild(
+                VisualTreeHelper.GetChild(nodeList,
+                0), 0), 0);
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(nodeCanvas); i++)
+            {
+                var v = 
+                    VisualTreeHelper.GetChild(
+                    VisualTreeHelper.GetChild(nodeCanvas, i), 
+                    0);
+
+                if (v is NodeControl nc && nc.Node.Node == node)
+                {
+                    return nc;
+                }
+            }
+
+            return null;
+        }
+
+        private void InitializeVisualNodeConnections()
+        {
+            if (Method != null)
+            {
+                // Wait so the nodes get created
+                Task.Delay(100).ContinueWith(_ => Dispatcher.Invoke(() => 
+                {
+                    foreach (Node node in Method.Nodes)
+                    {
+                        NodeControl nodeControl = FindNodeControl(node);
+
+                        // Visually connect pins
+                        foreach (NodeInputDataPin pin in node.InputDataPins)
+                        {
+                            if (pin.IncomingPin != null)
+                            {
+                                NodeControl otherNodeControl = FindNodeControl(pin.IncomingPin.Node);
+
+                                nodeControl.FindPinControl(pin).ConnectedPin =
+                                    otherNodeControl.FindPinControl(pin.IncomingPin);
+                            }
+                        }
+
+                        foreach (NodeOutputExecPin pin in node.OutputExecPins)
+                        {
+                            if (pin.OutgoingPin != null)
+                            {
+                                NodeControl otherNodeControl = FindNodeControl(pin.OutgoingPin.Node);
+
+                                nodeControl.FindPinControl(pin).ConnectedPin =
+                                    otherNodeControl.FindPinControl(pin.OutgoingPin);
+                            }
+                        }
+                    }
+                }));
+            }
+        }
+        #endregion
 
         public void ShowVariableGetSet(Variable variable, Point position)
         {
@@ -194,7 +218,7 @@ namespace NetPrintsEditor.Controls
             }
             if (Method != null && e.Data.GetDataPresent(typeof(Method)))
             {
-                Point mousePosition = e.GetPosition(canvas);
+                Point mousePosition = e.GetPosition(methodEditorWindow);
                 Method method = e.Data.GetData(typeof(Method)) as Method;
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters

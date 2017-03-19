@@ -16,11 +16,23 @@ namespace NetPrints.Graph
         {
             get { return InputExecPins[0]; }
         }
+        
+        public ReturnNode(Method method)
+            : base(method)
+        {
+            AddInputExecPin("Exec");
+
+            SetReturnTypes(method.ReturnTypes);
+            SetupReturnTypesChangedEvent();
+        }
 
         public void SetReturnTypes(IEnumerable<Type> returnTypes)
         {
+            List<NodeOutputDataPin> oldConnections = new List<NodeOutputDataPin>();
+
             foreach (NodeInputDataPin pin in InputDataPins)
             {
+                oldConnections.Add(pin.IncomingPin);
                 GraphUtil.DisconnectInputDataPin(pin);
             }
 
@@ -30,14 +42,27 @@ namespace NetPrints.Graph
             {
                 AddInputDataPin(returnType.Name, returnType);
             }
+
+            // Try to reconnect old pins
+            for (int i = 0; i < Math.Min(oldConnections.Count, InputDataPins.Count); i++)
+            {
+                Type returnType = InputDataPins[i].PinType;
+                
+                var connPin = oldConnections[i];
+
+                if(connPin != null)
+                {
+                    if (returnType == connPin.PinType || connPin.PinType.IsSubclassOf(returnType))
+                    {
+                        GraphUtil.ConnectDataPins(connPin, InputDataPins[i]);
+                    }
+                }
+            }
         }
 
-        public ReturnNode(Method method)
-            : base(method)
+        // Called in constructor or after method has been deserialized
+        public void SetupReturnTypesChangedEvent()
         {
-            AddInputExecPin("Exec");
-
-            SetReturnTypes(method.ReturnTypes);
             Method.ReturnTypes.CollectionChanged += OnReturnTypesChanged;
         }
 

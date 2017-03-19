@@ -85,5 +85,12 @@ namespace NetPrints.Core
             EntryNode = new EntryNode(this);
             ReturnNode = new ReturnNode(this);
         }
+
+        [OnDeserialized]
+        private void OnDeserializing(StreamingContext c)
+        {
+            EntryNode.SetupArgumentTypesChangedEvent();
+            ReturnNode.SetupReturnTypesChangedEvent();
+        }
     }
 }
