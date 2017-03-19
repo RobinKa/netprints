@@ -49,11 +49,11 @@ namespace NetPrints.Graph
         public ForLoopNode(Method method)
             : base(method)
         {
-            AddInputExecPin("StartLoop");
+            AddInputExecPin("Exec");
             AddInputExecPin("NextLoop");
             
-            AddOutputExecPin("ExecLoop");
-            AddOutputExecPin("ExecCompleted");
+            AddOutputExecPin("Loop");
+            AddOutputExecPin("Completed");
 
             AddInputDataPin("InitialIndex", typeof(int));
             AddInputDataPin("MaxIndex", typeof(int));
