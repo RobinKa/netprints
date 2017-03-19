@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using System.ComponentModel;
+using NetPrintsEditor.ViewModels;
 
 namespace NetPrintsEditor.Controls
 {
@@ -23,99 +24,35 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class PinControl : UserControl
     {
-        private const double SplineAlpha = 0.5;
+        public static readonly DependencyProperty ParentNodeControlProperty = DependencyProperty.Register(
+            nameof(ParentNodeControl), typeof(NodeControl), typeof(PinControl));
 
-        public static readonly DependencyProperty StartPointProperty =
-            DependencyProperty.Register(nameof(StartPoint), typeof(Point), typeof(PinControl));
-
-        public static readonly DependencyProperty AnchorPointProperty =
-            DependencyProperty.Register(nameof(AnchorPoint), typeof(Point), typeof(PinControl));
-
-        public static readonly DependencyProperty ControlPoint1Property =
-            DependencyProperty.Register(nameof(ControlPoint1), typeof(Point), typeof(PinControl));
-
-        public static readonly DependencyProperty ControlPoint2Property =
-           DependencyProperty.Register(nameof(ControlPoint2), typeof(Point), typeof(PinControl));
-
-        public static readonly DependencyProperty ConnectedPinProperty =
-           DependencyProperty.Register(nameof(ConnectedPin), typeof(PinControl), typeof(PinControl));
-
-        public PinControl ConnectedPin
+        public NodeControl ParentNodeControl
         {
-            get
-            {
-                return (PinControl)GetValue(ConnectedPinProperty);
-            }
-            set
-            {
-                if(ConnectedPin != null)
-                {
-                    value.LayoutUpdated -= OnLayoutUpdated;
-                }
-
-                SetValue(ConnectedPinProperty, value);
-
-                if (value != null)
-                {
-                    value.LayoutUpdated += OnLayoutUpdated;
-                    value.InvalidateVisual();
-                }
-
-                InvalidateVisual();
-            }
+            get => (NodeControl)GetValue(ParentNodeControlProperty);
+            set => SetValue(ParentNodeControlProperty, value);
         }
 
         private void OnLayoutUpdated(object sender, EventArgs e)
         {
-            StartPoint = ellipse.TransformToVisual(canvas).Transform(new Point(
-                    ellipse.RenderSize.Width / 2, ellipse.RenderSize.Height / 2));
-
-            if (ConnectedPin != null && ConnectedPin.ellipse.FindCommonVisualAncestor(canvas) != null)
+            if (Pin != null)
             {
-                AnchorPoint = ConnectedPin.ellipse.TransformToVisual(canvas).Transform(new Point(
-                    ConnectedPin.ellipse.RenderSize.Width / 2, ConnectedPin.ellipse.RenderSize.Height / 2));
+                Pin.PositionX = connector.Width / 2;
+                Pin.PositionY = connector.Height / 2;
+
+                if (ParentNodeControl != null && connector.FindCommonVisualAncestor(ParentNodeControl) != null)
+                {
+                    Pin.NodeRelativePosition = connector.TransformToVisual(ParentNodeControl).Transform(Pin.Position);
+                }
             }
-            else
-            {
-                AnchorPoint = StartPoint;
-            }
-
-            ControlPoint1 = new Point((1 - SplineAlpha) * AnchorPoint.X, 0);
-            ControlPoint2 = new Point(SplineAlpha * AnchorPoint.X, AnchorPoint.Y);
-
-            cable.Visibility = ConnectedPin != null ? Visibility.Visible : Visibility.Hidden;
-        }
-
-        public Point StartPoint
-        {
-            get => (Point)GetValue(StartPointProperty);
-            set => SetValue(StartPointProperty, value);
-        }
-
-        public Point AnchorPoint
-        {
-            get => (Point)GetValue(AnchorPointProperty);
-            set => SetValue(AnchorPointProperty, value);
-        }
-
-        public Point ControlPoint1
-        {
-            get => (Point)GetValue(ControlPoint1Property);
-            set => SetValue(ControlPoint1Property, value);
-        }
-
-        public Point ControlPoint2
-        {
-            get => (Point)GetValue(ControlPoint2Property);
-            set => SetValue(ControlPoint2Property, value);
         }
 
         public static readonly DependencyProperty PinProperty =
-            DependencyProperty.Register("Pin", typeof(NodePin), typeof(PinControl));
+            DependencyProperty.Register(nameof(Pin), typeof(NodePinVM), typeof(PinControl));
         
-        public NodePin Pin
+        public NodePinVM Pin
         {
-            get => GetValue(PinProperty) as NodePin;
+            get => GetValue(PinProperty) as NodePinVM;
             set => SetValue(PinProperty, value);
         }
 
@@ -129,13 +66,13 @@ namespace NetPrintsEditor.Controls
         {
             base.OnPropertyChanged(e);
 
-            if(e.Property == PinProperty)
+            if (e.Property == PinProperty && Pin != null)
             {
-                if(Pin is NodeInputDataPin || Pin is NodeInputExecPin)
+                if (Pin.Pin is NodeInputDataPin || Pin.Pin is NodeInputExecPin)
                 {
                     grid.ColumnDefinitions[0].Width = new GridLength(20, GridUnitType.Pixel);
                     grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
-                    ellipse.SetValue(Grid.ColumnProperty, 0);
+                    connector.SetValue(Grid.ColumnProperty, 0);
                     label.SetValue(Grid.ColumnProperty, 1);
                     label.HorizontalContentAlignment = HorizontalAlignment.Left;
                 }
@@ -143,26 +80,26 @@ namespace NetPrintsEditor.Controls
                 {
                     grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
                     grid.ColumnDefinitions[1].Width = new GridLength(20, GridUnitType.Pixel);
-                    ellipse.SetValue(Grid.ColumnProperty, 1);
+                    connector.SetValue(Grid.ColumnProperty, 1);
                     label.SetValue(Grid.ColumnProperty, 0);
                     label.HorizontalContentAlignment = HorizontalAlignment.Right;
                 }
 
                 Color newColor = Color.FromArgb(0xFF, 0xFF, 0x00, 0x00);
 
-                if (Pin is NodeInputDataPin)
+                if (Pin.Pin is NodeInputDataPin)
                 {
                     newColor = Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF);
                 }
-                else if(Pin is NodeOutputDataPin)
+                else if(Pin.Pin is NodeOutputDataPin)
                 {
                     newColor = Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF);
                 }
-                else if(Pin is NodeInputExecPin)
+                else if(Pin.Pin is NodeInputExecPin)
                 {
                     newColor = Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0);
                 }
-                else if(Pin is NodeOutputExecPin)
+                else if(Pin.Pin is NodeOutputExecPin)
                 {
                     newColor = Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0);
                 }
@@ -177,32 +114,23 @@ namespace NetPrintsEditor.Controls
         {
             if(sender is Ellipse el && e.LeftButton == MouseButtonState.Pressed)
             {
-                DragDrop.DoDragDrop(el, this, DragDropEffects.Link);
+                DragDrop.DoDragDrop(el, Pin, DragDropEffects.Link);
             }
         }
 
         private void OnEllipseDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(PinControl)))
+            if (e.Data.GetDataPresent(typeof(NodePinVM)))
             {
                 // Another pin was dropped on this pin, link it
 
-                PinControl droppedPinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
+                NodePinVM droppedPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.ConnectPins, new NetPrintsCommands.ConnectPinsParameters()
                 {
-                    PinA = droppedPinControl.Pin,
+                    PinA = droppedPin,
                     PinB = Pin
                 });
-
-                if(Pin is NodeInputDataPin || Pin is NodeOutputExecPin)
-                {
-                    ConnectedPin = droppedPinControl;
-                }
-                else
-                {
-                    droppedPinControl.ConnectedPin = this;
-                }
 
                 e.Handled = true;
             }
@@ -212,13 +140,13 @@ namespace NetPrintsEditor.Controls
         {
             e.Effects = DragDropEffects.None;
 
-            if (e.Data.GetDataPresent(typeof(PinControl)))
+            if (e.Data.GetDataPresent(typeof(NodePinVM)))
             {
                 // Another pin is being hovered over this one, see if it can be linked to this pin
 
-                PinControl draggingPinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
+                NodePinVM draggingPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
                 
-                if(GraphUtil.CanConnectNodePins(draggingPinControl.Pin, Pin))
+                if(GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin))
                 {
                     e.Effects = DragDropEffects.Link;
                 }

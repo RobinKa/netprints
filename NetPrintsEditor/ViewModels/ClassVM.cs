@@ -16,8 +16,35 @@ namespace NetPrintsEditor.ViewModels
     public class ClassVM : INotifyPropertyChanged
     {
         // Wrapped attributes of Class
-        public ObservableCollection<Variable> Attributes { get => cls.Attributes; }
-        public ObservableCollection<Method> Methods { get => cls.Methods; }
+        public ObservableViewModelCollection<VariableVM, Variable> Attributes
+        {
+            get => attributes;
+            set
+            {
+                if(attributes != value)
+                {
+                    attributes = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableViewModelCollection<VariableVM, Variable> attributes;
+
+        public ObservableViewModelCollection<MethodVM, Method> Methods
+        {
+            get => methods;
+            set
+            {
+                if(methods != value)
+                {
+                    methods = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableViewModelCollection<MethodVM, Method> methods;
 
         public Type SuperType
         {
@@ -83,7 +110,7 @@ namespace NetPrintsEditor.ViewModels
 
         public ClassVM(Class cls)
         {
-            this.cls = cls;
+            Class = cls;
         }
 
 #region INotifyPropertyChanged
@@ -91,6 +118,15 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            if(propertyName == nameof(Class))
+            {
+                Methods = new ObservableViewModelCollection<MethodVM, Method>(
+                    cls.Methods, m => new MethodVM(m));
+
+                Attributes = new ObservableViewModelCollection<VariableVM, Variable>(
+                    cls.Attributes, a => new VariableVM(a));
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 #endregion

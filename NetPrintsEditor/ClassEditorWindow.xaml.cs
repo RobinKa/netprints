@@ -54,7 +54,7 @@ namespace NetPrintsEditor
 
         private void OnMethodListDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            methodEditor.Method = methodList.SelectedItem as Method;
+            methodEditor.Method = methodList.SelectedItem as MethodVM;
         }
 
         private void OnListItemMouseMove(object sender, MouseEventArgs e)
@@ -151,8 +151,8 @@ namespace NetPrintsEditor
             newMethod.ReturnNode.PositionY = newMethod.EntryNode.PositionY;
             GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.ReturnNode.ReturnPin);
 
-            Class.Methods.Add(newMethod);
-            //methodEditor.Method = newMethod;
+            Class.Class.Methods.Add(newMethod);
+            methodEditor.Method = Class.Methods.Single(m => m.Method == newMethod);
         }
 
         // Remove Method
@@ -176,7 +176,7 @@ namespace NetPrintsEditor
 
         private void CommandAddAttribute_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.Attributes.Add(new Variable(e.Parameter as string, typeof(object)));
+            Class.Class.Attributes.Add(new Variable(e.Parameter as string, typeof(object)));
         }
 
         // Remove Attribute
@@ -215,13 +215,10 @@ namespace NetPrintsEditor
             }
 
             // Find closed by name
-            Node node = Class.Methods.FirstOrDefault(m => m.Name == p.Node.Method.Name)?.Nodes.FirstOrDefault(n => n.Name == p.Node.Name);
-            if(node != null)
-            {
-                return new NodeVM(node);
-            }
+            NodeVM node = Class.Methods.FirstOrDefault(m => m.Name == p.Node.Method.Name)?.
+                Nodes.FirstOrDefault(n => n.Name == p.Node.Name);
 
-            return null;
+            return node;
         }
 
         // Connect pins
@@ -229,16 +226,22 @@ namespace NetPrintsEditor
         private void CommandConnectPins_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             ConnectPinsParameters xcp = e.Parameter as ConnectPinsParameters;
-            bool xcanConnect = GraphUtil.CanConnectNodePins(xcp.PinA, xcp.PinB);
             
-            e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA, cp.PinB);
+            e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin);
         }
 
         private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)
         {
             ConnectPinsParameters cp = e.Parameter as ConnectPinsParameters;
 
-            GraphUtil.ConnectNodePins(cp.PinA, cp.PinB);
+            if (cp.PinA.Pin is NodeInputDataPin || cp.PinA.Pin is NodeOutputExecPin)
+            {
+                cp.PinA.ConnectedPin = cp.PinB;
+            }
+            else
+            {
+                cp.PinB.ConnectedPin = cp.PinA;
+            }
         }
 
         // Add node
@@ -254,7 +257,7 @@ namespace NetPrintsEditor
             
             if (p.Method == null)
             {
-                p.Method = methodEditor.Method;
+                p.Method = methodEditor.Method.Method;
                 Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow);
                 p.PositionX = mouseLoc.X;
                 p.PositionY = mouseLoc.Y;
@@ -298,7 +301,7 @@ namespace NetPrintsEditor
 
         private void OnVariableSelected(object sender, MouseButtonEventArgs e)
         {
-            if (sender is ListViewItem item && item.DataContext is Variable v)
+            if (sender is ListViewItem item && item.DataContext is VariableVM v)
             {
                 viewerTabControl.SelectedIndex = 1;
                 variableViewer.Variable = v;
@@ -307,10 +310,10 @@ namespace NetPrintsEditor
 
         private void OnMethodSelected(object sender, MouseButtonEventArgs e)
         {
-            if (sender is ListViewItem item && item.DataContext is Method m)
+            if (sender is ListViewItem item && item.DataContext is MethodVM m)
             {
                 viewerTabControl.SelectedIndex = 2;
-                methodViewer.Method = new MethodVM(m);
+                methodViewer.Method = m;
             }
         }
 

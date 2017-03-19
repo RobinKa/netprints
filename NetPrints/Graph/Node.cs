@@ -32,11 +32,33 @@ namespace NetPrints.Graph
         [DataMember]
         public ObservableCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableCollection<NodeOutputExecPin>();
 
-        [DataMember]
-        public double PositionX { get; set; }
+        public delegate void NodePositionChangedDelegate(Node node, double positionX, double positionY);
+        public event NodePositionChangedDelegate OnPositionChanged;
 
         [DataMember]
-        public double PositionY { get; set; }
+        public double PositionX
+        {
+            get => positionX;
+            set
+            {
+                positionX = value;
+                OnPositionChanged?.Invoke(this, positionX, positionY);
+            }
+        }
+
+        [DataMember]
+        public double PositionY
+        {
+            get => positionY;
+            set
+            {
+                positionY = value;
+                OnPositionChanged?.Invoke(this, positionX, positionY);
+            }
+        }
+        
+        private double positionX;
+        private double positionY;
 
         [DataMember]
         public string Name { get; set; }

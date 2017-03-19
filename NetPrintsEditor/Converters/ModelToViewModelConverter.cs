@@ -28,20 +28,12 @@ namespace NetPrintsEditor.Converters
             {
                 return new ClassVM(cls);
             }
-            else if(value is ObservableCollection<Method> methods)
+            else if(value is NodePin pin)
             {
-                return new ObservableCollection<MethodVM>(methods.Select(m => new MethodVM(m)));
-            }
-            else if (value is ObservableCollection<Node> nodes)
-            {
-                return new ObservableCollection<NodeVM>(nodes.Select(n => new NodeVM(n)));
-            }
-            else if (value is ObservableCollection<Class> classes)
-            {
-                return new ObservableCollection<ClassVM>(classes.Select(c => new ClassVM(c)));
+                return new NodePinVM(pin);
             }
 
-            return null;
+            throw new ArgumentException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

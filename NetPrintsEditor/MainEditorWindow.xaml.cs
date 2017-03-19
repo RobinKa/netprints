@@ -49,7 +49,7 @@ namespace NetPrintsEditor
                 classes.Add(new ClassVM(cls));
             });
 
-            Classes = new ObservableCollection<ClassVM>(classes);
+            Classes = new ObservableCollection<ClassVM>(classes.OrderBy(c => c.Name));
         }
 
         private void OpenOrCreateClassWindow(ClassVM cls)

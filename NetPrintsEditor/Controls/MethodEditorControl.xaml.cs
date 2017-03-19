@@ -31,14 +31,14 @@ namespace NetPrintsEditor.Controls
     {
         public const double GridCellSize = 20;
 
-        public Method Method
+        public MethodVM Method
         {
-            get => GetValue(MethodProperty) as Method;
+            get => GetValue(MethodProperty) as MethodVM;
             set => SetValue(MethodProperty, value);
         }
 
         public static DependencyProperty MethodProperty = DependencyProperty.Register(
-            nameof(Method), typeof(Method), typeof(MethodEditorControl));
+            nameof(Method), typeof(MethodVM), typeof(MethodEditorControl));
         
         public static DependencyProperty SuggestedFunctionsProperty = DependencyProperty.Register(
             nameof(SuggestedFunctions), typeof(ObservableCollection<MethodInfo>), typeof(MethodEditorControl));
@@ -54,83 +54,7 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        #region Hack: Initialize Visual Node Connections
-        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-
-            if(e.Property == MethodProperty)
-            {
-                InitializeVisualNodeConnections();
-            }
-        }
-
-        private NodeControl FindNodeControl(Node node)
-        {
-            // NodeList -> ... -> Canvas -> ... -> NodeControl
-
-            var nodeCanvas = 
-                VisualTreeHelper.GetChild(
-                VisualTreeHelper.GetChild(
-                VisualTreeHelper.GetChild(nodeList,
-                0), 0), 0);
-
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(nodeCanvas); i++)
-            {
-                var v = 
-                    VisualTreeHelper.GetChild(
-                    VisualTreeHelper.GetChild(nodeCanvas, i), 
-                    0);
-
-                if (v is NodeControl nc && nc.Node.Node == node)
-                {
-                    return nc;
-                }
-            }
-
-            return null;
-        }
-
-        private void InitializeVisualNodeConnections()
-        {
-            if (Method != null)
-            {
-                // Wait so the nodes get created
-                Task.Delay(100).ContinueWith(_ => Dispatcher.Invoke(() => 
-                {
-                    foreach (Node node in Method.Nodes)
-                    {
-                        NodeControl nodeControl = FindNodeControl(node);
-
-                        // Visually connect pins
-                        foreach (NodeInputDataPin pin in node.InputDataPins)
-                        {
-                            if (pin.IncomingPin != null)
-                            {
-                                NodeControl otherNodeControl = FindNodeControl(pin.IncomingPin.Node);
-
-                                nodeControl.FindPinControl(pin).ConnectedPin =
-                                    otherNodeControl.FindPinControl(pin.IncomingPin);
-                            }
-                        }
-
-                        foreach (NodeOutputExecPin pin in node.OutputExecPins)
-                        {
-                            if (pin.OutgoingPin != null)
-                            {
-                                NodeControl otherNodeControl = FindNodeControl(pin.OutgoingPin.Node);
-
-                                nodeControl.FindPinControl(pin).ConnectedPin =
-                                    otherNodeControl.FindPinControl(pin.OutgoingPin);
-                            }
-                        }
-                    }
-                }));
-            }
-        }
-        #endregion
-
-        public void ShowVariableGetSet(Variable variable, Point position)
+        public void ShowVariableGetSet(VariableVM variable, Point position)
         {
             variableGetSet.Visibility = Visibility.Visible;
             variableGetSet.Tag = new object[] { variable, position };
@@ -149,11 +73,11 @@ namespace NetPrintsEditor.Controls
 
         private void OnVariableSetClicked(object sender, RoutedEventArgs e)
         {
-            if(sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is Variable v && o[1] is Point pos)
+            if(sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is VariableVM v && o[1] is Point pos)
             {
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(VariableSetterNode), Method, pos.X, pos.Y,
+                    typeof(VariableSetterNode), Method.Method, pos.X, pos.Y,
                     v.Name, v.VariableType
                 ));
             }
@@ -163,11 +87,11 @@ namespace NetPrintsEditor.Controls
 
         private void OnVariableGetClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is Variable v && o[1] is Point pos)
+            if (sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is VariableVM v && o[1] is Point pos)
             {
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(VariableGetterNode), Method, pos.X, pos.Y,
+                    typeof(VariableGetterNode), Method.Method, pos.X, pos.Y,
                     v.Name, v.VariableType
                 ));
             }
@@ -182,21 +106,21 @@ namespace NetPrintsEditor.Controls
 
         private void OnGridDrop(object sender, DragEventArgs e)
         {
-            if (Method != null && e.Data.GetDataPresent(typeof(Variable)))
+            if (Method != null && e.Data.GetDataPresent(typeof(VariableVM)))
             {
-                Variable variable = e.Data.GetData(typeof(Variable)) as Variable;
+                VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
                 
                 ShowVariableGetSet(variable, e.GetPosition(variableGetSetCanvas));
 
                 e.Handled = true;
             }
-            else if(e.Data.GetDataPresent(typeof(PinControl)))
+            else if(e.Data.GetDataPresent(typeof(NodePinVM)))
             {
                 // Show all relevant methods for the type of the pin if its a data pin
 
-                PinControl pinControl = e.Data.GetData(typeof(PinControl)) as PinControl;
+                NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
 
-                if (pinControl.Pin is NodeDataPin dataPin)
+                if (pin.Pin is NodeDataPin dataPin)
                 {
                     if (dataPin is NodeOutputDataPin odp)
                     {
@@ -216,14 +140,14 @@ namespace NetPrintsEditor.Controls
                     e.Handled = true;
                 }
             }
-            if (Method != null && e.Data.GetDataPresent(typeof(Method)))
+            if (Method != null && e.Data.GetDataPresent(typeof(MethodVM)))
             {
                 Point mousePosition = e.GetPosition(methodEditorWindow);
-                Method method = e.Data.GetData(typeof(Method)) as Method;
+                MethodVM method = e.Data.GetData(typeof(MethodVM)) as MethodVM;
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(CallMethodNode), Method, mousePosition.X, mousePosition.Y,
+                    typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
                     method.Name, method.ArgumentTypes, method.ReturnTypes
                 ));
 
@@ -235,17 +159,17 @@ namespace NetPrintsEditor.Controls
         {
             e.Effects = DragDropEffects.None;
 
-            if (Method != null && e.Data.GetDataPresent(typeof(Variable)))
+            if (Method != null && e.Data.GetDataPresent(typeof(VariableVM)))
             {
                 e.Effects = DragDropEffects.Copy;
                 e.Handled = true;
             }
-            else if(e.Data.GetDataPresent(typeof(PinControl)))
+            else if(e.Data.GetDataPresent(typeof(NodePinVM)))
             {
                 e.Effects = DragDropEffects.Link;
                 e.Handled = true;
             }
-            else if(Method != null && e.Data.GetDataPresent(typeof(Method)))
+            else if(Method != null && e.Data.GetDataPresent(typeof(MethodVM)))
             {
                 e.Effects = DragDropEffects.Copy;
                 e.Handled = true;

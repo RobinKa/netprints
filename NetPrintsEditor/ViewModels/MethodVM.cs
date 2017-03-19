@@ -27,7 +27,20 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public ObservableCollection<Node> Nodes { get => method.Nodes; }
+        public ObservableViewModelCollection<NodeVM, Node> Nodes
+        {
+            get => nodes;
+            set
+            {
+                if(nodes != value)
+                {
+                    nodes = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableViewModelCollection<NodeVM, Node> nodes;
 
         public ObservableCollection<Type> ArgumentTypes
         {
@@ -44,8 +57,11 @@ namespace NetPrintsEditor.ViewModels
             get => method.Modifiers;
             set
             {
-                method.Modifiers = value;
-                OnPropertyChanged();
+                if (method.Modifiers != value)
+                {
+                    method.Modifiers = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -66,7 +82,7 @@ namespace NetPrintsEditor.ViewModels
 
         public MethodVM(Method method)
         {
-            this.method = method;
+            Method = method;
         }
 
         #region INotifyPropertyChanged
@@ -74,6 +90,39 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            if (propertyName == nameof(Method))
+            {
+                Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
+
+                // Setup connections from new PinVMs to PinVMs
+                foreach (NodeVM node in Nodes)
+                {
+                    foreach (NodePinVM pinVM in node.OutputExecPins)
+                    {
+                        NodeOutputExecPin pin = pinVM.Pin as NodeOutputExecPin;
+
+                        if (pin.OutgoingPin != null)
+                        {
+                            NodeInputExecPin connPin = pin.OutgoingPin as NodeInputExecPin;
+                            pinVM.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
+                                InputExecPins.Single(x => x.Pin == connPin);
+                        }
+                    }
+
+                    foreach (NodePinVM pinVM in node.InputDataPins)
+                    {
+                        NodeInputDataPin pin = pinVM.Pin as NodeInputDataPin;
+
+                        if (pin.IncomingPin != null)
+                        {
+                            NodeOutputDataPin connPin = pin.IncomingPin as NodeOutputDataPin;
+                            pinVM.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
+                                OutputDataPins.Single(x => x.Pin == connPin);
+                        }
+                    }
+                }
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion

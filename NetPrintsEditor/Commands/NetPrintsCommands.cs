@@ -69,8 +69,8 @@ namespace NetPrintsEditor.Commands
 
         public class ConnectPinsParameters
         {
-            public NodePin PinA;
-            public NodePin PinB;
+            public NodePinVM PinA;
+            public NodePinVM PinB;
         }
 
         public delegate Tuple<ICommand, object> MakeUndoCommandDelegate(object parameters);

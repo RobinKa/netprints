@@ -30,10 +30,63 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public ObservableCollection<NodeInputDataPin> InputDataPins { get => node.InputDataPins; }
-        public ObservableCollection<NodeOutputDataPin> OutputDataPins { get => node.OutputDataPins; }
-        public ObservableCollection<NodeInputExecPin> InputExecPins { get => node.InputExecPins; }
-        public ObservableCollection<NodeOutputExecPin> OutputExecPins { get => node.OutputExecPins; }
+        public ObservableViewModelCollection<NodePinVM, NodeInputDataPin> InputDataPins
+        {
+            get => inputDataPins;
+            set
+            {
+                if(inputDataPins != value)
+                {
+                    inputDataPins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableViewModelCollection<NodePinVM, NodeOutputDataPin> OutputDataPins
+        {
+            get => outputDataPins;
+            set
+            {
+                if (outputDataPins != value)
+                {
+                    outputDataPins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableViewModelCollection<NodePinVM, NodeInputExecPin> InputExecPins
+        {
+            get => inputExecPins;
+            set
+            {
+                if (inputExecPins != value)
+                {
+                    inputExecPins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableViewModelCollection<NodePinVM, NodeOutputExecPin> OutputExecPins
+        {
+            get => outputExecPins;
+            set
+            {
+                if (outputExecPins != value)
+                {
+                    outputExecPins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableViewModelCollection<NodePinVM, NodeInputDataPin> inputDataPins;
+        private ObservableViewModelCollection<NodePinVM, NodeOutputDataPin> outputDataPins;
+        private ObservableViewModelCollection<NodePinVM, NodeInputExecPin> inputExecPins;
+        private ObservableViewModelCollection<NodePinVM, NodeOutputExecPin> outputExecPins;
+        
         public bool IsPure { get => node.IsPure; }
 
         // Wrapped Node
@@ -85,7 +138,7 @@ namespace NetPrintsEditor.ViewModels
 
         public NodeVM(Node node)
         {
-            this.node = node;
+            Node = node;
         }
 
         #region INotifyPropertyChanged
@@ -93,6 +146,21 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            if(propertyName == nameof(Node))
+            {
+                InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
+                    Node.InputDataPins, p => new NodePinVM(p));
+
+                OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
+                    Node.OutputDataPins, p => new NodePinVM(p));
+
+                InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
+                    Node.InputExecPins, p => new NodePinVM(p));
+
+                OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
+                    Node.OutputExecPins, p => new NodePinVM(p));
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion

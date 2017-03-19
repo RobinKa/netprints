@@ -6,35 +6,43 @@
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="100" x:Name="pinWindow">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+    
     <Canvas x:Name="canvas" Height="20" MouseLeftButtonDown="Canvas_MouseLeftButtonDown">
         <Grid x:Name="grid" Width="110">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Ellipse Grid.Column="0" x:Name="ellipse" Width="20" Height="20" Fill="#FFE0E0E0" Stroke="#AA000000" MouseMove="OnEllipseMouseMove" DragOver="OnEllipseDragOver" Drop="OnEllipseDrop" AllowDrop="True" />
+            <Canvas x:Name="connector" Grid.Column="0" Width="20" Height="20">
+                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="#FFE0E0E0" Stroke="#AA000000" MouseMove="OnEllipseMouseMove" DragOver="OnEllipseDragOver" Drop="OnEllipseDrop" AllowDrop="True" />
+                <Path x:Name="cable" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsConnected, Converter={StaticResource ResourceKey=BoolToVis}}" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                    <Path.Data>
+                        <PathGeometry>
+                            <PathGeometry.Figures>
+                                <PathFigureCollection>
+                                    <PathFigure StartPoint="{Binding ElementName=pinWindow, Path=Pin.Position}">
+                                        <PathFigure.Segments>
+                                            <PathSegmentCollection>
+                                                <BezierSegment 
+                                            Point1="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP1}" 
+                                            Point2="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP2}" 
+                                            Point3="{Binding ElementName=pinWindow, Path=Pin.ConnectedPosition}" />
+                                            </PathSegmentCollection>
+                                        </PathFigure.Segments>
+                                    </PathFigure>
+                                </PathFigureCollection>
+                            </PathGeometry.Figures>
+                        </PathGeometry>
+                    </Path.Data>
+                </Path>
+            </Canvas>
             <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         </Grid>
 
-        <Path x:Name="cable" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
-            <Path.Data>
-                <PathGeometry>
-                    <PathGeometry.Figures>
-                        <PathFigureCollection>
-                            <PathFigure StartPoint="{Binding ElementName=pinWindow, Path=StartPoint}">
-                                <PathFigure.Segments>
-                                    <PathSegmentCollection>
-                                        <BezierSegment 
-                                            Point1="{Binding ElementName=pinWindow, Path=ControlPoint1}" 
-                                            Point2="{Binding ElementName=pinWindow, Path=ControlPoint2}" 
-                                            Point3="{Binding ElementName=pinWindow, Path=AnchorPoint}" />
-                                    </PathSegmentCollection>
-                                </PathFigure.Segments>
-                            </PathFigure>
-                        </PathFigureCollection>
-                    </PathGeometry.Figures>
-                </PathGeometry>
-            </Path.Data>
-        </Path>
+        
     </Canvas>
 </UserControl>

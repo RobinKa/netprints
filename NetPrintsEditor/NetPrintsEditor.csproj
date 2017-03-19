@@ -87,7 +87,10 @@
     </Compile>
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="ViewModels\MethodVM.cs" />
+    <Compile Include="ViewModels\NodePinVM.cs" />
     <Compile Include="ViewModels\NodeVM.cs" />
+    <Compile Include="ViewModels\ObservableViewModelCollection.cs" />
+    <Compile Include="ViewModels\VariableVM.cs" />
     <Page Include="Controls\MethodEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -71,7 +71,9 @@ namespace NetPrintsEditor.Controls
             if(sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is Type newType)
             {
                 int index = GetControlIndex(box, 0);
-                Method.ArgumentTypes[index] = newType;
+
+                if(Method.ArgumentTypes[index] != newType)
+                    Method.ArgumentTypes[index] = newType;
             }
         }
 
@@ -81,7 +83,9 @@ namespace NetPrintsEditor.Controls
             if (sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is Type newType)
             {
                 int index = GetControlIndex(box, 0);
-                Method.ReturnTypes[index] = newType;
+
+                if(Method.ReturnTypes[index] != newType)
+                    Method.ReturnTypes[index] = newType;
             }
         }
 

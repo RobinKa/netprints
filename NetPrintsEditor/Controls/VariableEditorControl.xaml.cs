@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,11 @@ namespace NetPrintsEditor.Controls
     public partial class VariableEditorControl : UserControl
     {
         public static DependencyProperty VariableProperty = DependencyProperty.Register(
-            nameof(Variable), typeof(Variable), typeof(VariableEditorControl));
+            nameof(Variable), typeof(VariableVM), typeof(VariableEditorControl));
 
-        public Variable Variable
+        public VariableVM Variable
         {
-            get => GetValue(VariableProperty) as Variable;
+            get => (VariableVM)GetValue(VariableProperty);
             set => SetValue(VariableProperty, value);
         }
 

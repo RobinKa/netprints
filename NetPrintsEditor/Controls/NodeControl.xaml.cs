@@ -18,6 +18,9 @@ using NetPrintsEditor.ViewModels;
 using NetPrintsEditor.Commands;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
 using System.Threading;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using NetPrints.Extensions;
 
 namespace NetPrintsEditor.Controls
 {
@@ -35,42 +38,14 @@ namespace NetPrintsEditor.Controls
             set => SetValue(NodeProperty, value);
         }
 
-        public PinControl FindPinControl(NodePin pin)
-        {
-            ItemsControl[] pinLists = new ItemsControl[]
-            {
-                inputDataPinList, outputDataPinList,
-                inputExecPinList, outputExecPinList
-            };
-
-            DependencyObject foundItem = null;
-            foreach(ItemsControl pinList in pinLists)
-            {
-                foundItem = pinList.ItemContainerGenerator.ContainerFromItem(pin);
-                if (foundItem != null)
-                    break;
-            }
-
-            if(foundItem == null)
-            {
-                return null;
-            }
-
-            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(foundItem); i++)
-            {
-                var v = VisualTreeHelper.GetChild(foundItem, i);
-                if(v is PinControl pc && pc.Pin == pin)
-                {
-                    return pc;
-                }
-            }
-
-            return null;
-        }
-
         public NodeControl()
         {
             InitializeComponent();
+        }
+
+        private void OnInputExecPinsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            
         }
 
         #region Dragging
