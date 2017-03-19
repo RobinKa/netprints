@@ -24,6 +24,7 @@
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
+                        <Setter Property="Content" Value="{Binding Converter={StaticResource converter}}" />
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
