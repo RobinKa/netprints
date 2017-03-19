@@ -25,7 +25,7 @@
             </Rectangle.Effect>
         </Rectangle>
 
-        <Grid Margin="10">
+        <Grid Margin="10, 10, 10, 20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
