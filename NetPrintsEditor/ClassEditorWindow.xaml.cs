@@ -267,6 +267,8 @@ namespace NetPrintsEditor
             Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
             node.PositionX = p.PositionX;
             node.PositionY = p.PositionY;
+
+            methodEditor.grid.ContextMenu.IsOpen = false;
         }
 
         #endregion
