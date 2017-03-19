@@ -145,6 +145,11 @@ namespace NetPrintsEditor.ViewModels
             get => connectedPin;
             set
             {
+                if(!(Pin is NodeOutputExecPin || Pin is NodeInputDataPin))
+                {
+                    throw new Exception("Can only set connected pin of NodeOutputExecPin and NodeInputDataPin");
+                }
+
                 if(connectedPin != value)
                 {
                     if (connectedPin != null)
@@ -152,8 +157,22 @@ namespace NetPrintsEditor.ViewModels
                         connectedPin.Node.OnPositionChanged -= OnConnectedPinNodePositionChanged;
                         connectedPin.PropertyChanged -= OnConnectedPinPropertyChanged;
                     }
-                    
-                    GraphUtil.ConnectNodePins(Pin, value.Pin);
+
+                    if (value != null)
+                    {
+                        GraphUtil.ConnectNodePins(Pin, value.Pin);
+                    }
+                    else
+                    {
+                        if(Pin is NodeOutputExecPin oxp)
+                        {
+                            GraphUtil.DisconnectOutputExecPin(oxp);
+                        }
+                        else if(Pin is NodeInputDataPin idp)
+                        {
+                            GraphUtil.DisconnectInputDataPin(idp);
+                        }
+                    }
 
                     connectedPin = value;
                     OnPropertyChanged();

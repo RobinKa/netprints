@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" x:Name="ctrl" Loaded="OnLoaded">
     <UserControl.Resources>
-        <converters:MethodInfoConverter x:Key="converter" />
+        <converters:SuggestionListConverter x:Key="converter" />
     </UserControl.Resources>
     
     <Border BorderBrush="#FF222222" Background="#DD333333" BorderThickness="2" CornerRadius="4">

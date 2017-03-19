@@ -40,13 +40,13 @@ namespace NetPrintsEditor.Controls
         public static DependencyProperty MethodProperty = DependencyProperty.Register(
             nameof(Method), typeof(MethodVM), typeof(MethodEditorControl));
         
-        public static DependencyProperty SuggestedFunctionsProperty = DependencyProperty.Register(
-            nameof(SuggestedFunctions), typeof(ObservableCollection<MethodInfo>), typeof(MethodEditorControl));
+        public static DependencyProperty SuggestionsProperty = DependencyProperty.Register(
+            nameof(Suggestions), typeof(ObservableCollection<object>), typeof(MethodEditorControl));
 
-        public ObservableCollection<MethodInfo> SuggestedFunctions
+        public ObservableCollection<object> Suggestions
         {
-            get => (ObservableCollection<MethodInfo>)GetValue(SuggestedFunctionsProperty);
-            set => SetValue(SuggestedFunctionsProperty, value);
+            get => (ObservableCollection<object>)GetValue(SuggestionsProperty);
+            set => SetValue(SuggestionsProperty, value);
         }
 
         public MethodEditorControl()
@@ -124,12 +124,12 @@ namespace NetPrintsEditor.Controls
                 {
                     if (dataPin is NodeOutputDataPin odp)
                     {
-                        SuggestedFunctions = new ObservableCollection<MethodInfo>(
+                        Suggestions = new ObservableCollection<object>(
                             ReflectionUtil.GetPublicMethodsForType(odp.PinType));
                     }
                     else if (dataPin is NodeInputDataPin idp)
                     {
-                        SuggestedFunctions = new ObservableCollection<MethodInfo>(
+                        Suggestions = new ObservableCollection<object>(
                             ReflectionUtil.GetStaticFunctionsWithReturnType(idp.PinType));
                     }
 
@@ -138,6 +138,10 @@ namespace NetPrintsEditor.Controls
                     grid.ContextMenu.IsOpen = true;
 
                     e.Handled = true;
+                }
+                else if(pin.Pin is NodeOutputExecPin oxp)
+                {
+                    pin.ConnectedPin = null;
                 }
             }
             if (Method != null && e.Data.GetDataPresent(typeof(MethodVM)))
@@ -178,7 +182,9 @@ namespace NetPrintsEditor.Controls
 
         private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            SuggestedFunctions = new ObservableCollection<MethodInfo>(ReflectionUtil.GetStaticFunctions());
+            Suggestions = new ObservableCollection<object>(ReflectionUtil.GetStaticFunctions());
+            Suggestions.Add(typeof(ForLoopNode));
+            Suggestions.Add(typeof(IfElseNode));
         }
     }
 }

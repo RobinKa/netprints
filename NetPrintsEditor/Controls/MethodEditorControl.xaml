@@ -13,7 +13,7 @@
             <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                 <ContextMenu.Template>
                     <ControlTemplate>
-                        <local:SearchableComboBox Items="{Binding SuggestedFunctions}"
+                        <local:SearchableComboBox Items="{Binding Suggestions}"
                             Width="700" Height="300"/>
                     </ControlTemplate>
                 </ContextMenu.Template>

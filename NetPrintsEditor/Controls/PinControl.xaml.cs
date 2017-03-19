@@ -71,16 +71,16 @@ namespace NetPrintsEditor.Controls
                 if (Pin.Pin is NodeInputDataPin || Pin.Pin is NodeInputExecPin)
                 {
                     grid.ColumnDefinitions[0].Width = new GridLength(20, GridUnitType.Pixel);
-                    grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
+                    grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);
                     connector.SetValue(Grid.ColumnProperty, 0);
-                    label.SetValue(Grid.ColumnProperty, 1);
+                    label.SetValue(Grid.ColumnProperty, 2);
                     label.HorizontalContentAlignment = HorizontalAlignment.Left;
                 }
                 else
                 {
                     grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
-                    grid.ColumnDefinitions[1].Width = new GridLength(20, GridUnitType.Pixel);
-                    connector.SetValue(Grid.ColumnProperty, 1);
+                    grid.ColumnDefinitions[2].Width = new GridLength(20, GridUnitType.Pixel);
+                    connector.SetValue(Grid.ColumnProperty, 2);
                     label.SetValue(Grid.ColumnProperty, 0);
                     label.HorizontalContentAlignment = HorizontalAlignment.Right;
                 }
