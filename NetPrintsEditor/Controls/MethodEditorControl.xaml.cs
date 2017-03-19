@@ -31,6 +31,11 @@ namespace NetPrintsEditor.Controls
     {
         public const double GridCellSize = 20;
 
+        private double nodeListScale = 1;
+        private const double NodeListMinScale = 0.3;
+        private const double NodeListMaxScale = 1.0;
+        private const double NodeListScaleFactor = 1.3;
+
         public MethodVM Method
         {
             get => GetValue(MethodProperty) as MethodVM;
@@ -185,6 +190,31 @@ namespace NetPrintsEditor.Controls
             Suggestions = new ObservableCollection<object>(ReflectionUtil.GetStaticFunctions());
             Suggestions.Add(typeof(ForLoopNode));
             Suggestions.Add(typeof(IfElseNode));
+        }
+
+        private void OnMouseWheelScroll(object sender, MouseWheelEventArgs e)
+        {
+            if(e.Delta < 0)
+            {
+                nodeListScale /= NodeListScaleFactor;
+            }
+            else
+            {
+                nodeListScale *= NodeListScaleFactor;
+            }
+
+            // Clamp scale between min and max
+            if(nodeListScale < NodeListMinScale)
+            {
+                nodeListScale = NodeListMinScale;
+            }
+            else if(nodeListScale > NodeListMaxScale)
+            {
+                nodeListScale = NodeListMaxScale;
+            }
+
+            nodeList.LayoutTransform = new ScaleTransform(nodeListScale, nodeListScale);
+            e.Handled = true;
         }
     }
 }
