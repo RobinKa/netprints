@@ -33,6 +33,34 @@ namespace NetPrints.Translator
             return name;
         }
 
+        public static string ObjectToLiteral(object obj, Type type)
+        {
+            // Put quotes around string literals
+            if (type == typeof(string))
+            {
+                return $"\"{obj}\"";
+            }
+            // Put f after float literals
+            else if (type == typeof(float))
+            {
+                return $"{obj}f";
+            }
+            // Put u after uint literals
+            else if (type == typeof(uint))
+            {
+                return $"{obj}u";
+            }
+            // Put single quotes around char literals
+            else if (type == typeof(char))
+            {
+                return $"'{obj}'";
+            }
+            else
+            {
+                return obj.ToString();
+            }
+        }
+
         public static string GetUniqueVariableName(string name, IList<string> names)
         {
             int i = 1;

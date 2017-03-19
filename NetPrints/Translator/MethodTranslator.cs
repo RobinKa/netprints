@@ -74,7 +74,14 @@ namespace NetPrints.Translator
         {
             if(pin.IncomingPin == null)
             {
-                return $"default({pin.PinType.FullName})";
+                if (pin.UsesUnconnectedValue && pin.UnconnectedValue != null)
+                {
+                    return TranslatorUtil.ObjectToLiteral(pin.UnconnectedValue, pin.PinType);
+                }
+                else
+                {
+                    return $"default({pin.PinType.FullName})";
+                }
             }
             else
             {
@@ -573,32 +580,7 @@ namespace NetPrints.Translator
 
         public void PureTranslateLiteralNode(LiteralNode node)
         {
-            string literalString;
-            
-            // Put quotes around string literals
-            if (node.LiteralType == typeof(string))
-            {
-                literalString = $"\"{node.Value}\"";
-            }
-            // Put f after float literals
-            else if(node.LiteralType == typeof(float))
-            {
-                literalString = $"{node.Value}f";
-            }
-            // Put u after uint literals
-            else if (node.LiteralType == typeof(uint))
-            {
-                literalString = $"{node.Value}u";
-            }
-            // Put single quotes around char literals
-            else if(node.LiteralType == typeof(char))
-            {
-                literalString = $"'{node.Value}'";
-            }
-            else
-            {
-                literalString = node.Value.ToString();
-            }
+            string literalString = TranslatorUtil.ObjectToLiteral(node.Value, node.LiteralType);
 
             builder.AppendLine($"{GetOrCreatePinName(node.ValuePin)} = {literalString};");
         }

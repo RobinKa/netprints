@@ -29,6 +29,34 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public object UnconnectedValue
+        {
+            get
+            {
+                if(Pin is NodeInputDataPin p)
+                {
+                    return p.UnconnectedValue;
+                }
+
+                return null;
+            }
+            set
+            {
+                if (Pin is NodeInputDataPin p && p.UnconnectedValue != value)
+                {
+                    p.UnconnectedValue = Convert.ChangeType(value, p.PinType);
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsUsingUnconnectedValue
+        {
+            get => Pin is NodeInputDataPin p && p.IncomingPin == null && 
+                (p.PinType == typeof(string) ||
+                p.PinType == typeof(int));
+        }
+
         public Node Node
         {
             get => pin.Node;
@@ -130,6 +158,7 @@ namespace NetPrintsEditor.ViewModels
                     connectedPin = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsConnected));
+                    OnPropertyChanged(nameof(IsUsingUnconnectedValue));
                     OnConnectionPositionUpdate();
 
                     if (connectedPin != null)

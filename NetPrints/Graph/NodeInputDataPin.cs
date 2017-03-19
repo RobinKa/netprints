@@ -17,6 +17,26 @@ namespace NetPrints.Graph
             set;
         }
 
+        public bool UsesUnconnectedValue
+        {
+            get => PinType.IsPrimitive || PinType == typeof(string);
+        }
+
+        [DataMember]
+        public object UnconnectedValue
+        {
+            get => unconnectedValue;
+            set
+            {
+                if (value != null && (!UsesUnconnectedValue || value.GetType() != PinType))
+                    throw new ArgumentException();
+
+                unconnectedValue = value;
+            }
+        }
+
+        private object unconnectedValue;
+
         public NodeInputDataPin(Node node, string name, Type pinType)
             : base(node, name, pinType)
         {
