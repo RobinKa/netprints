@@ -88,7 +88,7 @@ namespace NetPrints.Graph
         
         public override string ToString()
         {
-            return GraphUtil.SplitCamelCase(Name);
+            return GraphUtil.SplitCamelCase(GetType().Name);
         }
 
         protected void AddInputDataPin(string pinName, Type pinType)
