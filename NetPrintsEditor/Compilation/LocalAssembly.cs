@@ -34,7 +34,7 @@ namespace NetPrintsEditor.Compilation
 
         public static LocalAssemblyName FromPath(string path)
         {
-            Assembly assembly = Assembly.LoadFrom(path);
+            Assembly assembly = Assembly.UnsafeLoadFrom(path);
             return new LocalAssemblyName(assembly.FullName, assembly.Location);
         }
 
@@ -60,7 +60,7 @@ namespace NetPrintsEditor.Compilation
             }
             catch
             {
-                Assembly loadedAssembly = Assembly.LoadFrom(Path);
+                Assembly loadedAssembly = Assembly.UnsafeLoadFrom(Path);
 
                 if(loadedAssembly.FullName != Name)
                 {
@@ -76,7 +76,7 @@ namespace NetPrintsEditor.Compilation
             try
             {
                 // Check if assembly name at path matches Name
-                if (Assembly.LoadFrom(Path).FullName == Name)
+                if (Assembly.UnsafeLoadFrom(Path).FullName == Name)
                 {
                     return true;
                 }
