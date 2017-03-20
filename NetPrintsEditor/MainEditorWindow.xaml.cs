@@ -17,6 +17,7 @@ using System.Collections.Concurrent;
 using NetPrints.Serialization;
 using System.Collections.ObjectModel;
 using NetPrintsEditor.ViewModels;
+using Microsoft.Win32;
 
 namespace NetPrintsEditor
 {
@@ -25,34 +26,25 @@ namespace NetPrintsEditor
     /// </summary>
     public partial class MainEditorWindow : Window
     {
-        public static DependencyProperty ClassesProperty = DependencyProperty.Register(
-            nameof(Classes), typeof(ObservableCollection<ClassVM>), typeof(MainEditorWindow));
+        public static DependencyProperty ProjectProperty = DependencyProperty.Register(
+            nameof(Project), typeof(ProjectVM), typeof(MainEditorWindow));
 
-        public ObservableCollection<ClassVM> Classes
+        public ProjectVM Project
         {
-            get => GetValue(ClassesProperty) as ObservableCollection<ClassVM>;
-            set => SetValue(ClassesProperty, value);
+            get => (ProjectVM)GetValue(ProjectProperty);
+            set => SetValue(ProjectProperty, value);
         }
 
         private Dictionary<ClassVM, ClassEditorWindow> classEditorWindows = new Dictionary<ClassVM, ClassEditorWindow>();
-        
+
         public MainEditorWindow()
         {
             InitializeComponent();
 
-            ConcurrentBag<ClassVM> classes = new ConcurrentBag<ClassVM>();
-
-            string[] files = Directory.GetFiles(".", "*.xml", SearchOption.TopDirectoryOnly);
-            Parallel.ForEach(files, file =>
-            {
-                Class cls = SerializationHelper.LoadClass(file);
-                classes.Add(new ClassVM(cls));
-            });
-
-            Classes = new ObservableCollection<ClassVM>(classes.OrderBy(c => c.Name));
+            Project = new ProjectVM(null);
         }
-
-        private void OpenOrCreateClassWindow(ClassVM cls)
+        
+        private void OpenOrCreateClassEditorWindow(ClassVM cls)
         {
             if (classEditorWindows.ContainsKey(cls))
             {
@@ -86,12 +78,21 @@ namespace NetPrintsEditor
             }
         }
 
+        public void CloseAllClassEditorWindows()
+        {
+            // Close all open windows
+            foreach (ClassEditorWindow wnd in new List<ClassEditorWindow>(classEditorWindows.Values))
+            {
+                wnd.Close();
+            }
+        }
+
         #region UI Events
         private void OnClassButtonClicked(object sender, RoutedEventArgs e)
         {
             if(sender is Button button && button.DataContext is ClassVM cls)
             {
-                OpenOrCreateClassWindow(cls);
+                OpenOrCreateClassEditorWindow(cls);
             }
         }
 
@@ -99,28 +100,87 @@ namespace NetPrintsEditor
         {
             base.OnClosed(e);
 
-            // Close all open windows
-            foreach(ClassEditorWindow wnd in new List<ClassEditorWindow>(classEditorWindows.Values))
-            {
-                wnd.Close();
-            }
+            CloseAllClassEditorWindows();
         }
 
         private void NewClassButtonClicked(object sender, RoutedEventArgs e)
         {
-            Class cls = new Class()
+            ClassVM newClass = Project.CreateNewClass();
+        }
+
+        private void ExistingClassButtonClicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
             {
-                Name = NetPrintsUtil.GetUniqueName("MyClass", Classes.Select(c => c.Name).ToList()),
-                Namespace = NetPrintsUtil.GetUniqueName("MyNamespace", Classes.Select(c => c.Namespace).ToList())
+                Filter = "Class Files (*.xml)|*.xml"
             };
 
-            ClassVM clsVM = new ClassVM(cls);
-
-            Classes.Add(clsVM);
-
-            OpenOrCreateClassWindow(clsVM);
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    ClassVM existingClass = Project.AddExistingClass(openFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to load existing class at path {openFileDialog.FileName}:\n\n{ex}", 
+                        "Failed to load existing class", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
         #endregion
+
+        private void OnOpenProjectClicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "Project Files (*.xml)|*.xml"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    Project = ProjectVM.LoadFromPath(openFileDialog.FileName);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show($"Failed to load project at path {openFileDialog.FileName}:\n\n{ex}", 
+                        "Failed to load project", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void OnSaveProjectClicked(object sender, RoutedEventArgs e)
+        {
+            // Open the save dialog if no path is set yet
+            if (Project.Path == null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog()
+                {
+                    DefaultExt = "xml",
+                    AddExtension = true,
+                    Filter = "Project Files (*.xml)|*.xml",
+                    OverwritePrompt = true,
+                    FileName = $"{Project.Name}.xml"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    Project.Path = saveFileDialog.FileName;
+                }
+            }
+
+            if(Project.Path != null)
+            {
+                Project.Save();
+            }
+        }
+
+        private void OnCreateProjectClicked(object sender, RoutedEventArgs e)
+        {
+            Project = ProjectVM.CreateNew("MyProject", "MyNamespace");
+        }
     }
 }
 

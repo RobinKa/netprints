@@ -6,19 +6,33 @@
         xmlns:local="clr-namespace:NetPrintsEditor"
         mc:Ignorable="d"
         Background="#FF404040"
-        Height="300" Width="300"
-        Title="MainEditorWindow"
+        Height="300" Width="400"
+        Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
         x:Name="mainEditorWindow">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Content="New Class" Click="NewClassButtonClicked" FontSize="18" FontWeight="Bold" />
+        <Grid>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Create Project" Click="OnCreateProjectClicked" Padding="5" FontSize="14"/>
+                <Button Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="14"/>
+                <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="14"/>
+            </StackPanel>
+        </Grid>
 
-        <ItemsControl Grid.Row="2" x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Classes}">
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="20" />
+            <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
+        </Grid>
+        <ItemsControl Grid.Row="2" x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Button Content="{Binding Name}" Click="OnClassButtonClicked" />

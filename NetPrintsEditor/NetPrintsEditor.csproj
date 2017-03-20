@@ -86,11 +86,13 @@
     <Compile Include="MainEditorWindow.xaml.cs">
       <DependentUpon>MainEditorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Project.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="ViewModels\MethodVM.cs" />
     <Compile Include="ViewModels\NodePinVM.cs" />
     <Compile Include="ViewModels\NodeVM.cs" />
     <Compile Include="ViewModels\ObservableViewModelCollection.cs" />
+    <Compile Include="ViewModels\ProjectVM.cs" />
     <Compile Include="ViewModels\VariableVM.cs" />
     <Page Include="Controls\MethodEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
