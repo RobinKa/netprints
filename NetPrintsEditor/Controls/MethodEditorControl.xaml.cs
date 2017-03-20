@@ -124,30 +124,45 @@ namespace NetPrintsEditor.Controls
                 // Show all relevant methods for the type of the pin if its a data pin
 
                 NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-
-                if (pin.Pin is NodeDataPin dataPin)
+                
+                if (pin.Pin is NodeOutputDataPin odp)
                 {
-                    if (dataPin is NodeOutputDataPin odp)
-                    {
-                        Suggestions = new ObservableCollection<object>(
-                            ReflectionUtil.GetPublicMethodsForType(odp.PinType));
-                    }
-                    else if (dataPin is NodeInputDataPin idp)
-                    {
-                        Suggestions = new ObservableCollection<object>(
-                            ReflectionUtil.GetStaticFunctionsWithReturnType(idp.PinType));
-                    }
-
-                    // Open the context menu
-                    grid.ContextMenu.PlacementTarget = grid;
-                    grid.ContextMenu.IsOpen = true;
-
-                    e.Handled = true;
+                    Suggestions = new ObservableCollection<object>(
+                        ReflectionUtil.GetPublicMethodsForType(odp.PinType));
                 }
-                else if(pin.Pin is NodeOutputExecPin oxp)
+                else if (pin.Pin is NodeInputDataPin idp)
+                {
+                    Suggestions = new ObservableCollection<object>(
+                        ReflectionUtil.GetStaticFunctionsWithReturnType(idp.PinType));
+                }
+                else if (pin.Pin is NodeOutputExecPin oxp)
                 {
                     pin.ConnectedPin = null;
+
+                    Suggestions = new ObservableCollection<object>(
+                        ReflectionUtil.GetPublicMethodsForType(Method.Class.SuperType));
+                    Suggestions.Add(typeof(ForLoopNode));
+                    Suggestions.Add(typeof(IfElseNode));
+
                 }
+                else if(pin.Pin is NodeInputExecPin ixp)
+                {
+                    Suggestions = new ObservableCollection<object>(
+                        ReflectionUtil.GetStaticFunctions());
+                    Suggestions.Add(typeof(ForLoopNode));
+                    Suggestions.Add(typeof(IfElseNode));
+                }
+                else
+                {
+                    // Unknown type, no suggestions
+                    Suggestions = new ObservableCollection<object>();
+                }
+                
+                // Open the context menu
+                grid.ContextMenu.PlacementTarget = grid;
+                grid.ContextMenu.IsOpen = true;
+
+                e.Handled = true;
             }
             if (Method != null && e.Data.GetDataPresent(typeof(MethodVM)))
             {

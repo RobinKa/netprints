@@ -47,6 +47,19 @@ namespace NetPrintsEditor.ViewModels
             get => method.ArgumentTypes;
         }
 
+        public Class Class
+        {
+            get => method.Class;
+            set
+            {
+                if (method.Class != value)
+                {
+                    method.Class = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ObservableCollection<Type> ReturnTypes
         {
             get => method.ReturnTypes;
