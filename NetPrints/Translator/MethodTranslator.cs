@@ -36,7 +36,7 @@ namespace NetPrints.Translator
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
-                (translator, node) => translator.TranslateNextForLoopNode(node as ForLoopNode)} },
+                (translator, node) => translator.TranslateContinueForLoopNode(node as ForLoopNode)} },
 
             { typeof(VariableGetterNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateVariableGetterNode(node as VariableGetterNode) } },
             { typeof(LiteralNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateLiteralNode(node as LiteralNode) } },
@@ -542,7 +542,7 @@ namespace NetPrints.Translator
             builder.AppendLine("}");
         }
 
-        public void TranslateNextForLoopNode(ForLoopNode node)
+        public void TranslateContinueForLoopNode(ForLoopNode node)
         {
             // Translate all the pure nodes this node depends on in
             // the correct order
