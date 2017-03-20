@@ -48,6 +48,7 @@
     <Compile Include="Core\ObservableRangeCollection.cs" />
     <Compile Include="Core\Variable.cs" />
     <Compile Include="Graph\CallMethodNode.cs" />
+    <Compile Include="Graph\ConstructorNode.cs" />
     <Compile Include="Graph\CallStaticFunctionNode.cs" />
     <Compile Include="Graph\ExecNode.cs" />
     <Compile Include="Graph\ForLoopNode.cs" />

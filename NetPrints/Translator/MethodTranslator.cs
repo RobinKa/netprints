@@ -33,6 +33,7 @@ namespace NetPrints.Translator
             { typeof(EntryNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateMethodEntry(node as EntryNode) } },
             { typeof(IfElseNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateIfElseNode(node as IfElseNode) } },
             { typeof(CallStaticFunctionNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateCallStaticFunctionNode(node as CallStaticFunctionNode) } },
+            { typeof(ConstructorNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateConstructorNode(node as ConstructorNode) } },
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
@@ -454,6 +455,34 @@ namespace NetPrints.Translator
                     builder.AppendLine($"{returnNames.ElementAt(i)} = {temporaryReturnName}.Item{i + 1};");
                 }
             }
+
+            // Go to the next state
+            WriteGotoOutputPin(node.OutputExecPins[0]);
+        }
+
+        public void TranslateConstructorNode(ConstructorNode node)
+        {
+            // Translate all the pure nodes this node depends on in
+            // the correct order
+            TranslateDependentPureNodes(node);
+
+            // Write assignment of return values
+            string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
+            builder.Append($"{returnName} = new ");
+            
+            // Write class name, default to own class name
+            if (node.ClassType != null)
+            {
+                builder.Append($"{node.ClassType.FullName}");
+            }
+            else
+            {
+                builder.Append($"{method.Class.Name}");
+            }
+            
+            // Write constructor arguments
+            var argumentNames = GetPinIncomingValues(node.ArgumentPins);
+            builder.AppendLine($"{node.ClassType}({string.Join(", ", argumentNames)});");
 
             // Go to the next state
             WriteGotoOutputPin(node.OutputExecPins[0]);
