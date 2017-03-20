@@ -1,6 +1,7 @@
 ﻿using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Converters;
+using NetPrintsEditor.Dialogs;
 using System;
 using System.Collections;
 using System.Globalization;
@@ -122,7 +123,8 @@ namespace NetPrintsEditor.Controls
                             methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
                         ));
                     }
-                } else if(item.DataContext is Type t)
+                }
+                else if(item.DataContext is Type t)
                 {
                     if(t == typeof(ForLoopNode))
                     {
@@ -133,7 +135,8 @@ namespace NetPrintsEditor.Controls
                             0,
                             0
                         ));
-                    } else if(t == typeof(IfElseNode))
+                    }
+                    else if(t == typeof(IfElseNode))
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -142,6 +145,37 @@ namespace NetPrintsEditor.Controls
                             0,
                             0
                         ));
+                    }
+                    else if(t == typeof(ConstructorNode))
+                    {
+                        SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
+                        if(selectTypeDialog.ShowDialog() == true)
+                        {
+                            Type selectedType = selectTypeDialog.SelectedType;
+
+                            // Get all public constructors for the type
+                            ConstructorInfo[] constructors = selectedType.GetConstructors();
+
+                            if (constructors.Length > 0)
+                            {
+                                // Just choose the first constructor we find
+                                ConstructorInfo constructor = constructors[0];
+                                
+                                // ConstructorNode(Method method, Type classType, IEnumerable<Type> argumentTypes)
+
+                                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                                (
+                                    typeof(ConstructorNode),
+                                    null,
+                                    0,
+                                    0,
+
+                                    // Parameters
+                                    selectedType,
+                                    constructor.GetParameters().Select(p => p.ParameterType).ToArray()
+                                ));
+                            }
+                        }
                     }
                 }
             }

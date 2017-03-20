@@ -21,7 +21,10 @@ namespace NetPrintsEditor.ViewModels
             new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x3A, 0x50));
 
         private static readonly SolidColorBrush CallStaticFunctionBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x50, 0x3A));
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x50, 0x20, 0x3A));
+
+        private static readonly SolidColorBrush ConstructorNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x3A, 0x50, 0x20));
 
         public SolidColorBrush Brush
         {
@@ -42,6 +45,10 @@ namespace NetPrintsEditor.ViewModels
                 else if(Node is CallStaticFunctionNode)
                 {
                     return CallStaticFunctionBrush;
+                }
+                else if(Node is ConstructorNode)
+                {
+                    return ConstructorNodeBrush;
                 }
 
                 return DefaultNodeBrush;

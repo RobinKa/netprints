@@ -131,7 +131,8 @@ namespace NetPrintsEditor.Controls
                         Method.Class.SuperType))
                     {
                         typeof(ForLoopNode),
-                        typeof(IfElseNode)
+                        typeof(IfElseNode),
+                        typeof(ConstructorNode),
                     };
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
@@ -140,7 +141,8 @@ namespace NetPrintsEditor.Controls
                         ReflectionUtil.GetStaticFunctions(Method?.Class?.Project?.LoadedAssemblies))
                     {
                         typeof(ForLoopNode),
-                        typeof(IfElseNode)
+                        typeof(IfElseNode),
+                        typeof(ConstructorNode),
                     };
                 }
                 else
@@ -203,7 +205,8 @@ namespace NetPrintsEditor.Controls
                     Method.Class?.Project?.LoadedAssemblies))
                 {
                     typeof(ForLoopNode),
-                    typeof(IfElseNode)
+                    typeof(IfElseNode),
+                    typeof(ConstructorNode),
                 };
             }
             else

@@ -40,7 +40,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -87,6 +86,9 @@
     <Compile Include="Converters\SuggestionListConverter.cs" />
     <Compile Include="Converters\VariableModifierConverter.cs" />
     <Compile Include="Converters\MethodModifierConverter.cs" />
+    <Compile Include="Dialogs\SelectTypeDialog.xaml.cs">
+      <DependentUpon>SelectTypeDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainEditorWindow.xaml.cs">
       <DependentUpon>MainEditorWindow.xaml</DependentUpon>
     </Compile>
@@ -146,6 +148,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\VariableEditorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectTypeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

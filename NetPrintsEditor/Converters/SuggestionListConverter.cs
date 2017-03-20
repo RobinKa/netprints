@@ -20,11 +20,15 @@ namespace NetPrintsEditor.Converters
             {
                 if (t == typeof(ForLoopNode))
                 {
-                    return "Control Flow - For Loop";
+                    return "NetPrints - For Loop";
                 }
                 else if (t == typeof(IfElseNode))
                 {
-                    return "Control Flow - If Else";
+                    return "NetPrints - If Else";
+                }
+                else if(t == typeof(ConstructorNode))
+                {
+                    return "NetPrints - Construct New Object";
                 }
             }
 
