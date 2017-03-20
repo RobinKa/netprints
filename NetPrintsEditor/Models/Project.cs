@@ -15,7 +15,9 @@ namespace NetPrintsEditor.Models
     {
         private static readonly string[] DefaultAssemblies = new string[]
         {
-
+            "mscorlib.dll",
+            "System.dll",
+            "System.Core.dll",
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(
