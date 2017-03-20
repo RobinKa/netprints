@@ -31,7 +31,7 @@ namespace NetPrints.Translator
 
             return name;
         }
-
+        
         public static string ObjectToLiteral(object obj, Type type)
         {
             // Put quotes around string literals
@@ -53,6 +53,14 @@ namespace NetPrints.Translator
             else if (type == typeof(char))
             {
                 return $"'{obj}'";
+            }
+            else if(type == typeof(long))
+            {
+                return $"{obj}l";
+            }
+            else if(type == typeof(ulong))
+            {
+                return $"{obj}ul";
             }
             else
             {
