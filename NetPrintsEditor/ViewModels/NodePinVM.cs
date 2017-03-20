@@ -152,15 +152,15 @@ namespace NetPrintsEditor.ViewModels
             get => new Point(PositionX, PositionY);
         }
 
-        public static readonly SolidColorBrush ExecPinCableBrush =
+        private static readonly SolidColorBrush ExecPinBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0));
 
-        public static readonly SolidColorBrush DataPinCableBrush =
+        private static readonly SolidColorBrush DataPinBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF));
 
         public Brush Brush
         {
-            get => (Pin is NodeDataPin) ? DataPinCableBrush : ExecPinCableBrush;
+            get => (Pin is NodeDataPin) ? DataPinBrush : ExecPinBrush;
         }
 
         public Point AbsolutePosition

@@ -2,11 +2,52 @@
 using NetPrints.Graph;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace NetPrintsEditor.ViewModels
 {
     public class NodeVM : INotifyPropertyChanged
     {
+        private static readonly SolidColorBrush DefaultNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x30, 0x30, 0x30));
+
+        private static readonly SolidColorBrush EntryNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x50));
+
+        private static readonly SolidColorBrush ReturnNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x50, 0x20, 0x20));
+
+        private static readonly SolidColorBrush CallMethodBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x3A, 0x50));
+
+        private static readonly SolidColorBrush CallStaticFunctionBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x50, 0x3A));
+
+        public SolidColorBrush Brush
+        {
+            get
+            {
+                if(Node is EntryNode)
+                {
+                    return EntryNodeBrush;
+                }
+                else if(Node is ReturnNode)
+                {
+                    return ReturnNodeBrush;
+                }
+                else if(Node is CallMethodNode)
+                {
+                    return CallMethodBrush;
+                }
+                else if(Node is CallStaticFunctionNode)
+                {
+                    return CallStaticFunctionBrush;
+                }
+
+                return DefaultNodeBrush;
+            }
+        }
+
         // Wrapped attributes of Node
         public string Name
         {
@@ -90,6 +131,7 @@ namespace NetPrintsEditor.ViewModels
                 {
                     node = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(Brush));
                 }
             }
         }

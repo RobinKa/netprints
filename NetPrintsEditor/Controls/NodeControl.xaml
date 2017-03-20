@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="120" d:DesignWidth="220" x:Name="nodeWindow">
-    
+
     <UserControl.RenderTransform>
         <TranslateTransform 
             X="{Binding ElementName=nodeWindow, Path=Node.PositionX}"
@@ -25,19 +25,21 @@
             </Rectangle.Effect>
         </Rectangle>
 
-        <Grid Margin="3, 10, 3, 20">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition/>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label x:Name="nodeLabel" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 0" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
+            <Rectangle Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}" />
+
+            <Label x:Name="nodeLabel" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 10" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                 <Label.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
                 </Label.Effect>
             </Label>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
