@@ -15,7 +15,7 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="30" />
             <RowDefinition Height="40" />
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <Grid>
@@ -48,21 +48,23 @@
             <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="20" />
             <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
         </Grid>
-        
-        <ItemsControl Grid.Row="3" x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="30" />
-                        </Grid.ColumnDefinitions>
-                        <Button Content="{Binding Name}" Click="OnClassButtonClicked" />
-                        <Button Grid.Column="1" Content="-" Click="OnRemoveClassButtonClicked" />
-                    </Grid>
+
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <Button Content="{Binding FullName}" Click="OnClassButtonClicked" />
+                            <Button Grid.Column="1" Content="-" Click="OnRemoveClassButtonClicked" />
+                        </Grid>
                     
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>
