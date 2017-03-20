@@ -62,6 +62,29 @@ namespace NetPrints.Graph
             toPin.IncomingPin = fromPin;
         }
 
+        public static void DisconnectNodePins(Node node)
+        {
+            foreach (NodeInputDataPin pin in node.InputDataPins)
+            {
+                DisconnectInputDataPin(pin);
+            }
+
+            foreach (NodeOutputDataPin pin in node.OutputDataPins)
+            {
+                DisconnectOutputDataPin(pin);
+            }
+
+            foreach (NodeInputExecPin pin in node.InputExecPins)
+            {
+                DisconnectInputExecPin(pin);
+            }
+
+            foreach (NodeOutputExecPin pin in node.OutputExecPins)
+            {
+                DisconnectOutputExecPin(pin);
+            }
+        }
+
         public static void DisconnectInputDataPin(NodeInputDataPin pin)
         {
             pin.IncomingPin?.OutgoingPins.Remove(pin);
