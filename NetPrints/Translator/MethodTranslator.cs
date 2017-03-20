@@ -239,6 +239,7 @@ namespace NetPrints.Translator
             // Reset state
             variableNames.Clear();
             nodeStateIds.Clear();
+            pinsJumpedTo.Clear();
             nextStateId = 0;
             builder.Clear();
 
