@@ -147,6 +147,8 @@ namespace NetPrintsEditor.ViewModels
                     node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
                 }
             }
+
+            OnPropertyChanged(nameof(AllPins));
         }
 
         private void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
