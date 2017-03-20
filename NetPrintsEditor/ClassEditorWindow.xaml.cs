@@ -343,6 +343,11 @@ namespace NetPrintsEditor
                     viewerTabControl.SelectedIndex = 0;
                 }
 
+                if (methodEditor.Method == m)
+                {
+                    methodEditor.Method = null;
+                }
+
                 Class.Class.Methods.Remove(m.Method);
             }
         }
