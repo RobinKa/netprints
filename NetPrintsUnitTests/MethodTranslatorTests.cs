@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Graph;
 using NetPrints.Core;
 using NetPrints.Translator;
-using NetPrints.Extensions;
 
 namespace NetPrints.Tests
 {
@@ -39,8 +38,10 @@ namespace NetPrints.Tests
             };
 
             // Create method
-            stringLengthMethod = new Method("StringLength");
-            stringLengthMethod.Modifiers = MethodModifiers.Public;
+            stringLengthMethod = new Method("StringLength")
+            {
+                Modifiers = MethodModifiers.Public
+            };
             stringLengthMethod.ArgumentTypes.AddRange(argumentTypes);
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
@@ -69,8 +70,10 @@ namespace NetPrints.Tests
             };
 
             // Create method
-            ifElseMethod = new Method("IfElse");
-            ifElseMethod.Modifiers = MethodModifiers.Public;
+            ifElseMethod = new Method("IfElse")
+            {
+                Modifiers = MethodModifiers.Public
+            };
             ifElseMethod.ArgumentTypes.AddRange(argumentTypes);
             ifElseMethod.ReturnTypes.AddRange(returnTypes);
 
@@ -100,8 +103,10 @@ namespace NetPrints.Tests
             };
 
             // Create method
-            forLoopMethod = new Method("ForLoop");
-            forLoopMethod.Modifiers = MethodModifiers.Public;
+            forLoopMethod = new Method("ForLoop")
+            {
+                Modifiers = MethodModifiers.Public
+            };
             forLoopMethod.ArgumentTypes.AddRange(argumentTypes);
             forLoopMethod.ReturnTypes.AddRange(returnTypes);
 

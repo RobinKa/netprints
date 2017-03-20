@@ -1,0 +1,36 @@
+﻿<Window x:Class="NetPrintsEditor.AssemblyListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Background="#FF404040"
+        Height="400" Width="600"
+        Title="Assemblies"
+        x:Name="assemblyListWindow" WindowStyle="ToolWindow">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button Content="Add" Click="OnAddAssemblyFromPathButtonClicked" Padding="5" FontSize="14"/>
+        
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="assemblyList" ItemsSource="{Binding ElementName=assemblyListWindow, Path=Project.Assemblies}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding}" Background="#FF333333" BorderBrush="#FF444444" />
+                            <Button Grid.Column="1" Content="-" Click="OnRemoveAssemblyButtonClicked" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

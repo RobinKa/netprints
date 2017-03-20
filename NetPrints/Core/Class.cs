@@ -21,10 +21,10 @@ namespace NetPrints.Core
     public class Class
     {
         [DataMember]
-        public ObservableCollection<Variable> Attributes { get; set; } = new ObservableCollection<Variable>();
+        public ObservableRangeCollection<Variable> Attributes { get; set; } = new ObservableRangeCollection<Variable>();
 
         [DataMember]
-        public ObservableCollection<Method> Methods { get; set; } = new ObservableCollection<Method>();
+        public ObservableRangeCollection<Method> Methods { get; set; } = new ObservableRangeCollection<Method>();
 
         [DataMember]
         public Type SuperType { get; set; } = typeof(object);

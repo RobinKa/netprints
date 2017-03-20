@@ -1,12 +1,6 @@
-﻿using NetPrints.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using NetPrints.Core;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Models
 {
@@ -15,9 +9,9 @@ namespace NetPrintsEditor.Models
     {
         private static readonly string[] DefaultAssemblies = new string[]
         {
-            "mscorlib.dll",
-            "System.dll",
-            "System.Core.dll",
+            "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+            "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+            "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(
@@ -44,18 +38,18 @@ namespace NetPrintsEditor.Models
         }
 
         [DataMember]
-        public ObservableCollection<string> ClassPaths
+        public ObservableRangeCollection<string> ClassPaths
         {
             get;
             set;
-        } = new ObservableCollection<string>();
+        } = new ObservableRangeCollection<string>();
 
         [DataMember]
-        public ObservableCollection<string> Assemblies
+        public ObservableRangeCollection<string> Assemblies
         {
             get;
             set;
-        } = new ObservableCollection<string>();
+        } = new ObservableRangeCollection<string>();
 
         private Project()
         {

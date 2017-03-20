@@ -5,33 +5,65 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Collections.ObjectModel;
+using NetPrints.Core;
 
 namespace NetPrintsEditor
 {
     public static class ReflectionUtil
     {
-        public static ObservableCollection<Type> NonStaticTypes = new ObservableCollection<Type>(GetNonStaticTypes());
+        public static ObservableRangeCollection<Type> NonStaticTypes = new ObservableRangeCollection<Type>();
 
-        public static IEnumerable<MethodInfo> GetStaticFunctions()
+        public static void UpdateNonStaticTypes(IEnumerable<Assembly> assemblies = null)
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
-                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
-                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-            ));
+            NonStaticTypes.Clear();
+            NonStaticTypes.AddRange(GetNonStaticTypes(assemblies));
         }
 
-        public static IEnumerable<MethodInfo> GetStaticFunctionsWithReturnType(Type returnType)
+        public static IEnumerable<Assembly> LoadAssemblies(IEnumerable<string> assemblyNames)
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
-                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
-                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .Where(m => m.ReturnType == returnType)
-            ));
+            return assemblyNames.Select(assemblyName => Assembly.Load(assemblyName) 
+                ?? throw new ArgumentException($"Could not load {assemblyName}"));
         }
 
-        public static IEnumerable<Type> GetNonStaticTypes()
+        public static string GetAssemblyFullNameFromPath(string path)
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
+            Assembly assembly = Assembly.LoadFrom(path);
+            return assembly.FullName;
+        }
+
+        public static IEnumerable<MethodInfo> GetStaticFunctions(IEnumerable<Assembly> assemblies = null)
+        {
+            if(assemblies == null)
+            {
+                assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            }
+
+            return assemblies.SelectMany(a =>
+                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
+                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)));
+        }
+
+        public static IEnumerable<MethodInfo> GetStaticFunctionsWithReturnType(Type returnType, IEnumerable<Assembly> assemblies = null)
+        {
+            if (assemblies == null)
+            {
+                assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            }
+
+            return assemblies.SelectMany(a =>
+                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
+                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                        .Where(m => m.ReturnType == returnType)));
+        }
+
+        public static IEnumerable<Type> GetNonStaticTypes(IEnumerable<Assembly> assemblies = null)
+        {
+            if (assemblies == null)
+            {
+                assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            }
+
+            return assemblies.SelectMany(a =>
                 a.GetTypes().Where(t => t.IsPublic && !(t.IsAbstract && t.IsSealed)));
         }
 

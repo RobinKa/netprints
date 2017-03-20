@@ -159,9 +159,9 @@ namespace NetPrintsEditor
                 {
                     Project = ProjectVM.LoadFromPath(openFileDialog.FileName);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to load project at path {openFileDialog.FileName}:\n\n{ex}", 
+                    MessageBox.Show($"Failed to load project at path {openFileDialog.FileName}:\n\n{ex}",
                         "Failed to load project", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -221,6 +221,11 @@ namespace NetPrintsEditor
                 }
             }
         }
+
+        private void OnAssembliesButtonClicked(object sender, RoutedEventArgs e)
+        {
+            AssemblyListWindow assemblyListWindow = new AssemblyListWindow(Project);
+            assemblyListWindow.ShowDialog();
+        }
     }
 }
-

@@ -1,26 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using NetPrints.Core;
 using NetPrints.Graph;
-using NetPrints.Translator;
-using NetPrintsEditor.Adorners;
 using NetPrintsEditor.ViewModels;
 using NetPrintsEditor.Commands;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using NetPrints.Extensions;
 
 namespace NetPrintsEditor.Controls
 {
@@ -46,11 +31,11 @@ namespace NetPrintsEditor.Controls
             nameof(Method), typeof(MethodVM), typeof(MethodEditorControl));
         
         public static DependencyProperty SuggestionsProperty = DependencyProperty.Register(
-            nameof(Suggestions), typeof(ObservableCollection<object>), typeof(MethodEditorControl));
+            nameof(Suggestions), typeof(ObservableRangeCollection<object>), typeof(MethodEditorControl));
 
-        public ObservableCollection<object> Suggestions
+        public ObservableRangeCollection<object> Suggestions
         {
-            get => (ObservableCollection<object>)GetValue(SuggestionsProperty);
+            get => (ObservableRangeCollection<object>)GetValue(SuggestionsProperty);
             set => SetValue(SuggestionsProperty, value);
         }
 
@@ -127,35 +112,38 @@ namespace NetPrintsEditor.Controls
                 
                 if (pin.Pin is NodeOutputDataPin odp)
                 {
-                    Suggestions = new ObservableCollection<object>(
+                    Suggestions = new ObservableRangeCollection<object>(
                         ReflectionUtil.GetPublicMethodsForType(odp.PinType));
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
-                    Suggestions = new ObservableCollection<object>(
-                        ReflectionUtil.GetStaticFunctionsWithReturnType(idp.PinType));
+                    Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetStaticFunctionsWithReturnType(
+                        idp.PinType, Method?.Class?.Project?.LoadedAssemblies));
                 }
                 else if (pin.Pin is NodeOutputExecPin oxp)
                 {
                     pin.ConnectedPin = null;
 
-                    Suggestions = new ObservableCollection<object>(
-                        ReflectionUtil.GetPublicMethodsForType(Method.Class.SuperType));
-                    Suggestions.Add(typeof(ForLoopNode));
-                    Suggestions.Add(typeof(IfElseNode));
-
+                    Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetPublicMethodsForType(
+                        Method.Class.SuperType))
+                    {
+                        typeof(ForLoopNode),
+                        typeof(IfElseNode)
+                    };
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
                 {
-                    Suggestions = new ObservableCollection<object>(
-                        ReflectionUtil.GetStaticFunctions());
-                    Suggestions.Add(typeof(ForLoopNode));
-                    Suggestions.Add(typeof(IfElseNode));
+                    Suggestions = new ObservableRangeCollection<object>(
+                        ReflectionUtil.GetStaticFunctions(Method?.Class?.Project?.LoadedAssemblies))
+                    {
+                        typeof(ForLoopNode),
+                        typeof(IfElseNode)
+                    };
                 }
                 else
                 {
                     // Unknown type, no suggestions
-                    Suggestions = new ObservableCollection<object>();
+                    Suggestions = new ObservableRangeCollection<object>();
                 }
                 
                 // Open the context menu
@@ -202,14 +190,17 @@ namespace NetPrintsEditor.Controls
 
         private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            Suggestions = new ObservableCollection<object>(ReflectionUtil.GetStaticFunctions());
-            Suggestions.Add(typeof(ForLoopNode));
-            Suggestions.Add(typeof(IfElseNode));
+            Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetStaticFunctions(
+                Method?.Class?.Project?.LoadedAssemblies))
+            {
+                typeof(ForLoopNode),
+                typeof(IfElseNode)
+            };
         }
 
         private void OnMouseWheelScroll(object sender, MouseWheelEventArgs e)
         {
-            if(e.Delta < 0)
+            if (e.Delta < 0)
             {
                 nodeListScale /= NodeListScaleFactor;
             }

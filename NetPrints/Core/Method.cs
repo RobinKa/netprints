@@ -45,25 +45,25 @@ namespace NetPrints.Core
         }
 
         [DataMember]
-        public ObservableCollection<Node> Nodes
+        public ObservableRangeCollection<Node> Nodes
         {
             get;
             private set;
-        } = new ObservableCollection<Node>();
+        } = new ObservableRangeCollection<Node>();
 
         [DataMember]
-        public ObservableCollection<Type> ArgumentTypes
+        public ObservableRangeCollection<Type> ArgumentTypes
         {
             get;
             private set;
-        } = new ObservableCollection<Type>();
+        } = new ObservableRangeCollection<Type>();
 
         [DataMember]
-        public ObservableCollection<Type> ReturnTypes
+        public ObservableRangeCollection<Type> ReturnTypes
         {
             get;
             private set;
-        } = new ObservableCollection<Type>();
+        } = new ObservableRangeCollection<Type>();
 
         [DataMember]
         public MethodModifiers Modifiers

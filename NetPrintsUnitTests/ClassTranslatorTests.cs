@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Graph;
 using NetPrints.Core;
-using NetPrints.Extensions;
 using NetPrints.Translator;
 
 namespace NetPrints.Tests
@@ -29,9 +28,11 @@ namespace NetPrints.Tests
             };
 
             // Create method
-            stringLengthMethod = new Method("StringLength");
-            stringLengthMethod.Class = cls;
-            stringLengthMethod.Modifiers = MethodModifiers.Public;
+            stringLengthMethod = new Method("StringLength")
+            {
+                Class = cls,
+                Modifiers = MethodModifiers.Public
+            };
             stringLengthMethod.ArgumentTypes.AddRange(argumentTypes);
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
@@ -57,9 +58,11 @@ namespace NetPrints.Tests
             {
             };
 
-            mainMethod = new Method("Main");
-            mainMethod.Class = cls;
-            mainMethod.Modifiers = MethodModifiers.Static;
+            mainMethod = new Method("Main")
+            {
+                Class = cls,
+                Modifiers = MethodModifiers.Static
+            };
             mainMethod.ArgumentTypes.AddRange(argumentTypes);
             mainMethod.ReturnTypes.AddRange(returnTypes);
 
@@ -88,10 +91,12 @@ namespace NetPrints.Tests
 
             classTranslator = new ClassTranslator();
 
-            cls = new Class();
-            cls.Name = "TestClass";
-            cls.Namespace = "TestNamespace";
-            cls.SuperType = typeof(object);
+            cls = new Class()
+            {
+                Name = "TestClass",
+                Namespace = "TestNamespace",
+                SuperType = typeof(object)
+            };
             cls.Attributes.Add(new Variable("testVariable", typeof(string)));
             cls.Methods.Add(stringLengthMethod);
             cls.Methods.Add(mainMethod);

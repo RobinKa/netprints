@@ -59,6 +59,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AssemblyListWindow.xaml.cs">
+      <DependentUpon>AssemblyListWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
     <Compile Include="CompilerUtil.cs" />
@@ -94,6 +97,10 @@
     <Compile Include="ViewModels\ObservableViewModelCollection.cs" />
     <Compile Include="ViewModels\ProjectVM.cs" />
     <Compile Include="ViewModels\VariableVM.cs" />
+    <Page Include="AssemblyListWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\MethodEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

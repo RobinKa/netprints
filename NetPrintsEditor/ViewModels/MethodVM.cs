@@ -42,25 +42,27 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<NodeVM, Node> nodes;
 
-        public ObservableCollection<Type> ArgumentTypes
+        public ObservableRangeCollection<Type> ArgumentTypes
         {
             get => method.ArgumentTypes;
         }
 
-        public Class Class
+        public ClassVM Class
         {
-            get => method.Class;
+            get => classVM;
             set
             {
-                if (method.Class != value)
+                if (classVM != value)
                 {
-                    method.Class = value;
+                    classVM = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public ObservableCollection<Type> ReturnTypes
+        private ClassVM classVM;
+
+        public ObservableRangeCollection<Type> ReturnTypes
         {
             get => method.ReturnTypes;
         }

@@ -21,16 +21,16 @@ namespace NetPrints.Graph
     public abstract class Node
     {
         [DataMember]
-        public ObservableCollection<NodeInputDataPin> InputDataPins { get; private set; } = new ObservableCollection<NodeInputDataPin>();
+        public ObservableRangeCollection<NodeInputDataPin> InputDataPins { get; private set; } = new ObservableRangeCollection<NodeInputDataPin>();
 
         [DataMember]
-        public ObservableCollection<NodeOutputDataPin> OutputDataPins { get; private set; } = new ObservableCollection<NodeOutputDataPin>();
+        public ObservableRangeCollection<NodeOutputDataPin> OutputDataPins { get; private set; } = new ObservableRangeCollection<NodeOutputDataPin>();
 
         [DataMember]
-        public ObservableCollection<NodeInputExecPin> InputExecPins { get; private set; } = new ObservableCollection<NodeInputExecPin>();
+        public ObservableRangeCollection<NodeInputExecPin> InputExecPins { get; private set; } = new ObservableRangeCollection<NodeInputExecPin>();
 
         [DataMember]
-        public ObservableCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableCollection<NodeOutputExecPin>();
+        public ObservableRangeCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableRangeCollection<NodeOutputExecPin>();
 
         public delegate void NodePositionChangedDelegate(Node node, double positionX, double positionY);
         public event NodePositionChangedDelegate OnPositionChanged;

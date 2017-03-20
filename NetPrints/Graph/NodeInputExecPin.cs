@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NetPrints.Core;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
@@ -11,7 +7,8 @@ namespace NetPrints.Graph
     public class NodeInputExecPin : NodeExecPin
     {
         [DataMember]
-        public List<NodeOutputExecPin> IncomingPins { get; private set; } = new List<NodeOutputExecPin>();
+        public ObservableRangeCollection<NodeOutputExecPin> IncomingPins { get; private set; } = 
+            new ObservableRangeCollection<NodeOutputExecPin>();
 
         public NodeInputExecPin(Node node, string name)
             : base(node, name)

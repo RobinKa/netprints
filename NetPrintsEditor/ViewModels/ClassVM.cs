@@ -15,6 +15,21 @@ namespace NetPrintsEditor.ViewModels
 {
     public class ClassVM : INotifyPropertyChanged
     {
+        public ProjectVM Project
+        {
+            get => project;
+            set
+            {
+                if(project != value)
+                {
+                    project = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ProjectVM project;
+
         // Wrapped attributes of Class
         public ObservableViewModelCollection<VariableVM, Variable> Attributes
         {
@@ -128,7 +143,7 @@ namespace NetPrintsEditor.ViewModels
             if(propertyName == nameof(Class))
             {
                 Methods = new ObservableViewModelCollection<MethodVM, Method>(
-                    cls.Methods, m => new MethodVM(m));
+                    cls.Methods, m => new MethodVM(m) { Class = this } );
 
                 Attributes = new ObservableViewModelCollection<VariableVM, Variable>(
                     cls.Attributes, a => new VariableVM(a));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetPrints.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -7,7 +8,7 @@ using System.Linq;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class ObservableViewModelCollection<TViewModel, TModel> : ObservableCollection<TViewModel>
+    public class ObservableViewModelCollection<TViewModel, TModel> : ObservableRangeCollection<TViewModel>
     {
         private readonly INotifyCollectionChanged source;
         private readonly Func<TModel, TViewModel> viewModelFactory;
@@ -19,7 +20,7 @@ namespace NetPrintsEditor.ViewModels
             Contract.Requires(viewModelFactory != null);
         }
 
-        public ObservableViewModelCollection(ObservableCollection<TModel> source, Func<TModel, TViewModel> viewModelFactory)
+        public ObservableViewModelCollection(ObservableRangeCollection<TModel> source, Func<TModel, TViewModel> viewModelFactory)
             : this((INotifyCollectionChanged)source, viewModelFactory)
         {
             Contract.Requires(source != null);

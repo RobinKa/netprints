@@ -14,6 +14,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="40" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -29,8 +30,12 @@
             <Button Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="14"/>
             <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="14"/>
         </Grid>
-
+        
         <Grid Grid.Row="1">
+            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" Padding="5" FontSize="14"/>
+        </Grid>
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -40,7 +45,7 @@
             <Button Grid.Column="1" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontSize="20" />
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -49,7 +54,7 @@
             <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
         </Grid>
 
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

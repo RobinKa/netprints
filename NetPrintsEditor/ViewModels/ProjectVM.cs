@@ -1,23 +1,19 @@
 ﻿using NetPrints.Core;
-using NetPrints.Extensions;
 using NetPrints.Serialization;
 using NetPrints.Translator;
 using NetPrintsEditor.Models;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
 
 namespace NetPrintsEditor.ViewModels
@@ -29,7 +25,7 @@ namespace NetPrintsEditor.ViewModels
             get => project != null;
         }
 
-        public ObservableCollection<ClassVM> Classes
+        public ObservableRangeCollection<ClassVM> Classes
         {
             get => classes;
             set
@@ -42,9 +38,9 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private ObservableCollection<ClassVM> classes;
+        private ObservableRangeCollection<ClassVM> classes;
 
-        public ObservableCollection<string> ClassPaths
+        public ObservableRangeCollection<string> ClassPaths
         {
             get => project.ClassPaths;
             private set
@@ -55,6 +51,58 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public ObservableRangeCollection<string> Assemblies
+        {
+            get => project.Assemblies;
+            set
+            {
+                if(project.Assemblies != value)
+                {
+                    if(project.Assemblies != null)
+                    {
+                        project.Assemblies.CollectionChanged -= OnAssembliesChanged;
+                    }
+
+                    project.Assemblies = value;
+
+                    LoadedAssemblies.Clear();
+
+                    if (project.Assemblies != null)
+                    {
+                        value.CollectionChanged += OnAssembliesChanged;
+                        LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(project.Assemblies));
+                    }
+
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private void OnAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch(e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<string>()));
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<string>()));
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<string>()));
+                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<string>()));
+                    break;
+
+                case NotifyCollectionChangedAction.Reset:
+                    LoadedAssemblies.Clear();
+                    break;
+            }
+
+            ReflectionUtil.UpdateNonStaticTypes(LoadedAssemblies);
         }
 
         public string Path
@@ -103,10 +151,23 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (project != value)
                 {
+                    if(project != null)
+                    {
+                        Assemblies.CollectionChanged -= OnAssembliesChanged;
+                    }
+
                     project = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsProjectOpen));
                     OnPropertyChanged(nameof(CanCompile));
+
+                    LoadedAssemblies?.Clear();
+
+                    if(project != null)
+                    {
+                        Assemblies.CollectionChanged += OnAssembliesChanged;
+                        LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(project.Assemblies));
+                    }
                 }
             }
         }
@@ -139,10 +200,23 @@ namespace NetPrintsEditor.ViewModels
         private bool isCompiling = false;
 
         private Project project;
+
+        public ObservableRangeCollection<Assembly> LoadedAssemblies
+        {
+            get;
+            private set;
+        } = new ObservableRangeCollection<Assembly>();
         
         public ProjectVM(Project project)
         {
+            LoadedAssemblies.CollectionChanged += OnLoadedAssembliesChanged;
+
             Project = project;
+        }
+
+        private void OnLoadedAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            ReflectionUtil.UpdateNonStaticTypes(LoadedAssemblies);
         }
 
         public void CompileProject(bool generateExecutable)
@@ -187,7 +261,7 @@ namespace NetPrintsEditor.ViewModels
                 string outputPath = $"Compiled/{Project.Name}.{ext}";
 
                 CompilerResults results = CompilerUtil.CompileSources(
-                    outputPath, Project.Assemblies, sources, generateExecutable);
+                    outputPath, LoadedAssemblies, sources, generateExecutable);
 
                 // Write errors to file
                 File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
@@ -218,7 +292,7 @@ namespace NetPrintsEditor.ViewModels
         {
             ProjectVM p = new ProjectVM(Project.CreateNew(name, defaultNamespace, addDefaultAssemblies))
             {
-                Classes = new ObservableCollection<ClassVM>()
+                Classes = new ObservableRangeCollection<ClassVM>()
             };
 
             return p;
@@ -233,10 +307,10 @@ namespace NetPrintsEditor.ViewModels
             Parallel.ForEach(p.ClassPaths, classPath =>
             {
                 Class cls = SerializationHelper.LoadClass(classPath);
-                classes.Add(new ClassVM(cls));
+                classes.Add(new ClassVM(cls) { Project = p });
             });
 
-            p.Classes = new ObservableCollection<ClassVM>(classes.OrderBy(c => c.Name));
+            p.Classes = new ObservableRangeCollection<ClassVM>(classes.OrderBy(c => c.Name));
 
             return p;
         }
@@ -250,7 +324,7 @@ namespace NetPrintsEditor.ViewModels
             }
 
             // Set class paths from class storage paths
-            ClassPaths = new ObservableCollection<string>(Classes.Select(c => c.StoragePath));
+            ClassPaths = new ObservableRangeCollection<string>(Classes.Select(c => c.StoragePath));
 
             // Save project file
             Project.Save();
@@ -267,7 +341,7 @@ namespace NetPrintsEditor.ViewModels
                 Namespace = DefaultNamespace
             };
 
-            ClassVM clsVM = new ClassVM(cls);
+            ClassVM clsVM = new ClassVM(cls) { Project = this };
 
             Classes.Add(clsVM);
 
@@ -278,7 +352,7 @@ namespace NetPrintsEditor.ViewModels
         {
             if(!Classes.Any(c => System.IO.Path.GetFullPath(c.StoragePath) == System.IO.Path.GetFullPath(path)))
             {
-                ClassVM cls = new ClassVM(SerializationHelper.LoadClass(path));
+                ClassVM cls = new ClassVM(SerializationHelper.LoadClass(path)) { Project = this };
                 Classes.Add(cls);
                 return cls;
             }
