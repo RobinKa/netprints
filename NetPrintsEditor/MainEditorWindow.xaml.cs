@@ -18,6 +18,7 @@ using NetPrints.Serialization;
 using System.Collections.ObjectModel;
 using NetPrintsEditor.ViewModels;
 using Microsoft.Win32;
+using System.ComponentModel;
 
 namespace NetPrintsEditor
 {
@@ -93,6 +94,20 @@ namespace NetPrintsEditor
             if(sender is Button button && button.DataContext is ClassVM cls)
             {
                 OpenOrCreateClassEditorWindow(cls);
+            }
+        }
+
+        private void OnRemoveClassButtonClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is ClassVM cls)
+            {
+                if(classEditorWindows.ContainsKey(cls))
+                {
+                    classEditorWindows[cls].Close();
+                    classEditorWindows.Remove(cls);
+                }
+
+                Project.Classes.Remove(cls);
             }
         }
 
@@ -180,6 +195,30 @@ namespace NetPrintsEditor
         private void OnCreateProjectClicked(object sender, RoutedEventArgs e)
         {
             Project = ProjectVM.CreateNew("MyProject", "MyNamespace");
+        }
+
+        private void OnCompileButtonClicked(object sender, RoutedEventArgs e)
+        {
+            Project.CompileProject(false);
+        }
+
+        private void OnRunButtonClicked(object sender, RoutedEventArgs e)
+        {
+            Project.PropertyChanged += OnProjectPropertyChangedWhileCompiling;
+            Project.CompileProject(true);
+        }
+
+        private void OnProjectPropertyChangedWhileCompiling(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(Project.IsCompiling) && !Project.IsCompiling)
+            {
+                Project.PropertyChanged -= OnProjectPropertyChangedWhileCompiling;
+
+                if (Project.LastCompilationSucceeded)
+                {
+                    Project.RunProject();
+                }
+            }
         }
     }
 }

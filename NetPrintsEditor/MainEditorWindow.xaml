@@ -12,6 +12,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="40" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -29,13 +30,32 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
+
+            <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontSize="20" />
+            <Button Grid.Column="1" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontSize="20" />
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
             <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="20" />
             <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
         </Grid>
-        <ItemsControl Grid.Row="2" x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
+        
+        <ItemsControl Grid.Row="3" x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding Name}" Click="OnClassButtonClicked" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+                        <Button Content="{Binding Name}" Click="OnClassButtonClicked" />
+                        <Button Grid.Column="1" Content="-" Click="OnRemoveClassButtonClicked" />
+                    </Grid>
+                    
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
