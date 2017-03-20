@@ -1,24 +1,30 @@
 ﻿using Microsoft.CSharp;
+using NetPrintsEditor.Compilation;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace NetPrintsEditor
 {
-    class CompilerUtil
+    public static class CompilerUtil
     {
         public static CompilerResults CompileSources(string outputPath, 
-            IEnumerable<Assembly> assemblies, IEnumerable<string> sources, bool generateExecutable=false)
+            IEnumerable<LocalAssemblyName> assemblies, IEnumerable<string> sources, bool generateExecutable=false)
         {
             CSharpCodeProvider csc = new CSharpCodeProvider();
-            CompilerParameters parameters = new CompilerParameters(assemblies.Select(a => a.ManifestModule.Name).ToArray(), outputPath, true);
+            CompilerParameters parameters = new CompilerParameters(assemblies.Select(a => a.Path).ToArray(), outputPath, true);
             parameters.GenerateExecutable = generateExecutable;
             CompilerResults results = csc.CompileAssemblyFromSource(parameters, sources.ToArray());
             return results;
+        }
+
+        public static string GetAssemblyFullNameFromPath(string path)
+        {
+            Assembly assembly = Assembly.LoadFrom(path);
+            return assembly.FullName;
         }
 
         public static CompilerResults CompileStringToLibrary(string sourceCode, string outputPath)
@@ -35,12 +41,6 @@ namespace NetPrintsEditor
             CompilerResults results = csc.CompileAssemblyFromSource(parameters, sourceCode);
 
             return results;
-        }
-
-        public static string GetAssemblyFullNameFromPath(string path)
-        {
-            Assembly assembly = Assembly.LoadFrom(path);
-            return assembly.FullName;
         }
 
         public static CompilerResults CompileStringToExecutable(string sourceCode, string outputPath)

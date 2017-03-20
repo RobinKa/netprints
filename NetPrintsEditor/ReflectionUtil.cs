@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Collections.ObjectModel;
 using NetPrints.Core;
+using NetPrintsEditor.Compilation;
 
 namespace NetPrintsEditor
 {
@@ -15,13 +16,12 @@ namespace NetPrintsEditor
 
         public static void UpdateNonStaticTypes(IEnumerable<Assembly> assemblies = null)
         {
-            NonStaticTypes.Clear();
-            NonStaticTypes.AddRange(GetNonStaticTypes(assemblies));
+            NonStaticTypes.ReplaceRange(GetNonStaticTypes(assemblies));
         }
 
-        public static IEnumerable<Assembly> LoadAssemblies(IEnumerable<string> assemblyNames)
+        public static IEnumerable<Assembly> LoadAssemblies(IEnumerable<LocalAssemblyName> assemblyNames)
         {
-            return assemblyNames.Select(assemblyName => Assembly.Load(assemblyName) 
+            return assemblyNames.Select(assemblyName => assemblyName.LoadAssembly()
                 ?? throw new ArgumentException($"Could not load {assemblyName}"));
         }
 

@@ -64,7 +64,8 @@
     </Compile>
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
-    <Compile Include="CompilerUtil.cs" />
+    <Compile Include="Compilation\LocalAssembly.cs" />
+    <Compile Include="Compilation\CompilerUtil.cs" />
     <Compile Include="Controls\MethodEditorControl.xaml.cs">
       <DependentUpon>MethodEditorControl.xaml</DependentUpon>
     </Compile>

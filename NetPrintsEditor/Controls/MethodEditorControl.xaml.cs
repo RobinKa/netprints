@@ -190,12 +190,19 @@ namespace NetPrintsEditor.Controls
 
         private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetStaticFunctions(
-                Method?.Class?.Project?.LoadedAssemblies))
+            if (Method != null)
             {
-                typeof(ForLoopNode),
-                typeof(IfElseNode)
-            };
+                Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetStaticFunctions(
+                    Method.Class?.Project?.LoadedAssemblies))
+                {
+                    typeof(ForLoopNode),
+                    typeof(IfElseNode)
+                };
+            }
+            else
+            {
+                Suggestions?.Clear();
+            }
         }
 
         private void OnMouseWheelScroll(object sender, MouseWheelEventArgs e)

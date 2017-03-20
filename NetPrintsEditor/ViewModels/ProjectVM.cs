@@ -1,10 +1,13 @@
-﻿using NetPrints.Core;
+﻿using Microsoft.Win32;
+using NetPrints.Core;
 using NetPrints.Serialization;
 using NetPrints.Translator;
+using NetPrintsEditor.Compilation;
 using NetPrintsEditor.Models;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,6 +17,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace NetPrintsEditor.ViewModels
@@ -53,7 +57,7 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public ObservableRangeCollection<string> Assemblies
+        public ObservableRangeCollection<LocalAssemblyName> Assemblies
         {
             get => project.Assemblies;
             set
@@ -72,6 +76,7 @@ namespace NetPrintsEditor.ViewModels
                     if (project.Assemblies != null)
                     {
                         value.CollectionChanged += OnAssembliesChanged;
+                        FixAssemblyPaths();
                         LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(project.Assemblies));
                     }
 
@@ -82,19 +87,21 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch(e.Action)
+            FixAssemblyPaths();
+
+            switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<string>()));
+                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<LocalAssemblyName>()));
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<string>()));
+                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<LocalAssemblyName>()));
                     break;
 
                 case NotifyCollectionChangedAction.Replace:
-                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<string>()));
-                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<string>()));
+                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<LocalAssemblyName>()));
+                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<LocalAssemblyName>()));
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
@@ -166,6 +173,7 @@ namespace NetPrintsEditor.ViewModels
                     if(project != null)
                     {
                         Assemblies.CollectionChanged += OnAssembliesChanged;
+                        FixAssemblyPaths();
                         LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(project.Assemblies));
                     }
                 }
@@ -261,7 +269,7 @@ namespace NetPrintsEditor.ViewModels
                 string outputPath = $"Compiled/{Project.Name}.{ext}";
 
                 CompilerResults results = CompilerUtil.CompileSources(
-                    outputPath, LoadedAssemblies, sources, generateExecutable);
+                    outputPath, Assemblies, sources, generateExecutable);
 
                 // Write errors to file
                 File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
@@ -285,6 +293,43 @@ namespace NetPrintsEditor.ViewModels
             }
 
             Process.Start(exePath);
+        }
+
+        private void FixAssemblyPaths()
+        {
+            List<LocalAssemblyName> assembliesToRemove = new List<LocalAssemblyName>();
+
+            // Fix assembly references
+            foreach (LocalAssemblyName localAssemblyName in Assemblies)
+            {
+                if (!localAssemblyName.FixPath())
+                {
+                    OpenFileDialog openFileDialog = new OpenFileDialog();
+                    openFileDialog.Title = $"Open {localAssemblyName.Name}";
+                    if (openFileDialog.ShowDialog() == true)
+                    {
+                        localAssemblyName.Path = openFileDialog.FileName;
+                        if (!localAssemblyName.FixPath())
+                        {
+                            assembliesToRemove.Add(localAssemblyName);
+                        }
+                    }
+                    else
+                    {
+                        assembliesToRemove.Add(localAssemblyName);
+                    }
+                }
+            }
+
+            // Remove assemblies references which couldnt be fixed
+            if (assembliesToRemove.Count > 0)
+            {
+                Assemblies.RemoveRange(assembliesToRemove);
+
+                MessageBox.Show("The following assemblies could not be found and have been removed from the project:\n\n" +
+                    string.Join(Environment.NewLine, assembliesToRemove.Select(n => n.Name)),
+                    "Could not load some assemblies", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         #region Create / Load / Save Project

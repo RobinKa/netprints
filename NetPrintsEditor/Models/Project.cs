@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using NetPrintsEditor.Compilation;
 using System.IO;
 using System.Runtime.Serialization;
 
@@ -7,11 +8,11 @@ namespace NetPrintsEditor.Models
     [DataContract]
     public class Project
     {
-        private static readonly string[] DefaultAssemblies = new string[]
+        private static readonly LocalAssemblyName[] DefaultAssemblies = new LocalAssemblyName[]
         {
-            "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-            "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-            "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+            LocalAssemblyName.FromName("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"),
+            LocalAssemblyName.FromName("System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"),
+            LocalAssemblyName.FromName("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"),
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(
@@ -45,11 +46,11 @@ namespace NetPrintsEditor.Models
         } = new ObservableRangeCollection<string>();
 
         [DataMember]
-        public ObservableRangeCollection<string> Assemblies
+        public ObservableRangeCollection<LocalAssemblyName> Assemblies
         {
             get;
             set;
-        } = new ObservableRangeCollection<string>();
+        } = new ObservableRangeCollection<LocalAssemblyName>();
 
         private Project()
         {

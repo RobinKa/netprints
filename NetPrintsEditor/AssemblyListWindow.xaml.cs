@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -50,11 +51,11 @@ namespace NetPrintsEditor
             {
                 try
                 {
-                    string fullName = ReflectionUtil.GetAssemblyFullNameFromPath(openFileDialog.FileName);
-
-                    if (!Project.Assemblies.Contains(fullName))
+                    LocalAssemblyName localAssemblyName = LocalAssemblyName.FromPath(openFileDialog.FileName);
+                    
+                    if (!Project.Assemblies.Any(n => n.Name == localAssemblyName.Name || n.Path == localAssemblyName.Path))
                     {
-                        Project.Assemblies.Add(fullName);
+                        Project.Assemblies.Add(localAssemblyName);
                     }
                 }
                 catch (Exception ex)
@@ -66,7 +67,7 @@ namespace NetPrintsEditor
 
         private void OnRemoveAssemblyButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is string assemblyName)
+            if (sender is Button button && button.DataContext is LocalAssemblyName assemblyName)
             {
                 Project.Assemblies.Remove(assemblyName);
             }
