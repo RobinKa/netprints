@@ -105,7 +105,9 @@ namespace NetPrintsEditor.Controls
         {
             if(sender is Rectangle el && e.LeftButton == MouseButtonState.Pressed)
             {
+                Pin.IsBeingConnected = true;
                 DragDrop.DoDragDrop(el, Pin, DragDropEffects.Link);
+                Pin.IsBeingConnected = false;
             }
         }
 
@@ -140,6 +142,9 @@ namespace NetPrintsEditor.Controls
                 if(GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin))
                 {
                     e.Effects = DragDropEffects.Link;
+
+                    NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
+                    pin.ConnectingRelativeMousePosition = pin.GetRelativePositionToPin(Pin);
                 }
 
                 e.Handled = true;

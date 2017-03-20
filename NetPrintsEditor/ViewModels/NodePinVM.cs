@@ -8,6 +8,49 @@ namespace NetPrintsEditor.ViewModels
 {
     public class NodePinVM : INotifyPropertyChanged
     {
+        public Point GetRelativePositionToPin(NodePinVM pin)
+        {
+            return (Point)(
+                new Vector(pin.Node.PositionX, pin.Node.PositionY)
+                + (Vector)pin.NodeRelativePosition
+                + (Vector)pin.Position
+                - new Vector(Node.PositionX, Node.PositionY) 
+                - (Vector)NodeRelativePosition);
+        }
+
+        public Point ConnectingRelativeMousePosition
+        {
+            get => connectingRelativeMousePosition;
+            set
+            {
+                if(connectingRelativeMousePosition != value)
+                {
+                    connectingRelativeMousePosition = value;
+                    OnPropertyChanged();
+                    OnConnectionPositionUpdate();
+                }
+            }
+        }
+
+        private Point connectingRelativeMousePosition;
+
+        public bool IsBeingConnected
+        {
+            get => isBeingConnected;
+            set
+            {
+                if(isBeingConnected != value)
+                {
+                    isBeingConnected = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsCableVisible));
+                    OnConnectionPositionUpdate();
+                }
+            }
+        }
+
+        private bool isBeingConnected = false;
+
         public NodePin Pin
         {
             get => pin;
@@ -177,6 +220,7 @@ namespace NetPrintsEditor.ViewModels
                     connectedPin = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsConnected));
+                    OnPropertyChanged(nameof(IsCableVisible));
                     OnPropertyChanged(nameof(IsUsingUnconnectedValue));
                     OnConnectionPositionUpdate();
 
@@ -202,6 +246,11 @@ namespace NetPrintsEditor.ViewModels
             get => connectedPin != null;
         }
 
+        public bool IsCableVisible
+        {
+            get => IsConnected || IsBeingConnected;
+        }
+
         private void OnConnectedPinNodePositionChanged(Node node, double posX, double posY)
         {
             OnConnectionPositionUpdate();
@@ -211,15 +260,22 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (connectedPin != null)
+                if (IsBeingConnected)
                 {
-                    return connectedPin.NodeRelativePosition.X - NodeRelativePosition.X + 
-                        connectedPin.Node.PositionX - Node.PositionX
-                        + connectedPin.PositionX;
+                    return ConnectingRelativeMousePosition.X;
                 }
                 else
                 {
-                    return PositionX;
+                    if (connectedPin != null)
+                    {
+                        return connectedPin.NodeRelativePosition.X - NodeRelativePosition.X +
+                            connectedPin.Node.PositionX - Node.PositionX
+                            + connectedPin.PositionX;
+                    }
+                    else
+                    {
+                        return PositionX;
+                    }
                 }
             }
         }
@@ -228,15 +284,22 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (connectedPin != null)
+                if (IsBeingConnected)
                 {
-                    return connectedPin.NodeRelativePosition.Y - NodeRelativePosition.Y +
-                        connectedPin.Node.PositionY - Node.PositionY
-                        + connectedPin.PositionY;
+                    return ConnectingRelativeMousePosition.Y;
                 }
                 else
                 {
-                    return PositionY;
+                    if (connectedPin != null)
+                    {
+                        return connectedPin.NodeRelativePosition.Y - NodeRelativePosition.Y +
+                            connectedPin.Node.PositionY - Node.PositionY
+                            + connectedPin.PositionY;
+                    }
+                    else
+                    {
+                        return PositionY;
+                    }
                 }
             }
         }
@@ -275,7 +338,7 @@ namespace NetPrintsEditor.ViewModels
 
         public Point ConnectedPosition
         {
-            get => new Point(ConnectedPositionX, ConnectedPositionY);
+            get => new Point(ConnectedPositionX, ConnectedPositionY) ;
         }
 
         private NodePin pin;

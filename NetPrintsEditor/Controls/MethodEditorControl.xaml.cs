@@ -2,6 +2,9 @@
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -178,6 +181,12 @@ namespace NetPrintsEditor.Controls
             }
             else if(e.Data.GetDataPresent(typeof(NodePinVM)))
             {
+                // Set connecting position to the correct relative mouse position
+                NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
+                pin.ConnectingRelativeMousePosition = e.GetPosition(this)
+                    - new Vector(pin.Node.PositionX, pin.Node.PositionY)
+                    - new Vector(pin.NodeRelativePosition.X, pin.NodeRelativePosition.Y);
+
                 e.Effects = DragDropEffects.Link;
                 e.Handled = true;
             }

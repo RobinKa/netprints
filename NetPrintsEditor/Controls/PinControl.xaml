@@ -29,7 +29,8 @@
                     </Style>
                 </Rectangle.Style>
             </Rectangle>
-            <Path x:Name="cable" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsConnected, Converter={StaticResource ResourceKey=BoolToVis}}" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+
+            <Path x:Name="cable" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                 <Path.Data>
                     <PathGeometry>
                         <PathGeometry.Figures>
@@ -38,9 +39,9 @@
                                     <PathFigure.Segments>
                                         <PathSegmentCollection>
                                             <BezierSegment 
-                                        Point1="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP1}" 
-                                        Point2="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP2}" 
-                                        Point3="{Binding ElementName=pinWindow, Path=Pin.ConnectedPosition}" />
+                                                    Point1="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP1}" 
+                                                    Point2="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP2}" 
+                                                    Point3="{Binding ElementName=pinWindow, Path=Pin.ConnectedPosition}" />
                                         </PathSegmentCollection>
                                     </PathFigure.Segments>
                                 </PathFigure>
@@ -50,6 +51,7 @@
                 </Path.Data>
             </Path>
         </Canvas>
+
         <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         <TextBox Grid.Column="2" 
                     Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
