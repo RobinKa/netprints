@@ -75,6 +75,7 @@ namespace NetPrintsEditor
                 ClassEditorWindow wnd = new ClassEditorWindow(cls);
                 wnd.Closed += (w, ea) => classEditorWindows.Remove(cls);
                 classEditorWindows.Add(cls, wnd);
+                wnd.WindowState = WindowState.Maximized;
                 wnd.Show();
             }
         }
