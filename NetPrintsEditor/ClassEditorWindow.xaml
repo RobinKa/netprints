@@ -22,6 +22,7 @@
         <CommandBinding Command="cmds:NetPrintsCommands.SelectNode" CanExecute="CommandSelectNode_CanExecute" Executed="CommandSelectNode_Execute" />
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="ApplicationCommands.Delete" Executed="CommandDelete_Executed" />
     </Window.CommandBindings>
 
     <Grid>

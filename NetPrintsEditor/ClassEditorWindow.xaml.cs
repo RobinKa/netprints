@@ -291,7 +291,27 @@ namespace NetPrintsEditor
         }
         #endregion
 
-        #region Undo / Redo
+        #region Standard Commands
+        private void CommandDelete_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            // Delete the node if its not null and not an entry or return node
+            if(Class?.SelectedNode != null && !(Class.SelectedNode.Node is EntryNode || Class.SelectedNode.Node is ReturnNode))
+            {
+                NodeVM selectedNode = Class.SelectedNode;
+                Class.SelectedNode = null;
+
+                // Find the MethodVM that contains this NodeVM
+                MethodVM method = Class.Methods.Single(m => m.Nodes.Contains(selectedNode));
+
+                // Disconnect all pins that are connected to this node
+                method.AllPins.Where(p => p.ConnectedPin?.Node == selectedNode.Node).
+                    ToList().ForEach(p => p.ConnectedPin = null);
+                
+                // Remove the node from its method
+                selectedNode.Method.Nodes.Remove(selectedNode.Node);
+            }
+        }
+
         private void CommandUndo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             undoRedoStack.Undo();
