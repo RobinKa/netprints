@@ -34,7 +34,7 @@
         <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         <TextBox Grid.Column="2" 
                     Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
-                    Visibility="{Binding ElementName=pinWindow, Path=Pin.IsUsingUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3"/>
+                    Visibility="{Binding ElementName=pinWindow, Path=Pin.UsesUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3"/>
     </Grid>
 
         
