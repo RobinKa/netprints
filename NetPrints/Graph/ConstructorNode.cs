@@ -23,6 +23,8 @@ namespace NetPrints.Graph
         public ConstructorNode(Method method, Type classType, IEnumerable<Type> argumentTypes)
             : base(method)
         {
+            ClassType = classType;
+
             foreach(Type argumentType in argumentTypes)
             {
                 AddInputDataPin(argumentType.Name, argumentType);
@@ -33,7 +35,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"Create New {ClassType}";
+            return $"Construct New {ClassType}";
         }
     }
 }

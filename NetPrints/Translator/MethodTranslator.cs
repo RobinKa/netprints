@@ -466,23 +466,13 @@ namespace NetPrints.Translator
             // the correct order
             TranslateDependentPureNodes(node);
 
-            // Write assignment of return values
+            // Write assignment and constructor
             string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
-            builder.Append($"{returnName} = new ");
-            
-            // Write class name, default to own class name
-            if (node.ClassType != null)
-            {
-                builder.Append($"{node.ClassType.FullName}");
-            }
-            else
-            {
-                builder.Append($"{method.Class.Name}");
-            }
+            builder.Append($"{returnName} = new {node.ClassType.FullName}");
             
             // Write constructor arguments
             var argumentNames = GetPinIncomingValues(node.ArgumentPins);
-            builder.AppendLine($"{node.ClassType}({string.Join(", ", argumentNames)});");
+            builder.AppendLine($"({string.Join(", ", argumentNames)});");
 
             // Go to the next state
             WriteGotoOutputPin(node.OutputExecPins[0]);
