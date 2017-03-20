@@ -18,11 +18,15 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Create Project" Click="OnCreateProjectClicked" Padding="5" FontSize="14"/>
-                <Button Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="14"/>
-                <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="14"/>
-            </StackPanel>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            
+            <Button Content="Create Project" Click="OnCreateProjectClicked" Padding="5" FontSize="14"/>
+            <Button Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="14"/>
+            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="14"/>
         </Grid>
 
         <Grid Grid.Row="1">
