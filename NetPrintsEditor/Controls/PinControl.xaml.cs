@@ -96,20 +96,20 @@ namespace NetPrintsEditor.Controls
                 }
 
                 SolidColorBrush brush = new SolidColorBrush(newColor);
-                ellipse.Fill = brush;
+                pinElement.Fill = brush;
                 cable.Stroke = brush;
             }
         }
 
-        private void OnEllipseMouseMove(object sender, MouseEventArgs e)
+        private void OnPinElementMouseMove(object sender, MouseEventArgs e)
         {
-            if(sender is Ellipse el && e.LeftButton == MouseButtonState.Pressed)
+            if(sender is Rectangle el && e.LeftButton == MouseButtonState.Pressed)
             {
                 DragDrop.DoDragDrop(el, Pin, DragDropEffects.Link);
             }
         }
 
-        private void OnEllipseDrop(object sender, DragEventArgs e)
+        private void OnPinElementDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(NodePinVM)))
             {
@@ -127,7 +127,7 @@ namespace NetPrintsEditor.Controls
             }
         }
 
-        private void OnEllipseDragOver(object sender, DragEventArgs e)
+        private void OnPinElementDragOver(object sender, DragEventArgs e)
         {
             e.Effects = DragDropEffects.None;
 

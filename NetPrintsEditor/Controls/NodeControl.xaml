@@ -19,7 +19,7 @@
     </UserControl.Resources>
 
     <Grid MinWidth="220">
-        <Rectangle Stroke="#CC505050" StrokeThickness="3" RadiusX="4" RadiusY="4" Fill="#AA303030">
+        <Rectangle Stroke="#CC303030" StrokeThickness="2" Fill="#FF202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>
             </Rectangle.Effect>
