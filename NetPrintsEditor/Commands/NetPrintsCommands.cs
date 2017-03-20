@@ -18,7 +18,8 @@ namespace NetPrintsEditor.Commands
         public static readonly RoutedUICommand ConnectPins = new RoutedUICommand(nameof(ConnectPins), nameof(ConnectPins), typeof(NetPrintsCommands));
         public static readonly RoutedUICommand DoNothing = new RoutedUICommand(nameof(DoNothing), nameof(DoNothing), typeof(NetPrintsCommands));
         public static readonly RoutedUICommand AddNode = new RoutedUICommand(nameof(AddNode), nameof(AddNode), typeof(NetPrintsCommands));
-        
+        public static readonly RoutedUICommand SelectNode = new RoutedUICommand(nameof(SelectNode), nameof(SelectNode), typeof(NetPrintsCommands));
+
         public class SetNodePositionParameters
         {
             public NodeVM Node;
@@ -97,6 +98,7 @@ namespace NetPrintsEditor.Commands
             },
             { ConnectPins, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             { AddNode, (p) => new Tuple<ICommand, object>(DoNothing, p) },
+            { SelectNode, (p) => new Tuple<ICommand, object>(DoNothing, p) },
         };
     }
 }

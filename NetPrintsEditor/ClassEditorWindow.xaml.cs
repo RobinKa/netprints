@@ -278,6 +278,17 @@ namespace NetPrintsEditor
             methodEditor.grid.ContextMenu.IsOpen = false;
         }
 
+        // Select Node
+
+        private void CommandSelectNode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is NodeVM;
+        }
+
+        private void CommandSelectNode_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            Class.SelectedNode = e.Parameter as NodeVM;
+        }
         #endregion
 
         #region Undo / Redo

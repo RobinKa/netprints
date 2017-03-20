@@ -22,6 +22,33 @@ namespace NetPrintsEditor.ViewModels
 
         private ProjectVM project;
 
+        public NodeVM SelectedNode
+        {
+            get => selectedNode;
+            set
+            {
+                if(selectedNode != value)
+                {
+                    if(selectedNode != null)
+                    {
+                        selectedNode.IsSelected = false;
+                    }
+
+                    selectedNode = value;
+
+                    if (selectedNode != null)
+                    {
+                        selectedNode.IsSelected = true;
+                    }
+
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private NodeVM selectedNode;
+
+
         // Wrapped attributes of Class
         public ObservableViewModelCollection<VariableVM, Variable> Attributes
         {

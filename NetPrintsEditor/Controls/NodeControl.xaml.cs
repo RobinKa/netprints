@@ -1,4 +1,5 @@
-﻿using NetPrintsEditor.ViewModels;
+﻿using NetPrintsEditor.Commands;
+using NetPrintsEditor.ViewModels;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -46,6 +47,8 @@ namespace NetPrintsEditor.Controls
 
             CaptureMouse();
             e.Handled = true;
+
+            UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)

@@ -55,6 +55,33 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        private static readonly SolidColorBrush DeselectedBorderBrush =
+            new SolidColorBrush(Color.FromArgb(0xCC, 0x30, 0x30, 0x30));
+
+        private static readonly SolidColorBrush SelectedBorderBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xEE, 0x50));
+
+        public SolidColorBrush BorderBrush
+        {
+            get => IsSelected ? SelectedBorderBrush : DeselectedBorderBrush;
+        }
+
+        public bool IsSelected
+        {
+            get => isSelected;
+            set
+            {
+                if (isSelected != value)
+                {
+                    isSelected = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(BorderBrush));
+                }
+            }
+        }
+
+        private bool isSelected;
+
         // Wrapped attributes of Node
         public string Name
         {
