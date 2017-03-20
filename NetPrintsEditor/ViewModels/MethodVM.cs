@@ -11,6 +11,32 @@ namespace NetPrintsEditor.ViewModels
 {
     public class MethodVM : INotifyPropertyChanged
     {
+        public NodeVM SelectedNode
+        {
+            get => selectedNode;
+            set
+            {
+                if (selectedNode != value)
+                {
+                    if (selectedNode != null)
+                    {
+                        selectedNode.IsSelected = false;
+                    }
+
+                    selectedNode = value;
+
+                    if (selectedNode != null)
+                    {
+                        selectedNode.IsSelected = true;
+                    }
+
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private NodeVM selectedNode;
+
         public string Name
         {
             get => method.Name;

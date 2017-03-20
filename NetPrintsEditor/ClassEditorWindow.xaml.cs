@@ -287,18 +287,29 @@ namespace NetPrintsEditor
 
         private void CommandSelectNode_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.SelectedNode = e.Parameter as NodeVM;
+            // Try to find the MethodVM corresponding to the passed NodeVM
+            // and set its selected node
+
+            NodeVM node = e.Parameter as NodeVM;
+            MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node));
+            if(method != null)
+            {
+                method.SelectedNode = node;
+            }
         }
         #endregion
 
         #region Standard Commands
         private void CommandDelete_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            // Delete the node if its not null and not an entry or return node
-            if(Class?.SelectedNode != null && !(Class.SelectedNode.Node is EntryNode || Class.SelectedNode.Node is ReturnNode))
+            // Delete the currently selected node in the currently open method
+            // Only delete the node if it is not an entry or return node
+            if(methodEditor?.Method?.SelectedNode != null &&
+                !(methodEditor.Method.SelectedNode.Node is EntryNode) &&
+                !(methodEditor.Method.SelectedNode.Node is ReturnNode))
             {
-                NodeVM selectedNode = Class.SelectedNode;
-                Class.SelectedNode = null;
+                NodeVM selectedNode = methodEditor.Method.SelectedNode;
+                methodEditor.Method.SelectedNode = null;
 
                 // Find the MethodVM that contains this NodeVM
                 MethodVM method = Class.Methods.Single(m => m.Nodes.Contains(selectedNode));
