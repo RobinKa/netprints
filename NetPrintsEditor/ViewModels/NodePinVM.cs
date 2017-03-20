@@ -9,6 +9,19 @@ namespace NetPrintsEditor.ViewModels
 {
     public class NodePinVM : INotifyPropertyChanged
     {
+        public string ToolTip
+        {
+            get
+            {
+                if(Pin is NodeDataPin dataPin)
+                {
+                    return $"{dataPin.PinType.FullName} {dataPin.Name}";
+                }
+
+                return null;
+            }
+        }
+
         public Point ConnectingAbsolutePosition
         {
             get => connectingRelativeMousePosition;
@@ -61,6 +74,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(UsesUnconnectedValue));
+                    OnPropertyChanged(nameof(ToolTip));
                 }
             }
         }

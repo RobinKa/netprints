@@ -18,7 +18,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Canvas x:Name="connector" Grid.Column="0" Width="14" Height="14">
-            <Rectangle x:Name="pinElement" Width="14" Height="14" Fill="{Binding ElementName=pinWindow, Path=Pin.Brush}"  MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver" Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
+            <Rectangle x:Name="pinElement" ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14" Fill="{Binding ElementName=pinWindow, Path=Pin.Brush}"  MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver" Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
                 <Rectangle.Style>
                     <Style TargetType="{x:Type Rectangle}">
                         <Style.Triggers>

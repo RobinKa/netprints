@@ -96,6 +96,10 @@
             <Setter Property="Background" Value="#FF444444" />
         </Style>
 
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#FF555555" />
+        </Style>
+
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
