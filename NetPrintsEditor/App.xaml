@@ -10,6 +10,7 @@
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <SolidColorBrush x:Key="Item.MouseOver.Background" Color="#FFBBBBBB"/>
@@ -55,6 +56,7 @@
             <Setter Property="BorderBrush" Value="#FF444444"/>
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="CheckBox">
@@ -62,6 +64,7 @@
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="ComboBoxItem">
@@ -69,6 +72,7 @@
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="ListView">
@@ -79,11 +83,13 @@
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="GridSplitter">
