@@ -56,6 +56,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public string FullName
+        {
+            get => $"{Namespace}.{Name}";
+        }
+
         public string Namespace
         {
             get => cls.Namespace;
@@ -64,6 +69,7 @@ namespace NetPrintsEditor.ViewModels
                 cls.Namespace = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(StoragePath));
+                OnPropertyChanged(nameof(FullName));
             }
         }
 
@@ -75,6 +81,7 @@ namespace NetPrintsEditor.ViewModels
                 cls.Name = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(StoragePath));
+                OnPropertyChanged(nameof(FullName));
             }
         }
 
