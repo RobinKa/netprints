@@ -1,11 +1,11 @@
-﻿using System.Windows;
+﻿using NetPrints.Core;
+using NetPrints.Graph;
+using NetPrintsEditor.Commands;
+using NetPrintsEditor.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using NetPrints.Core;
-using NetPrints.Graph;
-using NetPrintsEditor.ViewModels;
-using NetPrintsEditor.Commands;
 
 namespace NetPrintsEditor.Controls
 {

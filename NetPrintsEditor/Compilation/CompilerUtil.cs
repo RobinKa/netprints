@@ -1,11 +1,9 @@
 ﻿using Microsoft.CSharp;
 using NetPrintsEditor.Compilation;
-using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.IO;
 
 namespace NetPrintsEditor
 {
@@ -15,6 +13,7 @@ namespace NetPrintsEditor
             IEnumerable<LocalAssemblyName> assemblies, IEnumerable<string> sources, bool generateExecutable=false)
         {
             CSharpCodeProvider csc = new CSharpCodeProvider();
+            
             CompilerParameters parameters = new CompilerParameters(assemblies.Select(a => a.Path).ToArray(), outputPath, true);
             parameters.GenerateExecutable = generateExecutable;
             parameters.CompilerOptions = "/platform:anycpu32bitpreferred";

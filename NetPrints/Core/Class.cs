@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace NetPrints.Core
 {

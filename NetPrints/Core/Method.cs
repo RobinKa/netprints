@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using NetPrints.Graph;
+﻿using NetPrints.Graph;
+using System;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NetPrints.Core;
 using System.Text;
-using System.IO;
-using System.Linq;
-using NetPrints.Core;
 
 namespace NetPrints.Translator
 {

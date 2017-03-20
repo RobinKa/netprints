@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NetPrints.Graph;
-using NetPrintsEditor.ViewModels;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Core;
+using NetPrintsEditor.ViewModels;
 using System.Windows;
 
 namespace NetPrintsEditorUnitTests

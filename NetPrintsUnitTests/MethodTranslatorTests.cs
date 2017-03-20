@@ -1,9 +1,9 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NetPrints.Core;
+using NetPrints.Graph;
+using NetPrints.Translator;
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NetPrints.Graph;
-using NetPrints.Core;
-using NetPrints.Translator;
 
 namespace NetPrints.Tests
 {

@@ -1,8 +1,8 @@
-﻿using System.Windows;
+﻿using NetPrintsEditor.ViewModels;
+using System.Collections.Specialized;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using NetPrintsEditor.ViewModels;
-using System.Collections.Specialized;
 
 namespace NetPrintsEditor.Controls
 {

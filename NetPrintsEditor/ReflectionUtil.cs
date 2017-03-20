@@ -1,12 +1,9 @@
-﻿using System;
+﻿using NetPrints.Core;
+using NetPrintsEditor.Compilation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
-using System.Collections.ObjectModel;
-using NetPrints.Core;
-using NetPrintsEditor.Compilation;
 
 namespace NetPrintsEditor
 {

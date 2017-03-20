@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
+﻿using NetPrints.Core;
+using System;
 using System.ComponentModel;
-using NetPrints.Core;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using System.IO;
 
 namespace NetPrintsEditor.ViewModels
 {

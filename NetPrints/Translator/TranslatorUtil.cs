@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Diagnostics;
-using NetPrints.Core;
+﻿using NetPrints.Core;
 using NetPrints.Graph;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace NetPrints.Translator
 {
