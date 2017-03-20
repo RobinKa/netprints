@@ -25,13 +25,13 @@
             </Rectangle.Effect>
         </Rectangle>
 
-        <Grid Margin="10, 10, 10, 20">
+        <Grid Margin="3, 10, 3, 20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label x:Name="nodeLabel" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="0" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
+            <Label x:Name="nodeLabel" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 0" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                 <Label.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
                 </Label.Effect>

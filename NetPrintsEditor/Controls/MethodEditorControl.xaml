@@ -8,6 +8,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800" x:Name="methodEditorWindow">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+    
     <Grid x:Name="grid" ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop" Tag="{Binding ElementName=methodEditorWindow}" ContextMenuOpening="OnContextMenuOpening">
         <Grid.ContextMenu>
             <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
@@ -21,34 +25,69 @@
         </Grid.ContextMenu>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <ItemsControl MouseWheel="OnMouseWheelScroll" Width="5000" Height="5000" x:Name="nodeList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.Nodes}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas>
-                            <Canvas.Background>
-                                <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
-                                    <DrawingBrush.Drawing>
-                                        <GeometryDrawing>
-                                            <GeometryDrawing.Geometry>
-                                                <RectangleGeometry Rect="0,0,50,50"/>
-                                            </GeometryDrawing.Geometry>
-                                            <GeometryDrawing.Pen>
-                                                <Pen Brush="Gray" Thickness="1"/>
-                                            </GeometryDrawing.Pen>
-                                        </GeometryDrawing>
-                                    </DrawingBrush.Drawing>
-                                </DrawingBrush>
-                            </Canvas.Background>
-                        </Canvas>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+            <Canvas x:Name="drawCanvas" MouseWheel="OnMouseWheelScroll" Width="5000" Height="5000">
+                <Canvas.Background>
+                    <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing>
+                                <GeometryDrawing.Geometry>
+                                    <RectangleGeometry Rect="0,0,50,50"/>
+                                </GeometryDrawing.Geometry>
+                                <GeometryDrawing.Pen>
+                                    <Pen Brush="Gray" Thickness="1"/>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Canvas.Background>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:NodeControl Node="{Binding}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                <ItemsControl x:Name="nodeList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.Nodes}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:NodeControl Node="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ItemsControl x:Name="cableList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.AllPins}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Path Visibility="{Binding IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}" Stroke="{Binding Brush}" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathGeometry.Figures>
+                                            <PathFigureCollection>
+                                                <PathFigure StartPoint="{Binding AbsolutePosition}">
+                                                    <PathFigure.Segments>
+                                                        <PathSegmentCollection>
+                                                            <BezierSegment 
+                                                                Point1="{Binding ConnectedCP1}" 
+                                                                Point2="{Binding ConnectedCP2}" 
+                                                                Point3="{Binding ConnectedAbsolutePosition}" />
+                                                        </PathSegmentCollection>
+                                                    </PathFigure.Segments>
+                                                </PathFigure>
+                                            </PathFigureCollection>
+                                        </PathGeometry.Figures>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Canvas>
         </ScrollViewer>
 
         <Canvas x:Name="variableGetSetCanvas">

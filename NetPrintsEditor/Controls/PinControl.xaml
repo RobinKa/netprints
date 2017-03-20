@@ -18,7 +18,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Canvas x:Name="connector" Grid.Column="0" Width="14" Height="14">
-            <Rectangle x:Name="pinElement" Width="14" Height="14" MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver" Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
+            <Rectangle x:Name="pinElement" Width="14" Height="14" Fill="{Binding ElementName=pinWindow, Path=Pin.Brush}"  MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver" Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
                 <Rectangle.Style>
                     <Style TargetType="{x:Type Rectangle}">
                         <Style.Triggers>
@@ -29,27 +29,6 @@
                     </Style>
                 </Rectangle.Style>
             </Rectangle>
-
-            <Path x:Name="cable" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}" Stroke="#FFE0E0E0" Panel.ZIndex="1" StrokeThickness="4" IsHitTestVisible="False" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
-                <Path.Data>
-                    <PathGeometry>
-                        <PathGeometry.Figures>
-                            <PathFigureCollection>
-                                <PathFigure StartPoint="{Binding ElementName=pinWindow, Path=Pin.Position}">
-                                    <PathFigure.Segments>
-                                        <PathSegmentCollection>
-                                            <BezierSegment 
-                                                    Point1="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP1}" 
-                                                    Point2="{Binding ElementName=pinWindow, Path=Pin.ConnectedCP2}" 
-                                                    Point3="{Binding ElementName=pinWindow, Path=Pin.ConnectedPosition}" />
-                                        </PathSegmentCollection>
-                                    </PathFigure.Segments>
-                                </PathFigure>
-                            </PathFigureCollection>
-                        </PathGeometry.Figures>
-                    </PathGeometry>
-                </Path.Data>
-            </Path>
         </Canvas>
 
         <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />

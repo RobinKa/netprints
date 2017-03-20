@@ -1,6 +1,8 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -82,9 +84,94 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (method != value)
                 {
+                    if (method != null)
+                    {
+                        // Unbind nodes changed event
+                        // Unbind all nodes' pins changed events
+
+                        Nodes.CollectionChanged -= OnNodeCollectionChanged;
+                        foreach (NodeVM node in Nodes)
+                        {
+                            node.InputDataPins.CollectionChanged -= OnPinCollectionChanged;
+                            node.OutputDataPins.CollectionChanged -= OnPinCollectionChanged;
+                            node.InputExecPins.CollectionChanged -= OnPinCollectionChanged;
+                            node.OutputExecPins.CollectionChanged -= OnPinCollectionChanged;
+                        }
+                    }
+
                     method = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(AllPins));
+
+                    if (method != null)
+                    {
+                        // Bind nodes changed event
+                        // Bind all nodes' pins changed events
+
+                        Nodes.CollectionChanged += OnNodeCollectionChanged;
+                        foreach (NodeVM node in Nodes)
+                        {
+                            node.InputDataPins.CollectionChanged += OnPinCollectionChanged;
+                            node.OutputDataPins.CollectionChanged += OnPinCollectionChanged;
+                            node.InputExecPins.CollectionChanged += OnPinCollectionChanged;
+                            node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
+                        }
+                    }
                 }
+            }
+        }
+
+        private void OnNodeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            // Unbind old node pins
+            // Bind new node pins
+
+            if (e.OldItems != null)
+            {
+                foreach (NodeVM node in e.OldItems.Cast<NodeVM>())
+                {
+                    node.InputDataPins.CollectionChanged -= OnPinCollectionChanged;
+                    node.OutputDataPins.CollectionChanged -= OnPinCollectionChanged;
+                    node.InputExecPins.CollectionChanged -= OnPinCollectionChanged;
+                    node.OutputExecPins.CollectionChanged -= OnPinCollectionChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (NodeVM node in e.NewItems.Cast<NodeVM>())
+                {
+                    node.InputDataPins.CollectionChanged += OnPinCollectionChanged;
+                    node.OutputDataPins.CollectionChanged += OnPinCollectionChanged;
+                    node.InputExecPins.CollectionChanged += OnPinCollectionChanged;
+                    node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
+                }
+            }
+        }
+
+        private void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(AllPins));
+        }
+
+        public IEnumerable<NodePinVM> AllPins
+        {
+            get
+            {
+                List<NodePinVM> pins = new List<NodePinVM>();
+
+                if (Method != null)
+                {
+                    foreach (NodeVM node in Nodes)
+                    {
+                        pins.AddRange(node.InputDataPins);
+                        pins.AddRange(node.OutputDataPins);
+                        pins.AddRange(node.InputExecPins);
+                        pins.AddRange(node.OutputExecPins);
+                    }
+                }
+
+                return pins;
             }
         }
 

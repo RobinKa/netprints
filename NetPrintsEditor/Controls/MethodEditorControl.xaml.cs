@@ -19,10 +19,10 @@ namespace NetPrintsEditor.Controls
     {
         public const double GridCellSize = 20;
 
-        private double nodeListScale = 1;
-        private const double NodeListMinScale = 0.3;
-        private const double NodeListMaxScale = 1.0;
-        private const double NodeListScaleFactor = 1.3;
+        private double drawCanvasScale = 1;
+        private const double DrawCanvasMinScale = 0.3;
+        private const double DrawCanvasMaxScale = 1.0;
+        private const double DrawCanvasScaleFactor = 1.3;
 
         public MethodVM Method
         {
@@ -183,9 +183,7 @@ namespace NetPrintsEditor.Controls
             {
                 // Set connecting position to the correct relative mouse position
                 NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-                pin.ConnectingRelativeMousePosition = e.GetPosition(this)
-                    - new Vector(pin.Node.PositionX, pin.Node.PositionY)
-                    - new Vector(pin.NodeRelativePosition.X, pin.NodeRelativePosition.Y);
+                pin.ConnectingAbsolutePosition = e.GetPosition(drawCanvas);
 
                 e.Effects = DragDropEffects.Link;
                 e.Handled = true;
@@ -218,24 +216,24 @@ namespace NetPrintsEditor.Controls
         {
             if (e.Delta < 0)
             {
-                nodeListScale /= NodeListScaleFactor;
+                drawCanvasScale /= DrawCanvasScaleFactor;
             }
             else
             {
-                nodeListScale *= NodeListScaleFactor;
+                drawCanvasScale *= DrawCanvasScaleFactor;
             }
 
             // Clamp scale between min and max
-            if(nodeListScale < NodeListMinScale)
+            if(drawCanvasScale < DrawCanvasMinScale)
             {
-                nodeListScale = NodeListMinScale;
+                drawCanvasScale = DrawCanvasMinScale;
             }
-            else if(nodeListScale > NodeListMaxScale)
+            else if(drawCanvasScale > DrawCanvasMaxScale)
             {
-                nodeListScale = NodeListMaxScale;
+                drawCanvasScale = DrawCanvasMaxScale;
             }
 
-            nodeList.LayoutTransform = new ScaleTransform(nodeListScale, nodeListScale);
+            drawCanvas.LayoutTransform = new ScaleTransform(drawCanvasScale, drawCanvasScale);
             e.Handled = true;
         }
     }

@@ -3,22 +3,13 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Media;
 
 namespace NetPrintsEditor.ViewModels
 {
     public class NodePinVM : INotifyPropertyChanged
     {
-        public Point GetRelativePositionToPin(NodePinVM pin)
-        {
-            return (Point)(
-                new Vector(pin.Node.PositionX, pin.Node.PositionY)
-                + (Vector)pin.NodeRelativePosition
-                + (Vector)pin.Position
-                - new Vector(Node.PositionX, Node.PositionY) 
-                - (Vector)NodeRelativePosition);
-        }
-
-        public Point ConnectingRelativeMousePosition
+        public Point ConnectingAbsolutePosition
         {
             get => connectingRelativeMousePosition;
             set
@@ -68,6 +59,7 @@ namespace NetPrintsEditor.ViewModels
                     pin.Node.OnPositionChanged += OnNodePositionChanged;
 
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(Brush));
                 }
             }
         }
@@ -133,6 +125,7 @@ namespace NetPrintsEditor.ViewModels
                     positionX = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Position));
+                    OnPropertyChanged(nameof(AbsolutePosition));
                     OnConnectionPositionUpdate();
                 }
             }
@@ -148,6 +141,7 @@ namespace NetPrintsEditor.ViewModels
                     positionY = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Position));
+                    OnPropertyChanged(nameof(AbsolutePosition));
                     OnConnectionPositionUpdate();
                 }
             }
@@ -156,6 +150,25 @@ namespace NetPrintsEditor.ViewModels
         public Point Position
         {
             get => new Point(PositionX, PositionY);
+        }
+
+        public static readonly SolidColorBrush ExecPinCableBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0));
+
+        public static readonly SolidColorBrush DataPinCableBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF));
+
+        public Brush Brush
+        {
+            get => (Pin is NodeDataPin) ? DataPinCableBrush : ExecPinCableBrush;
+        }
+
+        public Point AbsolutePosition
+        {
+            // Node abs + Node->PinCenter
+            get => new Point(
+                Node.PositionX + NodeRelativePosition.X , 
+                Node.PositionY + NodeRelativePosition.Y);
         }
 
         public Point NodeRelativePosition
@@ -176,11 +189,10 @@ namespace NetPrintsEditor.ViewModels
         private void OnConnectionPositionUpdate()
         {
             OnPropertyChanged(nameof(NodeRelativePosition));
-            OnPropertyChanged(nameof(ConnectedPositionY));
-            OnPropertyChanged(nameof(ConnectedPositionY));
-            OnPropertyChanged(nameof(ConnectedPosition));
+            OnPropertyChanged(nameof(ConnectedAbsolutePosition));
             OnPropertyChanged(nameof(ConnectedCP1));
             OnPropertyChanged(nameof(ConnectedCP2));
+            OnPropertyChanged(nameof(AbsolutePosition));
         }
 
         public NodePinVM ConnectedPin
@@ -256,67 +268,19 @@ namespace NetPrintsEditor.ViewModels
             OnConnectionPositionUpdate();
         }
 
-        public double ConnectedPositionX
-        {
-            get
-            {
-                if (IsBeingConnected)
-                {
-                    return ConnectingRelativeMousePosition.X;
-                }
-                else
-                {
-                    if (connectedPin != null)
-                    {
-                        return connectedPin.NodeRelativePosition.X - NodeRelativePosition.X +
-                            connectedPin.Node.PositionX - Node.PositionX
-                            + connectedPin.PositionX;
-                    }
-                    else
-                    {
-                        return PositionX;
-                    }
-                }
-            }
-        }
-
-        public double ConnectedPositionY
-        {
-            get
-            {
-                if (IsBeingConnected)
-                {
-                    return ConnectingRelativeMousePosition.Y;
-                }
-                else
-                {
-                    if (connectedPin != null)
-                    {
-                        return connectedPin.NodeRelativePosition.Y - NodeRelativePosition.Y +
-                            connectedPin.Node.PositionY - Node.PositionY
-                            + connectedPin.PositionY;
-                    }
-                    else
-                    {
-                        return PositionY;
-                    }
-                }
-            }
-        }
-
         private const double CPOffset = 100;
 
         public Point ConnectedCP1
         {
             get
             {
-                if (Pin is NodeOutputExecPin)
+                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin)
                 {
-                    return new Point(PositionX + CPOffset, PositionY);
+                    return new Point(AbsolutePosition.X + CPOffset, AbsolutePosition.Y);
                 }
                 else
                 {
-                    return new Point(PositionX - CPOffset, PositionY);
+                    return new Point(AbsolutePosition.X - CPOffset, AbsolutePosition.Y);
                 }
             }
         }
@@ -325,20 +289,30 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (Pin is NodeOutputExecPin)
+                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin)
                 {
-                    return new Point(ConnectedPositionX - CPOffset, ConnectedPositionY);
+                    return new Point(ConnectedAbsolutePosition.X - CPOffset, ConnectedAbsolutePosition.Y);
                 }
                 else
                 {
-                    return new Point(ConnectedPositionX + CPOffset, ConnectedPositionY);
+                    return new Point(ConnectedAbsolutePosition.X + CPOffset, ConnectedAbsolutePosition.Y);
                 }
             }
         }
 
-        public Point ConnectedPosition
+        public Point ConnectedAbsolutePosition
         {
-            get => new Point(ConnectedPositionX, ConnectedPositionY) ;
+            get
+            {
+                if (IsBeingConnected)
+                {
+                    return ConnectingAbsolutePosition;
+                }
+                else
+                {
+                    return IsConnected ? ConnectedPin.AbsolutePosition : AbsolutePosition;
+                }
+            }
         }
 
         private NodePin pin;

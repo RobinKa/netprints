@@ -75,29 +75,6 @@ namespace NetPrintsEditor.Controls
                     label.SetValue(Grid.ColumnProperty, 0);
                     label.HorizontalContentAlignment = HorizontalAlignment.Right;
                 }
-
-                Color newColor = Color.FromArgb(0xFF, 0xFF, 0x00, 0x00);
-
-                if (Pin.Pin is NodeInputDataPin)
-                {
-                    newColor = Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF);
-                }
-                else if(Pin.Pin is NodeOutputDataPin)
-                {
-                    newColor = Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF);
-                }
-                else if(Pin.Pin is NodeInputExecPin)
-                {
-                    newColor = Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0);
-                }
-                else if(Pin.Pin is NodeOutputExecPin)
-                {
-                    newColor = Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0);
-                }
-
-                SolidColorBrush brush = new SolidColorBrush(newColor);
-                pinElement.Fill = brush;
-                cable.Stroke = brush;
             }
         }
 
@@ -142,9 +119,13 @@ namespace NetPrintsEditor.Controls
                 if(GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin))
                 {
                     e.Effects = DragDropEffects.Link;
-
-                    NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-                    pin.ConnectingRelativeMousePosition = pin.GetRelativePositionToPin(Pin);
+                    
+                    draggingPin.ConnectingAbsolutePosition = Pin.AbsolutePosition;
+                }
+                else
+                {
+                    draggingPin.ConnectingAbsolutePosition = Pin.AbsolutePosition - (Vector)Pin.Position
+                        + (Vector)e.GetPosition(this);
                 }
 
                 e.Handled = true;
