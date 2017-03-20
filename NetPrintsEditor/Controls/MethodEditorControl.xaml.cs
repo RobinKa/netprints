@@ -239,5 +239,15 @@ namespace NetPrintsEditor.Controls
             drawCanvas.LayoutTransform = new ScaleTransform(drawCanvasScale, drawCanvasScale);
             e.Handled = true;
         }
+
+        private void OnDrawCanvasLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Deselect node
+
+            if (Method != null)
+            {
+                Method.SelectedNode = null;
+            }
+        }
     }
 }
