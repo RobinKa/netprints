@@ -38,8 +38,8 @@ namespace NetPrints.Graph
 
             AddInputDataPin("Condition", typeof(bool));
 
-            AddOutputExecPin("ExecTrue");
-            AddOutputExecPin("ExecFalse");
+            AddOutputExecPin("True");
+            AddOutputExecPin("False");
         }
     }
 }
