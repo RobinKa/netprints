@@ -26,7 +26,7 @@ namespace NetPrints.Graph
             get { return InputExecPins[0]; }
         }
 
-        public NodeInputExecPin NextLoopPin
+        public NodeInputExecPin ContinuePin
         {
             get { return InputExecPins[1]; }
         }
@@ -50,7 +50,7 @@ namespace NetPrints.Graph
             : base(method)
         {
             AddInputExecPin("Exec");
-            AddInputExecPin("NextLoop");
+            AddInputExecPin("Continue");
             
             AddOutputExecPin("Loop");
             AddOutputExecPin("Completed");

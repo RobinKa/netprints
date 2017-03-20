@@ -537,7 +537,7 @@ namespace NetPrints.Translator
             builder.AppendLine($"{GetOrCreatePinName(node.IndexPin)} = {GetPinIncomingValue(node.InitialIndexPin)};");
             builder.AppendLine($"if({GetOrCreatePinName(node.IndexPin)} < {GetPinIncomingValue(node.MaxIndexPin)})");
             builder.AppendLine("{");
-            WritePushJumpStack(node.NextLoopPin);
+            WritePushJumpStack(node.ContinuePin);
             WriteGotoOutputPin(node.LoopPin);
             builder.AppendLine("}");
         }
@@ -551,7 +551,7 @@ namespace NetPrints.Translator
             builder.AppendLine($"{GetOrCreatePinName(node.IndexPin)}++;");
             builder.AppendLine($"if({GetOrCreatePinName(node.IndexPin)} < {GetPinIncomingValue(node.MaxIndexPin)})");
             builder.AppendLine("{");
-            WritePushJumpStack(node.NextLoopPin);
+            WritePushJumpStack(node.ContinuePin);
             WriteGotoOutputPin(node.LoopPin);
             builder.AppendLine("}");
 
