@@ -48,16 +48,20 @@ namespace NetPrintsEditor
             classViewer.Class = Class;
         }
 
-        private void OnMethodListDoubleClick(object sender, MouseButtonEventArgs e)
+        private void OnMethodDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            methodEditor.Method = methodList.SelectedItem as MethodVM;
+            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
+            {
+                methodEditor.Method = m;
+            }
         }
 
-        private void OnListItemMouseMove(object sender, MouseEventArgs e)
+        private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && sender is Border b && b.DataContext != null)
+            if (e.LeftButton == MouseButtonState.Pressed && sender is FrameworkElement element && 
+                element.DataContext != null)
             {
-                DragDrop.DoDragDrop(b, b.DataContext, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(element, element.DataContext, DragDropEffects.Copy);
             }
         }
 
@@ -297,21 +301,49 @@ namespace NetPrintsEditor
         }
         #endregion
 
-        private void OnVariableSelected(object sender, MouseButtonEventArgs e)
+        private void OnAttributeClicked(object sender, MouseButtonEventArgs e)
         {
-            if (sender is ListViewItem item && item.DataContext is VariableVM v)
+            if (sender is FrameworkElement element && element.DataContext is VariableVM v)
             {
                 viewerTabControl.SelectedIndex = 1;
                 variableViewer.Variable = v;
             }
         }
 
-        private void OnMethodSelected(object sender, MouseButtonEventArgs e)
+        private void OnRemoveAttributeClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is ListViewItem item && item.DataContext is MethodVM m)
+            if (sender is FrameworkElement element && element.DataContext is VariableVM v)
+            {
+                if(viewerTabControl.SelectedIndex == 1 && variableViewer.Variable == v)
+                {
+                    variableViewer.Variable = null;
+                    viewerTabControl.SelectedIndex = 0;
+                }
+
+                Class.Class.Attributes.Remove(v.Variable);
+            }
+        }
+
+        private void OnMethodClicked(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
             {
                 viewerTabControl.SelectedIndex = 2;
                 methodViewer.Method = m;
+            }
+        }
+
+        private void OnRemoveMethodClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
+            {
+                if (viewerTabControl.SelectedIndex == 2 && methodViewer.Method == m)
+                {
+                    methodViewer.Method = null;
+                    viewerTabControl.SelectedIndex = 0;
+                }
+
+                Class.Class.Methods.Remove(m.Method);
             }
         }
 

@@ -24,35 +24,6 @@
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
     </Window.CommandBindings>
 
-    <Window.Resources>
-        <ControlTemplate x:Key="SelectedTemplate" TargetType="ListViewItem">
-            <Border MouseMove="OnListItemMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF3A3A3A" Background="#FF555555" Margin="1">
-                <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />
-            </Border>
-        </ControlTemplate>
-
-        <Style TargetType="ListViewItem" x:Key="DefaultListViewItemStyle">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <Border MouseMove="OnListItemMouseMove" CornerRadius="3" BorderThickness="1" BorderBrush="#FF444444" Background="#FF333333" Margin="1" >
-                            <TextBlock Foreground="#FFEEEEEE" Text="{Binding Name}" Margin="3" VerticalAlignment="Center" FontSize="14" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <MultiTrigger>
-                    <MultiTrigger.Conditions>
-                        <Condition Property="IsSelected" Value="true" />
-                        <Condition Property="Selector.IsSelectionActive" Value="true" />
-                    </MultiTrigger.Conditions>
-                    <Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
-                </MultiTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -97,19 +68,20 @@
                     </Grid.RowDefinitions>
 
                     <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
-                    
-                    <ListView Grid.Row="1" x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}" MouseDoubleClick="OnMethodListDoubleClick">
+
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Label Content="{Binding Name}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag" MouseDoubleClick="OnMethodDoubleClick" />
+                                    <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveMethodClicked" />
+                                </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
-
-                        <ListView.ItemContainerStyle>
-                            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
-                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMethodSelected" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
                     </ListView>
 
                     <Button Grid.Row="2" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
@@ -125,19 +97,20 @@
                     </Grid.RowDefinitions>
 
                     <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
-                    
-                    <ListView Grid.Row="1" x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
+
+                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Label Content="{Binding Name}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag" />
+                                    <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveAttributeClicked" />
+                                </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
-
-                        <ListView.ItemContainerStyle>
-                            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
-                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnVariableSelected" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
                     </ListView>
 
                     <Button Grid.Row="2" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" />
