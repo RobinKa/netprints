@@ -263,6 +263,13 @@ namespace NetPrintsEditor
                 p.PositionY = mouseLoc.Y;
             }
 
+            // Make sure the node will on the canvas
+            if (p.PositionX < 0)
+                p.PositionX = 0;
+
+            if (p.PositionY < 0)
+                p.PositionY = 0;
+
             object[] parameters = new object[] { p.Method }.Union(p.ConstructorParameters).ToArray();
             Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
             node.PositionX = p.PositionX;
