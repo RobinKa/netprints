@@ -243,8 +243,16 @@ namespace NetPrintsEditor.ViewModels
 
         public void Save()
         {
+            // Save all classes
+            foreach (ClassVM cls in Classes)
+            {
+                SerializationHelper.SaveClass(cls.Class, cls.StoragePath);
+            }
+
             // Set class paths from class storage paths
             ClassPaths = new ObservableCollection<string>(Classes.Select(c => c.StoragePath));
+
+            // Save project file
             Project.Save();
         }
         #endregion
