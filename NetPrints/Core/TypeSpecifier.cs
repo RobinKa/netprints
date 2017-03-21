@@ -14,14 +14,14 @@ namespace NetPrints.Core
         public string Name
         {
             get;
-            set;
+            private set;
         }
 
         [DataMember]
         public bool IsEnum
         {
             get;
-            set;
+            private set;
         }
 
         public string ShortName
