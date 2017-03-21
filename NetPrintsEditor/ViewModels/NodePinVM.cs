@@ -77,7 +77,7 @@ namespace NetPrintsEditor.ViewModels
 
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
-                    OnPropertyChanged(nameof(UsesUnconnectedValue));
+                    OnPropertyChanged(nameof(ShowUnconnectedValue));
                     OnPropertyChanged(nameof(ToolTip));
                 }
             }
@@ -116,9 +116,9 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public bool UsesUnconnectedValue
+        public bool ShowUnconnectedValue
         {
-            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue;
+            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected;
         }
 
         public Node Node
@@ -265,7 +265,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsConnected));
                     OnPropertyChanged(nameof(IsCableVisible));
-                    OnPropertyChanged(nameof(UsesUnconnectedValue));
+                    OnPropertyChanged(nameof(ShowUnconnectedValue));
                     OnConnectionPositionUpdate();
 
                     if (connectedPin != null)
