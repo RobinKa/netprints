@@ -70,7 +70,8 @@ namespace NetPrintsEditor
 
             return assemblies.SelectMany(a =>
                 a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
-                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)));
+                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .Where(m => !m.IsSpecialName)));
         }
 
         public static IEnumerable<MethodInfo> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier, IEnumerable<Assembly> assemblies = null)
@@ -83,7 +84,7 @@ namespace NetPrintsEditor
             return assemblies.SelectMany(a =>
                 a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
                     t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .Where(m => m.ReturnType == returnTypeSpecifier)));
+                        .Where(m => m.ReturnType == returnTypeSpecifier && !m.IsSpecialName)));
         }
 
         public static IEnumerable<Type> GetNonStaticTypes(IEnumerable<Assembly> assemblies = null)
@@ -103,7 +104,10 @@ namespace NetPrintsEditor
 
             if (type != null)
             {
-                return type.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+                // Get all public instance methods, ignore special ones (properties / events)
+
+                return type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                    .Where(m => !m.IsSpecialName);
             }
             else
             {
