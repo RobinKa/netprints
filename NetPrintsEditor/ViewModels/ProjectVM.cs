@@ -108,8 +108,6 @@ namespace NetPrintsEditor.ViewModels
                     LoadedAssemblies.Clear();
                     break;
             }
-
-            ReflectionUtil.UpdateNonStaticTypes(LoadedAssemblies);
         }
 
         public string Path
