@@ -14,7 +14,7 @@ namespace NetPrintsEditor.Converters
             if(value is MethodInfo methodInfo)
             {
                 string paramTypeNames = string.Join(", ", 
-                    methodInfo.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
+                    methodInfo.GetParameters().Select(p => $"{p.ParameterType} {p.Name}"));
 
                 string s = $"{methodInfo.DeclaringType} {methodInfo.Name} ({paramTypeNames})";
 
