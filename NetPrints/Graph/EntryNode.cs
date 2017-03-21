@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.Serialization;
+using System.Linq;
 
 namespace NetPrints.Graph
 {
@@ -25,37 +26,35 @@ namespace NetPrints.Graph
 
         public void SetArgumentTypes(IEnumerable<TypeSpecifier> parameterTypes)
         {
-            List<List<NodeInputDataPin>> oldConnections = new List<List<NodeInputDataPin>>();
+            Dictionary<int, IEnumerable<NodeInputDataPin>> oldConnections =
+                new Dictionary<int, IEnumerable<NodeInputDataPin>>();
 
             foreach (NodeOutputDataPin pin in OutputDataPins)
             {
-                oldConnections.Add(new List<NodeInputDataPin>(pin.OutgoingPins));
+                // Remember pins with same type as before
+                int i = OutputDataPins.IndexOf(pin);
+                if (i < parameterTypes.Count() && pin.PinType == parameterTypes.ElementAt(i))
+                {
+                    oldConnections.Add(i, new List<NodeInputDataPin>(pin.OutgoingPins));
+                }
+
                 GraphUtil.DisconnectOutputDataPin(pin);
             }
 
             OutputDataPins.Clear();
 
-            foreach(TypeSpecifier paramType in parameterTypes)
+            foreach (TypeSpecifier paramType in parameterTypes)
             {
                 AddOutputDataPin(paramType.ShortName, paramType);
             }
 
-            /* TODO: Replace IsSubclassOf somehow
-            // Try to reconnect old pins
-            for(int i = 0; i < Math.Min(oldConnections.Count, OutputDataPins.Count); i++)
+            foreach (var oldConn in oldConnections)
             {
-                TypeSpecifier paramType = OutputDataPins[i].PinType;
-                
-                var oldConn = oldConnections[i];
-
-                foreach (var connPin in oldConn)
+                foreach (NodeInputDataPin toPin in oldConn.Value)
                 {
-                    if (paramType == connPin.PinType || paramType.IsSubclassOf(connPin.PinType))
-                    {
-                        GraphUtil.ConnectDataPins(OutputDataPins[i], connPin);
-                    }
+                    GraphUtil.ConnectDataPins(OutputDataPins[oldConn.Key], toPin);
                 }
-            }*/
+            }
         }
 
         // Called in constructor or after method has been deserialized

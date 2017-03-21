@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -25,11 +26,18 @@ namespace NetPrints.Graph
 
         public void SetReturnTypes(IEnumerable<TypeSpecifier> returnTypes)
         {
-            List<NodeOutputDataPin> oldConnections = new List<NodeOutputDataPin>();
+            Dictionary<int, NodeOutputDataPin> oldConnections = new Dictionary<int, NodeOutputDataPin>();
 
             foreach (NodeInputDataPin pin in InputDataPins)
             {
-                oldConnections.Add(pin.IncomingPin);
+                // Remember pins with same type as before
+                int i = InputDataPins.IndexOf(pin);
+                if (i < returnTypes.Count() && pin.PinType == returnTypes.ElementAt(i)
+                    && pin.IncomingPin != null)
+                {
+                    oldConnections.Add(i, pin.IncomingPin);
+                }
+
                 GraphUtil.DisconnectInputDataPin(pin);
             }
 
@@ -40,22 +48,10 @@ namespace NetPrints.Graph
                 AddInputDataPin(returnType.ShortName, returnType);
             }
 
-            /* TODO: Replace IsSubclassOf
-            // Try to reconnect old pins
-            for (int i = 0; i < Math.Min(oldConnections.Count, InputDataPins.Count); i++)
+            foreach (var oldConn in oldConnections)
             {
-                Type returnType = InputDataPins[i].PinType;
-                
-                var connPin = oldConnections[i];
-
-                if(connPin != null)
-                {
-                    if (returnType == connPin.PinType || connPin.PinType.IsSubclassOf(returnType))
-                    {
-                        GraphUtil.ConnectDataPins(connPin, InputDataPins[i]);
-                    }
-                }
-            }*/
+                GraphUtil.ConnectDataPins(oldConn.Value, InputDataPins[oldConn.Key]);
+            }
         }
 
         // Called in constructor or after method has been deserialized
