@@ -96,7 +96,7 @@ namespace NetPrints.Graph
 
         protected void AddOutputDataPin(string pinName, TypeSpecifier pinType)
         {
-            OutputDataPins.Add(new NodeOutputDataPin(this, pinName, pinType));;
+            OutputDataPins.Add(new NodeOutputDataPin(this, pinName, pinType));
         }
 
         protected void AddInputExecPin(string pinName)
