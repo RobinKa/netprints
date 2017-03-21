@@ -1,5 +1,7 @@
 ﻿using NetPrints.Graph;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -78,6 +80,8 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ShowUnconnectedValue));
+                    OnPropertyChanged(nameof(ShowEnumValue));
+                    OnPropertyChanged(nameof(PossibleEnumNames));
                     OnPropertyChanged(nameof(ToolTip));
                 }
             }
@@ -99,10 +103,11 @@ namespace NetPrintsEditor.ViewModels
                 if (Pin is NodeInputDataPin p && p.UnconnectedValue != value)
                 {
                     // Try to convert to the correct type first if it can be found
+                    // Dont do this for enums as they just use a string
 
                     Type t = ReflectionUtil.GetTypeFromSpecifier(p.PinType);
-
-                    if (t != null)
+                    
+                    if (t != null && !p.PinType.IsEnum)
                     {
                         p.UnconnectedValue = Convert.ChangeType(value, t);
                     }
@@ -118,7 +123,30 @@ namespace NetPrintsEditor.ViewModels
 
         public bool ShowUnconnectedValue
         {
-            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected;
+            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && !p.PinType.IsEnum;
+        }
+
+        public bool ShowEnumValue
+        {
+            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && p.PinType.IsEnum;
+        }
+
+        public IEnumerable<string> PossibleEnumNames
+        {
+            get
+            {
+                if (Pin is NodeInputDataPin p && p.PinType.IsEnum)
+                {
+                    Type enumType = ReflectionUtil.GetTypeFromSpecifier(p.PinType);
+
+                    if(enumType != null)
+                    {
+                        return Enum.GetNames(enumType);
+                    }
+                }
+
+                return null;
+            }
         }
 
         public Node Node
@@ -266,6 +294,8 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(IsConnected));
                     OnPropertyChanged(nameof(IsCableVisible));
                     OnPropertyChanged(nameof(ShowUnconnectedValue));
+                    OnPropertyChanged(nameof(ShowEnumValue));
+                    OnPropertyChanged(nameof(PossibleEnumNames));
                     OnConnectionPositionUpdate();
 
                     if (connectedPin != null)

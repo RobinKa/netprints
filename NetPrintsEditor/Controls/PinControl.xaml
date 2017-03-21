@@ -34,7 +34,14 @@
         <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode" FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         <TextBox Grid.Column="2" 
                     Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
-                    Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3"/>
+                    Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3" />
+
+        <ComboBox Grid.Column="2"
+                  Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3" 
+                  SelectedItem="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
+                  ItemsSource="{Binding ElementName=pinWindow, Path=Pin.PossibleEnumNames}"
+                  />
+
     </Grid>
 
         
