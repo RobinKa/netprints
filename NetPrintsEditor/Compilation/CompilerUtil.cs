@@ -16,7 +16,7 @@ namespace NetPrintsEditor
             
             CompilerParameters parameters = new CompilerParameters(assemblies.Select(a => a.Path).ToArray(), outputPath, true);
             parameters.GenerateExecutable = generateExecutable;
-            parameters.CompilerOptions = "/platform:anycpu32bitpreferred";
+            parameters.CompilerOptions = generateExecutable ? "/platform:anycpu32bitpreferred" : null;
             CompilerResults results = csc.CompileAssemblyFromSource(parameters, sources.ToArray());
             return results;
         }
