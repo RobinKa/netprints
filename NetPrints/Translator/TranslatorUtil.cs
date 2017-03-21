@@ -32,7 +32,7 @@ namespace NetPrints.Translator
             return name;
         }
         
-        public static string ObjectToLiteral(object obj, Type type)
+        public static string ObjectToLiteral(object obj, TypeSpecifier type)
         {
             // Put quotes around string literals
             if (type == typeof(string))

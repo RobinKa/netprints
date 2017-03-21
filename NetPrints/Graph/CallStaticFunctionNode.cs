@@ -16,7 +16,7 @@ namespace NetPrints.Graph
         }
 
         [DataMember]
-        public string ClassName
+        public TypeSpecifier ClassType
         {
             get;
             private set;
@@ -27,26 +27,26 @@ namespace NetPrints.Graph
             get { return InputDataPins; }
         }
 
-        public CallStaticFunctionNode(Method method, string className, string methodName, IEnumerable<Type> inputTypes, IEnumerable<Type> outputTypes)
+        public CallStaticFunctionNode(Method method, TypeSpecifier classType, string methodName, IEnumerable<TypeSpecifier> inputTypes, IEnumerable<TypeSpecifier> outputTypes)
             : base(method)
         {
-            ClassName = className;
+            ClassType = classType;
             MethodName = methodName;
             
-            foreach(Type inputType in inputTypes)
+            foreach(TypeSpecifier inputType in inputTypes)
             {
-                AddInputDataPin(inputType.Name, inputType);
+                AddInputDataPin(inputType.ShortName, inputType);
             }
 
-            foreach(Type outputType in outputTypes)
+            foreach(TypeSpecifier outputType in outputTypes)
             {
-                AddOutputDataPin(outputType.Name, outputType);
+                AddOutputDataPin(outputType.ShortName, outputType);
             }
         }
 
         public override string ToString()
         {
-            return $"Call Static {ClassName} {MethodName}";
+            return $"Call Static {ClassType} {MethodName}";
         }
     }
 }

@@ -116,7 +116,8 @@ namespace NetPrintsEditor.Controls
 
                 NodePinVM draggingPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
                 
-                if(GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin))
+                if(GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin, 
+                    (a, b) => ReflectionUtil.TypeSpecifierIsSubclassOf(a, b)))
                 {
                     e.Effects = DragDropEffects.Link;
                     

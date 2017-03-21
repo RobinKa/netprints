@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetPrints.Core;
+using System;
 using System.Text.RegularExpressions;
 
 namespace NetPrints.Graph
@@ -10,12 +11,12 @@ namespace NetPrints.Graph
             return Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
         }
 
-        public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, bool swapped=false)
+        public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, bool swapped=false)
         {
             return (pinA is NodeInputExecPin && pinB is NodeOutputExecPin) ||
                 (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB 
-                && (datA.PinType == datB.PinType || datB.PinType.IsSubclassOf(datA.PinType))) ||
-                (!swapped && CanConnectNodePins(pinB, pinA, true));
+                && (datA.PinType == datB.PinType || isSubclassOf(datB.PinType, datA.PinType))) ||
+                (!swapped && CanConnectNodePins(pinB, pinA, isSubclassOf, true));
         }
 
         public static void ConnectNodePins(NodePin pinA, NodePin pinB, bool swapped=false)

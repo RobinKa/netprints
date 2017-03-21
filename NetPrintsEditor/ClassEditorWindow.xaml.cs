@@ -227,7 +227,9 @@ namespace NetPrintsEditor
         {
             ConnectPinsParameters xcp = e.Parameter as ConnectPinsParameters;
             
-            e.CanExecute = e.Parameter is ConnectPinsParameters cp && GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin);
+            e.CanExecute = e.Parameter is ConnectPinsParameters cp && 
+                GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin, 
+                (a, b) => ReflectionUtil.TypeSpecifierIsSubclassOf(a, b, Class.Project.LoadedAssemblies));
         }
 
         private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)

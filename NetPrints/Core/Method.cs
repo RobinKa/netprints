@@ -50,18 +50,18 @@ namespace NetPrints.Core
         } = new ObservableRangeCollection<Node>();
 
         [DataMember]
-        public ObservableRangeCollection<Type> ArgumentTypes
+        public ObservableRangeCollection<TypeSpecifier> ArgumentTypes
         {
             get;
             private set;
-        } = new ObservableRangeCollection<Type>();
+        } = new ObservableRangeCollection<TypeSpecifier>();
 
         [DataMember]
-        public ObservableRangeCollection<Type> ReturnTypes
+        public ObservableRangeCollection<TypeSpecifier> ReturnTypes
         {
             get;
             private set;
-        } = new ObservableRangeCollection<Type>();
+        } = new ObservableRangeCollection<TypeSpecifier>();
 
         [DataMember]
         public MethodModifiers Modifiers

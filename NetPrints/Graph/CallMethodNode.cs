@@ -16,6 +16,13 @@ namespace NetPrints.Graph
             private set;
         }
 
+        [DataMember]
+        public TypeSpecifier TargetType
+        {
+            get;
+            private set;
+        }
+
         public NodeInputDataPin TargetPin
         {
             get { return InputDataPins[0]; }
@@ -26,21 +33,22 @@ namespace NetPrints.Graph
             get { return InputDataPins.Skip(1).ToList(); }
         }
 
-        public CallMethodNode(Method method, string methodName, IEnumerable<Type> inputTypes, IEnumerable<Type> outputTypes)
+        public CallMethodNode(Method method, TypeSpecifier targetType, string methodName, IEnumerable<TypeSpecifier> inputTypes, IEnumerable<TypeSpecifier> outputTypes)
             : base(method)
         {
             MethodName = methodName;
+            TargetType = targetType;
 
-            AddInputDataPin("Target", typeof(object));
+            AddInputDataPin("Target", targetType);
             
-            foreach(Type inputType in inputTypes)
+            foreach(TypeSpecifier inputType in inputTypes)
             {
-                AddInputDataPin(inputType.Name, inputType);
+                AddInputDataPin(inputType.ShortName, inputType);
             }
 
-            foreach(Type outputType in outputTypes)
+            foreach(TypeSpecifier outputType in outputTypes)
             {
-                AddOutputDataPin(outputType.Name, outputType);
+                AddOutputDataPin(outputType.ShortName, outputType);
             }
         }
 

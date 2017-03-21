@@ -210,8 +210,9 @@ namespace NetPrintsEditor.ViewModels
         public ObservableRangeCollection<Assembly> LoadedAssemblies
         {
             get;
-            private set;
         } = new ObservableRangeCollection<Assembly>();
+
+        private Assembly selfReflectionAssembly;
         
         public ProjectVM(Project project)
         {
@@ -234,6 +235,13 @@ namespace NetPrintsEditor.ViewModels
             }
 
             IsCompiling = true;
+
+            // Remove previous self reflection assembly
+            if (selfReflectionAssembly != null)
+            {
+                LoadedAssemblies.Remove(selfReflectionAssembly);
+                selfReflectionAssembly = null;
+            }
 
             // Save original thread dispatcher
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
@@ -272,10 +280,18 @@ namespace NetPrintsEditor.ViewModels
                 // Write errors to file
                 File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
                     string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
-
+                
                 dispatcher.Invoke(() =>
                 {
                     LastCompilationSucceeded = !results.Errors.HasErrors;
+
+                    if(LastCompilationSucceeded)
+                    {
+                        // Add newly compiled project assembly
+                        selfReflectionAssembly = Assembly.ReflectionOnlyLoadFrom(results.PathToAssembly);
+                        LoadedAssemblies.Add(selfReflectionAssembly);
+                    }
+
                     IsCompiling = false;
                 });
             }).Start();
@@ -302,8 +318,11 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (!localAssemblyName.FixPath())
                 {
-                    OpenFileDialog openFileDialog = new OpenFileDialog();
-                    openFileDialog.Title = $"Open {localAssemblyName.Name}";
+                    OpenFileDialog openFileDialog = new OpenFileDialog()
+                    {
+                        Title = $"Open {localAssemblyName.Name}"
+                    };
+
                     if (openFileDialog.ShowDialog() == true)
                     {
                         localAssemblyName.Path = openFileDialog.FileName;

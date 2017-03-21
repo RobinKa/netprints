@@ -20,7 +20,7 @@ namespace NetPrints.Core
     public class Variable
     {
         [DataMember]
-        public Type VariableType
+        public TypeSpecifier VariableType
         {
             get;
             set;
@@ -40,7 +40,7 @@ namespace NetPrints.Core
             set;
         } = VariableModifiers.Private;
 
-        public Variable(string name, Type variableType)
+        public Variable(string name, TypeSpecifier variableType)
         {
             Name = name;
             VariableType = variableType;

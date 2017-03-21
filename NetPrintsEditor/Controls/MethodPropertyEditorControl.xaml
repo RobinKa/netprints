@@ -117,7 +117,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
-                            <ComboBox Text="{Binding FullName, Mode=OneWay}" 
+                            <ComboBox Text="{Binding Mode=OneWay}" 
                                       SelectedItem="{Binding Mode=OneWay}"
                                       ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}" 
                                       Style="{DynamicResource ComboBoxStyle1}" 

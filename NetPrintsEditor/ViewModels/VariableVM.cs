@@ -7,7 +7,7 @@ namespace NetPrintsEditor.ViewModels
 {
     public class VariableVM : INotifyPropertyChanged
     {
-        public Type VariableType
+        public TypeSpecifier VariableType
         {
             get => variable.VariableType;
             set

@@ -81,7 +81,7 @@ namespace NetPrints.Translator
                 }
                 else
                 {
-                    return $"default({pin.PinType.FullName})";
+                    return $"default({pin.PinType})";
                 }
             }
             else
@@ -103,7 +103,7 @@ namespace NetPrints.Translator
         private string GetOrCreateTypedPinName(NodeOutputDataPin pin)
         {
             string pinName = GetOrCreatePinName(pin);
-            return $"{pin.PinType.FullName} {pinName}";
+            return $"{pin.PinType} {pinName}";
         }
 
         private IEnumerable<string> GetOrCreateTypedPinNames(IEnumerable<NodeOutputDataPin> pins)
@@ -144,7 +144,7 @@ namespace NetPrints.Translator
 
                 if (!(pin.Node is EntryNode))
                 {
-                    builder.AppendLine($"{pin.PinType.FullName} {variableName};");
+                    builder.AppendLine($"{pin.PinType} {variableName};");
                 }
             }
         }
@@ -193,14 +193,14 @@ namespace NetPrints.Translator
             if (method.ReturnTypes.Count() > 1)
             {
                 // Tuple<Types..> (won't be needed in the future)
-                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes.Select(t => t.FullName)) + ">";
+                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes) + ">";
                 builder.Append(returnType + " ");
 
                 //builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
             }
             else if (method.ReturnTypes.Count() == 1)
             {
-                builder.Append($"{method.ReturnTypes[0].FullName} ");
+                builder.Append($"{method.ReturnTypes[0]} ");
             }
             else
             {
@@ -371,7 +371,7 @@ namespace NetPrints.Translator
             {
                 temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
 
-                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.FullName));
+                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType));
                 
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
@@ -426,15 +426,15 @@ namespace NetPrints.Translator
             {
                 temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
 
-                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.FullName));
+                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType));
 
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
             // Write class name / target, default to own class name
-            if (node.ClassName != null)
+            if (node.ClassType != null)
             {
-                builder.Append($"{node.ClassName}.");
+                builder.Append($"{node.ClassType}.");
             }
             else
             {
@@ -468,7 +468,7 @@ namespace NetPrints.Translator
 
             // Write assignment and constructor
             string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
-            builder.Append($"{returnName} = new {node.ClassType.FullName}");
+            builder.Append($"{returnName} = new {node.ClassType}");
             
             // Write constructor arguments
             var argumentNames = GetPinIncomingValues(node.ArgumentPins);
@@ -524,7 +524,7 @@ namespace NetPrints.Translator
                 var returnValues = node.InputDataPins.Select(pin => GetPinIncomingValue(pin));
 
                 // Tuple<Types..> (won't be needed in the future)
-                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", node.InputDataPins.Select(pin => pin.PinType.FullName)) + ">";
+                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", node.InputDataPins.Select(pin => pin.PinType)) + ">";
                 builder.AppendLine($"return new {returnType}({string.Join(",", returnValues)});");
             }
         }

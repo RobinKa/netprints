@@ -15,7 +15,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 if(Pin is NodeDataPin dataPin)
                 {
-                    return $"{dataPin.PinType.FullName} {dataPin.Name}";
+                    return $"{dataPin.PinType} {dataPin.Name}";
                 }
 
                 return null;
@@ -94,7 +94,19 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (Pin is NodeInputDataPin p && p.UnconnectedValue != value)
                 {
-                    p.UnconnectedValue = Convert.ChangeType(value, p.PinType);
+                    // Try to convert to the correct type first if it can be found
+
+                    Type t = ReflectionUtil.GetTypeFromSpecifier(p.PinType);
+
+                    if (t != null)
+                    {
+                        p.UnconnectedValue = Convert.ChangeType(value, t);
+                    }
+                    else
+                    {
+                        p.UnconnectedValue = value;
+                    }
+
                     OnPropertyChanged();
                 }
             }

@@ -46,6 +46,7 @@
     <Compile Include="Core\Method.cs" />
     <Compile Include="Core\NetPrintsUtil.cs" />
     <Compile Include="Core\ObservableRangeCollection.cs" />
+    <Compile Include="Core\TypeSpecifier.cs" />
     <Compile Include="Core\Variable.cs" />
     <Compile Include="Graph\CallMethodNode.cs" />
     <Compile Include="Graph\ConstructorNode.cs" />

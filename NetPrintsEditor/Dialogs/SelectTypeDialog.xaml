@@ -14,7 +14,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <ComboBox
-            Text="{Binding SelectedType.FullName, ElementName=wnd, Mode=OneWay}" 
+            Text="{Binding SelectedType, ElementName=wnd, Mode=OneWay}" 
             SelectedItem="{Binding SelectedType, ElementName=wnd, Mode=TwoWay}" 
             ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"
             Style="{DynamicResource ComboBoxStyle1}"/>

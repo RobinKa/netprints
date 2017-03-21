@@ -89,12 +89,12 @@ namespace NetPrints.Graph
             return GraphUtil.SplitCamelCase(GetType().Name);
         }
 
-        protected void AddInputDataPin(string pinName, Type pinType)
+        protected void AddInputDataPin(string pinName, TypeSpecifier pinType)
         {
             InputDataPins.Add(new NodeInputDataPin(this, pinName, pinType));
         }
 
-        protected void AddOutputDataPin(string pinName, Type pinType)
+        protected void AddOutputDataPin(string pinName, TypeSpecifier pinType)
         {
             OutputDataPins.Add(new NodeOutputDataPin(this, pinName, pinType));;
         }

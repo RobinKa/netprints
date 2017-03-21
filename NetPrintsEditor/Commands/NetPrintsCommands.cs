@@ -55,7 +55,7 @@ namespace NetPrintsEditor.Commands
 
                 if (nodeType.GetConstructor(constructorParamTypes) == null)
                 {
-                    throw new ArgumentException("Invalid parameters for constructor of node");
+                    throw new ArgumentException($"Invalid parameters for constructor of {nodeType.FullName}");
                 }
 
                 NodeType = nodeType;

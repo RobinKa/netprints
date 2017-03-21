@@ -63,7 +63,7 @@ namespace NetPrints.Translator
                 .Replace("%Namespace%", c.Namespace)
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
-                .Replace("%SuperType%", c.SuperType.FullName)
+                .Replace("%SuperType%", c.SuperType)
                 .Replace("%Content%", content.ToString());
         }
 
@@ -106,7 +106,7 @@ namespace NetPrints.Translator
 
             return VARIABLE_TEMPLATE
                 .Replace("%VariableModifiers%", modifiers.ToString())
-                .Replace("%VariableType%", variable.VariableType.FullName)
+                .Replace("%VariableType%", variable.VariableType)
                 .Replace("%VariableName%", variable.Name);
         }
 

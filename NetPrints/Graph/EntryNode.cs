@@ -23,7 +23,7 @@ namespace NetPrints.Graph
             SetupArgumentTypesChangedEvent();
         }
 
-        public void SetArgumentTypes(IEnumerable<Type> parameterTypes)
+        public void SetArgumentTypes(IEnumerable<TypeSpecifier> parameterTypes)
         {
             List<List<NodeInputDataPin>> oldConnections = new List<List<NodeInputDataPin>>();
 
@@ -35,15 +35,16 @@ namespace NetPrints.Graph
 
             OutputDataPins.Clear();
 
-            foreach(Type paramType in parameterTypes)
+            foreach(TypeSpecifier paramType in parameterTypes)
             {
-                AddOutputDataPin(paramType.Name, paramType);
+                AddOutputDataPin(paramType.ShortName, paramType);
             }
 
+            /* TODO: Replace IsSubclassOf somehow
             // Try to reconnect old pins
             for(int i = 0; i < Math.Min(oldConnections.Count, OutputDataPins.Count); i++)
             {
-                Type paramType = OutputDataPins[i].PinType;
+                TypeSpecifier paramType = OutputDataPins[i].PinType;
                 
                 var oldConn = oldConnections[i];
 
@@ -54,7 +55,7 @@ namespace NetPrints.Graph
                         GraphUtil.ConnectDataPins(OutputDataPins[i], connPin);
                     }
                 }
-            }
+            }*/
         }
 
         // Called in constructor or after method has been deserialized

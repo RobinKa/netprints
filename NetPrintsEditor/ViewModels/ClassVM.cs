@@ -53,7 +53,7 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<MethodVM, Method> methods;
 
-        public Type SuperType
+        public TypeSpecifier SuperType
         {
             get => cls.SuperType;
             set

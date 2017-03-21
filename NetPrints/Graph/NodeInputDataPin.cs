@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetPrints.Core;
+using System;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -15,7 +16,7 @@ namespace NetPrints.Graph
 
         public bool UsesUnconnectedValue
         {
-            get => PinType.IsPrimitive || PinType == typeof(string);
+            get => PinType.IsPrimitive;
         }
 
         [DataMember]
@@ -33,7 +34,7 @@ namespace NetPrints.Graph
 
         private object unconnectedValue;
 
-        public NodeInputDataPin(Node node, string name, Type pinType)
+        public NodeInputDataPin(Node node, string name, TypeSpecifier pinType)
             : base(node, name, pinType)
         {
             

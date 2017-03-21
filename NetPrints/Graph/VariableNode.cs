@@ -20,13 +20,13 @@ namespace NetPrints.Graph
         [DataMember]
         public string VariableName { get; private set; }
 
-        public VariableNode(Method method, string variableName, Type variableType)
+        public VariableNode(Method method, string variableName, TypeSpecifier variableType)
             : base(method)
         {
             VariableName = variableName;
             
             AddInputDataPin("Target", typeof(object));
-            AddOutputDataPin(variableType.Name, variableType);
+            AddOutputDataPin(variableType.ShortName, variableType);
         }
     }
 }

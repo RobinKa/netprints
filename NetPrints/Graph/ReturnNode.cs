@@ -23,7 +23,7 @@ namespace NetPrints.Graph
             SetupReturnTypesChangedEvent();
         }
 
-        public void SetReturnTypes(IEnumerable<Type> returnTypes)
+        public void SetReturnTypes(IEnumerable<TypeSpecifier> returnTypes)
         {
             List<NodeOutputDataPin> oldConnections = new List<NodeOutputDataPin>();
 
@@ -35,11 +35,12 @@ namespace NetPrints.Graph
 
             InputDataPins.Clear();
 
-            foreach (Type returnType in returnTypes)
+            foreach (TypeSpecifier returnType in returnTypes)
             {
-                AddInputDataPin(returnType.Name, returnType);
+                AddInputDataPin(returnType.ShortName, returnType);
             }
 
+            /* TODO: Replace IsSubclassOf
             // Try to reconnect old pins
             for (int i = 0; i < Math.Min(oldConnections.Count, InputDataPins.Count); i++)
             {
@@ -54,7 +55,7 @@ namespace NetPrints.Graph
                         GraphUtil.ConnectDataPins(connPin, InputDataPins[i]);
                     }
                 }
-            }
+            }*/
         }
 
         // Called in constructor or after method has been deserialized

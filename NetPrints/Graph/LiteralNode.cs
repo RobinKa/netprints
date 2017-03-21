@@ -13,7 +13,7 @@ namespace NetPrints.Graph
         }
 
         [DataMember]
-        public Type LiteralType { get; private set; }
+        public TypeSpecifier LiteralType { get; private set; }
 
         [DataMember]
         public object Value
@@ -35,7 +35,7 @@ namespace NetPrints.Graph
 
         private object val;
 
-        public LiteralNode(Method method, Type literalType, object value)
+        public LiteralNode(Method method, TypeSpecifier literalType, object value)
             : base(method)
         {
             LiteralType = literalType;

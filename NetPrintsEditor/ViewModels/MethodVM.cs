@@ -65,7 +65,7 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<NodeVM, Node> nodes;
 
-        public ObservableRangeCollection<Type> ArgumentTypes
+        public ObservableRangeCollection<TypeSpecifier> ArgumentTypes
         {
             get => method.ArgumentTypes;
         }
@@ -85,7 +85,7 @@ namespace NetPrintsEditor.ViewModels
 
         private ClassVM classVM;
 
-        public ObservableRangeCollection<Type> ReturnTypes
+        public ObservableRangeCollection<TypeSpecifier> ReturnTypes
         {
             get => method.ReturnTypes;
         }

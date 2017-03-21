@@ -11,7 +11,7 @@ namespace NetPrints.Graph
         public ObservableRangeCollection<NodeInputDataPin> OutgoingPins { get; private set; } 
             = new ObservableRangeCollection<NodeInputDataPin>();
 
-        public NodeOutputDataPin(Node node, string name, Type pinType)
+        public NodeOutputDataPin(Node node, string name, TypeSpecifier pinType)
             : base(node, name, pinType)
         {
 

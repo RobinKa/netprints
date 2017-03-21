@@ -18,11 +18,7 @@ namespace NetPrints.Tests
 
         public void CreateStringLengthMethod()
         {
-            List<Type> argumentTypes = new List<Type>()
-            {
-            };
-
-            List<Type> returnTypes = new List<Type>()
+            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
                 typeof(int),
             };
@@ -33,7 +29,7 @@ namespace NetPrints.Tests
                 Class = cls,
                 Modifiers = MethodModifiers.Public
             };
-            stringLengthMethod.ArgumentTypes.AddRange(argumentTypes);
+
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
@@ -50,27 +46,17 @@ namespace NetPrints.Tests
 
         public void CreateMainMethod()
         {
-            List<Type> argumentTypes = new List<Type>()
-            {
-            };
-
-            List<Type> returnTypes = new List<Type>()
-            {
-            };
-
             mainMethod = new Method("Main")
             {
                 Class = cls,
                 Modifiers = MethodModifiers.Static
             };
-            mainMethod.ArgumentTypes.AddRange(argumentTypes);
-            mainMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
             LiteralNode stringLiteralNode = new LiteralNode(mainMethod, typeof(string), "Hello World");
             VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, "testVariable", typeof(string));
-            CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, "StringLength", new List<Type>(), new List<Type>() { typeof(int) });
-            CallStaticFunctionNode writeConsoleNode = new CallStaticFunctionNode(mainMethod, "Console", "WriteLine", new List<Type>() { typeof(string) }, new List<Type>());
+            CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, cls.Type, "StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { typeof(int) });
+            CallStaticFunctionNode writeConsoleNode = new CallStaticFunctionNode(mainMethod, "Console", "WriteLine", new List<TypeSpecifier>() { typeof(string) }, new List<TypeSpecifier>());
 
             // Connect node execs
             GraphUtil.ConnectExecPins(mainMethod.EntryNode.InitialExecutionPin, setStringNode.InputExecPins[0]);

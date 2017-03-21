@@ -7,7 +7,7 @@ namespace NetPrints.Serialization
     public class SerializationHelper
     {
         private static DataContractSerializer classSerializer = new DataContractSerializer(
-                typeof(Class), null, int.MaxValue, false, true, new TypeReplacementSurrogate());
+                typeof(Class), null, int.MaxValue, false, true, null);
 
         public static void SaveClass(Class cls, string outputPath)
         {

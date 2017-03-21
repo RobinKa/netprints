@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetPrints.Core;
+using System;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -7,9 +8,9 @@ namespace NetPrints.Graph
     public abstract class NodeDataPin : NodePin
     {
         [DataMember]
-        public Type PinType { get; private set; }
+        public TypeSpecifier PinType { get; private set; }
 
-        public NodeDataPin(Node node, string name, Type pinType)
+        public NodeDataPin(Node node, string name, TypeSpecifier pinType)
             : base(node, name)
         {
             PinType = pinType;

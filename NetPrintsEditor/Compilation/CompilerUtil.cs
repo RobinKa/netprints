@@ -13,10 +13,13 @@ namespace NetPrintsEditor
             IEnumerable<LocalAssemblyName> assemblies, IEnumerable<string> sources, bool generateExecutable=false)
         {
             CSharpCodeProvider csc = new CSharpCodeProvider();
-            
-            CompilerParameters parameters = new CompilerParameters(assemblies.Select(a => a.Path).ToArray(), outputPath, true);
-            parameters.GenerateExecutable = generateExecutable;
-            parameters.CompilerOptions = generateExecutable ? "/platform:anycpu32bitpreferred" : null;
+
+            CompilerParameters parameters = new CompilerParameters(assemblies.Select(a => a.Path).ToArray(), outputPath, true)
+            {
+                GenerateExecutable = generateExecutable,
+                CompilerOptions = generateExecutable ? "/platform:anycpu32bitpreferred" : null
+            };
+
             CompilerResults results = csc.CompileAssemblyFromSource(parameters, sources.ToArray());
             return results;
         }

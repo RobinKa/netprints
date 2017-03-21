@@ -1,4 +1,5 @@
-﻿using NetPrints.Graph;
+﻿using NetPrints.Core;
+using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Converters;
 using NetPrintsEditor.Dialogs;
@@ -88,8 +89,9 @@ namespace NetPrintsEditor.Controls
                 {
                     if (methodInfo.IsStatic)
                     {
-                        //CallStaticFunctionNode(Method method, string className, string methodName, 
-                        //    IEnumerable<Type> inputTypes, IEnumerable<Type> outputTypes)
+                        // CallStaticFunctionNode(Method method, TypeSpecifier classType, 
+                        // string methodName, IEnumerable<TypeSpecifier> inputTypes, 
+                        // IEnumerable<TypeSpecifier> outputTypes)
 
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -99,16 +101,16 @@ namespace NetPrintsEditor.Controls
                             0,
 
                             // Parameters
-                            methodInfo.DeclaringType.ToString(),
+                            (TypeSpecifier)methodInfo.DeclaringType,
                             methodInfo.Name,
-                            methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(),
-                            methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
+                            methodInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType).ToArray(),
+                            methodInfo.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodInfo.ReturnType }
                         ));
                     }
                     else
                     {
-                        //CallMethodNode(Method method, string methodName, IEnumerable<Type> inputTypes, 
-                        //    IEnumerable<Type> outputTypes)
+                        // CallMethodNode(Method method, string methodName, 
+                        //     IEnumerable<TypeSpecifier> inputTypes, IEnumerable<TypeSpecifier> outputTypes)
 
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -118,9 +120,10 @@ namespace NetPrintsEditor.Controls
                             0,
 
                             // Parameters
+                            (TypeSpecifier)methodInfo.DeclaringType,
                             methodInfo.Name,
-                            methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(),
-                            methodInfo.ReturnType == typeof(void) ? new Type[] { } : new Type[] { methodInfo.ReturnType }
+                            methodInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType).ToArray(),
+                            methodInfo.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodInfo.ReturnType }
                         ));
                     }
                 }
@@ -160,8 +163,9 @@ namespace NetPrintsEditor.Controls
                             {
                                 // Just choose the first constructor we find
                                 ConstructorInfo constructor = constructors[0];
-                                
-                                // ConstructorNode(Method method, Type classType, IEnumerable<Type> argumentTypes)
+
+                                // ConstructorNode(Method method, TypeSpecifier classType, 
+                                //     IEnumerable<TypeSpecifier> argumentTypes)
 
                                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                                 (
@@ -171,8 +175,8 @@ namespace NetPrintsEditor.Controls
                                     0,
 
                                     // Parameters
-                                    selectedType,
-                                    constructor.GetParameters().Select(p => p.ParameterType).ToArray()
+                                    (TypeSpecifier)selectedType,
+                                    constructor.GetParameters().Select(p => (TypeSpecifier)p.ParameterType).ToArray()
                                 ));
                             }
                         }

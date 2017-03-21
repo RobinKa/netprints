@@ -27,12 +27,12 @@ namespace NetPrints.Tests
 
         public void CreateStringLengthMethod()
         {
-            List<Type> argumentTypes = new List<Type>()
+            List<TypeSpecifier> argumentTypes = new List<TypeSpecifier>()
             {
                 typeof(string),
             };
 
-            List<Type> returnTypes = new List<Type>()
+            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
                 typeof(int),
             };
@@ -58,13 +58,13 @@ namespace NetPrints.Tests
         
         public void CreateIfElseMethod()
         {
-            List<Type> argumentTypes = new List<Type>()
+            List<TypeSpecifier> argumentTypes = new List<TypeSpecifier>()
             {
                 typeof(int),
                 typeof(bool),
             };
 
-            List<Type> returnTypes = new List<Type>()
+            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
                 typeof(int),
             };
@@ -94,21 +94,11 @@ namespace NetPrints.Tests
 
         public void CreateForLoopMethod()
         {
-            List<Type> argumentTypes = new List<Type>()
-            {
-            };
-
-            List<Type> returnTypes = new List<Type>()
-            {
-            };
-
             // Create method
             forLoopMethod = new Method("ForLoop")
             {
                 Modifiers = MethodModifiers.Public
             };
-            forLoopMethod.ArgumentTypes.AddRange(argumentTypes);
-            forLoopMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
             LiteralNode maxIndexLiteralNode = new LiteralNode(forLoopMethod, typeof(int), 10);

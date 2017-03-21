@@ -9,7 +9,7 @@ namespace NetPrints.Graph
     public class ConstructorNode : ExecNode
     {
         [DataMember]
-        public Type ClassType
+        public TypeSpecifier ClassType
         {
             get;
             private set;
@@ -20,17 +20,17 @@ namespace NetPrints.Graph
             get { return InputDataPins; }
         }
 
-        public ConstructorNode(Method method, Type classType, IEnumerable<Type> argumentTypes)
+        public ConstructorNode(Method method, TypeSpecifier classType, IEnumerable<TypeSpecifier> argumentTypes)
             : base(method)
         {
             ClassType = classType;
 
-            foreach(Type argumentType in argumentTypes)
+            foreach(TypeSpecifier argumentType in argumentTypes)
             {
-                AddInputDataPin(argumentType.Name, argumentType);
+                AddInputDataPin(argumentType.ShortName, argumentType);
             }
             
-            AddOutputDataPin(classType.Name, classType);
+            AddOutputDataPin(classType.ShortName, classType);
         }
 
         public override string ToString()
