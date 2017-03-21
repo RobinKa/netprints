@@ -1,8 +1,10 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
+using System.Linq;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -176,7 +178,7 @@ namespace NetPrintsEditor.ViewModels
 
                     OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
                         Node.OutputExecPins, p => new NodePinVM(p));
-
+                    
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                 }

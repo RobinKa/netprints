@@ -103,6 +103,133 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        /*
+        Scenarios:
+        
+        Method changed [0]:
+            (Un)assign (old) nodes changed events [1]
+            (Un)assign (old)new pins changed events [2]
+            (Un)assign (old)new pin connection changed events [3]
+            (Un)setup (old)new method pins' connections in VM
+
+        Node changed [1]:
+            (Un)assign (old)new pins changed events [2]
+            (Un)assign (old)new pin connection changed events [3]
+            (Un)setup (old)new node pins' connections in VM
+
+        Pin changed [2]:
+            (Un)assign (old)new pin connection changed events [3]
+            (Un)setup (old)new pin connection in VM
+
+        Pin connection changed [3]:
+            (Un)setup (old)new connection in VM
+        */
+
+        private void SetupNodeEvents(NodeVM node, bool add)
+        {
+            // (Un)assign (old)new pins changed events [2]
+            if (add)
+            {
+                node.InputDataPins.CollectionChanged += OnPinCollectionChanged;
+                node.OutputDataPins.CollectionChanged += OnPinCollectionChanged;
+                node.InputExecPins.CollectionChanged += OnPinCollectionChanged;
+                node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
+            }
+            else
+            {
+                node.InputDataPins.CollectionChanged -= OnPinCollectionChanged;
+                node.OutputDataPins.CollectionChanged -= OnPinCollectionChanged;
+                node.InputExecPins.CollectionChanged -= OnPinCollectionChanged;
+                node.OutputExecPins.CollectionChanged -= OnPinCollectionChanged;
+            }
+
+            // (Un)assign (old)new pin connection changed events [3]
+            node.InputDataPins.ToList().ForEach(p => SetupPinEvents(p, add));
+            node.OutputExecPins.ToList().ForEach(p => SetupPinEvents(p, add));
+        }
+
+        private void SetupPinEvents(NodePinVM pin, bool add)
+        {
+            // (Un)assign (old)new pin connection changed events [3]
+
+            if (pin.Pin is NodeInputDataPin idp)
+            {
+                if (add)
+                {
+                    idp.IncomingPinChanged += OnInputDataPinIncomingPinChanged;
+                }
+                else
+                {
+                    idp.IncomingPinChanged -= OnInputDataPinIncomingPinChanged;
+                }
+            }
+            else if (pin.Pin is NodeOutputExecPin oxp)
+            {
+                if (add)
+                {
+                    oxp.OutgoingPinChanged += OnOutputExecPinIncomingPinChanged;
+                }
+                else
+                {
+                    oxp.OutgoingPinChanged -= OnOutputExecPinIncomingPinChanged;
+                }
+            }
+        }
+
+        private void SetupPinConnection(NodePinVM pin, bool add)
+        {
+            if(pin.Pin is NodeInputDataPin idp)
+            {
+                if (idp.IncomingPin != null)
+                {
+                    if (add)
+                    {
+                        NodeOutputDataPin connPin = idp.IncomingPin as NodeOutputDataPin;
+                        pin.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
+                            OutputDataPins.Single(x => x.Pin == connPin);
+                    }
+                    else
+                    {
+                        pin.ConnectedPin = null;
+                    }
+                }
+            }
+
+            else if(pin.Pin is NodeOutputExecPin oxp)
+            {
+                if (oxp.OutgoingPin != null)
+                {
+                    if (add)
+                    {
+                        NodeInputExecPin connPin = oxp.OutgoingPin as NodeInputExecPin;
+                        pin.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
+                            InputExecPins.Single(x => x.Pin == connPin);
+                    }
+                    else
+                    {
+                        pin.ConnectedPin = null;
+                    }
+                }
+            }
+        }
+
+        private void SetupNodeConnections(NodeVM node, bool add)
+        {
+            node.OutputExecPins.ToList().ForEach(p => SetupPinConnection(p, add));
+            node.InputDataPins.ToList().ForEach(p => SetupPinConnection(p, add));
+
+            // Make sure to remove the IXP and ODP connections 
+            // any other nodes are connecting to too
+
+            if(!add)
+            {
+                AllPins.Where(p =>
+                    node.InputExecPins.Contains(p.ConnectedPin) ||
+                    node.OutputDataPins.Contains(p.ConnectedPin)).
+                    ToList().ForEach(p => p.ConnectedPin = null);
+            }
+        }
+
         public Method Method
         {
             get => method;
@@ -112,36 +239,26 @@ namespace NetPrintsEditor.ViewModels
                 {
                     if (method != null)
                     {
-                        // Unbind nodes changed event
-                        // Unbind all nodes' pins changed events
-
                         Nodes.CollectionChanged -= OnNodeCollectionChanged;
-                        foreach (NodeVM node in Nodes)
-                        {
-                            node.InputDataPins.CollectionChanged -= OnPinCollectionChanged;
-                            node.OutputDataPins.CollectionChanged -= OnPinCollectionChanged;
-                            node.InputExecPins.CollectionChanged -= OnPinCollectionChanged;
-                            node.OutputExecPins.CollectionChanged -= OnPinCollectionChanged;
-                        }
+                        Nodes.ToList().ForEach(n => SetupNodeEvents(n, false));
+
+                        Nodes.ToList().ForEach(n => SetupNodeConnections(n, false));
                     }
 
                     method = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(AllPins));
 
+                    Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
+                    
                     if (method != null)
                     {
-                        // Bind nodes changed event
-                        // Bind all nodes' pins changed events
-
                         Nodes.CollectionChanged += OnNodeCollectionChanged;
-                        foreach (NodeVM node in Nodes)
-                        {
-                            node.InputDataPins.CollectionChanged += OnPinCollectionChanged;
-                            node.OutputDataPins.CollectionChanged += OnPinCollectionChanged;
-                            node.InputExecPins.CollectionChanged += OnPinCollectionChanged;
-                            node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
-                        }
+                        Nodes.ToList().ForEach(n => SetupNodeEvents(n, true));
+
+                        // Connections on normal pins already exist,
+                        // Set them up for the viewmodels of the pins
+                        Nodes.ToList().ForEach(n => SetupNodeConnections(n, true));
                     }
                 }
             }
@@ -149,29 +266,20 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnNodeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            // Unbind old node pins
-            // Bind new node pins
-
             if (e.OldItems != null)
             {
-                foreach (NodeVM node in e.OldItems.Cast<NodeVM>())
-                {
-                    node.InputDataPins.CollectionChanged -= OnPinCollectionChanged;
-                    node.OutputDataPins.CollectionChanged -= OnPinCollectionChanged;
-                    node.InputExecPins.CollectionChanged -= OnPinCollectionChanged;
-                    node.OutputExecPins.CollectionChanged -= OnPinCollectionChanged;
-                }
+                var removedNodes = e.OldItems.Cast<NodeVM>();
+                removedNodes.ToList().ForEach(n => SetupNodeEvents(n, false));
+
+                removedNodes.ToList().ForEach(n => SetupNodeConnections(n, false));
             }
 
             if (e.NewItems != null)
             {
-                foreach (NodeVM node in e.NewItems.Cast<NodeVM>())
-                {
-                    node.InputDataPins.CollectionChanged += OnPinCollectionChanged;
-                    node.OutputDataPins.CollectionChanged += OnPinCollectionChanged;
-                    node.InputExecPins.CollectionChanged += OnPinCollectionChanged;
-                    node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
-                }
+                var addedNodes = e.NewItems.Cast<NodeVM>();
+                addedNodes.ToList().ForEach(n => SetupNodeEvents(n, true));
+
+                addedNodes.ToList().ForEach(n => SetupNodeConnections(n, true));
             }
 
             OnPropertyChanged(nameof(AllPins));
@@ -179,7 +287,50 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.OldItems != null)
+            {
+                var removedPins = e.OldItems.Cast<NodePinVM>();
+
+                // Unsetup initial connections of added pins
+                removedPins.ToList().ForEach(p => SetupPinConnection(p, false));
+
+                // Remove events for removed pins
+                removedPins.ToList().ForEach(p => SetupPinEvents(p, false));
+            }
+
+            if(e.NewItems != null)
+            {
+                var addedPins = e.NewItems.Cast<NodePinVM>();
+
+                // Setup initial connections of added pins
+                addedPins.ToList().ForEach(p => SetupPinConnection(p, true));
+
+                // Add events for added pins
+                addedPins.ToList().ForEach(p => SetupPinEvents(p, true));
+            }
+
             OnPropertyChanged(nameof(AllPins));
+        }
+
+        private void OnInputDataPinIncomingPinChanged(NodeInputDataPin pin, NodeOutputDataPin oldPin, NodeOutputDataPin newPin)
+        {
+            // Connect pinVM newPinVM (or null if newPin is null)
+
+            NodePinVM pinVM = FindPinVMFromPin(pin);
+            pinVM.ConnectedPin = newPin == null ? null : FindPinVMFromPin(newPin);
+        }
+
+        private void OnOutputExecPinIncomingPinChanged(NodeOutputExecPin pin, NodeInputExecPin oldPin, NodeInputExecPin newPin)
+        {
+            // Connect pinVM newPinVM (or null if newPin is null)
+
+            NodePinVM pinVM = FindPinVMFromPin(pin);
+            pinVM.ConnectedPin = newPin == null ? null : FindPinVMFromPin(newPin);
+        }
+
+        private NodePinVM FindPinVMFromPin(NodePin pin)
+        {
+            return AllPins.Single(p => p.Pin == pin);
         }
 
         public IEnumerable<NodePinVM> AllPins
@@ -215,39 +366,6 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (propertyName == nameof(Method))
-            {
-                Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
-
-                // Setup connections from new PinVMs to PinVMs
-                foreach (NodeVM node in Nodes)
-                {
-                    foreach (NodePinVM pinVM in node.OutputExecPins)
-                    {
-                        NodeOutputExecPin pin = pinVM.Pin as NodeOutputExecPin;
-
-                        if (pin.OutgoingPin != null)
-                        {
-                            NodeInputExecPin connPin = pin.OutgoingPin as NodeInputExecPin;
-                            pinVM.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
-                                InputExecPins.Single(x => x.Pin == connPin);
-                        }
-                    }
-
-                    foreach (NodePinVM pinVM in node.InputDataPins)
-                    {
-                        NodeInputDataPin pin = pinVM.Pin as NodeInputDataPin;
-
-                        if (pin.IncomingPin != null)
-                        {
-                            NodeOutputDataPin connPin = pin.IncomingPin as NodeOutputDataPin;
-                            pinVM.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
-                                OutputDataPins.Single(x => x.Pin == connPin);
-                        }
-                    }
-                }
-            }
-
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion

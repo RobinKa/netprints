@@ -310,18 +310,14 @@ namespace NetPrintsEditor
                 !(methodEditor.Method.SelectedNode.Node is EntryNode) &&
                 !(methodEditor.Method.SelectedNode.Node is ReturnNode))
             {
-                NodeVM selectedNode = methodEditor.Method.SelectedNode;
+                NodeVM deletedNode = methodEditor.Method.SelectedNode;
                 methodEditor.Method.SelectedNode = null;
-
-                // Find the MethodVM that contains this NodeVM
-                MethodVM method = Class.Methods.Single(m => m.Nodes.Contains(selectedNode));
-
-                // Disconnect all pins that are connected to this node
-                method.AllPins.Where(p => p.ConnectedPin?.Node == selectedNode.Node).
-                    ToList().ForEach(p => p.ConnectedPin = null);
                 
                 // Remove the node from its method
-                selectedNode.Method.Nodes.Remove(selectedNode.Node);
+                // This will trigger the correct events in MethodVM
+                // so everything gets disconnected properly
+
+                deletedNode.Method.Nodes.Remove(deletedNode.Node);
             }
         }
 

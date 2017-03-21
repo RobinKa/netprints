@@ -1,5 +1,6 @@
 ﻿using NetPrints.Graph;
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -69,7 +70,10 @@ namespace NetPrintsEditor.ViewModels
 
                     pin = value;
 
-                    pin.Node.OnPositionChanged += OnNodePositionChanged;
+                    if (pin != null)
+                    {
+                        pin.Node.OnPositionChanged += OnNodePositionChanged;
+                    }
 
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
@@ -220,6 +224,9 @@ namespace NetPrintsEditor.ViewModels
             OnPropertyChanged(nameof(AbsolutePosition));
         }
 
+        // = Incoming pin for data input
+        // = Outgoing pin for exec output
+        // = null for rest
         public NodePinVM ConnectedPin
         {
             get => connectedPin;
