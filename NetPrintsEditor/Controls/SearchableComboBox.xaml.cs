@@ -154,7 +154,13 @@ namespace NetPrintsEditor.Controls
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
                         if(selectTypeDialog.ShowDialog() == true)
                         {
-                            Type selectedType = selectTypeDialog.SelectedType;
+                            Type selectedType = ReflectionUtil.GetTypeFromSpecifier(
+                                selectTypeDialog.SelectedType);
+
+                            if(selectedType == null)
+                            {
+                                throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
+                            }
 
                             // Get all public constructors for the type
                             ConstructorInfo[] constructors = selectedType.GetConstructors();

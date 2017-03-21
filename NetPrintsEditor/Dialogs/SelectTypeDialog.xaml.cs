@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetPrints.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +21,11 @@ namespace NetPrintsEditor.Dialogs
     public partial class SelectTypeDialog : Window
     {
         public static readonly DependencyProperty SelectedTypeProperty = DependencyProperty.Register(
-            nameof(SelectedType), typeof(Type), typeof(SelectTypeDialog));
+            nameof(SelectedType), typeof(TypeSpecifier), typeof(SelectTypeDialog));
 
-        public Type SelectedType
+        public TypeSpecifier SelectedType
         {
-            get => (Type)GetValue(SelectedTypeProperty);
+            get => (TypeSpecifier)GetValue(SelectedTypeProperty);
             set => SetValue(SelectedTypeProperty, value);
         }
 
