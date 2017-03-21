@@ -72,9 +72,6 @@ namespace NetPrints.Tests
         [TestInitialize]
         public void Setup()
         {
-            CreateStringLengthMethod();
-            CreateMainMethod();
-
             classTranslator = new ClassTranslator();
 
             cls = new Class()
@@ -83,6 +80,10 @@ namespace NetPrints.Tests
                 Namespace = "TestNamespace",
                 SuperType = typeof(object)
             };
+
+            CreateStringLengthMethod();
+            CreateMainMethod();
+
             cls.Attributes.Add(new Variable("testVariable", typeof(string)));
             cls.Methods.Add(stringLengthMethod);
             cls.Methods.Add(mainMethod);
