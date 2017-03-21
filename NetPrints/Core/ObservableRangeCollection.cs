@@ -77,6 +77,15 @@ namespace NetPrints.Core
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
+        protected override void ClearItems()
+        {
+            while (Count > 0)
+                base.RemoveAt(Count - 1);
+            //List<T> removed = new List<T>(this);
+            //base.ClearItems();
+            //base.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed));
+        }
+
         /// <summary> 
         /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class. 
         /// </summary> 
