@@ -34,6 +34,11 @@ namespace NetPrints.Translator
         
         public static string ObjectToLiteral(object obj, TypeSpecifier type)
         {
+            // Interpret object string as enum field
+            if(type.IsEnum)
+            {
+                return $"{type}.{obj}";
+            }
             // Put quotes around string literals
             if (type == typeof(string))
             {

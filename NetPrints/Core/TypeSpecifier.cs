@@ -17,6 +17,13 @@ namespace NetPrints.Core
             set;
         }
 
+        [DataMember]
+        public bool IsEnum
+        {
+            get;
+            set;
+        }
+
         public string ShortName
         {
             get
@@ -34,18 +41,21 @@ namespace NetPrints.Core
                     this == typeof(int) || this == typeof(uint) ||
                     this == typeof(long) || this == typeof(ulong) ||
                     this == typeof(float) || this == typeof(double) ||
-                    this == typeof(string) || this == typeof(bool);
+                    this == typeof(string) || this == typeof(bool) ||
+                    IsEnum;
             }
         }
         
-        public TypeSpecifier(string typeName)
+        public TypeSpecifier(string typeName, bool isEnum=false)
         {
             Name = typeName;
+            IsEnum = isEnum;
         }
 
         public static TypeSpecifier Create<T>()
         {
-            return typeof(T);
+            Type t = typeof(T);
+            return new TypeSpecifier(t.FullName, t.IsSubclassOf(typeof(Enum)));
         }
 
         public override int GetHashCode()
@@ -57,7 +67,13 @@ namespace NetPrints.Core
         {
             if(obj is TypeSpecifier t)
             {
-                return Name == t.Name;
+                if(Name == t.Name)
+                {
+                    if (IsEnum != t.IsEnum)
+                        throw new ArgumentException("obj has same type name but IsEnum is different");
+
+                    return true;
+                }
             }
 
             return false;
@@ -75,7 +91,7 @@ namespace NetPrints.Core
 
         public static implicit operator TypeSpecifier(Type type)
         {
-            return new TypeSpecifier(type.FullName);
+            return new TypeSpecifier(type.FullName, type.IsSubclassOf(typeof(Enum)));
         }
 
         public static implicit operator string(TypeSpecifier specifier)
