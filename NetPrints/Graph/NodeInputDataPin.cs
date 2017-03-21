@@ -42,8 +42,16 @@ namespace NetPrints.Graph
             get => unconnectedValue;
             set
             {
-                if (value != null && (!UsesUnconnectedValue || value.GetType() != PinType))
+                // Check that:
+                // this pin uses the unconnected value
+                // the value is of the same type or string if enum
+
+                if (value != null && (!UsesUnconnectedValue ||
+                    (!PinType.IsEnum && value.GetType() != PinType) ||
+                    (PinType.IsEnum && value.GetType() != typeof(string))))
+                {
                     throw new ArgumentException();
+                }
 
                 unconnectedValue = value;
             }
