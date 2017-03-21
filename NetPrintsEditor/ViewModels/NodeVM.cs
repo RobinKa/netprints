@@ -164,6 +164,19 @@ namespace NetPrintsEditor.ViewModels
                 if (node != value)
                 {
                     node = value;
+
+                    InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
+                        Node.InputDataPins, p => new NodePinVM(p));
+
+                    OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
+                        Node.OutputDataPins, p => new NodePinVM(p));
+
+                    InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
+                        Node.InputExecPins, p => new NodePinVM(p));
+
+                    OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
+                        Node.OutputExecPins, p => new NodePinVM(p));
+
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                 }
@@ -213,21 +226,6 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if(propertyName == nameof(Node))
-            {
-                InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
-                    Node.InputDataPins, p => new NodePinVM(p));
-
-                OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
-                    Node.OutputDataPins, p => new NodePinVM(p));
-
-                InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
-                    Node.InputExecPins, p => new NodePinVM(p));
-
-                OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
-                    Node.OutputExecPins, p => new NodePinVM(p));
-            }
-
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
