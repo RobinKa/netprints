@@ -62,8 +62,7 @@
             <ComboBox Grid.Row="8" Grid.Column="1" x:Name="variableType" 
                       Text="{Binding Variable.VariableType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Variable.VariableType, ElementName=wnd, Mode=TwoWay}" 
-                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"
-                      Style="{DynamicResource ComboBoxStyle1}"/>
+                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"/>
         </Grid>
     </StackPanel>
 </UserControl>

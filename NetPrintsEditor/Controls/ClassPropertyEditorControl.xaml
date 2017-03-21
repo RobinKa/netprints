@@ -58,8 +58,7 @@
             <ComboBox Grid.Row="7" Grid.Column="1"
                       Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 
-                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"
-                      Style="{DynamicResource ComboBoxStyle1}"/>
+                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"/>
         </Grid>
     </StackPanel>
 </UserControl>
