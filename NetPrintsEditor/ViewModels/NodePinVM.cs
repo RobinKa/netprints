@@ -52,7 +52,7 @@ namespace NetPrintsEditor.ViewModels
 
                     // Disconnect pin if its being connected
                     // and is an IDP or OXP
-                    if(Pin is NodeInputDataPin || Pin is NodeOutputExecPin)
+                    if(value && (Pin is NodeInputDataPin || Pin is NodeOutputExecPin))
                     {
                         ConnectedPin = null;
                     }
