@@ -40,13 +40,16 @@ namespace NetPrintsEditor.ViewModels
                 {
                     return ReturnNodeBrush;
                 }
-                else if(Node is CallMethodNode)
+                else if(Node is CallMethodNode callMethodNode)
                 {
-                    return CallMethodBrush;
-                }
-                else if(Node is CallStaticFunctionNode)
-                {
-                    return CallStaticFunctionBrush;
+                    if (callMethodNode.IsStatic)
+                    {
+                        return CallStaticFunctionBrush;
+                    }
+                    else
+                    {
+                        return CallMethodBrush;
+                    }
                 }
                 else if(Node is ConstructorNode)
                 {

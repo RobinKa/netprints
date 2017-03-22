@@ -5,7 +5,6 @@ namespace NetPrints.Graph
 {
     [DataContract]
     [KnownType(typeof(CallMethodNode))]
-    [KnownType(typeof(CallStaticFunctionNode))]
     [KnownType(typeof(ConstructorNode))]
     public abstract class ExecNode : Node
     {

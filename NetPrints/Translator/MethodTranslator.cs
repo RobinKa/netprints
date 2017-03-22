@@ -35,7 +35,6 @@ namespace NetPrints.Translator
             { typeof(ReturnNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateReturnNode(node as ReturnNode) } },
             { typeof(EntryNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateMethodEntry(node as EntryNode) } },
             { typeof(IfElseNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateIfElseNode(node as IfElseNode) } },
-            { typeof(CallStaticFunctionNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateCallStaticFunctionNode(node as CallStaticFunctionNode) } },
             { typeof(ConstructorNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateConstructorNode(node as ConstructorNode) } },
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
@@ -390,16 +389,25 @@ namespace NetPrints.Translator
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
-            // Write target
-            if (node.TargetPin.IncomingPin != null)
+            // Static: Write class name / target, default to own class name
+            // Instance: Write target, default to this
+
+            if (node.IsStatic)
             {
-                string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
-                builder.Append($"{targetName}.");
+                builder.Append($"{node.DeclaringType}.");
             }
             else
             {
-                // Default to this
-                builder.Append("this.");
+                if (node.TargetPin.IncomingPin != null)
+                {
+                    string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
+                    builder.Append($"{targetName}.");
+                }
+                else
+                {
+                    // Default to thise
+                    builder.Append("this.");
+                }
             }
 
             // Write function call with arguments
@@ -414,59 +422,6 @@ namespace NetPrints.Translator
                 for(int i = 0; i < returnNames.Count(); i++)
                 {
                     builder.AppendLine($"{returnNames.ElementAt(i)} = {temporaryReturnName}.Item{i+1};");
-                }
-            }
-
-            // Go to the next state
-            WriteGotoOutputPin(node.OutputExecPins[0]);
-        }
-
-        public void TranslateCallStaticFunctionNode(CallStaticFunctionNode node)
-        {
-            string temporaryReturnName = null;
-
-            // Translate all the pure nodes this node depends on in
-            // the correct order
-            TranslateDependentPureNodes(node);
-
-            // Write assignment of return values
-            if (node.OutputDataPins.Count == 1)
-            {
-                string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
-
-                builder.Append($"{returnName} = ");
-            }
-            else if (node.OutputDataPins.Count > 1)
-            {
-                temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
-
-                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType));
-
-                builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
-            }
-
-            // Write class name / target, default to own class name
-            if (node.ClassType != null)
-            {
-                builder.Append($"{node.ClassType}.");
-            }
-            else
-            {
-                builder.Append($"{method.Class.Name}.");
-            }
-
-            // Write function call with arguments
-            var argumentNames = GetPinIncomingValues(node.ArgumentPins);
-
-            builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
-
-            // Assign the real variables from the temporary tuple
-            if (node.OutputDataPins.Count > 1)
-            {
-                var returnNames = GetOrCreatePinNames(node.OutputDataPins);
-                for (int i = 0; i < returnNames.Count(); i++)
-                {
-                    builder.AppendLine($"{returnNames.ElementAt(i)} = {temporaryReturnName}.Item{i + 1};");
                 }
             }
 

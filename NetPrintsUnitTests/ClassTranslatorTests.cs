@@ -4,6 +4,7 @@ using NetPrints.Graph;
 using NetPrints.Translator;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NetPrints.Tests
 {
@@ -52,11 +53,14 @@ namespace NetPrints.Tests
                 Modifiers = MethodModifiers.Static
             };
 
+            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { typeof(int) }, MethodModifiers.Public, typeof(string));
+            MethodSpecifier writeConsoleSpecifier = typeof(Console).GetMethods().Single(m => m.Name == "WriteLine" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
+
             // Create nodes
             LiteralNode stringLiteralNode = new LiteralNode(mainMethod, typeof(string), "Hello World");
             VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, "testVariable", typeof(string));
-            CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, cls.Type, "StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { typeof(int) });
-            CallStaticFunctionNode writeConsoleNode = new CallStaticFunctionNode(mainMethod, "Console", "WriteLine", new List<TypeSpecifier>() { typeof(string) }, new List<TypeSpecifier>());
+            CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, stringLengthSpecifier);
+            CallMethodNode writeConsoleNode = new CallMethodNode(mainMethod, writeConsoleSpecifier);
 
             // Connect node execs
             GraphUtil.ConnectExecPins(mainMethod.EntryNode.InitialExecutionPin, setStringNode.InputExecPins[0]);

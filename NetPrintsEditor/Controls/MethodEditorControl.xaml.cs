@@ -198,29 +198,17 @@ namespace NetPrintsEditor.Controls
                 Point mousePosition = e.GetPosition(methodEditorWindow);
                 MethodVM method = e.Data.GetData(typeof(MethodVM)) as MethodVM;
 
-                if (method.Modifiers.HasFlag(MethodModifiers.Static))
-                {
-                    // CallStaticFunctionNode(Method method, TypeSpecifier classType, 
-                    // string methodName, IEnumerable<TypeSpecifier> inputTypes, 
-                    // IEnumerable<TypeSpecifier> outputTypes)
+                // CallMethodNode(Method method, MethodSpecifier methodSpecifier)
 
-                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                    (
-                        typeof(CallStaticFunctionNode), Method.Method, mousePosition.X, mousePosition.Y,
-                        method.Class.Type, method.Name, method.ArgumentTypes, method.ReturnTypes
-                    ));
-                }
-                else
-                {
-                    // CallMethodNode(Method method, TypeSpecifier targetType, string methodName, 
-                    // IEnumerable<TypeSpecifier> inputTypes, IEnumerable<TypeSpecifier> outputTypes)
+                // TODO: Get this from method directly somehow
+                MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name, method.ArgumentTypes, method.ReturnTypes,
+                    method.Modifiers, method.Class.Type);
 
-                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                    (
-                        typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
-                        method.Class.Type, method.Name, method.ArgumentTypes, method.ReturnTypes
-                    ));
-                }
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                (
+                    typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
+                    methodSpecifier
+                ));
 
                 e.Handled = true;
             }

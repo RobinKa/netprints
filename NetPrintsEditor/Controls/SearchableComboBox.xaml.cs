@@ -90,32 +90,7 @@ namespace NetPrintsEditor.Controls
             {
                 if(item.DataContext is MethodSpecifier methodSpecifier)
                 {
-                    if (methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static))
-                    {
-                        // CallStaticFunctionNode(Method method, TypeSpecifier classType, 
-                        // string methodName, IEnumerable<TypeSpecifier> inputTypes, 
-                        // IEnumerable<TypeSpecifier> outputTypes)
-
-                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                        (
-                            typeof(CallStaticFunctionNode),
-                            null,
-                            0,
-                            0,
-
-                            // Parameters
-                            methodSpecifier.DeclaringType,
-                            methodSpecifier.Name,
-                            methodSpecifier.Arguments,
-                            methodSpecifier.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodSpecifier.ReturnType }
-                        ));
-                    }
-                    else
-                    {
-                        // CallMethodNode(Method method, string methodName, 
-                        //     IEnumerable<TypeSpecifier> inputTypes, IEnumerable<TypeSpecifier> outputTypes)
-
-                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
                             typeof(CallMethodNode),
                             null,
@@ -123,12 +98,8 @@ namespace NetPrintsEditor.Controls
                             0,
 
                             // Parameters
-                            methodSpecifier.DeclaringType,
-                            methodSpecifier.Name,
-                            methodSpecifier.Arguments,
-                            methodSpecifier.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodSpecifier.ReturnType }
+                            methodSpecifier
                         ));
-                    }
                 }
                 else if(item.DataContext is PropertySpecifier propertySpecifier)
                 {

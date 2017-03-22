@@ -7,43 +7,54 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetPrintsEditor.Reflection
+namespace NetPrints.Core
 {
     [Serializable]
+    [DataContract]
     public class MethodSpecifier
     {
+        [DataMember]
         public string Name
         {
             get;
+            private set;
         }
-        
+
+        [DataMember]
         public TypeSpecifier DeclaringType
         {
             get;
+            private set;
         }
-        
+
+        [DataMember]
         public IList<TypeSpecifier> Arguments
         {
             get;
+            private set;
         }
-        
-        public TypeSpecifier ReturnType
+
+        [DataMember]
+        public IList<TypeSpecifier> ReturnTypes
         {
             get;
+            private set;
         }
-        
+
+        [DataMember]
         public MethodModifiers Modifiers
         {
             get;
+            private set;
         }
 
         public MethodSpecifier(string name, IEnumerable<TypeSpecifier> arguments,
-            TypeSpecifier returnType, MethodModifiers modifiers, TypeSpecifier declaringType)
+            IEnumerable<TypeSpecifier> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType)
         {
             Name = name;
             DeclaringType = declaringType;
             Arguments = arguments.ToList();
-            ReturnType = returnType;
+            ReturnTypes = returnTypes.ToList();
             Modifiers = modifiers;
         }
 
@@ -51,37 +62,41 @@ namespace NetPrintsEditor.Reflection
         {
             MethodModifiers modifiers = MethodModifiers.Private;
 
-            if(methodInfo.IsPublic)
+            if (methodInfo.IsPublic)
             {
                 modifiers |= MethodModifiers.Public;
             }
 
-            if(methodInfo.IsVirtual)
+            if (methodInfo.IsVirtual)
             {
                 modifiers |= MethodModifiers.Virtual;
             }
 
-            if(methodInfo.IsFinal)
+            if (methodInfo.IsFinal)
             {
                 modifiers |= MethodModifiers.Sealed;
             }
 
-            if(methodInfo.IsAbstract)
+            if (methodInfo.IsAbstract)
             {
                 modifiers |= MethodModifiers.Abstract;
             }
 
-            if(methodInfo.IsStatic)
+            if (methodInfo.IsStatic)
             {
                 modifiers |= MethodModifiers.Static;
             }
 
             // TODO: Protected / Internal
 
+            TypeSpecifier[] returnTypes = methodInfo.ReturnType == typeof(void) ?
+                new TypeSpecifier[] { } :
+                new TypeSpecifier[] { methodInfo.ReturnType };
+
             return new MethodSpecifier(
                 methodInfo.Name,
                 methodInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType),
-                methodInfo.ReturnType,
+                returnTypes,
                 modifiers,
                 methodInfo.DeclaringType);
         }

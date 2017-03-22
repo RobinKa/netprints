@@ -10,19 +10,37 @@ namespace NetPrints.Graph
     public class CallMethodNode : ExecNode
     {
         [DataMember]
+        public MethodSpecifier MethodSpecifier
+        {
+            get;
+            private set;
+        }
+        
         public string MethodName
         {
-            get;
-            private set;
+            get => MethodSpecifier.Name;
         }
-
-        [DataMember]
-        public TypeSpecifier TargetType
+        
+        public bool IsStatic
         {
-            get;
-            private set;
+            get => MethodSpecifier.Modifiers.HasFlag(MethodModifiers.Static);
+        }
+        
+        public TypeSpecifier DeclaringType
+        {
+            get => MethodSpecifier.DeclaringType;
         }
 
+        public IList<TypeSpecifier> ArgumentTypes
+        {
+            get => MethodSpecifier.Arguments;
+        }
+
+        public IList<TypeSpecifier> ReturnTypes
+        {
+            get => MethodSpecifier.ReturnTypes;
+        }
+        
         public NodeInputDataPin TargetPin
         {
             get { return InputDataPins[0]; }
@@ -30,31 +48,51 @@ namespace NetPrints.Graph
 
         public IList<NodeInputDataPin> ArgumentPins
         {
-            get { return InputDataPins.Skip(1).ToList(); }
+            get
+            {
+                if (IsStatic)
+                {
+                    return InputDataPins;
+                }
+                else
+                {
+                    // First pin is the target object, ignore it
+                    return InputDataPins.Skip(1).ToList();
+                }
+            }
         }
 
-        public CallMethodNode(Method method, TypeSpecifier targetType, string methodName, IEnumerable<TypeSpecifier> inputTypes, IEnumerable<TypeSpecifier> outputTypes)
+        public CallMethodNode(Method method, MethodSpecifier methodSpecifier)
             : base(method)
         {
-            MethodName = methodName;
-            TargetType = targetType;
+            MethodSpecifier = methodSpecifier;
 
-            AddInputDataPin("Target", targetType);
-            
-            foreach(TypeSpecifier inputType in inputTypes)
+            if (!IsStatic)
             {
-                AddInputDataPin(inputType.ShortName, inputType);
+                AddInputDataPin("Target", DeclaringType);
             }
 
-            foreach(TypeSpecifier outputType in outputTypes)
+            foreach(TypeSpecifier argumentType in ArgumentTypes)
             {
-                AddOutputDataPin(outputType.ShortName, outputType);
+                AddInputDataPin(argumentType.ShortName, argumentType);
+            }
+
+            foreach(TypeSpecifier returnType in ReturnTypes)
+            {
+                AddOutputDataPin(returnType.ShortName, returnType);
             }
         }
 
         public override string ToString()
         {
-            return $"Call {MethodName}";
+            if (IsStatic)
+            {
+                return $"Call Static {DeclaringType} {MethodName}";
+            }
+            else
+            {
+                return $"Call {MethodName}";
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetPrintsEditor.Reflection
+namespace NetPrints.Core
 {
     [Serializable]
     public class ConstructorSpecifier

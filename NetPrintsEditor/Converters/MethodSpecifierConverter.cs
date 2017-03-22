@@ -1,4 +1,5 @@
-﻿using NetPrintsEditor.Reflection;
+﻿using NetPrints.Core;
+using NetPrintsEditor.Reflection;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -18,9 +19,9 @@ namespace NetPrintsEditor.Converters
 
                 string s = $"{methodSpecifier.DeclaringType} {methodSpecifier.Name} ({paramTypeNames})";
 
-                if(methodSpecifier.ReturnType != typeof(void))
+                if(methodSpecifier.ReturnTypes.Count > 0)
                 {
-                    s += $" : {methodSpecifier.ReturnType}";
+                    s += $" : {string.Join(", ", methodSpecifier.ReturnTypes)}";
                 }
 
                 return s;

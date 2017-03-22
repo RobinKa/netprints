@@ -7,7 +7,6 @@ namespace NetPrints.Graph
 {
     [DataContract]
     [KnownType(typeof(CallMethodNode))]
-    [KnownType(typeof(CallStaticFunctionNode))]
     [KnownType(typeof(EntryNode))]
     [KnownType(typeof(ForLoopNode))]
     [KnownType(typeof(IfElseNode))]
