@@ -125,6 +125,7 @@ namespace NetPrintsEditor.ViewModels
         private void OnAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             FixAssemblyPaths();
+            ReloadReflectionProvider();
         }
 
         public string Path
