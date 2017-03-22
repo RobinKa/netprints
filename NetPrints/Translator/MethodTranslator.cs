@@ -10,6 +10,8 @@ namespace NetPrints.Translator
 {
     public class MethodTranslator
     {
+        private const string JumpStackVarName = "jumpStack";
+
         private Dictionary<NodeOutputDataPin, string> variableNames = new Dictionary<NodeOutputDataPin, string>();
         private Dictionary<Node, List<int>> nodeStateIds = new Dictionary<Node, List<int>>();
         private int nextStateId = 0;
@@ -17,7 +19,7 @@ namespace NetPrints.Translator
         private IEnumerable<Node> nodes = new List<Node>();
         private HashSet<NodeInputExecPin> pinsJumpedTo = new HashSet<NodeInputExecPin>();
 
-        private int jumpTableStateId;
+        private int jumpStackStateId;
         
         private StringBuilder builder = new StringBuilder();
 
@@ -214,11 +216,11 @@ namespace NetPrints.Translator
             builder.AppendLine($"({string.Join(", ", GetOrCreateTypedPinNames(method.EntryNode.OutputDataPins))})");
         }
 
-        private void TranslateJumpTable()
+        private void TranslateJumpStack()
         {
-            builder.AppendLine($"State{jumpTableStateId}:");
-            builder.AppendLine("if(jumpStack.Count == 0) throw new System.Exception();");
-            builder.AppendLine("switch(jumpStack.Pop())");
+            builder.AppendLine($"State{jumpStackStateId}:");
+            builder.AppendLine($"if({JumpStackVarName}.Count == 0) throw new System.Exception();");
+            builder.AppendLine($"switch({JumpStackVarName}.Pop())");
             builder.AppendLine("{");
 
             foreach (NodeInputExecPin pin in pinsJumpedTo)
@@ -250,9 +252,9 @@ namespace NetPrints.Translator
             // Assign a state id to every non-pure node
             CreateStates();
 
-            // Assign jump table state id
+            // Assign jump stack state id
             // Write it later once we know which states get jumped to
-            jumpTableStateId = GetNextStateId();
+            jumpStackStateId = GetNextStateId();
             
             // Create variables for all output pins for every node
             CreateVariables();
@@ -261,7 +263,9 @@ namespace NetPrints.Translator
             TranslateSignature();
             builder.AppendLine("{"); // Method start
 
-            builder.AppendLine("System.Collections.Generic.Stack<int> jumpStack = new System.Collections.Generic.Stack<int>();");
+            // Write a placeholder for the jump stack declaration
+            // Replaced later
+            builder.Append("%JUMPSTACKPLACEHOLDER%");
 
             // Write the variable declarations
             TranslateVariables();
@@ -285,8 +289,18 @@ namespace NetPrints.Translator
                 }
             }
 
-            // Write the jump table
-            TranslateJumpTable();
+            // Write the jump stack if it was ever used
+            if (pinsJumpedTo.Count > 0)
+            {
+                TranslateJumpStack();
+
+                string jumpStackType = typeof(Stack<int>).FullName;
+                builder.Replace("%JUMPSTACKPLACEHOLDER%", $"{jumpStackType} {JumpStackVarName} = {jumpStackType}{Environment.NewLine}");
+            }
+            else
+            {
+                builder.Replace("%JUMPSTACKPLACEHOLDER%", "");
+            }
             
             builder.AppendLine("}"); // Method end
 
@@ -305,9 +319,9 @@ namespace NetPrints.Translator
             }
         }
 
-        private void WriteGotoJumpTable()
+        private void WriteGotoJumpStack()
         {
-            builder.AppendLine($"goto State{jumpTableStateId};");
+            builder.AppendLine($"goto State{jumpStackStateId};");
         }
 
         private void WritePushJumpStack(NodeInputExecPin pin)
@@ -317,7 +331,7 @@ namespace NetPrints.Translator
                 pinsJumpedTo.Add(pin);
             }
 
-            builder.AppendLine($"jumpStack.Push({GetExecPinStateId(pin)});");
+            builder.AppendLine($"{JumpStackVarName}.Push({GetExecPinStateId(pin)});");
         }
 
         private void WriteGotoInputPin(NodeInputExecPin pin)
@@ -329,7 +343,7 @@ namespace NetPrints.Translator
         {
             if(pin.OutgoingPin == null)
             {
-                WriteGotoJumpTable();
+                WriteGotoJumpStack();
             }
             else
             {
