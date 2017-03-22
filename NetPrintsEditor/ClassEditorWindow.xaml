@@ -120,7 +120,23 @@
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-            <Controls:MethodEditorControl x:Name="methodEditor" Grid.Column="2" />
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="150" />
+                    <RowDefinition Height="24" />
+                </Grid.RowDefinitions>
+                
+                <Controls:MethodEditorControl x:Name="methodEditor" />
+
+                <GridSplitter Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+                <ListView Grid.Row="2" ItemsSource="{Binding ElementName=classWindow, Path=Class.Project.LastCompileErrors}" />
+
+                <Label Grid.Row="3" Content="{Binding ElementName=classWindow, Path=Class.Project.CompilationMessage}" />
+            </Grid>
+            
 
             <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
 

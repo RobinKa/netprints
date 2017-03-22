@@ -81,6 +81,21 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public ObservableRangeCollection<string> LastCompileErrors
+        {
+            get => lastCompileErrors;
+            set
+            {
+                if(lastCompileErrors != value)
+                {
+                    lastCompileErrors = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableRangeCollection<string> lastCompileErrors;
+
         public ObservableRangeCollection<LocalAssemblyName> Assemblies
         {
             get => project.Assemblies;
@@ -184,6 +199,21 @@ namespace NetPrintsEditor.ViewModels
             get => !isCompiling && IsProjectOpen;
         }
 
+        public string CompilationMessage
+        {
+            get => compilationMessage;
+            set
+            {
+                if(compilationMessage != value)
+                {
+                    compilationMessage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string compilationMessage = "Ready";
+
         public bool IsCompiling
         {
             get => isCompiling;
@@ -200,9 +230,18 @@ namespace NetPrintsEditor.ViewModels
 
         public bool LastCompilationSucceeded
         {
-            get;
-            set;
-        } = false;
+            get => lastCompilationSucceeded;
+            set
+            {
+                if(lastCompilationSucceeded != value)
+                {
+                    lastCompilationSucceeded = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool lastCompilationSucceeded = false;
 
         private bool isCompiling = false;
 
@@ -235,6 +274,7 @@ namespace NetPrintsEditor.ViewModels
             }
 
             IsCompiling = true;
+            CompilationMessage = "Compiling...";
 
             //  Unload the app domain of the previous assembly
             if (reflectionProviderWrapper != null)
@@ -295,10 +335,16 @@ namespace NetPrintsEditor.ViewModels
                 dispatcher.Invoke(() =>
                 {
                     LastCompilationSucceeded = results.Success;
+                    LastCompileErrors = new ObservableRangeCollection<string>(results.Errors);
 
-                    if(LastCompilationSucceeded)
+                    if (LastCompilationSucceeded)
                     {
                         LastCompiledAssemblyPath = results.PathToAssembly;
+                        CompilationMessage = $"Build succeeded";
+                    }
+                    else
+                    {
+                        CompilationMessage = $"Build failed with {LastCompileErrors.Count} error(s)";
                     }
 
                     ReloadReflectionProvider();
