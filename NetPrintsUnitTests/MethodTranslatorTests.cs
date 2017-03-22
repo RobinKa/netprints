@@ -42,11 +42,12 @@ namespace NetPrints.Tests
             {
                 Modifiers = MethodModifiers.Public
             };
+
             stringLengthMethod.ArgumentTypes.AddRange(argumentTypes);
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, "Length", typeof(int));
+            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, null, "Length", typeof(int));
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNode.ReturnPin);

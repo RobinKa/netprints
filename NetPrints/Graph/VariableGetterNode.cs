@@ -7,8 +7,8 @@ namespace NetPrints.Graph
     [DataContract]
     public class VariableGetterNode : VariableNode
     {
-        public VariableGetterNode(Method method, string variableName, TypeSpecifier variableType) 
-            : base(method, variableName, variableType)
+        public VariableGetterNode(Method method, TypeSpecifier targetType, string variableName, TypeSpecifier variableType) 
+            : base(method, targetType, variableName, variableType)
         {
         }
 

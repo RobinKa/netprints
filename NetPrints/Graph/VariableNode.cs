@@ -19,15 +19,30 @@ namespace NetPrints.Graph
             get { return OutputDataPins[0]; }
         }
 
+        public bool IsLocalVariable
+        {
+            get => TargetType == null;
+        }
+
         [DataMember]
         public string VariableName { get; private set; }
 
-        public VariableNode(Method method, string variableName, TypeSpecifier variableType)
+        [DataMember]
+        public TypeSpecifier TargetType { get; private set; }
+
+        public VariableNode(Method method, TypeSpecifier targetType, string variableName, TypeSpecifier variableType)
             : base(method)
         {
             VariableName = variableName;
-            
-            AddInputDataPin("Target", typeof(object));
+            TargetType = targetType;
+
+            // TargetType null means local variable
+
+            if (targetType != null)
+            {
+                AddInputDataPin("Target", targetType);
+            }
+
             AddOutputDataPin(variableType.ShortName, variableType);
         }
     }

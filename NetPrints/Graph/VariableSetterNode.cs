@@ -12,8 +12,8 @@ namespace NetPrints.Graph
             get { return InputDataPins[1]; }
         }
 
-        public VariableSetterNode(Method method, string variableName, TypeSpecifier variableType) 
-            : base(method, variableName, variableType)
+        public VariableSetterNode(Method method, TypeSpecifier targetType, string variableName, TypeSpecifier variableType) 
+            : base(method, targetType, variableName, variableType)
         {
             AddInputExecPin("Exec");
             AddOutputExecPin("Exec");

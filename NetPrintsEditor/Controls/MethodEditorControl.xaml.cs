@@ -68,10 +68,13 @@ namespace NetPrintsEditor.Controls
         {
             if(sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is VariableVM v && o[1] is Point pos)
             {
+                // VariableSetterNode(Method method, TypeSpecifier targetType, 
+                // string variableName, TypeSpecifier variableType) 
+
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(VariableSetterNode), Method.Method, pos.X, pos.Y,
-                    v.Name, v.VariableType
+                    Method.Class.Type, v.Name, v.VariableType
                 ));
             }
 
@@ -82,10 +85,13 @@ namespace NetPrintsEditor.Controls
         {
             if (sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is VariableVM v && o[1] is Point pos)
             {
+                // VariableGetterNode(Method method, TypeSpecifier targetType, 
+                // string variableName, TypeSpecifier variableType) 
+
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(VariableGetterNode), Method.Method, pos.X, pos.Y,
-                    v.Name, v.VariableType
+                    Method.Class.Type, v.Name, v.VariableType
                 ));
             }
 
@@ -103,7 +109,7 @@ namespace NetPrintsEditor.Controls
             {
                 VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
                 
-                ShowVariableGetSet(variable, e.GetPosition(variableGetSetCanvas));
+                ShowVariableGetSet(variable, e.GetPosition(drawCanvas));
 
                 e.Handled = true;
             }

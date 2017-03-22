@@ -486,14 +486,18 @@ namespace NetPrints.Translator
             
             string valueName = GetOrCreatePinName(node.InputDataPins[1].IncomingPin);
 
-            if (node.InputDataPins[0].IncomingPin != null)
+            // Add target name or this if not a local variable
+            if (!node.IsLocalVariable)
             {
-                string targetName = GetOrCreatePinName(node.InputDataPins[0].IncomingPin);
-                builder.Append($"{targetName}.");
-            }
-            else
-            {
-                builder.Append("this.");
+                if (node.InputDataPins[0].IncomingPin != null)
+                {
+                    string targetName = GetOrCreatePinName(node.InputDataPins[0].IncomingPin);
+                    builder.Append($"{targetName}.");
+                }
+                else
+                {
+                    builder.Append("this.");
+                }
             }
 
             builder.AppendLine($"{node.VariableName} = {valueName};");
