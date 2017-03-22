@@ -14,7 +14,7 @@ namespace NetPrints.Translator
                 }
             }";
 
-        private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName% { get; set; }";
+        private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName%;";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
         
