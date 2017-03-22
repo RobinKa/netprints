@@ -3,7 +3,9 @@ using NetPrints.Core;
 using NetPrints.Serialization;
 using NetPrints.Translator;
 using NetPrintsEditor.Compilation;
+using NetPrintsEditor.Interop;
 using NetPrintsEditor.Models;
+using NetPrintsEditor.Reflection;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Concurrent;
@@ -24,6 +26,15 @@ namespace NetPrintsEditor.ViewModels
 {
     public class ProjectVM : INotifyPropertyChanged
     {
+#region Singleton
+        public static ProjectVM Instance
+        {
+            get => instance;
+        }
+
+        private static ProjectVM instance;
+#endregion
+
         public bool IsProjectOpen
         {
             get => project != null;
@@ -71,15 +82,13 @@ namespace NetPrintsEditor.ViewModels
 
                     project.Assemblies = value;
 
-                    LoadedAssemblies.Clear();
-
                     if (project.Assemblies != null)
                     {
                         value.CollectionChanged += OnAssembliesChanged;
                         FixAssemblyPaths();
-                        LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(project.Assemblies));
                     }
 
+                    ReloadReflectionProvider();
                     OnPropertyChanged();
                 }
             }
@@ -88,26 +97,6 @@ namespace NetPrintsEditor.ViewModels
         private void OnAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             FixAssemblyPaths();
-
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<LocalAssemblyName>()));
-                    break;
-
-                case NotifyCollectionChangedAction.Remove:
-                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<LocalAssemblyName>()));
-                    break;
-
-                case NotifyCollectionChangedAction.Replace:
-                    LoadedAssemblies.RemoveRange(ReflectionUtil.LoadAssemblies(e.OldItems.Cast<LocalAssemblyName>()));
-                    LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(e.NewItems.Cast<LocalAssemblyName>()));
-                    break;
-
-                case NotifyCollectionChangedAction.Reset:
-                    LoadedAssemblies.Clear();
-                    break;
-            }
         }
 
         public string Path
@@ -165,15 +154,14 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsProjectOpen));
                     OnPropertyChanged(nameof(CanCompile));
-
-                    LoadedAssemblies?.Clear();
-
-                    if(project != null)
+                    
+                    if (project != null)
                     {
                         Assemblies.CollectionChanged += OnAssembliesChanged;
                         FixAssemblyPaths();
-                        LoadedAssemblies.AddRange(ReflectionUtil.LoadAssemblies(project.Assemblies));
                     }
+
+                    ReloadReflectionProvider();
                 }
             }
         }
@@ -207,23 +195,23 @@ namespace NetPrintsEditor.ViewModels
 
         private Project project;
 
-        public ObservableRangeCollection<Assembly> LoadedAssemblies
+        public IReflectionProvider ReflectionProvider
         {
-            get;
-        } = new ObservableRangeCollection<Assembly>();
-
-        private Assembly selfReflectionAssembly;
-        
-        public ProjectVM(Project project)
-        {
-            LoadedAssemblies.CollectionChanged += OnLoadedAssembliesChanged;
-
-            Project = project;
+            get => reflectionProviderWrapper.Object;
         }
 
-        private void OnLoadedAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public ObservableRangeCollection<TypeSpecifier> NonStaticTypes
         {
-            ReflectionUtil.UpdateNonStaticTypes(LoadedAssemblies);
+            get;
+        } = new ObservableRangeCollection<TypeSpecifier>();
+
+        private AppDomainObject<WrappedReflectionProvider> reflectionProviderWrapper;
+        private string lastCompiledAssemblyPath;
+
+        public ProjectVM(Project project)
+        {
+            Project = project;
+            instance = this;
         }
 
         public void CompileProject(bool generateExecutable)
@@ -236,11 +224,12 @@ namespace NetPrintsEditor.ViewModels
 
             IsCompiling = true;
 
-            // Remove previous self reflection assembly
-            if (selfReflectionAssembly != null)
+            //  Unload the app domain of the previous assembly
+            if (reflectionProviderWrapper != null)
             {
-                LoadedAssemblies.Remove(selfReflectionAssembly);
-                selfReflectionAssembly = null;
+                reflectionProviderWrapper.Unload();
+                reflectionProviderWrapper = null;
+                GC.Collect();
             }
 
             // Save original thread dispatcher
@@ -274,8 +263,16 @@ namespace NetPrintsEditor.ViewModels
 
                 string outputPath = $"Compiled/{Project.Name}.{ext}";
 
-                CompilerResults results = CompilerUtil.CompileSources(
-                    outputPath, Assemblies, sources, generateExecutable);
+                AppDomainObject<WrappedCodeCompiler> codeCompilerWrapper = 
+                    AppDomainHelper.Create<WrappedCodeCompiler>();
+
+                codeCompilerWrapper.Object.LoadRequiredAssemblies(
+                    AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
+
+                CodeCompileResults results = codeCompilerWrapper.Object.CompileSources(
+                    outputPath, Assemblies.Select(a => a.Path).ToArray(), sources, generateExecutable);
+
+                codeCompilerWrapper.Unload();
 
                 // Write errors to file
                 File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
@@ -283,18 +280,42 @@ namespace NetPrintsEditor.ViewModels
                 
                 dispatcher.Invoke(() =>
                 {
-                    LastCompilationSucceeded = !results.Errors.HasErrors;
+                    LastCompilationSucceeded = results.Success;
 
                     if(LastCompilationSucceeded)
                     {
-                        // Add newly compiled project assembly
-                        selfReflectionAssembly = Assembly.ReflectionOnlyLoadFrom(results.PathToAssembly);
-                        LoadedAssemblies.Add(selfReflectionAssembly);
+                        lastCompiledAssemblyPath = results.PathToAssembly;
                     }
+
+                    ReloadReflectionProvider();
 
                     IsCompiling = false;
                 });
             }).Start();
+        }
+
+        private void ReloadReflectionProvider()
+        {
+            //  Unload the app domain of the previous assembly
+            if (reflectionProviderWrapper != null)
+            {
+                reflectionProviderWrapper.Unload();
+                reflectionProviderWrapper = null;
+            }
+
+            // Load newly compiled assembly and referenced assemblies
+            List<string> assembliesToReflectOn = Assemblies.Select(a => a.Path).ToList();
+            if(!string.IsNullOrEmpty(lastCompiledAssemblyPath))
+            {
+                assembliesToReflectOn.Add(lastCompiledAssemblyPath);
+            }
+
+            reflectionProviderWrapper = AppDomainHelper.Create<WrappedReflectionProvider>();
+            reflectionProviderWrapper.Object.LoadRequiredAssemblies(
+                AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
+            reflectionProviderWrapper.Object.SetReflectionAssemblies(assembliesToReflectOn);
+
+            NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
         }
 
         public void RunProject()

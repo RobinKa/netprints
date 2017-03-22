@@ -105,7 +105,7 @@ namespace NetPrintsEditor.ViewModels
                     // Try to convert to the correct type first if it can be found
                     // Dont do this for enums as they just use a string
 
-                    Type t = ReflectionUtil.GetTypeFromSpecifier(p.PinType);
+                    Type t = Type.GetType(p.PinType);
                     
                     if (t != null && !p.PinType.IsEnum)
                     {
@@ -137,12 +137,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (Pin is NodeInputDataPin p && p.PinType.IsEnum)
                 {
-                    Type enumType = ReflectionUtil.GetTypeFromSpecifier(p.PinType);
-
-                    if(enumType != null)
-                    {
-                        return Enum.GetNames(enumType);
-                    }
+                    return ProjectVM.Instance.ReflectionProvider.GetEnumNames(p.PinType);
                 }
 
                 return null;

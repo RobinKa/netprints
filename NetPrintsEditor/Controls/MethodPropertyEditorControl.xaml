@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              xmlns:npc="clr-namespace:NetPrints.Core;assembly=NetPrints"
              xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
-             xmlns:npe="clr-namespace:NetPrintsEditor"
+             xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" x:Name="wnd">
     <UserControl.Resources>
@@ -89,7 +89,7 @@
                             </Grid.ColumnDefinitions>
                             <ComboBox Text="{Binding FullName, Mode=OneWay}" 
                                       SelectedItem="{Binding Mode=OneWay}"
-                                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"
+                                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"
                                       HorizontalContentAlignment="Stretch" 
                                       SelectionChanged="OnArgumentTypeChanged">
                             </ComboBox>
@@ -118,7 +118,7 @@
                             </Grid.ColumnDefinitions>
                             <ComboBox Text="{Binding Mode=OneWay}" 
                                       SelectedItem="{Binding Mode=OneWay}"
-                                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"
+                                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"
                                       HorizontalContentAlignment="Stretch" 
                                       SelectionChanged="OnReturnTypeChanged">
                             </ComboBox>

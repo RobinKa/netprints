@@ -1,4 +1,6 @@
-﻿using NetPrints.Graph;
+﻿using NetPrints.Core;
+using NetPrints.Graph;
+using NetPrintsEditor.Reflection;
 using System;
 using System.Globalization;
 using System.Reflection;
@@ -8,19 +10,19 @@ namespace NetPrintsEditor.Converters
 {
     public class SuggestionListConverter : IValueConverter
     {
-        private MethodInfoConverter methodInfoConverter = new MethodInfoConverter();
+        private MethodSpecifierConverter methodSpecifierConverter = new MethodSpecifierConverter();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is MethodInfo methodInfo)
+            if (value is MethodSpecifier methodSpecifier)
             {
-                return methodInfoConverter.Convert(methodInfo, targetType, parameter, culture);
+                return methodSpecifierConverter.Convert(methodSpecifier, targetType, parameter, culture);
             }
-            else if(value is PropertyInfo propertyInfo)
+            else if(value is PropertySpecifier propertySpecifier)
             {
-                return $"{propertyInfo.DeclaringType} {propertyInfo.Name} : {propertyInfo.PropertyType}";
+                return $"{propertySpecifier.DeclaringType} {propertySpecifier.Name} : {propertySpecifier.Type}";
             }
-            else if (value is Type t)
+            else if (value is TypeSpecifier t)
             {
                 if (t == typeof(ForLoopNode))
                 {

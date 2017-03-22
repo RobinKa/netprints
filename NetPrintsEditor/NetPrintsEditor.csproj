@@ -64,8 +64,18 @@
     <Compile Include="Commands\EditorCommands.cs" />
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
+    <Compile Include="Interop\AppDomainHelper.cs" />
+    <Compile Include="Compilation\CodeCompiler.cs" />
+    <Compile Include="Compilation\ICodeCompiler.cs" />
     <Compile Include="Compilation\LocalAssembly.cs" />
     <Compile Include="Compilation\CompilerUtil.cs" />
+    <Compile Include="Interop\WrappedCodeCompiler.cs" />
+    <Compile Include="Reflection\IReflectionProvider.cs" />
+    <Compile Include="Reflection\ConstructorSpecifier.cs" />
+    <Compile Include="Reflection\PropertySpecifier.cs" />
+    <Compile Include="Reflection\MethodSpecifier.cs" />
+    <Compile Include="Reflection\ReflectionProvider.cs" />
+    <Compile Include="Interop\WrappedReflectionProvider.cs" />
     <Compile Include="Controls\MethodEditorControl.xaml.cs">
       <DependentUpon>MethodEditorControl.xaml</DependentUpon>
     </Compile>
@@ -84,7 +94,7 @@
     <Compile Include="Controls\VariableGetSetControl.xaml.cs">
       <DependentUpon>VariableGetSetControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\MethodInfoConverter.cs" />
+    <Compile Include="Converters\MethodSpecifierConverter.cs" />
     <Compile Include="Converters\ClassModifierConverter.cs" />
     <Compile Include="Converters\ModelToViewModelConverter.cs" />
     <Compile Include="Converters\SuggestionListConverter.cs" />
@@ -97,7 +107,6 @@
       <DependentUpon>MainEditorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Project.cs" />
-    <Compile Include="ReflectionUtil.cs" />
     <Compile Include="ViewModels\MethodVM.cs" />
     <Compile Include="ViewModels\NodePinVM.cs" />
     <Compile Include="ViewModels\NodeVM.cs" />

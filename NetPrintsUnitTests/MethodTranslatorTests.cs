@@ -47,7 +47,7 @@ namespace NetPrints.Tests
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, null, "Length", typeof(int));
+            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, typeof(string), "Length", typeof(int));
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNode.ReturnPin);

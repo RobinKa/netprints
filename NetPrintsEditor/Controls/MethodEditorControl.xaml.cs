@@ -147,37 +147,38 @@ namespace NetPrintsEditor.Controls
                 {
                     // Add public methods
                     Suggestions = new ObservableRangeCollection<object>(
-                        ReflectionUtil.GetPublicMethodsForType(odp.PinType));
+                        ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(odp.PinType));
 
                     // Add properties
-                    Suggestions.AddRange(ReflectionUtil.GetPublicPropertiesForType(
-                        odp.PinType, Method?.Class?.Project?.LoadedAssemblies));
+                    Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicPropertiesForType(
+                        odp.PinType));
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
-                    Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetStaticFunctionsWithReturnType(
-                        idp.PinType, Method?.Class?.Project?.LoadedAssemblies));
+                    Suggestions = new ObservableRangeCollection<object>(
+                        ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithReturnType(
+                        idp.PinType));
                 }
                 else if (pin.Pin is NodeOutputExecPin oxp)
                 {
                     pin.ConnectedPin = null;
 
-                    Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetPublicMethodsForType(
-                        Method.Class.SuperType))
+                    Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
+                        GetPublicMethodsForType(Method.Class.SuperType))
                     {
-                        typeof(ForLoopNode),
-                        typeof(IfElseNode),
-                        typeof(ConstructorNode),
+                        TypeSpecifier.Create<ForLoopNode>(),
+                        TypeSpecifier.Create<IfElseNode>(),
+                        TypeSpecifier.Create<ConstructorNode>(),
                     };
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
                 {
                     Suggestions = new ObservableRangeCollection<object>(
-                        ReflectionUtil.GetStaticFunctions(Method?.Class?.Project?.LoadedAssemblies))
+                        ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
                     {
-                        typeof(ForLoopNode),
-                        typeof(IfElseNode),
-                        typeof(ConstructorNode),
+                        TypeSpecifier.Create<ForLoopNode>(),
+                        TypeSpecifier.Create<IfElseNode>(),
+                        TypeSpecifier.Create<ConstructorNode>(),
                     };
                 }
                 else
@@ -254,12 +255,12 @@ namespace NetPrintsEditor.Controls
         {
             if (Method != null)
             {
-                Suggestions = new ObservableRangeCollection<object>(ReflectionUtil.GetStaticFunctions(
-                    Method.Class?.Project?.LoadedAssemblies))
+                Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
+                    GetStaticFunctions())
                 {
-                    typeof(ForLoopNode),
-                    typeof(IfElseNode),
-                    typeof(ConstructorNode),
+                    TypeSpecifier.Create<ForLoopNode>(),
+                    TypeSpecifier.Create<IfElseNode>(),
+                    TypeSpecifier.Create<ConstructorNode>(),
                 };
             }
             else

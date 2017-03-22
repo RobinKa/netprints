@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetPrintsEditor.Dialogs"
-        xmlns:npe="clr-namespace:NetPrintsEditor"
+        xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
         mc:Ignorable="d"
         x:Name="wnd"
         Title="Select Type" Height="100" Width="250" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
@@ -16,7 +16,7 @@
         <ComboBox
             Text="{Binding SelectedType, ElementName=wnd, Mode=OneWay}" 
             SelectedItem="{Binding SelectedType, ElementName=wnd, Mode=TwoWay}" 
-            ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"/>
+            ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
 
         <Button Content="Select" Grid.Row="2" Click="OnSelectButtonClicked" />
     </Grid>

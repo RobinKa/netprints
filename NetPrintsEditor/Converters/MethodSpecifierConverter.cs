@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetPrintsEditor.Reflection;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -7,20 +8,19 @@ using System.Windows.Data;
 namespace NetPrintsEditor.Converters
 {
     [ValueConversion(typeof(MethodInfo), typeof(string))]
-    public class MethodInfoConverter : IValueConverter
+    public class MethodSpecifierConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is MethodInfo methodInfo)
+            if(value is MethodSpecifier methodSpecifier)
             {
-                string paramTypeNames = string.Join(", ", 
-                    methodInfo.GetParameters().Select(p => $"{p.ParameterType} {p.Name}"));
+                string paramTypeNames = string.Join(", ", methodSpecifier.Arguments);
 
-                string s = $"{methodInfo.DeclaringType} {methodInfo.Name} ({paramTypeNames})";
+                string s = $"{methodSpecifier.DeclaringType} {methodSpecifier.Name} ({paramTypeNames})";
 
-                if(methodInfo.ReturnType != typeof(void))
+                if(methodSpecifier.ReturnType != typeof(void))
                 {
-                    s += $" : {methodInfo.ReturnType}";
+                    s += $" : {methodSpecifier.ReturnType}";
                 }
 
                 return s;

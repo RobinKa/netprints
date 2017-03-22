@@ -7,7 +7,7 @@
             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="NetPrintsEditor.Controls.VariableEditorControl"
             xmlns:npc="clr-namespace:NetPrints.Core;assembly=NetPrints"
             xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
-            xmlns:npe="clr-namespace:NetPrintsEditor"
+            xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
             mc:Ignorable="d" 
             d:DesignHeight="300" d:DesignWidth="300" x:Name="wnd">
     <UserControl.Resources>
@@ -62,7 +62,7 @@
             <ComboBox Grid.Row="8" Grid.Column="1" x:Name="variableType" 
                       Text="{Binding Variable.VariableType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Variable.VariableType, ElementName=wnd, Mode=TwoWay}" 
-                      ItemsSource="{x:Static npe:ReflectionUtil.NonStaticTypes}"/>
+                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
         </Grid>
     </StackPanel>
 </UserControl>

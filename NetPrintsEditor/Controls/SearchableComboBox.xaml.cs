@@ -3,8 +3,11 @@ using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Converters;
 using NetPrintsEditor.Dialogs;
+using NetPrintsEditor.Reflection;
+using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -85,9 +88,9 @@ namespace NetPrintsEditor.Controls
 
             if (sender is ListViewItem item)
             {
-                if(item.DataContext is MethodInfo methodInfo)
+                if(item.DataContext is MethodSpecifier methodSpecifier)
                 {
-                    if (methodInfo.IsStatic)
+                    if (methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static))
                     {
                         // CallStaticFunctionNode(Method method, TypeSpecifier classType, 
                         // string methodName, IEnumerable<TypeSpecifier> inputTypes, 
@@ -101,10 +104,10 @@ namespace NetPrintsEditor.Controls
                             0,
 
                             // Parameters
-                            (TypeSpecifier)methodInfo.DeclaringType,
-                            methodInfo.Name,
-                            methodInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType).ToArray(),
-                            methodInfo.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodInfo.ReturnType }
+                            methodSpecifier.DeclaringType,
+                            methodSpecifier.Name,
+                            methodSpecifier.Arguments,
+                            methodSpecifier.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodSpecifier.ReturnType }
                         ));
                     }
                     else
@@ -120,34 +123,30 @@ namespace NetPrintsEditor.Controls
                             0,
 
                             // Parameters
-                            (TypeSpecifier)methodInfo.DeclaringType,
-                            methodInfo.Name,
-                            methodInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType).ToArray(),
-                            methodInfo.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodInfo.ReturnType }
+                            methodSpecifier.DeclaringType,
+                            methodSpecifier.Name,
+                            methodSpecifier.Arguments,
+                            methodSpecifier.ReturnType == typeof(void) ? new TypeSpecifier[] { } : new TypeSpecifier[] { methodSpecifier.ReturnType }
                         ));
                     }
                 }
-                else if(item.DataContext is PropertyInfo propertyInfo)
+                else if(item.DataContext is PropertySpecifier propertySpecifier)
                 {
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
                     // and the return type of the accessor methods
-
-                    MethodInfo[] publicAccessors = propertyInfo.GetAccessors();
-                    bool canGet = publicAccessors.Any(a => a.ReturnType != typeof(void));
-                    bool canSet = publicAccessors.Any(a => a.ReturnType == typeof(void));
                     
                     VariableGetSetInfo variableInfo = new VariableGetSetInfo(
-                        propertyInfo.Name, propertyInfo.PropertyType, 
-                        canGet, canSet, 
-                        propertyInfo.DeclaringType);
+                        propertySpecifier.Name, propertySpecifier.Type, 
+                        propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter, 
+                        propertySpecifier.DeclaringType);
 
                     if (EditorCommands.OpenVariableGetSet.CanExecute(variableInfo))
                     {
                         EditorCommands.OpenVariableGetSet.Execute(variableInfo);
                     }
                 }
-                else if(item.DataContext is Type t)
+                else if(item.DataContext is TypeSpecifier t)
                 {
                     if(t == typeof(ForLoopNode))
                     {
@@ -174,8 +173,7 @@ namespace NetPrintsEditor.Controls
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
                         if(selectTypeDialog.ShowDialog() == true)
                         {
-                            Type selectedType = ReflectionUtil.GetTypeFromSpecifier(
-                                selectTypeDialog.SelectedType);
+                            TypeSpecifier selectedType = selectTypeDialog.SelectedType;
 
                             if(selectedType == null)
                             {
@@ -183,12 +181,13 @@ namespace NetPrintsEditor.Controls
                             }
 
                             // Get all public constructors for the type
-                            ConstructorInfo[] constructors = selectedType.GetConstructors();
+                            IEnumerable<ConstructorSpecifier> constructors = 
+                                ProjectVM.Instance.ReflectionProvider.GetConstructors(selectedType);
 
-                            if (constructors.Length > 0)
+                            if (constructors.Count() > 0)
                             {
                                 // Just choose the first constructor we find
-                                ConstructorInfo constructor = constructors[0];
+                                ConstructorSpecifier constructor = constructors.ElementAt(0);
 
                                 // ConstructorNode(Method method, TypeSpecifier classType, 
                                 //     IEnumerable<TypeSpecifier> argumentTypes)
@@ -201,8 +200,8 @@ namespace NetPrintsEditor.Controls
                                     0,
 
                                     // Parameters
-                                    (TypeSpecifier)selectedType,
-                                    constructor.GetParameters().Select(p => (TypeSpecifier)p.ParameterType).ToArray()
+                                    selectedType,
+                                    constructor.Arguments
                                 ));
                             }
                         }

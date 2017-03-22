@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace NetPrints.Core
 {
     [DataContract]
+    [Serializable]
     public class TypeSpecifier
     {
         [DataMember]
