@@ -44,15 +44,17 @@ namespace NetPrints.Translator
             {
                 return $"\"{obj}\"";
             }
-            // Put f after float literals
             else if (type == typeof(float))
             {
-                return $"{obj}f";
+                return $"{obj}F";
             }
-            // Put u after uint literals
+            else if(type == typeof(double))
+            {
+                return $"{obj}D";
+            }
             else if (type == typeof(uint))
             {
-                return $"{obj}u";
+                return $"{obj}U";
             }
             // Put single quotes around char literals
             else if (type == typeof(char))
@@ -61,11 +63,15 @@ namespace NetPrints.Translator
             }
             else if(type == typeof(long))
             {
-                return $"{obj}l";
+                return $"{obj}L";
             }
             else if(type == typeof(ulong))
             {
-                return $"{obj}ul";
+                return $"{obj}UL";
+            }
+            else if(type == typeof(decimal))
+            {
+                return $"{obj}M";
             }
             else
             {
