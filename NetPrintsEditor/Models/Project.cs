@@ -24,7 +24,14 @@ namespace NetPrintsEditor.Models
             get;
             set;
         }
-        
+
+        [DataMember]
+        public string LastCompiledAssemblyPath
+        {
+            get;
+            set;
+        }
+
         public string Path
         {
             get;

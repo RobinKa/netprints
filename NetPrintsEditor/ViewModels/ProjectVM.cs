@@ -68,6 +68,19 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public string LastCompiledAssemblyPath
+        {
+            get => project.LastCompiledAssemblyPath;
+            set
+            {
+                if(project.LastCompiledAssemblyPath != value)
+                {
+                    project.LastCompiledAssemblyPath = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ObservableRangeCollection<LocalAssemblyName> Assemblies
         {
             get => project.Assemblies;
@@ -206,7 +219,6 @@ namespace NetPrintsEditor.ViewModels
         } = new ObservableRangeCollection<TypeSpecifier>();
 
         private AppDomainObject<WrappedReflectionProvider> reflectionProviderWrapper;
-        private string lastCompiledAssemblyPath;
 
         public ProjectVM(Project project)
         {
@@ -286,7 +298,7 @@ namespace NetPrintsEditor.ViewModels
 
                     if(LastCompilationSucceeded)
                     {
-                        lastCompiledAssemblyPath = results.PathToAssembly;
+                        LastCompiledAssemblyPath = results.PathToAssembly;
                     }
 
                     ReloadReflectionProvider();
@@ -307,9 +319,9 @@ namespace NetPrintsEditor.ViewModels
 
             // Load newly compiled assembly and referenced assemblies
             List<string> assembliesToReflectOn = Assemblies.Select(a => a.Path).ToList();
-            if(!string.IsNullOrEmpty(lastCompiledAssemblyPath))
+            if(!string.IsNullOrEmpty(LastCompiledAssemblyPath) && File.Exists(LastCompiledAssemblyPath))
             {
-                assembliesToReflectOn.Add(lastCompiledAssemblyPath);
+                assembliesToReflectOn.Add(LastCompiledAssemblyPath);
             }
 
             reflectionProviderWrapper = AppDomainHelper.Create<WrappedReflectionProvider>();
