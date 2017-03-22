@@ -61,6 +61,7 @@
     <Compile Include="AssemblyListWindow.xaml.cs">
       <DependentUpon>AssemblyListWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Commands\EditorCommands.cs" />
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
     <Compile Include="Compilation\LocalAssembly.cs" />

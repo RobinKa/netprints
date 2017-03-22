@@ -16,6 +16,10 @@ namespace NetPrintsEditor.Converters
             {
                 return methodInfoConverter.Convert(methodInfo, targetType, parameter, culture);
             }
+            else if(value is PropertyInfo propertyInfo)
+            {
+                return $"{propertyInfo.DeclaringType} {propertyInfo.Name} : {propertyInfo.PropertyType}";
+            }
             else if (value is Type t)
             {
                 if (t == typeof(ForLoopNode))

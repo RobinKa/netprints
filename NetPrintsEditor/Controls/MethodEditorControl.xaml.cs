@@ -47,7 +47,7 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        public void ShowVariableGetSet(VariableGetSetInfo variableInfo, Point position)
+        public void ShowVariableGetSet(VariableGetSetInfo variableInfo, Point? position = null)
         {
             // Check that the tag is unused
             if(variableInfo.Tag != null)
@@ -55,11 +55,14 @@ namespace NetPrintsEditor.Controls
                 throw new ArgumentException("variableInfo needs to have its Tag set to null because it is used for position");
             }
 
-            variableInfo.Tag = position;
+            // Use current mouse position if position is not set
+            Point pos = position ?? Mouse.GetPosition(drawCanvas);
+
+            variableInfo.Tag = pos;
             variableGetSet.VariableInfo = variableInfo;
 
-            Canvas.SetLeft(variableGetSet, position.X - variableGetSet.Width / 2);
-            Canvas.SetTop(variableGetSet, position.Y - variableGetSet.Height / 2);
+            Canvas.SetLeft(variableGetSet, pos.X - variableGetSet.Width / 2);
+            Canvas.SetTop(variableGetSet, pos.Y - variableGetSet.Height / 2);
 
             variableGetSet.Visibility = Visibility.Visible;
         }
@@ -124,8 +127,11 @@ namespace NetPrintsEditor.Controls
             {
                 VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
 
+                bool canSet = !(variable.Modifiers.HasFlag(VariableModifiers.ReadOnly) ||
+                    variable.Modifiers.HasFlag(VariableModifiers.Const));
+
                 VariableGetSetInfo variableInfo = new VariableGetSetInfo(
-                    variable.Name, variable.VariableType, Method.Class.Type);
+                    variable.Name, variable.VariableType, true, canSet, Method.Class.Type);
 
                 ShowVariableGetSet(variableInfo, e.GetPosition(drawCanvas));
 
@@ -139,8 +145,13 @@ namespace NetPrintsEditor.Controls
                 
                 if (pin.Pin is NodeOutputDataPin odp)
                 {
+                    // Add public methods
                     Suggestions = new ObservableRangeCollection<object>(
                         ReflectionUtil.GetPublicMethodsForType(odp.PinType));
+
+                    // Add properties
+                    Suggestions.AddRange(ReflectionUtil.GetPublicPropertiesForType(
+                        odp.PinType, Method?.Class?.Project?.LoadedAssemblies));
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
@@ -291,5 +302,18 @@ namespace NetPrintsEditor.Controls
                 Method.SelectedNode = null;
             }
         }
+
+        #region Commands
+        private void OpenVariableGetSetCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableGetSetInfo variableInfo;
+        }
+
+        private void OpenVariableGetSetExecute(object sender, ExecutedRoutedEventArgs e)
+        {
+            grid.ContextMenu.IsOpen = false;
+            ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
+        }
+        #endregion
     }
 }

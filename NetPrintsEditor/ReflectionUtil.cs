@@ -114,5 +114,19 @@ namespace NetPrintsEditor
                 return new MethodInfo[] { };
             }
         }
+
+        public static IEnumerable<PropertyInfo> GetPublicPropertiesForType(TypeSpecifier typeSpecifier, IEnumerable<Assembly> assemblies = null)
+        {
+            Type type = GetTypeFromSpecifier(typeSpecifier, assemblies);
+
+            if (type != null)
+            {
+                return type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            }
+            else
+            {
+                return new PropertyInfo[] { };
+            }
+        }
     }
 }

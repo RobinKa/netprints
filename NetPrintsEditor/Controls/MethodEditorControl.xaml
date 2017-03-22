@@ -4,10 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
-             xmlns:converter="clr-namespace:NetPrintsEditor.Converters"
+             xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800" x:Name="methodEditorWindow">
 
+    <UserControl.CommandBindings>
+        <CommandBinding Command="cmds:EditorCommands.OpenVariableGetSet" CanExecute="OpenVariableGetSetCanExecute" Executed="OpenVariableGetSetExecute" />
+    </UserControl.CommandBindings>
+    
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>

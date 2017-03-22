@@ -127,6 +127,26 @@ namespace NetPrintsEditor.Controls
                         ));
                     }
                 }
+                else if(item.DataContext is PropertyInfo propertyInfo)
+                {
+                    // Open variable get / set for the property
+                    // Determine whether the getters / setters are public via GetAccessors
+                    // and the return type of the accessor methods
+
+                    MethodInfo[] publicAccessors = propertyInfo.GetAccessors();
+                    bool canGet = publicAccessors.Any(a => a.ReturnType != typeof(void));
+                    bool canSet = publicAccessors.Any(a => a.ReturnType == typeof(void));
+                    
+                    VariableGetSetInfo variableInfo = new VariableGetSetInfo(
+                        propertyInfo.Name, propertyInfo.PropertyType, 
+                        canGet, canSet, 
+                        propertyInfo.DeclaringType);
+
+                    if (EditorCommands.OpenVariableGetSet.CanExecute(variableInfo))
+                    {
+                        EditorCommands.OpenVariableGetSet.Execute(variableInfo);
+                    }
+                }
                 else if(item.DataContext is Type t)
                 {
                     if(t == typeof(ForLoopNode))
