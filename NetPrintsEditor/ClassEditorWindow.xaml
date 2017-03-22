@@ -39,8 +39,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="compileButton" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClick"/>
-            <Button Grid.Column="1" x:Name="runButton" Margin="5" Content="Run" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnRunButtonClicked" />
+            <Button x:Name="compileButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClicked"/>
+            <Button Grid.Column="1" x:Name="runButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Run" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnRunButtonClicked" />
             <Button Grid.Column="2" x:Name="classPropertiesButton" Margin="5" Content="Class" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnClassPropertiesClicked" />
             <Button Grid.Column="3" x:Name="saveButton" Margin="5" Content="Save" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnSaveButtonClicked" />
         </Grid>

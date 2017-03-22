@@ -6,6 +6,7 @@ using NetPrintsEditor.Commands;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.CodeDom.Compiler;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -65,69 +66,32 @@ namespace NetPrintsEditor
             }
         }
 
-        private void OnCompileButtonClick(object sender, RoutedEventArgs e)
+        private void OnCompileButtonClicked(object sender, RoutedEventArgs e)
         {
-            compileButton.Content = "...";
-
-            // Translate the class to C#
-            ClassTranslator classTranslator = new ClassTranslator();
-            string fullClassName = $"{Class.Namespace}.{Class.Name}";
-            string code = classTranslator.TranslateClass(Class.Class);
-
-            // Compile in another thread
-            new Thread(() =>
-            {
-                if (!Directory.Exists("Compiled"))
-                {
-                    Directory.CreateDirectory("Compiled");
-                }
-
-                File.WriteAllText($"Compiled/{fullClassName}.txt", code);
-
-                CompilerResults results = CompilerUtil.CompileStringToLibrary(code, $"Compiled/{fullClassName}.dll");
-
-                File.WriteAllText($"Compiled/{fullClassName}_errors.txt", string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
-
-                compileButton.Dispatcher.Invoke(() =>
-                {
-                    compileButton.Content = "Compile";
-                });
-            }).Start();
+            Class.Project.CompileProject(false);
         }
 
         private void OnRunButtonClicked(object sender, RoutedEventArgs e)
         {
-            runButton.Content = "...";
+            ProjectVM project = Class.Project;
 
-            // Translate the class to C#
-            ClassTranslator classTranslator = new ClassTranslator();
-            string fullClassName = $"{Class.Namespace}.{Class.Name}";
-            string code = classTranslator.TranslateClass(Class.Class);
+            project.PropertyChanged += OnProjectPropertyChangedWhileCompiling;
+            project.CompileProject(true);
+        }
 
-            // Compile in another thread
-            new Thread(() =>
+        private void OnProjectPropertyChangedWhileCompiling(object sender, PropertyChangedEventArgs e)
+        {
+            ProjectVM project = Class.Project;
+
+            if (e.PropertyName == nameof(project.IsCompiling) && !project.IsCompiling)
             {
-                if (!Directory.Exists("Compiled"))
+                project.PropertyChanged -= OnProjectPropertyChangedWhileCompiling;
+
+                if (project.LastCompilationSucceeded)
                 {
-                    Directory.CreateDirectory("Compiled");
+                    project.RunProject();
                 }
-
-                File.WriteAllText($"Compiled/{fullClassName}.txt", code);
-
-                CompilerResults results = CompilerUtil.CompileStringToExecutable(code, $"Compiled/{fullClassName}.exe");
-
-                File.WriteAllText($"Compiled/{fullClassName}_errors.txt", string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
-                
-                runButton.Dispatcher.Invoke(() =>
-                {
-                    runButton.Content = "Run";
-                });
-                
-                if (!results.Errors.HasErrors)
-                {
-                    Process.Start(System.IO.Path.Combine(Environment.CurrentDirectory, results.PathToAssembly));
-                }
-            }).Start();
+            }
         }
 
         #region Commands
