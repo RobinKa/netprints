@@ -276,7 +276,7 @@ namespace NetPrintsEditor.ViewModels
                 // Write errors to file
 
                 File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
-                    string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
+                    string.Join(Environment.NewLine, results.Errors));
                 
                 // Notify UI that we are done and refresh reflection provider
 
