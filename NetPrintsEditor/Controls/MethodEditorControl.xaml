@@ -53,6 +53,12 @@
                             <local:NodeControl Node="{Binding}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
                 </ItemsControl>
 
                 <ItemsControl Panel.ZIndex="1" x:Name="cableList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.AllPins}">

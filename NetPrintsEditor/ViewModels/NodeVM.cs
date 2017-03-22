@@ -68,6 +68,11 @@ namespace NetPrintsEditor.ViewModels
             get => IsSelected ? SelectedBorderBrush : DeselectedBorderBrush;
         }
 
+        public int ZIndex
+        {
+            get => IsSelected ? 1 : 0;
+        }
+
         public bool IsSelected
         {
             get => isSelected;
@@ -78,6 +83,7 @@ namespace NetPrintsEditor.ViewModels
                     isSelected = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(BorderBrush));
+                    OnPropertyChanged(nameof(ZIndex));
                 }
             }
         }
