@@ -147,6 +147,10 @@ namespace NetPrintsEditor.Controls
                     // Add properties
                     Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicPropertiesForType(
                         odp.PinType));
+
+                    // Add static functions taking the type of the pin
+                    Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithArgumentType(
+                        odp.PinType));
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
