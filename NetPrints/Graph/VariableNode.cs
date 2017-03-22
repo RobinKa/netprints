@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 namespace NetPrints.Graph
 {
     [DataContract]
+    [KnownType(typeof(VariableGetterNode))]
+    [KnownType(typeof(VariableSetterNode))]
     public class VariableNode : Node
     {
         public NodeInputDataPin TargetPin
