@@ -87,7 +87,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
-                            <ComboBox Text="{Binding FullName, Mode=OneWay}" 
+                            <ComboBox Text="{Binding Mode=OneWay}" 
                                       SelectedItem="{Binding Mode=OneWay}"
                                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"
                                       HorizontalContentAlignment="Stretch" 
