@@ -49,6 +49,14 @@ namespace NetPrintsEditor.ViewModels
                 if(isBeingConnected != value)
                 {
                     isBeingConnected = value;
+
+                    // Disconnect pin if its being connected
+                    // and is an IDP or OXP
+                    if(Pin is NodeInputDataPin || Pin is NodeOutputExecPin)
+                    {
+                        ConnectedPin = null;
+                    }
+
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsCableVisible));
                     OnConnectionPositionUpdate();
