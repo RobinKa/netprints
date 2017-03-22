@@ -158,10 +158,9 @@ namespace NetPrintsEditor.Controls
                             if (constructors.Count() > 0)
                             {
                                 // Just choose the first constructor we find
-                                ConstructorSpecifier constructor = constructors.ElementAt(0);
+                                ConstructorSpecifier constructorSpecifier = constructors.ElementAt(0);
 
-                                // ConstructorNode(Method method, TypeSpecifier classType, 
-                                //     IEnumerable<TypeSpecifier> argumentTypes)
+                                // ConstructorNode(Method method, ConstructorSpecifier specifier)
 
                                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                                 (
@@ -171,8 +170,7 @@ namespace NetPrintsEditor.Controls
                                     0,
 
                                     // Parameters
-                                    selectedType,
-                                    constructor.Arguments
+                                    constructorSpecifier
                                 ));
                             }
                         }
