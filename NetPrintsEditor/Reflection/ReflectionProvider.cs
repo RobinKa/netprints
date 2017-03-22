@@ -100,5 +100,15 @@ namespace NetPrintsEditor.Reflection
 
             return null;
         }
+
+        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier)
+        {
+            return Assemblies.SelectMany(a =>
+                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
+                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                        .Where(m => !m.IsSpecialName &&  m.GetParameters().Any(
+                            p => p.ParameterType == typeSpecifier))
+                        .Select(m => (MethodSpecifier)m)));
+        }
     }
 }

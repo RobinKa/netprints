@@ -12,6 +12,7 @@ namespace NetPrintsEditor.Reflection
         bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b);
         IEnumerable<MethodSpecifier> GetStaticFunctions();
         IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier);
+        IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier);
         IEnumerable<TypeSpecifier> GetNonStaticTypes();
         IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier);
         IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier);
