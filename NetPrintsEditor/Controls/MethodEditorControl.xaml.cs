@@ -316,7 +316,7 @@ namespace NetPrintsEditor.Controls
             {
                 dragCanvas = false;
                 drawCanvas.ReleaseMouseCapture();
-                Mouse.OverrideCursor = Cursors.Arrow;
+                Mouse.OverrideCursor = null;
                 e.Handled = true;
             }
         }
