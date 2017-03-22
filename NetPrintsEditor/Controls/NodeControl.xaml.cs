@@ -43,7 +43,7 @@ namespace NetPrintsEditor.Controls
             dragging = true;
 
             dragStartElementPosition = new Point(Node.PositionX, Node.PositionY);
-            dragStartMousePosition = e.GetPosition(null);
+            dragStartMousePosition = PointToScreen(e.GetPosition(this));
 
             CaptureMouse();
             e.Handled = true;
@@ -70,17 +70,24 @@ namespace NetPrintsEditor.Controls
 
             if (dragging)
             {
-                Point mousePosition = e.GetPosition(null);
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    Point mousePosition = PointToScreen(e.GetPosition(this));
 
-                Vector offset = mousePosition - dragStartMousePosition;
-                
-                Node.PositionX = dragStartElementPosition.X + offset.X;
-                Node.PositionY = dragStartElementPosition.Y + offset.Y;
+                    Vector offset = mousePosition - dragStartMousePosition;
 
-                Node.PositionX -= Node.PositionX % MethodEditorControl.GridCellSize;
-                Node.PositionY -= Node.PositionY % MethodEditorControl.GridCellSize;
+                    Node.PositionX = dragStartElementPosition.X + offset.X;
+                    Node.PositionY = dragStartElementPosition.Y + offset.Y;
 
-                InvalidateVisual();
+                    Node.PositionX -= Node.PositionX % MethodEditorControl.GridCellSize;
+                    Node.PositionY -= Node.PositionY % MethodEditorControl.GridCellSize;
+                }
+                else
+                {
+                    dragging = false;
+                }
+
+                e.Handled = true;
             }
         }
         #endregion

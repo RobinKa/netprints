@@ -304,11 +304,18 @@ namespace NetPrintsEditor.Controls
         {
             if(dragCanvas)
             {
-                Vector offset = dragCanvasStartOffset + (e.GetPosition(this) - dragCanvasStartLocation);
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    Vector offset = dragCanvasStartOffset + (e.GetPosition(this) - dragCanvasStartLocation);
 
-                drawCanvas.RenderTransform = new TranslateTransform(
-                    Math.Round(offset.X),
-                    Math.Round(offset.Y));
+                    drawCanvas.RenderTransform = new TranslateTransform(
+                        Math.Round(offset.X),
+                        Math.Round(offset.Y));
+                }
+                else
+                {
+                    dragCanvas = false;
+                }
 
                 e.Handled = true;
             }
