@@ -85,6 +85,7 @@ namespace NetPrintsEditor.Controls
                 Pin.IsBeingConnected = true;
                 DragDrop.DoDragDrop(el, Pin, DragDropEffects.Link);
                 Pin.IsBeingConnected = false;
+                e.Handled = true;
             }
         }
 

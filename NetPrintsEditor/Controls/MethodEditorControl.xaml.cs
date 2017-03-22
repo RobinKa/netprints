@@ -19,11 +19,6 @@ namespace NetPrintsEditor.Controls
     {
         public const double GridCellSize = 20;
 
-        private double drawCanvasScale = 1;
-        private const double DrawCanvasMinScale = 0.3;
-        private const double DrawCanvasMaxScale = 1.0;
-        private const double DrawCanvasScaleFactor = 1.3;
-
         public MethodVM Method
         {
             get => GetValue(MethodProperty) as MethodVM;
@@ -256,42 +251,7 @@ namespace NetPrintsEditor.Controls
                 Suggestions?.Clear();
             }
         }
-
-        private void OnMouseWheelScroll(object sender, MouseWheelEventArgs e)
-        {
-            if (e.Delta < 0)
-            {
-                drawCanvasScale /= DrawCanvasScaleFactor;
-            }
-            else
-            {
-                drawCanvasScale *= DrawCanvasScaleFactor;
-            }
-
-            // Clamp scale between min and max
-            if(drawCanvasScale < DrawCanvasMinScale)
-            {
-                drawCanvasScale = DrawCanvasMinScale;
-            }
-            else if(drawCanvasScale > DrawCanvasMaxScale)
-            {
-                drawCanvasScale = DrawCanvasMaxScale;
-            }
-
-            drawCanvas.LayoutTransform = new ScaleTransform(drawCanvasScale, drawCanvasScale);
-            e.Handled = true;
-        }
-
-        private void OnDrawCanvasLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // Deselect node
-
-            if (Method != null)
-            {
-                Method.SelectedNode = null;
-            }
-        }
-
+        
         #region Commands
         private void OpenVariableGetSetCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -302,6 +262,124 @@ namespace NetPrintsEditor.Controls
         {
             grid.ContextMenu.IsOpen = false;
             ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
+        }
+        #endregion
+
+        #region DrawCanvas dragging and scaling
+        private bool dragCanvas = false;
+        private Point dragCanvasStartLocation;
+        private Vector dragCanvasStartOffset;
+
+        private double drawCanvasScale = 1;
+        private const double DrawCanvasMinScale = 0.3;
+        private const double DrawCanvasMaxScale = 1.0;
+        private const double DrawCanvasScaleFactor = 1.3;
+
+        private void OnDrawCanvasLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Deselect node
+            if (Method?.SelectedNode != null)
+            {
+                Method.SelectedNode = null;
+                e.Handled = true;
+            }
+            
+            TranslateTransform currentTransform = drawCanvas.RenderTransform as TranslateTransform;
+            dragCanvas = true;
+            dragCanvasStartLocation = e.GetPosition(this);
+            dragCanvasStartOffset = currentTransform != null ?
+                    new Vector(currentTransform.X, currentTransform.Y) :
+                    new Vector(0, 0);
+
+            drawCanvas.CaptureMouse();
+            Mouse.OverrideCursor = Cursors.ScrollAll;
+            e.Handled = true;
+        }
+
+        private void OnDrawCanvasMouseMove(object sender, MouseEventArgs e)
+        {
+            if(dragCanvas)
+            {
+                Vector offset = dragCanvasStartOffset + (e.GetPosition(this) - dragCanvasStartLocation);
+
+                drawCanvas.RenderTransform = new TranslateTransform(
+                    Math.Round(offset.X),
+                    Math.Round(offset.Y));
+
+                e.Handled = true;
+            }
+        }
+
+        private void OnDrawCanvasLeftMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (dragCanvas)
+            {
+                dragCanvas = false;
+                drawCanvas.ReleaseMouseCapture();
+                Mouse.OverrideCursor = Cursors.Arrow;
+                e.Handled = true;
+            }
+        }
+
+        private void OnMouseWheelScroll(object sender, MouseWheelEventArgs e)
+        {
+            double oldScale = drawCanvasScale;
+
+            if (e.Delta < 0)
+            {
+                drawCanvasScale /= DrawCanvasScaleFactor;
+            }
+            else
+            {
+                drawCanvasScale *= DrawCanvasScaleFactor;
+            }
+
+            // Clamp scale between min and max
+            if (drawCanvasScale < DrawCanvasMinScale)
+            {
+                drawCanvasScale = DrawCanvasMinScale;
+            }
+            else if (drawCanvasScale > DrawCanvasMaxScale)
+            {
+                drawCanvasScale = DrawCanvasMaxScale;
+            }
+
+            drawCanvas.LayoutTransform = new ScaleTransform(drawCanvasScale, drawCanvasScale);
+
+            // Translate if the scale did not stay the same
+            if (oldScale != drawCanvasScale)
+            {
+                TranslateTransform currentTransform = drawCanvas.RenderTransform as TranslateTransform;
+                Vector currentOffset = currentTransform != null ?
+                    new Vector(currentTransform.X, currentTransform.Y) :
+                    new Vector(0, 0);
+
+                Vector targetOffset = 0.8 * currentOffset - Math.Sign(e.Delta) * 0.2 * (Vector)e.GetPosition(drawCanvas);
+                drawCanvas.RenderTransform = new TranslateTransform(
+                    Math.Round(targetOffset.X),
+                    Math.Round(targetOffset.Y));
+            }
+
+            e.Handled = true;
+        }
+
+        private void ResetDrawCanvasTransform()
+        {
+            drawCanvasScale = 1;
+            dragCanvas = false;
+
+            drawCanvas.RenderTransform = new TranslateTransform(0, 0);
+            drawCanvas.LayoutTransform = new ScaleTransform(1, 1);
+        }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if(e.Property == MethodProperty)
+            {
+                ResetDrawCanvasTransform();
+            }
         }
         #endregion
     }
