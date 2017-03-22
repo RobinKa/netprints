@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Interop
 {
-    public class AppDomainObject<T> where T : MarshalByRefObject
+    public class AppDomainObject<T> where T : WrappedAppDomainObject
     {
         public T Object { get; private set; }
 
@@ -29,21 +29,26 @@ namespace NetPrintsEditor.Interop
 
     public static class AppDomainHelper
     {
-        public static AppDomainObject<T> Create<T>() where T : MarshalByRefObject
+        public static AppDomainObject<T> Create<T>() 
+            where T : WrappedAppDomainObject
         {
             // Set shadow copy to true so we can still compile while we are loaded
-            // Might not be necessary if we unload the app domain before compilation
+            // TODO: Might be good to only shadow-load the compiled assemblies
 
             AppDomainSetup domainSetup = new AppDomainSetup
             {
                 ApplicationBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
                 ShadowCopyFiles = true.ToString(),
             };
-
+            
             AppDomain domain = AppDomain.CreateDomain(nameof(T), null, domainSetup);
 
             T domainObject = (T)domain.CreateInstanceFromAndUnwrap(
                     typeof(T).Assembly.Location, typeof(T).FullName);
+
+            // Load all assemblies that the current app domain is referencing
+            domainObject.Initialize(AppDomain.CurrentDomain.GetAssemblies().
+                Select(a => a.Location).ToArray());
             
             return new AppDomainObject<T>(domain, domainObject);
         }

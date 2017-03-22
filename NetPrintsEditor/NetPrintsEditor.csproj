@@ -69,6 +69,7 @@
     <Compile Include="Compilation\ICodeCompiler.cs" />
     <Compile Include="Compilation\LocalAssembly.cs" />
     <Compile Include="Compilation\CompilerUtil.cs" />
+    <Compile Include="Interop\WrappedAppDomainObject.cs" />
     <Compile Include="Interop\WrappedCodeCompiler.cs" />
     <Compile Include="Reflection\IReflectionProvider.cs" />
     <Compile Include="Reflection\ConstructorSpecifier.cs" />

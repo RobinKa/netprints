@@ -9,16 +9,13 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Interop
 {
-    public class WrappedCodeCompiler : MarshalByRefObject, ICodeCompiler
+    public class WrappedCodeCompiler : WrappedAppDomainObject, ICodeCompiler
     {
         private ICodeCompiler codeCompiler;
 
-        public void LoadRequiredAssemblies(IEnumerable<string> assemblyPaths)
+        public override void Initialize(IEnumerable<string> assemblyPaths)
         {
-            foreach (string assemblyPath in assemblyPaths)
-            {
-                Assembly.LoadFrom(assemblyPath);
-            }
+            base.Initialize(assemblyPaths);
 
             codeCompiler = new CodeCompiler();
         }

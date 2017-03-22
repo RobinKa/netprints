@@ -12,17 +12,9 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Interop
 {
-    public class WrappedReflectionProvider : MarshalByRefObject, IReflectionProvider
+    public class WrappedReflectionProvider : WrappedAppDomainObject, IReflectionProvider
     {
         private IReflectionProvider reflectionProvider;
-
-        public void LoadRequiredAssemblies(IEnumerable<string> assemblyPaths)
-        {
-            foreach(string assemblyPath in assemblyPaths)
-            {
-                Assembly.LoadFrom(assemblyPath);
-            }
-        }
 
         public void SetReflectionAssemblies(IEnumerable<string> assemblyPaths)
         {
@@ -34,7 +26,6 @@ namespace NetPrintsEditor.Interop
             }
 
             reflectionProvider = new ReflectionProvider(assemblies);
-
         }
 
         public override object InitializeLifetimeService()

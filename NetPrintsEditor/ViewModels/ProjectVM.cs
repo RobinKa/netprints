@@ -263,21 +263,23 @@ namespace NetPrintsEditor.ViewModels
 
                 string outputPath = $"Compiled/{Project.Name}.{ext}";
 
+                // Create compiler on other app domain, compile, unload the app domain
+
                 AppDomainObject<WrappedCodeCompiler> codeCompilerWrapper = 
                     AppDomainHelper.Create<WrappedCodeCompiler>();
-
-                codeCompilerWrapper.Object.LoadRequiredAssemblies(
-                    AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
-
+                
                 CodeCompileResults results = codeCompilerWrapper.Object.CompileSources(
                     outputPath, Assemblies.Select(a => a.Path).ToArray(), sources, generateExecutable);
 
                 codeCompilerWrapper.Unload();
 
                 // Write errors to file
+
                 File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
                     string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
                 
+                // Notify UI that we are done and refresh reflection provider
+
                 dispatcher.Invoke(() =>
                 {
                     LastCompilationSucceeded = results.Success;
@@ -311,8 +313,6 @@ namespace NetPrintsEditor.ViewModels
             }
 
             reflectionProviderWrapper = AppDomainHelper.Create<WrappedReflectionProvider>();
-            reflectionProviderWrapper.Object.LoadRequiredAssemblies(
-                AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
             reflectionProviderWrapper.Object.SetReflectionAssemblies(assembliesToReflectOn);
 
             NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
