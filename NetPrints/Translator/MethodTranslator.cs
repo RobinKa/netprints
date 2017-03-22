@@ -11,6 +11,7 @@ namespace NetPrints.Translator
     public class MethodTranslator
     {
         private const string JumpStackVarName = "jumpStack";
+        private const string JumpStackType = "System.Collections.Generic.Stack<int>";
 
         private Dictionary<NodeOutputDataPin, string> variableNames = new Dictionary<NodeOutputDataPin, string>();
         private Dictionary<Node, List<int>> nodeStateIds = new Dictionary<Node, List<int>>();
@@ -293,9 +294,8 @@ namespace NetPrints.Translator
             if (pinsJumpedTo.Count > 0)
             {
                 TranslateJumpStack();
-
-                string jumpStackType = typeof(Stack<int>).FullName;
-                builder.Replace("%JUMPSTACKPLACEHOLDER%", $"{jumpStackType} {JumpStackVarName} = {jumpStackType}{Environment.NewLine}");
+                
+                builder.Replace("%JUMPSTACKPLACEHOLDER%", $"{JumpStackType} {JumpStackVarName} = new {JumpStackType}();{Environment.NewLine}");
             }
             else
             {
