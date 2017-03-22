@@ -272,7 +272,7 @@ namespace NetPrintsEditor
             if (p.PositionY < 0)
                 p.PositionY = 0;
 
-            object[] parameters = new object[] { p.Method }.Union(p.ConstructorParameters).ToArray();
+            object[] parameters = new object[] { p.Method }.Concat(p.ConstructorParameters).ToArray();
             Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
             node.PositionX = p.PositionX;
             node.PositionY = p.PositionY;
