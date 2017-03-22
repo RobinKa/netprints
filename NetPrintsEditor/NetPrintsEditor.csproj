@@ -80,6 +80,9 @@
     <Compile Include="Controls\VariableEditorControl.xaml.cs">
       <DependentUpon>VariableEditorControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\VariableGetSetControl.xaml.cs">
+      <DependentUpon>VariableGetSetControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\MethodInfoConverter.cs" />
     <Compile Include="Converters\ClassModifierConverter.cs" />
     <Compile Include="Converters\ModelToViewModelConverter.cs" />
@@ -148,6 +151,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\VariableEditorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\VariableGetSetControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

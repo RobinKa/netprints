@@ -47,59 +47,74 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        public void ShowVariableGetSet(VariableVM variable, Point position)
+        public void ShowVariableGetSet(VariableGetSetInfo variableInfo, Point position)
         {
-            variableGetSet.Visibility = Visibility.Visible;
-            variableGetSet.Tag = new object[] { variable, position };
+            // Check that the tag is unused
+            if(variableInfo.Tag != null)
+            {
+                throw new ArgumentException("variableInfo needs to have its Tag set to null because it is used for position");
+            }
 
-            variableSetButton.Tag = variableGetSet.Tag;
-            variableGetButton.Tag = variableGetSet.Tag;
-            
+            variableInfo.Tag = position;
+            variableGetSet.VariableInfo = variableInfo;
+
             Canvas.SetLeft(variableGetSet, position.X - variableGetSet.Width / 2);
             Canvas.SetTop(variableGetSet, position.Y - variableGetSet.Height / 2);
+
+            variableGetSet.Visibility = Visibility.Visible;
         }
 
         public void HideVariableGetSet()
         {
+            variableGetSet.VariableInfo = null;
             variableGetSet.Visibility = Visibility.Hidden;
         }
 
-        private void OnVariableSetClicked(object sender, RoutedEventArgs e)
+        private void OnVariableGetSetMouseLeave(object sender, MouseEventArgs e)
         {
-            if(sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is VariableVM v && o[1] is Point pos)
+            HideVariableGetSet();
+        }
+
+        private void OnVariableSetClicked(VariableGetSetControl sender,
+            VariableGetSetInfo variableInfo, bool wasSet)
+        {
+            Point position;
+
+            // Try to get the spawn position from the variableInfo's Tag
+            // Otherwise use current mouse location
+
+            if(variableInfo.Tag is Point infoPosition)
+            {
+                position = infoPosition;
+            }
+            else
+            {
+                position = Mouse.GetPosition(drawCanvas);
+            }
+
+            if (wasSet)
             {
                 // VariableSetterNode(Method method, TypeSpecifier targetType, 
                 // string variableName, TypeSpecifier variableType) 
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(VariableSetterNode), Method.Method, pos.X, pos.Y,
-                    Method.Class.Type, v.Name, v.VariableType
+                    typeof(VariableSetterNode), Method.Method, position.X, position.Y,
+                    variableInfo.TargetType, variableInfo.Name, variableInfo.Type
                 ));
             }
-
-            HideVariableGetSet();
-        }
-
-        private void OnVariableGetClicked(object sender, RoutedEventArgs e)
-        {
-            if (sender is Control c && c.Tag is object[] o && o.Length == 2 && o[0] is VariableVM v && o[1] is Point pos)
+            else
             {
                 // VariableGetterNode(Method method, TypeSpecifier targetType, 
                 // string variableName, TypeSpecifier variableType) 
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(VariableGetterNode), Method.Method, pos.X, pos.Y,
-                    Method.Class.Type, v.Name, v.VariableType
+                    typeof(VariableGetterNode), Method.Method, position.X, position.Y,
+                    variableInfo.TargetType, variableInfo.Name, variableInfo.Type
                 ));
             }
 
-            HideVariableGetSet();
-        }
-
-        private void OnVariableGetSetMouseLeave(object sender, MouseEventArgs e)
-        {
             HideVariableGetSet();
         }
 
@@ -108,8 +123,11 @@ namespace NetPrintsEditor.Controls
             if (Method != null && e.Data.GetDataPresent(typeof(VariableVM)))
             {
                 VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
-                
-                ShowVariableGetSet(variable, e.GetPosition(drawCanvas));
+
+                VariableGetSetInfo variableInfo = new VariableGetSetInfo(
+                    variable.Name, variable.VariableType, Method.Class.Type);
+
+                ShowVariableGetSet(variableInfo, e.GetPosition(drawCanvas));
 
                 e.Handled = true;
             }
