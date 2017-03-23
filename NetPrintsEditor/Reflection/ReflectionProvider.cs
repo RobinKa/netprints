@@ -59,7 +59,9 @@ namespace NetPrintsEditor.Reflection
                     .Where(m => 
                         !m.IsSpecialName && 
                         m.GetParameters().All(p => !p.ParameterType.IsGenericParameter) &&
-                        !m.ReturnType.IsGenericParameter)
+                        !m.ReturnType.IsGenericParameter &&
+                        !m.IsGenericMethodDefinition &&
+                        !m.DeclaringType.ContainsGenericParameters)
                     .Select(m => (MethodSpecifier)m)));
         }
 
@@ -123,8 +125,9 @@ namespace NetPrintsEditor.Reflection
             return Assemblies.SelectMany(a =>
                 a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
                     t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .Where(m => !m.IsSpecialName &&  m.GetParameters().Any(
-                            p => p.ParameterType == typeSpecifier))
+                        .Where(m => !m.IsSpecialName &&  
+                            m.GetParameters().Any( p => p.ParameterType == typeSpecifier) &&
+                            !m.DeclaringType.ContainsGenericParameters)
                         .Select(m => (MethodSpecifier)m)));
         }
 
