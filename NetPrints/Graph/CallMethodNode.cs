@@ -97,12 +97,12 @@ namespace NetPrints.Graph
                 AddInputDataPin("Target", DeclaringType);
             }
 
-            foreach(TypeSpecifier argumentType in ArgumentTypes)
+            foreach(BaseType argumentType in ArgumentTypes)
             {
                 AddInputDataPin(argumentType.ShortName, argumentType);
             }
 
-            foreach(TypeSpecifier returnType in ReturnTypes)
+            foreach(BaseType returnType in ReturnTypes)
             {
                 AddOutputDataPin(returnType.ShortName, returnType);
             }
