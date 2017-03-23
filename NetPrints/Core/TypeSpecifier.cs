@@ -17,13 +17,20 @@ namespace NetPrints.Core
             get;
             private set;
         }
-        
+
         [DataMember]
-        public IList<BaseType> GenericArguments
+        public bool IsInterface
         {
             get;
             private set;
-        } = new List<BaseType>();
+        }
+        
+        [DataMember]
+        public ObservableRangeCollection<BaseType> GenericArguments
+        {
+            get;
+            private set;
+        }
 
         public override string ShortName
         {
@@ -47,25 +54,26 @@ namespace NetPrints.Core
             }
         }
         
-        public TypeSpecifier(string typeName, bool isEnum=false, IList<BaseType> genericArguments=null)
+        public TypeSpecifier(string typeName, bool isEnum=false, bool isInterface=false, IList<BaseType> genericArguments=null)
             : base(typeName)
         {
             IsEnum = isEnum;
-            
+            IsInterface = IsInterface;
+
             if(genericArguments == null)
             {
-                GenericArguments = new List<BaseType>();
+                GenericArguments = new ObservableRangeCollection<BaseType>();
             }
             else
             {
-                GenericArguments = genericArguments;
+                GenericArguments = new ObservableRangeCollection<BaseType>(genericArguments);
             }
         }
 
         public static TypeSpecifier Create<T>()
         {
             Type t = typeof(T);
-            return new TypeSpecifier(t.FullName, t.IsSubclassOf(typeof(Enum)));
+            return new TypeSpecifier(t.FullName, t.IsSubclassOf(typeof(Enum)), t.IsInterface);
         }
 
         public override int GetHashCode()
@@ -123,7 +131,9 @@ namespace NetPrints.Core
                 typeName = type.Namespace + "." + typeName;
             }
 
-            TypeSpecifier typeSpecifier = new TypeSpecifier(typeName, type.IsSubclassOf(typeof(Enum)));
+            TypeSpecifier typeSpecifier = new TypeSpecifier(typeName, 
+                type.IsSubclassOf(typeof(Enum)),
+                type.IsInterface);
 
             foreach(Type genType in type.GetGenericArguments())
             {
@@ -153,6 +163,11 @@ namespace NetPrints.Core
                 return ReferenceEquals(typeSpecifier, null);
             }
 
+            if (type.IsGenericParameter)
+            {
+                return false;
+            }
+
             return typeSpecifier.Equals((TypeSpecifier)type);
         }
 
@@ -161,6 +176,11 @@ namespace NetPrints.Core
             if (ReferenceEquals(type, null))
             {
                 return !ReferenceEquals(typeSpecifier, null);
+            }
+
+            if (type.IsGenericParameter)
+            {
+                return true;
             }
 
             return !typeSpecifier.Equals((TypeSpecifier)type);
@@ -173,6 +193,11 @@ namespace NetPrints.Core
                 return ReferenceEquals(typeSpecifier, null);
             }
 
+            if(type.IsGenericParameter)
+            {
+                return false;
+            }
+
             return typeSpecifier.Equals((TypeSpecifier)type);
         }
 
@@ -181,6 +206,11 @@ namespace NetPrints.Core
             if (ReferenceEquals(type, null))
             {
                 return !ReferenceEquals(typeSpecifier, null);
+            }
+
+            if (type.IsGenericParameter)
+            {
+                return true;
             }
 
             return !typeSpecifier.Equals((TypeSpecifier)type);

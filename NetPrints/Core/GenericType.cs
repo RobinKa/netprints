@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    [Serializable]
+    [DataContract]
     public class GenericTypeConstraint
     {
         
@@ -16,7 +18,7 @@ namespace NetPrints.Core
     [Serializable]
     public class GenericType : BaseType
     {
-        public IEnumerable<GenericTypeConstraint> Constraints
+        public ObservableRangeCollection<GenericTypeConstraint> Constraints
         {
             get;
             private set;
@@ -27,11 +29,11 @@ namespace NetPrints.Core
         {
             if(constraints == null)
             {
-                Constraints = new List<GenericTypeConstraint>();
+                Constraints = new ObservableRangeCollection<GenericTypeConstraint>();
             }
             else
             {
-                Constraints = constraints;
+                Constraints = new ObservableRangeCollection<GenericTypeConstraint>(constraints);
             }
         }
 

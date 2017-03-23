@@ -19,14 +19,9 @@ namespace NetPrints.Graph
             }
             else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
             {
-                if(datA.PinType == datB.PinType)
-                {
-                    return true;
-                }
-
                 if(datA.PinType is TypeSpecifier typeSpecA && 
                     datB.PinType is TypeSpecifier typeSpecB &&
-                    isSubclassOf(typeSpecB, typeSpecA))
+                    (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA)))
                 {
                     return true;
                 }
@@ -40,6 +35,18 @@ namespace NetPrints.Graph
                         return true;
                     }
                     else if(datB.PinType is GenericType gB)
+                    {
+                        return true;
+                    }
+                }
+
+                if (datA.PinType is TypeSpecifier tA)
+                {
+                    if (datB.PinType is TypeSpecifier tB)
+                    {
+                        return true;
+                    }
+                    else if (datB.PinType is GenericType genTypeB)
                     {
                         return true;
                     }

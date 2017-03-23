@@ -56,7 +56,11 @@ namespace NetPrintsEditor.Reflection
             return Assemblies.SelectMany(a =>
                 a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
                     t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                    .Where(m => !m.IsSpecialName).Select(m => (MethodSpecifier)m)));
+                    .Where(m => 
+                        !m.IsSpecialName && 
+                        m.GetParameters().All(p => !p.ParameterType.IsGenericParameter) &&
+                        !m.ReturnType.IsGenericParameter)
+                    .Select(m => (MethodSpecifier)m)));
         }
 
         public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier)
@@ -85,16 +89,29 @@ namespace NetPrintsEditor.Reflection
 
             return typeA != null && typeB != null && typeA.IsSubclassOf(typeB);
         }
-        #endregion
 
         private Type GetTypeFromSpecifier(TypeSpecifier specifier)
         {
             foreach (Assembly assembly in Assemblies)
             {
-                Type t = assembly.GetType(specifier);
+                string typeName = specifier.Name;
+                if(specifier.GenericArguments.Count > 0)
+                {
+                    typeName += $"`{specifier.GenericArguments.Count}";
+                }
+
+                Type t = assembly.GetType(typeName);
                 if (t != null)
                 {
-                    return t;
+                    if (specifier.GenericArguments.Count > 0 && t.IsGenericTypeDefinition)
+                    {
+                        return t.MakeGenericType(specifier.GenericArguments.Cast<TypeSpecifier>()
+                            .Select(typeSpec => GetTypeFromSpecifier(typeSpec)).ToArray());
+                    }
+                    else
+                    {
+                        return t;
+                    }
                 }
             }
 
@@ -110,5 +127,7 @@ namespace NetPrintsEditor.Reflection
                             p => p.ParameterType == typeSpecifier))
                         .Select(m => (MethodSpecifier)m)));
         }
+
+        #endregion
     }
 }

@@ -31,12 +31,12 @@ namespace NetPrints.Graph
             get => MethodSpecifier.DeclaringType;
         }
 
-        public IList<TypeSpecifier> ArgumentTypes
+        public IList<BaseType> ArgumentTypes
         {
             get => MethodSpecifier.Arguments;
         }
 
-        public IList<TypeSpecifier> ReturnTypes
+        public IList<BaseType> ReturnTypes
         {
             get => MethodSpecifier.ReturnTypes;
         }

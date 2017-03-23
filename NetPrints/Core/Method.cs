@@ -79,11 +79,11 @@ namespace NetPrints.Core
         }
 
         [DataMember]
-        public IList<GenericType> DeclaredGenericArguments
+        public ObservableRangeCollection<GenericType> DeclaredGenericArguments
         {
             get;
             private set;
-        } = new List<GenericType>();
+        } = new ObservableRangeCollection<GenericType>();
 
         public Method(string name)
         {

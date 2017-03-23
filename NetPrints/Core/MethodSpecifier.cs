@@ -28,14 +28,14 @@ namespace NetPrints.Core
         }
 
         [DataMember]
-        public IList<TypeSpecifier> Arguments
+        public IList<BaseType> Arguments
         {
             get;
             private set;
         }
 
         [DataMember]
-        public IList<TypeSpecifier> ReturnTypes
+        public IList<BaseType> ReturnTypes
         {
             get;
             private set;
@@ -49,14 +49,14 @@ namespace NetPrints.Core
         }
 
         [DataMember]
-        public IList<GenericType> GenericArguments
+        public IList<BaseType> GenericArguments
         {
             get;
             private set;
-        } = new List<GenericType>();
+        } = new List<BaseType>();
 
-        public MethodSpecifier(string name, IEnumerable<TypeSpecifier> arguments,
-            IEnumerable<TypeSpecifier> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType)
+        public MethodSpecifier(string name, IEnumerable<BaseType> arguments,
+            IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType)
         {
             Name = name;
             DeclaringType = declaringType;
@@ -96,13 +96,26 @@ namespace NetPrints.Core
 
             // TODO: Protected / Internal
 
-            TypeSpecifier[] returnTypes = methodInfo.ReturnType == typeof(void) ?
-                new TypeSpecifier[] { } :
-                new TypeSpecifier[] { methodInfo.ReturnType };
+            BaseType[] returnTypes;
+            if(methodInfo.ReturnType.IsGenericParameter)
+            {
+                returnTypes = new BaseType[] { (GenericType)methodInfo.ReturnType };
+            }
+            else
+            {
+                returnTypes = methodInfo.ReturnType == typeof(void) ?
+                    new BaseType[] { } :
+                    new BaseType[] { (TypeSpecifier)methodInfo.ReturnType };
+            }
+
+            BaseType[] parameterTypes = methodInfo.GetParameters().Select(
+                p => p.ParameterType.IsGenericParameter ?
+                    ((GenericType)p.ParameterType) as BaseType :
+                    ((TypeSpecifier)p.ParameterType) as BaseType).ToArray();
 
             return new MethodSpecifier(
                 methodInfo.Name,
-                methodInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType),
+                parameterTypes,
                 returnTypes,
                 modifiers,
                 methodInfo.DeclaringType);

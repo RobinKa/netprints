@@ -1,4 +1,5 @@
-﻿using NetPrints.Graph;
+﻿using NetPrints.Core;
+using NetPrints.Graph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -108,14 +109,15 @@ namespace NetPrintsEditor.ViewModels
             }
             set
             {
-                if (Pin is NodeInputDataPin p && p.UnconnectedValue != value)
+                if (Pin is NodeInputDataPin p && p.UnconnectedValue != value
+                    && p.PinType is TypeSpecifier typeSpecifier)
                 {
                     // Try to convert to the correct type first if it can be found
                     // Dont do this for enums as they just use a string
 
-                    Type t = Type.GetType(p.PinType);
+                    Type t = Type.GetType(typeSpecifier.Name);
                     
-                    if (t != null && !p.PinType.IsEnum)
+                    if (t != null && !typeSpecifier.IsEnum)
                     {
                         p.UnconnectedValue = Convert.ChangeType(value, t);
                     }
@@ -131,21 +133,23 @@ namespace NetPrintsEditor.ViewModels
 
         public bool ShowUnconnectedValue
         {
-            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && !p.PinType.IsEnum;
+            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
+                !(p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum);
         }
 
         public bool ShowEnumValue
         {
-            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && p.PinType.IsEnum;
+            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
+                (p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum);
         }
 
         public IEnumerable<string> PossibleEnumNames
         {
             get
             {
-                if (Pin is NodeInputDataPin p && p.PinType.IsEnum)
+                if (Pin is NodeInputDataPin p && p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum)
                 {
-                    return ProjectVM.Instance.ReflectionProvider.GetEnumNames(p.PinType);
+                    return ProjectVM.Instance.ReflectionProvider.GetEnumNames(typeSpec.Name);
                 }
 
                 return null;

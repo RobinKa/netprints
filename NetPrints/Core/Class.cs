@@ -39,11 +39,11 @@ namespace NetPrints.Core
         public ClassModifiers Modifiers { get; set; } = ClassModifiers.Internal;
 
         [DataMember]
-        public IList<GenericType> DeclaredGenericArguments { get; set; } = new List<GenericType>();
+        public ObservableRangeCollection<GenericType> DeclaredGenericArguments { get; set; } = new ObservableRangeCollection<GenericType>();
 
         public TypeSpecifier Type
         {
-            get => new TypeSpecifier($"{Namespace}.{Name}", SuperType.IsEnum, 
+            get => new TypeSpecifier($"{Namespace}.{Name}", SuperType.IsEnum, SuperType.IsInterface,
                 DeclaredGenericArguments.Cast<BaseType>().ToList());
         }
 

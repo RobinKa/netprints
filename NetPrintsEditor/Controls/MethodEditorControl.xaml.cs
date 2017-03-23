@@ -140,23 +140,32 @@ namespace NetPrintsEditor.Controls
                 
                 if (pin.Pin is NodeOutputDataPin odp)
                 {
-                    // Add public methods
-                    Suggestions = new ObservableRangeCollection<object>(
-                        ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(odp.PinType));
+                    if (odp.PinType is TypeSpecifier pinTypeSpec)
+                    {
+                        // Add public methods
+                        Suggestions = new ObservableRangeCollection<object>(
+                            ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(pinTypeSpec));
 
-                    // Add properties
-                    Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicPropertiesForType(
-                        odp.PinType));
+                        if (!pinTypeSpec.IsInterface && !pinTypeSpec.IsEnum)
+                        {
+                            // Add properties
+                            Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicPropertiesForType(
+                                pinTypeSpec));
+                        }
 
-                    // Add static functions taking the type of the pin
-                    Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithArgumentType(
-                        odp.PinType));
+                        // Add static functions taking the type of the pin
+                        Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithArgumentType(
+                            pinTypeSpec));
+                    }
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
-                    Suggestions = new ObservableRangeCollection<object>(
-                        ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithReturnType(
-                        idp.PinType));
+                    if (idp.PinType is TypeSpecifier pinTypeSpec)
+                    {
+                        Suggestions = new ObservableRangeCollection<object>(
+                            ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithReturnType(
+                                pinTypeSpec));
+                    }
                 }
                 else if (pin.Pin is NodeOutputExecPin oxp)
                 {
@@ -200,13 +209,16 @@ namespace NetPrintsEditor.Controls
                 // CallMethodNode(Method method, MethodSpecifier methodSpecifier)
 
                 // TODO: Get this from method directly somehow
-                MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name, method.ArgumentTypes, method.ReturnTypes,
+                MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name, 
+                    method.ArgumentTypes.Cast<TypeSpecifier>(), 
+                    method.ReturnTypes.Cast<TypeSpecifier>(),
                     method.Modifiers, method.Class.Type);
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
-                    methodSpecifier
+                    methodSpecifier,
+                    Array.Empty<GenericType>()
                 ));
 
                 e.Handled = true;

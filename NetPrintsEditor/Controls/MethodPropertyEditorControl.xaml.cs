@@ -57,7 +57,7 @@ namespace NetPrintsEditor.Controls
         private void OnArgumentTypeChanged(object sender, SelectionChangedEventArgs e)
         {
             // Find index of combobox and set the type
-            if(sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is TypeSpecifier newType)
+            if(sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is BaseType newType)
             {
                 int index = GetControlIndex(box, 0);
 
@@ -69,7 +69,7 @@ namespace NetPrintsEditor.Controls
         private void OnReturnTypeChanged(object sender, SelectionChangedEventArgs e)
         {
             // Find index of combobox and set the type
-            if (sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is TypeSpecifier newType)
+            if (sender is ComboBox box && e.AddedItems.Count > 0 && e.AddedItems[0] is BaseType newType)
             {
                 int index = GetControlIndex(box, 0);
 

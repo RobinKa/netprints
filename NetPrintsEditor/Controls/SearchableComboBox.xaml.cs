@@ -91,15 +91,16 @@ namespace NetPrintsEditor.Controls
                 if(item.DataContext is MethodSpecifier methodSpecifier)
                 {
                     UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                        (
-                            typeof(CallMethodNode),
-                            null,
-                            0,
-                            0,
+                    (
+                        typeof(CallMethodNode),
+                        null,
+                        0,
+                        0,
 
-                            // Parameters
-                            methodSpecifier
-                        ));
+                        // Parameters
+                        methodSpecifier,
+                        Array.Empty<GenericType>()
+                    ));
                 }
                 else if(item.DataContext is PropertySpecifier propertySpecifier)
                 {

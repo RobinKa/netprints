@@ -19,8 +19,7 @@ namespace NetPrints.Core
             get;
             private set;
         }
-
-        [DataMember]
+        
         public virtual string ShortName
         {
             get => Name;
