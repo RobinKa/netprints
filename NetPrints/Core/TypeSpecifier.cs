@@ -165,7 +165,8 @@ namespace NetPrints.Core
 
             if (type.IsGenericParameter)
             {
-                return false;
+                // TODO: Check constraints whether the generic parameter is compatible
+                return true;
             }
 
             return typeSpecifier.Equals((TypeSpecifier)type);
@@ -180,7 +181,8 @@ namespace NetPrints.Core
 
             if (type.IsGenericParameter)
             {
-                return true;
+                // TODO: Check constraints whether the generic parameter is compatible
+                return false;
             }
 
             return !typeSpecifier.Equals((TypeSpecifier)type);
@@ -192,10 +194,11 @@ namespace NetPrints.Core
             {
                 return ReferenceEquals(typeSpecifier, null);
             }
-
+            
             if(type.IsGenericParameter)
             {
-                return false;
+                // TODO: Check constraints whether the generic parameter is compatible
+                return true;
             }
 
             return typeSpecifier.Equals((TypeSpecifier)type);
@@ -210,7 +213,8 @@ namespace NetPrints.Core
 
             if (type.IsGenericParameter)
             {
-                return true;
+                // TODO: Check constraints whether the generic parameter is compatible
+                return false;
             }
 
             return !typeSpecifier.Equals((TypeSpecifier)type);
