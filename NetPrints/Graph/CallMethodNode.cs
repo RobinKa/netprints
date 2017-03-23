@@ -41,6 +41,13 @@ namespace NetPrints.Graph
             get => MethodSpecifier.ReturnTypes;
         }
         
+        [DataMember]
+        public IList<BaseType> GenericArgumentTypes
+        {
+            get;
+            private set;
+        }
+        
         public NodeInputDataPin TargetPin
         {
             get { return InputDataPins[0]; }
@@ -62,11 +69,29 @@ namespace NetPrints.Graph
             }
         }
 
-        public CallMethodNode(Method method, MethodSpecifier methodSpecifier)
+        public CallMethodNode(Method method, MethodSpecifier methodSpecifier, 
+            IList<BaseType> genericArgumentTypes = null)
             : base(method)
         {
             MethodSpecifier = methodSpecifier;
 
+            // TODO: Check that genericArgumentTypes fullfils GenericArguments constraints
+            if (MethodSpecifier.GenericArguments.Count > 0 && genericArgumentTypes != null
+                || (genericArgumentTypes != null && 
+                MethodSpecifier.GenericArguments.Count != genericArgumentTypes.Count))
+            {
+                throw new ArgumentException(nameof(genericArgumentTypes));
+            }
+
+            if (genericArgumentTypes == null)
+            {
+                GenericArgumentTypes = new List<BaseType>();
+            }
+            else
+            {
+                GenericArgumentTypes = genericArgumentTypes;
+            }
+            
             if (!IsStatic)
             {
                 AddInputDataPin("Target", DeclaringType);

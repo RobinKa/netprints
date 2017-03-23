@@ -79,7 +79,7 @@ namespace NetPrints.Translator
             {
                 if (pin.UsesUnconnectedValue && pin.UnconnectedValue != null)
                 {
-                    return TranslatorUtil.ObjectToLiteral(pin.UnconnectedValue, pin.PinType);
+                    return TranslatorUtil.ObjectToLiteral(pin.UnconnectedValue, (TypeSpecifier)pin.PinType);
                 }
                 else
                 {
@@ -211,6 +211,12 @@ namespace NetPrints.Translator
 
             // Write name
             builder.Append(method.Name);
+
+            // Write generic arguments if any
+            if(method.DeclaredGenericArguments.Count > 0)
+            {
+                builder.Append("<" + string.Join(", ", method.DeclaredGenericArguments) + ">");
+            }
 
             // Write parameters
             builder.AppendLine($"({string.Join(", ", GetOrCreateTypedPinNames(method.EntryNode.OutputDataPins))})");

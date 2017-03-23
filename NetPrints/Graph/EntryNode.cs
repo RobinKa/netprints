@@ -24,11 +24,12 @@ namespace NetPrints.Graph
             SetupArgumentTypesChangedEvent();
         }
 
-        public void SetArgumentTypes(IEnumerable<TypeSpecifier> parameterTypes)
+        public void SetArgumentTypes(IEnumerable<BaseType> parameterTypes)
         {
             Dictionary<int, IEnumerable<NodeInputDataPin>> oldConnections =
                 new Dictionary<int, IEnumerable<NodeInputDataPin>>();
 
+            // Disconnect all current connections and remember them
             foreach (NodeOutputDataPin pin in OutputDataPins)
             {
                 // Remember pins with same type as before
@@ -43,7 +44,7 @@ namespace NetPrints.Graph
 
             OutputDataPins.Clear();
 
-            foreach (TypeSpecifier paramType in parameterTypes)
+            foreach (BaseType paramType in parameterTypes)
             {
                 AddOutputDataPin(paramType.ShortName, paramType);
             }

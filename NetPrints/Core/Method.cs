@@ -1,5 +1,6 @@
 ﻿using NetPrints.Graph;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -50,18 +51,18 @@ namespace NetPrints.Core
         } = new ObservableRangeCollection<Node>();
 
         [DataMember]
-        public ObservableRangeCollection<TypeSpecifier> ArgumentTypes
+        public ObservableRangeCollection<BaseType> ArgumentTypes
         {
             get;
             private set;
-        } = new ObservableRangeCollection<TypeSpecifier>();
+        } = new ObservableRangeCollection<BaseType>();
 
         [DataMember]
-        public ObservableRangeCollection<TypeSpecifier> ReturnTypes
+        public ObservableRangeCollection<BaseType> ReturnTypes
         {
             get;
             private set;
-        } = new ObservableRangeCollection<TypeSpecifier>();
+        } = new ObservableRangeCollection<BaseType>();
 
         [DataMember]
         public MethodModifiers Modifiers
@@ -76,7 +77,14 @@ namespace NetPrints.Core
             get;
             set;
         }
-        
+
+        [DataMember]
+        public IList<GenericType> DeclaredGenericArguments
+        {
+            get;
+            private set;
+        } = new List<GenericType>();
+
         public Method(string name)
         {
             Name = name;

@@ -48,6 +48,13 @@ namespace NetPrints.Core
             private set;
         }
 
+        [DataMember]
+        public IList<GenericType> GenericArguments
+        {
+            get;
+            private set;
+        } = new List<GenericType>();
+
         public MethodSpecifier(string name, IEnumerable<TypeSpecifier> arguments,
             IEnumerable<TypeSpecifier> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType)
         {

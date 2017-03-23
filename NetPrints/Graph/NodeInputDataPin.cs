@@ -31,7 +31,7 @@ namespace NetPrints.Graph
 
         public bool UsesUnconnectedValue
         {
-            get => PinType.IsPrimitive;
+            get => PinType is TypeSpecifier t && t.IsPrimitive;
         }
 
         private NodeOutputDataPin incomingPin;
@@ -46,9 +46,10 @@ namespace NetPrints.Graph
                 // this pin uses the unconnected value
                 // the value is of the same type or string if enum
 
-                if (value != null && (!UsesUnconnectedValue ||
-                    (!PinType.IsEnum && value.GetType() != PinType) ||
-                    (PinType.IsEnum && value.GetType() != typeof(string))))
+                if (value != null && (!UsesUnconnectedValue || 
+                    (PinType is TypeSpecifier t && (
+                        (!t.IsEnum && value.GetType() != t) ||
+                        (t.IsEnum && value.GetType() != typeof(string))))))
                 {
                     throw new ArgumentException();
                 }
@@ -59,7 +60,7 @@ namespace NetPrints.Graph
 
         private object unconnectedValue;
 
-        public NodeInputDataPin(Node node, string name, TypeSpecifier pinType)
+        public NodeInputDataPin(Node node, string name, BaseType pinType)
             : base(node, name, pinType)
         {
             

@@ -29,6 +29,7 @@ namespace NetPrints.Graph
         [DataMember]
         public ObservableRangeCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableRangeCollection<NodeOutputExecPin>();
 
+        
         public delegate void NodePositionChangedDelegate(Node node, double positionX, double positionY);
         public event NodePositionChangedDelegate OnPositionChanged;
 
@@ -88,12 +89,12 @@ namespace NetPrints.Graph
             return GraphUtil.SplitCamelCase(GetType().Name);
         }
 
-        protected void AddInputDataPin(string pinName, TypeSpecifier pinType)
+        protected void AddInputDataPin(string pinName, BaseType pinType)
         {
             InputDataPins.Add(new NodeInputDataPin(this, pinName, pinType));
         }
 
-        protected void AddOutputDataPin(string pinName, TypeSpecifier pinType)
+        protected void AddOutputDataPin(string pinName, BaseType pinType)
         {
             OutputDataPins.Add(new NodeOutputDataPin(this, pinName, pinType));
         }

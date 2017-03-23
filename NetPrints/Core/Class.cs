@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -36,9 +38,13 @@ namespace NetPrints.Core
         [DataMember]
         public ClassModifiers Modifiers { get; set; } = ClassModifiers.Internal;
 
+        [DataMember]
+        public IList<GenericType> DeclaredGenericArguments { get; set; } = new List<GenericType>();
+
         public TypeSpecifier Type
         {
-            get => $"{Namespace}.{Name}";
+            get => new TypeSpecifier($"{Namespace}.{Name}", SuperType.IsEnum, 
+                DeclaredGenericArguments.Cast<BaseType>().ToList());
         }
 
         public Class()

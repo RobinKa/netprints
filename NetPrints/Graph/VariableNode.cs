@@ -30,7 +30,7 @@ namespace NetPrints.Graph
         [DataMember]
         public TypeSpecifier TargetType { get; private set; }
 
-        public VariableNode(Method method, TypeSpecifier targetType, string variableName, TypeSpecifier variableType)
+        public VariableNode(Method method, TypeSpecifier targetType, string variableName, BaseType variableType)
             : base(method)
         {
             VariableName = variableName;

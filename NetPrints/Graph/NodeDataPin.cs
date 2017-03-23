@@ -8,9 +8,9 @@ namespace NetPrints.Graph
     public abstract class NodeDataPin : NodePin
     {
         [DataMember]
-        public TypeSpecifier PinType { get; private set; }
+        public BaseType PinType { get; private set; }
 
-        public NodeDataPin(Node node, string name, TypeSpecifier pinType)
+        public NodeDataPin(Node node, string name, BaseType pinType)
             : base(node, name)
         {
             PinType = pinType;

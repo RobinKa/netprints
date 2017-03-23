@@ -24,7 +24,7 @@ namespace NetPrints.Graph
             SetupReturnTypesChangedEvent();
         }
 
-        public void SetReturnTypes(IEnumerable<TypeSpecifier> returnTypes)
+        public void SetReturnTypes(IEnumerable<BaseType> returnTypes)
         {
             Dictionary<int, NodeOutputDataPin> oldConnections = new Dictionary<int, NodeOutputDataPin>();
 

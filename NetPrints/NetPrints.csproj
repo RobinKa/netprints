@@ -42,24 +42,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\BaseType.cs" />
     <Compile Include="Core\Class.cs" />
     <Compile Include="Core\ConstructorSpecifier.cs" />
+    <Compile Include="Core\GenericType.cs" />
     <Compile Include="Core\Method.cs" />
     <Compile Include="Core\MethodSpecifier.cs" />
     <Compile Include="Core\NetPrintsUtil.cs" />
     <Compile Include="Core\ObservableRangeCollection.cs" />
     <Compile Include="Core\PropertySpecifier.cs" />
+    <Compile Include="Core\TypeGraph.cs" />
     <Compile Include="Core\TypeSpecifier.cs" />
     <Compile Include="Core\Variable.cs" />
     <Compile Include="Graph\CallMethodNode.cs" />
     <Compile Include="Graph\ConstructorNode.cs" />
     <Compile Include="Graph\ExecNode.cs" />
     <Compile Include="Graph\ForLoopNode.cs" />
+    <Compile Include="Graph\GenericsHelper.cs" />
     <Compile Include="Graph\GraphUtil.cs" />
     <Compile Include="Graph\IfElseNode.cs" />
     <Compile Include="Graph\LiteralNode.cs" />
     <Compile Include="Graph\EntryNode.cs" />
     <Compile Include="Graph\Node.cs" />
+    <Compile Include="Graph\NodeInputTypePin.cs" />
     <Compile Include="Graph\NodeDataPin.cs" />
     <Compile Include="Graph\NodeExecPin.cs" />
     <Compile Include="Graph\NodeInputDataPin.cs" />
@@ -68,6 +73,7 @@
     <Compile Include="Graph\NodeOutputExecPin.cs" />
     <Compile Include="Graph\NodePin.cs" />
     <Compile Include="Graph\ReturnNode.cs" />
+    <Compile Include="Graph\TypeNode.cs" />
     <Compile Include="Graph\VariableGetterNode.cs" />
     <Compile Include="Graph\VariableNode.cs" />
     <Compile Include="Graph\VariableSetterNode.cs" />

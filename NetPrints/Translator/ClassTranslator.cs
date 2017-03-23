@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using System.Linq;
 using System.Text;
 
 namespace NetPrints.Translator
@@ -8,7 +9,7 @@ namespace NetPrints.Translator
         private const string CLASS_TEMPLATE =
             @"namespace %Namespace%
             {
-                %ClassModifiers%class %ClassName% : %SuperType%
+                %ClassModifiers%class %ClassName%%GenericArguments% : %SuperType%
                 {
                     %Content%
                 }
@@ -59,10 +60,17 @@ namespace NetPrints.Translator
                 modifiers.Append("sealed ");
             }
 
+            string genericArguments = "";
+            if(c.DeclaredGenericArguments.Count > 0)
+            {
+                genericArguments = "<" + string.Join(", ", c.DeclaredGenericArguments) + ">";
+            }
+
             return CLASS_TEMPLATE
                 .Replace("%Namespace%", c.Namespace)
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
+                .Replace("%GenericArguments%", genericArguments)
                 .Replace("%SuperType%", c.SuperType)
                 .Replace("%Content%", content.ToString());
         }

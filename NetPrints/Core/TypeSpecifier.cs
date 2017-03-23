@@ -9,23 +9,23 @@ namespace NetPrints.Core
 {
     [DataContract]
     [Serializable]
-    public class TypeSpecifier
+    public class TypeSpecifier : BaseType
     {
-        [DataMember]
-        public string Name
-        {
-            get;
-            private set;
-        }
-
         [DataMember]
         public bool IsEnum
         {
             get;
             private set;
         }
+        
+        [DataMember]
+        public IList<BaseType> GenericArguments
+        {
+            get;
+            private set;
+        } = new List<BaseType>();
 
-        public string ShortName
+        public override string ShortName
         {
             get
             {
@@ -47,10 +47,19 @@ namespace NetPrints.Core
             }
         }
         
-        public TypeSpecifier(string typeName, bool isEnum=false)
+        public TypeSpecifier(string typeName, bool isEnum=false, IList<BaseType> genericArguments=null)
+            : base(typeName)
         {
-            Name = typeName;
             IsEnum = isEnum;
+            
+            if(genericArguments == null)
+            {
+                GenericArguments = new List<BaseType>();
+            }
+            else
+            {
+                GenericArguments = genericArguments;
+            }
         }
 
         public static TypeSpecifier Create<T>()
@@ -68,7 +77,11 @@ namespace NetPrints.Core
         {
             if(obj is TypeSpecifier t)
             {
-                if(Name == t.Name)
+                // Name equal
+                // Generic arguments equal
+                // IsEnum equal
+
+                if(Name == t.Name && GenericArguments.SequenceEqual(t.GenericArguments))
                 {
                     if (IsEnum != t.IsEnum)
                         throw new ArgumentException("obj has same type name but IsEnum is different");
@@ -82,7 +95,14 @@ namespace NetPrints.Core
 
         public override string ToString()
         {
-            return Name;
+            string s = Name;
+
+            if(GenericArguments.Count > 0)
+            {
+                s += "<" + string.Join(", ", GenericArguments) + ">";
+            }
+
+            return s;
         }
 
         public static implicit operator TypeSpecifier(string typeName)
@@ -92,7 +112,33 @@ namespace NetPrints.Core
 
         public static implicit operator TypeSpecifier(Type type)
         {
-            return new TypeSpecifier(type.FullName, type.IsSubclassOf(typeof(Enum)));
+            if (type.IsGenericParameter)
+            {
+                throw new ArgumentException(nameof(type));
+            }
+
+            string typeName = type.Name.Split('`').First();
+            if(!string.IsNullOrEmpty(type.Namespace))
+            {
+                typeName = type.Namespace + "." + typeName;
+            }
+
+            TypeSpecifier typeSpecifier = new TypeSpecifier(typeName, type.IsSubclassOf(typeof(Enum)));
+
+            foreach(Type genType in type.GetGenericArguments())
+            {
+                if (genType.IsGenericParameter)
+                {
+                    // TODO: Convert and add constraints
+                    typeSpecifier.GenericArguments.Add((GenericType)genType);
+                }
+                else
+                {
+                    typeSpecifier.GenericArguments.Add((TypeSpecifier)genType);
+                }
+            }
+            
+            return typeSpecifier;
         }
 
         public static implicit operator string(TypeSpecifier specifier)

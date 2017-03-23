@@ -13,10 +13,45 @@ namespace NetPrints.Graph
 
         public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, bool swapped=false)
         {
-            return (pinA is NodeInputExecPin && pinB is NodeOutputExecPin) ||
-                (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB 
-                && (datA.PinType == datB.PinType || isSubclassOf(datB.PinType, datA.PinType))) ||
-                (!swapped && CanConnectNodePins(pinB, pinA, isSubclassOf, true));
+            if (pinA is NodeInputExecPin && pinB is NodeOutputExecPin)
+            {
+                return true;
+            }
+            else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
+            {
+                if(datA.PinType == datB.PinType)
+                {
+                    return true;
+                }
+
+                if(datA.PinType is TypeSpecifier typeSpecA && 
+                    datB.PinType is TypeSpecifier typeSpecB &&
+                    isSubclassOf(typeSpecB, typeSpecA))
+                {
+                    return true;
+                }
+
+                // TODO: Check constraints below
+
+                if (datA.PinType is GenericType genTypeA)
+                {
+                    if(datB.PinType is TypeSpecifier tB)
+                    {
+                        return true;
+                    }
+                    else if(datB.PinType is GenericType gB)
+                    {
+                        return true;
+                    }
+                }
+            }
+            else if(!swapped)
+            {
+                // Try the same for swapped order
+                return CanConnectNodePins(pinB, pinA, isSubclassOf, true);
+            }
+
+            return false;
         }
 
         public static void ConnectNodePins(NodePin pinA, NodePin pinB, bool swapped=false)
