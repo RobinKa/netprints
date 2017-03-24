@@ -107,8 +107,11 @@ namespace NetPrintsEditor.Reflection
                 {
                     if (specifier.GenericArguments.Count > 0 && t.IsGenericTypeDefinition)
                     {
-                        return t.MakeGenericType(specifier.GenericArguments.Cast<TypeSpecifier>()
-                            .Select(typeSpec => GetTypeFromSpecifier(typeSpec)).ToArray());
+                        return t.MakeGenericType(specifier.GenericArguments
+                            .Select(baseType => baseType is TypeSpecifier typeSpec ?
+                                GetTypeFromSpecifier(typeSpec) :
+                                t.GetGenericArguments()[specifier.GenericArguments.IndexOf(baseType)])
+                            .ToArray());
                     }
                     else
                     {
