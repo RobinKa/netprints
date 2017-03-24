@@ -28,28 +28,9 @@ namespace NetPrints.Graph
 
                 // TODO: Check constraints below
 
-                if (datA.PinType is GenericType genTypeA)
+                if (datA.PinType is GenericType genTypeA || datB.PinType is GenericType genTypeB)
                 {
-                    if(datB.PinType is TypeSpecifier tB)
-                    {
-                        return true;
-                    }
-                    else if(datB.PinType is GenericType gB)
-                    {
-                        return true;
-                    }
-                }
 
-                if (datA.PinType is TypeSpecifier tA)
-                {
-                    if (datB.PinType is TypeSpecifier tB)
-                    {
-                        return true;
-                    }
-                    else if (datB.PinType is GenericType genTypeB)
-                    {
-                        return true;
-                    }
                 }
             }
             else if(!swapped)
