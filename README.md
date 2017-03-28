@@ -12,3 +12,6 @@
 
 # Control Flow
 ![](http://i.imgur.com/aWfEhvq.png)
+
+# Delegates
+![](http://i.imgur.com/9GjrV49.png)
