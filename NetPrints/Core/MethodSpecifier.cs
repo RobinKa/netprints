@@ -66,6 +66,48 @@ namespace NetPrints.Core
             Modifiers = modifiers;
             GenericArguments = genericArguments.ToList();
         }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is MethodSpecifier methodSpec)
+            {
+                return
+                    methodSpec.Name == Name &&
+                    methodSpec.DeclaringType == DeclaringType &&
+                    methodSpec.Arguments.SequenceEqual(Arguments) &&
+                    methodSpec.ReturnTypes.SequenceEqual(ReturnTypes) &&
+                    methodSpec.Modifiers == Modifiers &&
+                    methodSpec.GenericArguments.SequenceEqual(GenericArguments);
+            }
+            else
+            {
+                return base.Equals(obj);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+        public static bool operator==(MethodSpecifier a, MethodSpecifier b)
+        {
+            if (ReferenceEquals(b, null))
+            {
+                return ReferenceEquals(a, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(MethodSpecifier a, MethodSpecifier b)
+        {
+            if (ReferenceEquals(b, null))
+            {
+                return !ReferenceEquals(a, null);
+            }
+
+            return !a.Equals(b);
         }
 
         public static implicit operator MethodSpecifier(MethodInfo methodInfo)
