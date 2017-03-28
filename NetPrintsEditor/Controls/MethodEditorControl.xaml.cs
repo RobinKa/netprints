@@ -212,7 +212,8 @@ namespace NetPrintsEditor.Controls
                 MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name, 
                     method.ArgumentTypes.Cast<TypeSpecifier>(), 
                     method.ReturnTypes.Cast<TypeSpecifier>(),
-                    method.Modifiers, method.Class.Type);
+                    method.Modifiers, method.Class.Type,
+                    Array.Empty<BaseType>());
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
