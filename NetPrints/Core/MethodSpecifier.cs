@@ -116,12 +116,18 @@ namespace NetPrints.Core
                     ((GenericType)p.ParameterType) as BaseType :
                     ((TypeSpecifier)p.ParameterType) as BaseType).ToArray();
 
+            BaseType[] genericArgs = methodInfo.GetGenericArguments().Select(
+                p => p.IsGenericParameter ?
+                    ((GenericType)p) as BaseType :
+                    ((TypeSpecifier)p) as BaseType).ToArray();
+
             return new MethodSpecifier(
                 methodInfo.Name,
                 parameterTypes,
                 returnTypes,
                 modifiers,
-                methodInfo.DeclaringType);
+                methodInfo.DeclaringType,
+                genericArgs);
         }
     }
 }
