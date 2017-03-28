@@ -53,7 +53,7 @@ namespace NetPrints.Tests
                 Modifiers = MethodModifiers.Static
             };
 
-            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { typeof(int) }, MethodModifiers.Public, typeof(string));
+            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { typeof(int) }, MethodModifiers.Public, typeof(string), Array.Empty<BaseType>());
             MethodSpecifier writeConsoleSpecifier = typeof(Console).GetMethods().Single(m => m.Name == "WriteLine" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
 
             // Create nodes
