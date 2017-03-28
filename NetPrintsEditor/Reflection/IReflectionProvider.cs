@@ -15,6 +15,7 @@ namespace NetPrintsEditor.Reflection
         IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier);
         IEnumerable<TypeSpecifier> GetNonStaticTypes();
         IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier);
+        IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier);
         IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier);
         IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier);
         IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier);

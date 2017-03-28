@@ -15,6 +15,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(VariableGetterNode))]
     [KnownType(typeof(VariableSetterNode))]
     [KnownType(typeof(ConstructorNode))]
+    [KnownType(typeof(MakeDelegateNode))]
     public abstract class Node
     {
         [DataMember]

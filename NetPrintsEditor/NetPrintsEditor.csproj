@@ -64,6 +64,10 @@
     <Compile Include="Commands\EditorCommands.cs" />
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
+    <Compile Include="Dialogs\MakeDelegateTypeInfo.cs" />
+    <Compile Include="Dialogs\SelectMethodDialog.xaml.cs">
+      <DependentUpon>SelectMethodDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Interop\AppDomainHelper.cs" />
     <Compile Include="Compilation\CodeCompiler.cs" />
     <Compile Include="Compilation\ICodeCompiler.cs" />
@@ -164,6 +168,10 @@
     <Page Include="Controls\VariableGetSetControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectMethodDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\SelectTypeDialog.xaml">
       <SubType>Designer</SubType>

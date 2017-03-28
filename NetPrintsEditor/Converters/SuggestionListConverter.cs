@@ -1,5 +1,6 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrintsEditor.Dialogs;
 using NetPrintsEditor.Reflection;
 using System;
 using System.Globalization;
@@ -21,6 +22,10 @@ namespace NetPrintsEditor.Converters
             else if(value is PropertySpecifier propertySpecifier)
             {
                 return $"{propertySpecifier.DeclaringType} {propertySpecifier.Name} : {propertySpecifier.Type}";
+            }
+            else if(value is MakeDelegateTypeInfo makeDelegateTypeInfo)
+            {
+                return $"NetPrints - Make Delegate For A Method Of {makeDelegateTypeInfo.Type.ShortName}";
             }
             else if (value is TypeSpecifier t)
             {

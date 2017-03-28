@@ -78,6 +78,11 @@ namespace NetPrintsEditor.Interop
         {
             return reflectionProvider.GetStaticFunctionsWithArgumentType(typeSpecifier).ToArray();
         }
+
+        public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
+        {
+            return reflectionProvider.GetPublicStaticFunctionsForType(typeSpecifier).ToArray();
+        }
         #endregion
     }
 }

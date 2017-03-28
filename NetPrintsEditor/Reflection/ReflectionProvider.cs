@@ -48,6 +48,25 @@ namespace NetPrintsEditor.Reflection
             }
         }
 
+        public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
+        {
+            Type type = GetTypeFromSpecifier(typeSpecifier);
+
+            if (type != null)
+            {
+                // Get all public static methods, ignore special ones (properties / events),
+                // ignore those with generic parameters since we cant set those yet
+
+                return type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .Where(m => !m.IsSpecialName && !m.ContainsGenericParameters)
+                    .Select(m => (MethodSpecifier)m);
+            }
+            else
+            {
+                return new MethodSpecifier[] { };
+            }
+        }
+
         public IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier)
         {
             return GetTypeFromSpecifier(typeSpecifier)?.GetProperties().Select(p => (PropertySpecifier)p);
@@ -228,8 +247,11 @@ namespace NetPrintsEditor.Reflection
             }
             else if (typeToReplace is TypeSpecifier argTypeSpec)
             {
-                FindGenericArgumentsToReplace(argTypeSpec.GenericArguments,
-                    replacementType.GenericArguments, ref replacedGenericTypes);
+                if(!FindGenericArgumentsToReplace(argTypeSpec.GenericArguments,
+                    replacementType.GenericArguments, ref replacedGenericTypes))
+                {
+                    return null;
+                }
             }
 
             ReplaceGenericTypes(method.Arguments, replacedGenericTypes);
@@ -253,7 +275,7 @@ namespace NetPrintsEditor.Reflection
         /// finds the replacement for the generic types of the first 
         /// with the type of the second at the same position
         /// </summary>
-        private static void FindGenericArgumentsToReplace(IList<BaseType> toReplace, 
+        private static bool FindGenericArgumentsToReplace(IList<BaseType> toReplace, 
                 IList<BaseType> replaceWith, ref Dictionary<GenericType, BaseType> replacedGenericTypes)
         {
             for (int index = 0; index < toReplace.Count; index++)
@@ -263,10 +285,13 @@ namespace NetPrintsEditor.Reflection
 
                 if (toReplace[index] is GenericType genType)
                 {
+                    // If there are two different types trying to replace
+                    // the same generic parameter the method can not be
+                    // made compatible
                     if (replacedGenericTypes.ContainsKey(genType) &&
                         replacedGenericTypes[genType] != replaceWith[index])
                     {
-                        throw new Exception();
+                        return false;
                     }
 
                     replacedGenericTypes.Add(genType, replaceWith[index]);
@@ -281,11 +306,16 @@ namespace NetPrintsEditor.Reflection
 
                     for (int i = 0; i < typeSpec.GenericArguments.Count; i++)
                     {
-                        FindGenericArgumentsToReplace(typeSpec.GenericArguments,
-                            replaceWithTypeSpec.GenericArguments, ref replacedGenericTypes);
+                        if(!FindGenericArgumentsToReplace(typeSpec.GenericArguments,
+                            replaceWithTypeSpec.GenericArguments, ref replacedGenericTypes))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
+
+            return true;
         }
 
         /// <summary>

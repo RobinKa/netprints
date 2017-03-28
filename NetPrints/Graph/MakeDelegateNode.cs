@@ -40,11 +40,11 @@ namespace NetPrints.Graph
 
             if (methodSpecifier.ReturnTypes.Count == 0)
             {
-                delegateType = new TypeSpecifier("Action", false, false, methodSpecifier.Arguments);
+                delegateType = new TypeSpecifier("System.Action", false, false, methodSpecifier.Arguments);
             }
             else if(methodSpecifier.ReturnTypes.Count == 1)
             {
-                delegateType = new TypeSpecifier("Func", false, false, methodSpecifier.Arguments.Concat(methodSpecifier.ReturnTypes).ToList());
+                delegateType = new TypeSpecifier("System.Func", false, false, methodSpecifier.Arguments.Concat(methodSpecifier.ReturnTypes).ToList());
             }
             else
             {
@@ -52,6 +52,18 @@ namespace NetPrints.Graph
             }
 
             AddOutputDataPin(delegateType.ShortName, delegateType);
+        }
+
+        public override string ToString()
+        {
+            if(IsFromStaticMethod)
+            {
+                return $"Make Delegate from {MethodSpecifier.DeclaringType} {MethodSpecifier.Name}";
+            }
+            else
+            {
+                return $"Make Delegate from {MethodSpecifier.Name}";
+            }
         }
     }
 }

@@ -67,6 +67,34 @@ namespace NetPrints.Core
             GenericArguments = genericArguments.ToList();
         }
 
+        public override string ToString()
+        {
+            string methodString = "";
+
+            if (Modifiers.HasFlag(MethodModifiers.Static))
+            {
+                methodString += "Static ";
+            }
+
+            string argTypeString = string.Join(", ", Arguments);
+
+            methodString += $"{Name}({argTypeString})";
+
+            if(GenericArguments.Count > 0)
+            {
+                string genArgTypeString = string.Join(", ", GenericArguments);
+                methodString += $"<{genArgTypeString}>";
+            }
+
+            if(ReturnTypes.Count > 0)
+            {
+                string returnTypeString = string.Join(", ", ReturnTypes);
+                methodString += $" : {returnTypeString}";
+            }
+
+            return methodString;
+        }
+
         public override bool Equals(object obj)
         {
             if(obj is MethodSpecifier methodSpec)

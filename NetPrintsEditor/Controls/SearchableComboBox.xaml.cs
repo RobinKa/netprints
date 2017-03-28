@@ -118,6 +118,34 @@ namespace NetPrintsEditor.Controls
                         EditorCommands.OpenVariableGetSet.Execute(variableInfo);
                     }
                 }
+                else if (item.DataContext is MakeDelegateTypeInfo makeDelegateTypeInfo)
+                {
+                    var instanceMethods = ProjectVM.Instance.ReflectionProvider.
+                            GetPublicMethodsForType(makeDelegateTypeInfo.Type);
+
+                    var staticMethods = ProjectVM.Instance.ReflectionProvider.
+                            GetPublicStaticFunctionsForType(makeDelegateTypeInfo.Type);
+
+                    SelectMethodDialog selectMethodDialog = new SelectMethodDialog()
+                    {
+                        Methods = instanceMethods.Concat(staticMethods),
+                    };
+
+                    if (selectMethodDialog.ShowDialog() == true)
+                    {
+                        // MakeDelegateNode(Method method, MethodSpecifier methodSpecifier)
+
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(MakeDelegateNode),
+                            null,
+                            0,
+                            0,
+
+                            selectMethodDialog.SelectedMethod
+                        ));
+                    }
+                }
                 else if(item.DataContext is TypeSpecifier t)
                 {
                     if(t == typeof(ForLoopNode))

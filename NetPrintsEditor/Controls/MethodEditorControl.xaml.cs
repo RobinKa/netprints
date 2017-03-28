@@ -1,6 +1,7 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
+using NetPrintsEditor.Dialogs;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -156,6 +157,9 @@ namespace NetPrintsEditor.Controls
                         // Add static functions taking the type of the pin
                         Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithArgumentType(
                             pinTypeSpec));
+
+                        // Add make delegate
+                        Suggestions.Add(new MakeDelegateTypeInfo(pinTypeSpec));
                     }
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
