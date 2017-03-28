@@ -7,7 +7,6 @@
         mc:Ignorable="d"
         Background="#FF404040"
         Height="400" Width="600"
-        WindowState="Maximized"
         Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
         x:Name="mainEditorWindow">
     <Grid>
