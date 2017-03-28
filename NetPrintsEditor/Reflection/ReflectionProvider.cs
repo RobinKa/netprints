@@ -35,10 +35,12 @@ namespace NetPrintsEditor.Reflection
 
             if (type != null)
             {
-                // Get all public instance methods, ignore special ones (properties / events)
+                // Get all public instance methods, ignore special ones (properties / events),
+                // ignore those with generic parameters since we cant set those yet
 
                 return type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(m => !m.IsSpecialName).Select(m => (MethodSpecifier)m);
+                    .Where(m => !m.IsSpecialName && !m.ContainsGenericParameters)
+                    .Select(m => (MethodSpecifier)m);
             }
             else
             {
@@ -64,16 +66,7 @@ namespace NetPrintsEditor.Reflection
                         !m.DeclaringType.ContainsGenericParameters)
                     .Select(m => (MethodSpecifier)m)));
         }
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier)
-        {
-            return Assemblies.SelectMany(a =>
-                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
-                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .Where(m => m.ReturnType == returnTypeSpecifier && !m.IsSpecialName).
-                        Select(m => (MethodSpecifier)m)));
-        }
-
+        
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {
             return GetTypeFromSpecifier(typeSpecifier)?.GetConstructors().Select(c => (ConstructorSpecifier)c);
@@ -123,15 +116,201 @@ namespace NetPrintsEditor.Reflection
             return null;
         }
 
-        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier)
+        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier searchTypeSpec)
         {
-            return Assemblies.SelectMany(a =>
-                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
-                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .Where(m => !m.IsSpecialName &&  
-                            m.GetParameters().Any( p => p.ParameterType == typeSpecifier) &&
-                            !m.DeclaringType.ContainsGenericParameters)
-                        .Select(m => (MethodSpecifier)m)));
+            // Find all public static methods
+
+            IEnumerable<MethodInfo> availableMethods = Assemblies
+                .SelectMany(a =>
+                    a.GetTypes()
+                        .Where(t => t.IsPublic)
+                        .SelectMany(t =>
+                            t.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                            .Where(m => !m.IsSpecialName &&
+                                !m.DeclaringType.ContainsGenericParameters)));
+
+            Type searchType = GetTypeFromSpecifier(searchTypeSpec);
+
+            List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
+
+            // Find compatible methods
+
+            foreach (MethodInfo availableMethod in availableMethods)
+            {
+                MethodSpecifier availableMethodSpec = availableMethod;
+
+                // Check the return type whether it can be replaced by the wanted type
+
+                Type retType = availableMethod.ReturnType;
+                BaseType ret = retType;
+
+                if (ret == searchTypeSpec || retType.IsSubclassOf(searchType))
+                {
+                    MethodSpecifier foundMethod = availableMethod;
+                    foundMethod = TryMakeClosedMethod(foundMethod, ret, searchTypeSpec);
+
+                    // Only add fully closed methods
+                    if (foundMethod != null && !foundMethods.Contains(foundMethod))
+                    {
+                        foundMethods.Add(foundMethod);
+                    }
+                }
+                
+            }
+
+            return foundMethods;
+        }
+
+        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier searchTypeSpec)
+        {
+            // Find all public static methods
+
+            IEnumerable<MethodInfo> availableMethods = Assemblies
+                .SelectMany(a =>
+                    a.GetTypes()
+                        .Where(t => t.IsPublic)
+                        .SelectMany(t =>
+                            t.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                            .Where(m => !m.IsSpecialName && 
+                                !m.DeclaringType.ContainsGenericParameters)));
+
+            Type searchType = GetTypeFromSpecifier(searchTypeSpec);
+
+            List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
+
+            // Find compatible methods
+
+            foreach(MethodInfo availableMethod in availableMethods)
+            {
+                MethodSpecifier availableMethodSpec = availableMethod;
+
+                // Check each argument whether it can be replaced by the wanted type
+                for(int i = 0; i < availableMethodSpec.Arguments.Count; i++) 
+                {
+                    Type argType = availableMethod.GetParameters()[i].ParameterType;
+                    BaseType arg = argType;
+
+                    if (arg == searchTypeSpec || searchType.IsSubclassOf(argType))
+                    {
+                        MethodSpecifier foundMethod = availableMethod;
+                        foundMethod = TryMakeClosedMethod(foundMethod, arg, searchTypeSpec);
+
+                        // Only add fully closed methods
+                        if (foundMethod != null && !foundMethods.Contains(foundMethod))
+                        {
+                            foundMethods.Add(foundMethod);
+                        }
+                    }
+                }
+            }
+
+            return foundMethods;
+        }
+
+        private static MethodSpecifier TryMakeClosedMethod(MethodSpecifier method, 
+            BaseType typeToReplace, TypeSpecifier replacementType)
+        {
+            // Create a list of generic types to replace with another type
+            // These will then look for those generic types in the argument-
+            // and return types and replace them with the new type
+
+            Dictionary<GenericType, BaseType> replacedGenericTypes =
+                    new Dictionary<GenericType, BaseType>();
+
+            // If the arg is already generic itself, replace it directly with the 
+            // passed type specifier
+            // Otherwise, recursively check if the generic arguments should
+            // be replaced
+
+            if (typeToReplace is GenericType genType)
+            {
+                replacedGenericTypes.Add(genType, replacementType);
+            }
+            else if (typeToReplace is TypeSpecifier argTypeSpec)
+            {
+                FindGenericArgumentsToReplace(argTypeSpec.GenericArguments,
+                    replacementType.GenericArguments, ref replacedGenericTypes);
+            }
+
+            ReplaceGenericTypes(method.Arguments, replacedGenericTypes);
+            ReplaceGenericTypes(method.ReturnTypes, replacedGenericTypes);
+
+            // Remove the replaced generic arguments from the method
+            replacedGenericTypes.Keys.ToList().ForEach(g =>
+                method.GenericArguments.Remove(g));
+
+            // Only add fully closed methods
+            if (!method.GenericArguments.Any(a => a is GenericType))
+            {
+                return method;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Takes two topologically identical lists of types and 
+        /// finds the replacement for the generic types of the first 
+        /// with the type of the second at the same position
+        /// </summary>
+        private static void FindGenericArgumentsToReplace(IList<BaseType> toReplace, 
+                IList<BaseType> replaceWith, ref Dictionary<GenericType, BaseType> replacedGenericTypes)
+        {
+            for (int index = 0; index < toReplace.Count; index++)
+            {
+                // Replace the generic type directly if it is one
+                // Otherwise, recursively replace generic arguments
+
+                if (toReplace[index] is GenericType genType)
+                {
+                    if (replacedGenericTypes.ContainsKey(genType) &&
+                        replacedGenericTypes[genType] != replaceWith[index])
+                    {
+                        throw new Exception();
+                    }
+
+                    replacedGenericTypes.Add(genType, replaceWith[index]);
+                }
+                else if (toReplace[index] is TypeSpecifier typeSpec &&
+                    replaceWith[index] is TypeSpecifier replaceWithTypeSpec)
+                {
+                    if (typeSpec.GenericArguments.Count != replaceWithTypeSpec.GenericArguments.Count)
+                    {
+                        throw new Exception();
+                    }
+
+                    for (int i = 0; i < typeSpec.GenericArguments.Count; i++)
+                    {
+                        FindGenericArgumentsToReplace(typeSpec.GenericArguments,
+                            replaceWithTypeSpec.GenericArguments, ref replacedGenericTypes);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Takes a list of types and a list of replacement types
+        /// and replaces all types in the list with their replacements
+        /// </summary>
+        private static void ReplaceGenericTypes(IList<BaseType> types,
+            Dictionary<GenericType, BaseType> replacedGenericTypes)
+        {
+            for(int i = 0; i < types.Count; i++)
+            {
+                BaseType t = types[i];
+
+                if (t is GenericType genType)
+                {
+                    if (replacedGenericTypes.ContainsKey(genType))
+                    {
+                        types[i] = replacedGenericTypes[genType];
+                    }
+                }
+                else if(t is TypeSpecifier typeSpec)
+                {
+                    ReplaceGenericTypes(typeSpec.GenericArguments, replacedGenericTypes);
+                }
+            }
         }
 
         #endregion
