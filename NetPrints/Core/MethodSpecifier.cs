@@ -53,16 +53,19 @@ namespace NetPrints.Core
         {
             get;
             private set;
-        } = new List<BaseType>();
+        }
 
         public MethodSpecifier(string name, IEnumerable<BaseType> arguments,
-            IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType)
+            IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType,
+            IList<BaseType> genericArguments)
         {
             Name = name;
             DeclaringType = declaringType;
             Arguments = arguments.ToList();
             ReturnTypes = returnTypes.ToList();
             Modifiers = modifiers;
+            GenericArguments = genericArguments.ToList();
+        }
         }
 
         public static implicit operator MethodSpecifier(MethodInfo methodInfo)
