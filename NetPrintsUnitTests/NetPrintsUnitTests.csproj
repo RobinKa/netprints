@@ -53,6 +53,7 @@
     <Compile Include="GenericsTests.cs" />
     <Compile Include="MethodTranslatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

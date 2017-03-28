@@ -75,21 +75,16 @@ namespace NetPrints.Core
             Type t = typeof(T);
             return new TypeSpecifier(t.FullName, t.IsSubclassOf(typeof(Enum)), t.IsInterface);
         }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
-        }
-
+        
         public override bool Equals(object obj)
         {
-            if(obj is TypeSpecifier t)
+            if (obj is TypeSpecifier t)
             {
                 // Name equal
                 // Generic arguments equal
                 // IsEnum equal
 
-                if(Name == t.Name && GenericArguments.SequenceEqual(t.GenericArguments))
+                if (Name == t.Name && GenericArguments.SequenceEqual(t.GenericArguments))
                 {
                     if (IsEnum != t.IsEnum)
                         throw new ArgumentException("obj has same type name but IsEnum is different");
@@ -97,8 +92,18 @@ namespace NetPrints.Core
                     return true;
                 }
             }
+            else if(obj is GenericType genType)
+            {
+                // TODO: Check constraints
+                return true;
+            }
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
 
         public override string ToString()
@@ -156,6 +161,26 @@ namespace NetPrints.Core
             return specifier.Name;
         }
 
+        public static bool operator ==(TypeSpecifier a, TypeSpecifier b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TypeSpecifier a, TypeSpecifier b)
+        {
+            return !a.Equals(b);
+        }
+
+        public static bool operator ==(TypeSpecifier a, GenericType b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TypeSpecifier a, GenericType b)
+        {
+            return !a.Equals(b);
+        }
+
         public static bool operator ==(TypeSpecifier typeSpecifier, Type type)
         {
             if(ReferenceEquals(type, null))
@@ -165,8 +190,7 @@ namespace NetPrints.Core
 
             if (type.IsGenericParameter)
             {
-                // TODO: Check constraints whether the generic parameter is compatible
-                return true;
+                return typeSpecifier.Equals((GenericType)type);
             }
 
             return typeSpecifier.Equals((TypeSpecifier)type);
@@ -181,8 +205,7 @@ namespace NetPrints.Core
 
             if (type.IsGenericParameter)
             {
-                // TODO: Check constraints whether the generic parameter is compatible
-                return false;
+                return !typeSpecifier.Equals((GenericType)type);
             }
 
             return !typeSpecifier.Equals((TypeSpecifier)type);
@@ -197,8 +220,7 @@ namespace NetPrints.Core
             
             if(type.IsGenericParameter)
             {
-                // TODO: Check constraints whether the generic parameter is compatible
-                return true;
+                return typeSpecifier.Equals((GenericType)type);
             }
 
             return typeSpecifier.Equals((TypeSpecifier)type);
@@ -213,21 +235,10 @@ namespace NetPrints.Core
 
             if (type.IsGenericParameter)
             {
-                // TODO: Check constraints whether the generic parameter is compatible
-                return false;
+                return !typeSpecifier.Equals((GenericType)type);
             }
 
             return !typeSpecifier.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator ==(TypeSpecifier a, TypeSpecifier b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(TypeSpecifier a, TypeSpecifier b)
-        {
-            return !a.Equals(b);
         }
     }
 }

@@ -19,18 +19,41 @@ namespace NetPrints.Graph
             }
             else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
             {
+                // Both are TypeSpecifier
+
                 if(datA.PinType is TypeSpecifier typeSpecA && 
                     datB.PinType is TypeSpecifier typeSpecB &&
                     (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA)))
                 {
                     return true;
                 }
+                
+                // A is GenericType, B is whatever
 
-                // TODO: Check constraints below
-
-                if (datA.PinType is GenericType genTypeA || datB.PinType is GenericType genTypeB)
+                if (datA.PinType is GenericType genTypeA)
                 {
+                    if(datB.PinType is GenericType genTypeB)
+                    {
+                        return genTypeA == genTypeB;
+                    }
+                    else if(datB.PinType is TypeSpecifier typeSpecB2)
+                    {
+                        return genTypeA == typeSpecB2;
+                    }
+                }
 
+                // B is GenericType, A is whatever
+
+                if (datB.PinType is GenericType genTypeB2)
+                {
+                    if (datA.PinType is GenericType genTypeA2)
+                    {
+                        return genTypeA2 == genTypeB2;
+                    }
+                    else if (datA.PinType is TypeSpecifier typeSpecA2)
+                    {
+                        return genTypeB2 == typeSpecA2;
+                    }
                 }
             }
             else if(!swapped)
