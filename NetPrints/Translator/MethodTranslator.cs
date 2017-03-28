@@ -43,6 +43,7 @@ namespace NetPrints.Translator
 
             { typeof(VariableGetterNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateVariableGetterNode(node as VariableGetterNode) } },
             { typeof(LiteralNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateLiteralNode(node as LiteralNode) } },
+            { typeof(MakeDelegateNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeDelegateNode(node as MakeDelegateNode) } },
         };
 
         private int GetNextStateId()
@@ -582,6 +583,37 @@ namespace NetPrints.Translator
             string literalString = TranslatorUtil.ObjectToLiteral(node.Value, node.LiteralType);
 
             builder.AppendLine($"{GetOrCreatePinName(node.ValuePin)} = {literalString};");
+        }
+
+        public void PureTranslateMakeDelegateNode(MakeDelegateNode node)
+        {
+            // Write assignment of return value
+            string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
+            builder.Append($"{returnName} = ");
+
+            // Static: Write class name / target, default to own class name
+            // Instance: Write target, default to this
+
+            if (node.IsFromStaticMethod)
+            {
+                builder.Append($"{node.MethodSpecifier.DeclaringType}.");
+            }
+            else
+            {
+                if (node.TargetPin.IncomingPin != null)
+                {
+                    string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
+                    builder.Append($"{targetName}.");
+                }
+                else
+                {
+                    // Default to thise
+                    builder.Append("this.");
+                }
+            }
+
+            // Write method name
+            builder.AppendLine($"{node.MethodSpecifier.Name};");
         }
     }
 }

@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="ClassTranslatorTests.cs" />
     <Compile Include="GenericsTests.cs" />
+    <Compile Include="DelegateTranslatorTests.cs" />
     <Compile Include="MethodTranslatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeTests.cs" />

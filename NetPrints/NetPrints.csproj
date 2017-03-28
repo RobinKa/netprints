@@ -54,6 +54,7 @@
     <Compile Include="Core\TypeGraph.cs" />
     <Compile Include="Core\TypeSpecifier.cs" />
     <Compile Include="Core\Variable.cs" />
+    <Compile Include="Graph\MakeDelegateNode.cs" />
     <Compile Include="Graph\CallMethodNode.cs" />
     <Compile Include="Graph\ConstructorNode.cs" />
     <Compile Include="Graph\ExecNode.cs" />
