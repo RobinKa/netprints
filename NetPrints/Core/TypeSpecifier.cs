@@ -84,7 +84,7 @@ namespace NetPrints.Core
                 // Generic arguments equal
                 // IsEnum equal
 
-                if (Name == t.Name && GenericArguments.SequenceEqual(t.GenericArguments))
+                if (Name == t.Name && GenericArgumentsEqual(t))
                 {
                     if (IsEnum != t.IsEnum)
                         throw new ArgumentException("obj has same type name but IsEnum is different");
@@ -99,6 +99,11 @@ namespace NetPrints.Core
             }
 
             return false;
+        }
+
+        public bool GenericArgumentsEqual(TypeSpecifier t)
+        {
+            return GenericArguments.SequenceEqual(t.GenericArguments);
         }
 
         public override int GetHashCode()
@@ -163,21 +168,81 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, TypeSpecifier b)
         {
+            if (ReferenceEquals(b, null))
+            {
+                return ReferenceEquals(a, null);
+            }
+
             return a.Equals(b);
         }
 
         public static bool operator !=(TypeSpecifier a, TypeSpecifier b)
         {
+            if (ReferenceEquals(b, null))
+            {
+                return !ReferenceEquals(a, null);
+            }
+
             return !a.Equals(b);
         }
 
         public static bool operator ==(TypeSpecifier a, GenericType b)
         {
+            if (ReferenceEquals(b, null))
+            {
+                return ReferenceEquals(a, null);
+            }
+
             return a.Equals(b);
         }
 
         public static bool operator !=(TypeSpecifier a, GenericType b)
         {
+            if (ReferenceEquals(b, null))
+            {
+                return !ReferenceEquals(a, null);
+            }
+
+            return !a.Equals(b);
+        }
+
+        public static bool operator ==(TypeSpecifier a, BaseType b)
+        {
+            if (ReferenceEquals(b, null))
+            {
+                return ReferenceEquals(a, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TypeSpecifier a, BaseType b)
+        {
+            if (ReferenceEquals(b, null))
+            {
+                return !ReferenceEquals(a, null);
+            }
+
+            return !a.Equals(b);
+        }
+
+        public static bool operator ==(BaseType a, TypeSpecifier b)
+        {
+            if (ReferenceEquals(b, null))
+            {
+                return ReferenceEquals(a, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(BaseType a, TypeSpecifier b)
+        {
+            if (ReferenceEquals(b, null))
+            {
+                return !ReferenceEquals(a, null);
+            }
+
             return !a.Equals(b);
         }
 
