@@ -28,6 +28,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush ConstructorNodeBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x3A, 0x50, 0x20));
 
+        private static readonly SolidColorBrush MakeDelegateNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x7A, 0x20));
+
         public SolidColorBrush Brush
         {
             get
@@ -54,6 +57,10 @@ namespace NetPrintsEditor.ViewModels
                 else if(Node is ConstructorNode)
                 {
                     return ConstructorNodeBrush;
+                }
+                else if(Node is MakeDelegateNode)
+                {
+                    return MakeDelegateNodeBrush;
                 }
 
                 return DefaultNodeBrush;
