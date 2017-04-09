@@ -64,6 +64,7 @@
     <Compile Include="Commands\EditorCommands.cs" />
     <Compile Include="Commands\NetPrintsCommands.cs" />
     <Compile Include="Commands\UndoRedoStack.cs" />
+    <Compile Include="Compilation\LocalFrameworkAssemblyName.cs" />
     <Compile Include="Dialogs\MakeDelegateTypeInfo.cs" />
     <Compile Include="Dialogs\SelectMethodDialog.xaml.cs">
       <DependentUpon>SelectMethodDialog.xaml</DependentUpon>
@@ -71,9 +72,10 @@
     <Compile Include="Interop\AppDomainHelper.cs" />
     <Compile Include="Compilation\CodeCompiler.cs" />
     <Compile Include="Compilation\ICodeCompiler.cs" />
-    <Compile Include="Compilation\LocalAssembly.cs" />
+    <Compile Include="Compilation\LocalAssemblyName.cs" />
     <Compile Include="Interop\WrappedAppDomainObject.cs" />
     <Compile Include="Interop\WrappedCodeCompiler.cs" />
+    <Compile Include="Reflection\DocumentationUtil.cs" />
     <Compile Include="Reflection\IReflectionProvider.cs" />
     <Compile Include="Reflection\ReflectionProvider.cs" />
     <Compile Include="Interop\WrappedReflectionProvider.cs" />

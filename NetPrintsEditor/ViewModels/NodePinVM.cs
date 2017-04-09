@@ -19,6 +19,26 @@ namespace NetPrintsEditor.ViewModels
             {
                 if(Pin is NodeDataPin dataPin)
                 {
+                    if (dataPin.Node is CallMethodNode callMethodNode)
+                    {
+                        if (dataPin is NodeInputDataPin inputDataPin)
+                        {
+                            int paramIndex = callMethodNode.ArgumentPins.IndexOf(inputDataPin);
+                            if (paramIndex >= 0)
+                            {
+                                return ProjectVM.Instance.ReflectionProvider.GetMethodParameterDocumentation(callMethodNode.MethodSpecifier, paramIndex);
+                            }
+                        }
+                        else if(dataPin is NodeOutputDataPin outputDataPin)
+                        {
+                            int returnIndex = callMethodNode.OutputDataPins.IndexOf(outputDataPin);
+                            if (returnIndex >= 0)
+                            {
+                                return ProjectVM.Instance.ReflectionProvider.GetMethodReturnDocumentation(callMethodNode.MethodSpecifier, returnIndex);
+                            }
+                        }
+                    }
+
                     return $"{dataPin.PinType} {dataPin.Name}";
                 }
 

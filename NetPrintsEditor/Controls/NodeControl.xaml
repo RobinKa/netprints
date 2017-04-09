@@ -18,7 +18,7 @@
         <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
     </UserControl.Resources>
 
-    <Grid MinWidth="220">
+    <Grid MinWidth="220" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
         <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#FF202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>

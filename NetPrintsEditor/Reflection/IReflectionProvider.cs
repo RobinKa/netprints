@@ -19,5 +19,10 @@ namespace NetPrintsEditor.Reflection
         IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier);
         IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier);
         IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier);
+
+        // Documentation
+        string GetMethodDocumentation(MethodSpecifier methodSpecifier);
+        string GetMethodParameterDocumentation(MethodSpecifier methodSpecifier, int parameterIndex);
+        string GetMethodReturnDocumentation(MethodSpecifier methodSpecifier, int returnIndex);
     }
 }

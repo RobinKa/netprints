@@ -100,6 +100,20 @@ namespace NetPrintsEditor.ViewModels
 
         private bool isSelected;
 
+        public string ToolTip
+        {
+            get
+            {
+                if(Node is CallMethodNode callMethodNode)
+                {
+                    return ProjectVM.Instance.ReflectionProvider.GetMethodDocumentation(callMethodNode.MethodSpecifier);
+                }
+
+                return null;
+            }
+        }
+
+
         // Wrapped attributes of Node
         public string Name
         {
@@ -197,6 +211,7 @@ namespace NetPrintsEditor.ViewModels
                     
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
+                    OnPropertyChanged(nameof(ToolTip));
                 }
             }
         }

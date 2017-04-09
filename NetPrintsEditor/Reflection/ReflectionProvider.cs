@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NetPrints.Core;
+using System.Xml;
+using System.IO;
 
 namespace NetPrintsEditor.Reflection
 {
@@ -133,6 +135,15 @@ namespace NetPrintsEditor.Reflection
             }
 
             return null;
+        }
+
+        private MethodInfo GetMethodInfoFromSpecifier(MethodSpecifier specifier)
+        {
+            Type declaringType = GetTypeFromSpecifier(specifier.DeclaringType);
+            return declaringType?.GetMethods().Where(
+                    m => m.Name == specifier.Name && 
+                    m.GetParameters().Select(p => (BaseType)p.ParameterType).SequenceEqual(specifier.Arguments))
+                .FirstOrDefault();
         }
 
         public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier searchTypeSpec)
@@ -341,6 +352,46 @@ namespace NetPrintsEditor.Reflection
                     ReplaceGenericTypes(typeSpec.GenericArguments, replacedGenericTypes);
                 }
             }
+        }
+
+        // Documentation
+
+        public string GetMethodDocumentation(MethodSpecifier methodSpecifier)
+        {
+            MethodInfo methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
+
+            if(methodInfo == null)
+            {
+                return null;
+            }
+
+            return DocumentationUtil.GetMethodSummary(methodInfo);
+        }
+
+        public string GetMethodParameterDocumentation(MethodSpecifier methodSpecifier, int parameterIndex)
+        {
+            MethodInfo methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
+
+            if (methodInfo == null)
+            {
+                return null;
+            }
+
+            string parameterName = methodInfo.GetParameters()[parameterIndex].Name;
+
+            return DocumentationUtil.GetMethodParameterInfo(methodInfo, parameterName);
+        }
+
+        public string GetMethodReturnDocumentation(MethodSpecifier methodSpecifier, int returnIndex)
+        {
+            MethodInfo methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
+
+            if (methodInfo == null)
+            {
+                return null;
+            }
+
+            return DocumentationUtil.GetMethodReturnInfo(methodInfo);
         }
 
         #endregion

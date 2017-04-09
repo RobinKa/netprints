@@ -83,6 +83,21 @@ namespace NetPrintsEditor.Interop
         {
             return reflectionProvider.GetPublicStaticFunctionsForType(typeSpecifier).ToArray();
         }
+
+        public string GetMethodDocumentation(MethodSpecifier methodSpecifier)
+        {
+            return reflectionProvider.GetMethodDocumentation(methodSpecifier);
+        }
+
+        public string GetMethodParameterDocumentation(MethodSpecifier methodSpecifier, int parameterIndex)
+        {
+            return reflectionProvider.GetMethodParameterDocumentation(methodSpecifier, parameterIndex);
+        }
+
+        public string GetMethodReturnDocumentation(MethodSpecifier methodSpecifier, int returnIndex)
+        {
+            return reflectionProvider.GetMethodReturnDocumentation(methodSpecifier, returnIndex);
+        }
         #endregion
     }
 }
