@@ -11,6 +11,32 @@ namespace NetPrintsEditor.Reflection
 {
     public static class DocumentationUtil
     {
+        private static Dictionary<string, XmlDocument> cachedDocuments =
+            new Dictionary<string, XmlDocument>();
+
+        private static Dictionary<string, string> cachedMethodSummaries =
+            new Dictionary<string, string>();
+
+        private static Dictionary<Tuple<string, string>, string> cachedMethodParameterInfos =
+            new Dictionary<Tuple<string, string>, string>();
+
+        private static Dictionary<string, string> cachedMethodReturnInfo =
+            new Dictionary<string, string>();
+
+        private static string GetMethodInfoKey(MethodInfo methodInfo)
+        {
+            string key = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
+
+            if (methodInfo.GetParameters().Length > 0)
+            {
+                key += "(";
+                key += string.Join(",", methodInfo.GetParameters().Select(p => p.ParameterType.FullName));
+                key += ")";
+            }
+
+            return key;
+        }
+
         private static string GetAssemblyDocumentationPath(Assembly assembly)
         {
             // Try to find the documentation in the assembly's path
@@ -39,12 +65,21 @@ namespace NetPrintsEditor.Reflection
 
         private static XmlDocument GetAssemblyDocumentationDocument(Assembly assembly)
         {
-            string docPath = GetAssemblyDocumentationPath(assembly);
+            string key = Path.GetFileNameWithoutExtension(assembly.Location);
+
+            if (cachedDocuments.ContainsKey(key))
+            {
+                return cachedDocuments[key];
+            }
 
             try
             {
+                string docPath = GetAssemblyDocumentationPath(assembly);
                 XmlDocument doc = new XmlDocument();
-                doc.Load(docPath);
+                doc.Load(File.OpenRead(docPath));
+
+                cachedDocuments.Add(key, doc);
+
                 return doc;
             }
             catch
@@ -55,28 +90,37 @@ namespace NetPrintsEditor.Reflection
 
         public static string GetMethodSummary(MethodInfo methodInfo)
         {
-            XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
+            string methodKey = GetMethodInfoKey(methodInfo);
 
-            string searchName = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
-            if(methodInfo.GetParameters().Length > 0)
+            if (cachedMethodSummaries.ContainsKey(methodKey))
             {
-                searchName += "(";
-                searchName += string.Join(",", methodInfo.GetParameters().Select(p => p.ParameterType.FullName));
-                searchName += ")";
+                return cachedMethodSummaries[methodKey];
             }
 
-            XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/summary");
-            
+            XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
+            XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{methodKey}']/summary");
+
+            string documentation = null;
+
             if(nodes.Count > 0)
             {
-                return nodes.Item(0).InnerText;
+                documentation = nodes.Item(0).InnerText;
             }
 
-            return null;
+            cachedMethodSummaries.Add(methodKey, documentation);
+
+            return documentation;
         }
 
         public static string GetMethodParameterInfo(MethodInfo methodInfo, string parameterName)
         {
+            string methodKey = GetMethodInfoKey(methodInfo);
+            Tuple<string, string> cacheKey = new Tuple<string, string>(methodKey, parameterName);
+            if (cachedMethodParameterInfos.ContainsKey(cacheKey))
+            {
+                return cachedMethodParameterInfos[cacheKey];
+            }
+
             XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
 
             string searchName = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
@@ -89,16 +133,27 @@ namespace NetPrintsEditor.Reflection
 
             XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/param[@name='{parameterName}']");
 
+            string documentation = null;
+
             if (nodes.Count > 0)
             {
-                return nodes.Item(0).InnerText;
+                documentation = nodes.Item(0).InnerText;
             }
 
-            return null;
+            cachedMethodParameterInfos.Add(cacheKey, documentation);
+
+            return documentation;
         }
 
         public static string GetMethodReturnInfo(MethodInfo methodInfo)
         {
+            string methodKey = GetMethodInfoKey(methodInfo);
+
+            if (cachedMethodReturnInfo.ContainsKey(methodKey))
+            {
+                return cachedMethodReturnInfo[methodKey];
+            }
+
             XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
 
             string searchName = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
@@ -111,12 +166,16 @@ namespace NetPrintsEditor.Reflection
 
             XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/returns");
 
+            string documentation = null;
+
             if (nodes.Count > 0)
             {
-                return nodes.Item(0).InnerText;
+                documentation = nodes.Item(0).InnerText;
             }
 
-            return null;
+            cachedMethodReturnInfo.Add(methodKey, documentation);
+
+            return documentation;
         }
     }
 }
