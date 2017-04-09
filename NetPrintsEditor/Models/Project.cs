@@ -10,9 +10,9 @@ namespace NetPrintsEditor.Models
     {
         private static readonly LocalAssemblyName[] DefaultAssemblies = new LocalAssemblyName[]
         {
-            LocalAssemblyName.FromName("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"),
-            LocalAssemblyName.FromName("System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"),
-            LocalAssemblyName.FromName("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"),
+            new LocalFrameworkAssemblyName("System", "v4.0"),
+            new LocalFrameworkAssemblyName("System.Core", "v4.0"),
+            new LocalFrameworkAssemblyName("mscorlib", "v4.0"),
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(
