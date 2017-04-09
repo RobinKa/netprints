@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 namespace NetPrintsEditor.Compilation
 {
     [DataContract]
+    [KnownType(typeof(LocalFrameworkAssemblyName))]
     public class LocalAssemblyName
     {
         [DataMember]
@@ -44,7 +45,7 @@ namespace NetPrintsEditor.Compilation
             return new LocalAssemblyName(assembly.FullName, assembly.Location);
         }
 
-        public Assembly LoadAssembly()
+        public virtual Assembly LoadAssembly()
         {
             // First try to load from name, then from path
             // Make sure the name is correct when loading from path
@@ -71,7 +72,7 @@ namespace NetPrintsEditor.Compilation
             }
         }
 
-        public bool FixPath()
+        public virtual bool FixPath()
         {
             try
             {
@@ -87,6 +88,7 @@ namespace NetPrintsEditor.Compilation
                 {
                     // Try to get path from assembly name
                     Path = Assembly.Load(Name).Location ?? throw new Exception();
+
                     return true;
                 }
                 catch
