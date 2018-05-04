@@ -28,7 +28,7 @@
             </ContextMenu>
         </Grid.ContextMenu>
 
-        <Canvas x:Name="drawCanvas" MouseLeftButtonDown="OnDrawCanvasLeftMouseButtonDown" MouseLeftButtonUp="OnDrawCanvasLeftMouseUp" MouseMove="OnDrawCanvasMouseMove" MouseWheel="OnMouseWheelScroll" Width="5000" Height="5000">
+        <Canvas x:Name="drawCanvas" MouseLeftButtonDown="OnDrawCanvasLeftMouseButtonDown" MouseRightButtonDown="OnDrawCanvasRightMouseButtonDown" MouseRightButtonUp="OnDrawCanvasRightMouseUp" MouseMove="OnDrawCanvasMouseMove" MouseWheel="OnMouseWheelScroll" Width="5000" Height="5000">
             <Canvas.Background>
                 <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
                     <DrawingBrush.Drawing>

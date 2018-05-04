@@ -290,6 +290,7 @@ namespace NetPrintsEditor.Controls
         private bool dragCanvas = false;
         private Point dragCanvasStartLocation;
         private Vector dragCanvasStartOffset;
+        private bool movedDuringDrag = false;
 
         private double drawCanvasScale = 1;
         private const double DrawCanvasMinScale = 0.3;
@@ -304,7 +305,10 @@ namespace NetPrintsEditor.Controls
                 Method.SelectedNode = null;
                 e.Handled = true;
             }
-            
+        }
+
+        private void OnDrawCanvasRightMouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
             TranslateTransform currentTransform = drawCanvas.RenderTransform as TranslateTransform;
             dragCanvas = true;
             dragCanvasStartLocation = e.GetPosition(this);
@@ -312,8 +316,10 @@ namespace NetPrintsEditor.Controls
                     new Vector(currentTransform.X, currentTransform.Y) :
                     new Vector(0, 0);
 
+            movedDuringDrag = false;
+
             drawCanvas.CaptureMouse();
-            Mouse.OverrideCursor = Cursors.ScrollAll;
+            
             e.Handled = true;
         }
 
@@ -321,13 +327,16 @@ namespace NetPrintsEditor.Controls
         {
             if(dragCanvas)
             {
-                if (e.LeftButton == MouseButtonState.Pressed)
+                if (e.RightButton == MouseButtonState.Pressed)
                 {
                     Vector offset = dragCanvasStartOffset + (e.GetPosition(this) - dragCanvasStartLocation);
 
                     drawCanvas.RenderTransform = new TranslateTransform(
                         Math.Round(offset.X),
                         Math.Round(offset.Y));
+
+                    movedDuringDrag = true;
+                    Mouse.OverrideCursor = Cursors.ScrollAll;
                 }
                 else
                 {
@@ -338,14 +347,14 @@ namespace NetPrintsEditor.Controls
             }
         }
 
-        private void OnDrawCanvasLeftMouseUp(object sender, MouseButtonEventArgs e)
+        private void OnDrawCanvasRightMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (dragCanvas)
             {
                 dragCanvas = false;
                 drawCanvas.ReleaseMouseCapture();
                 Mouse.OverrideCursor = null;
-                e.Handled = true;
+                e.Handled = movedDuringDrag;
             }
         }
 
