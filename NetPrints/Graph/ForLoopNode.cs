@@ -50,10 +50,10 @@ namespace NetPrints.Graph
             AddOutputExecPin("Loop");
             AddOutputExecPin("Completed");
 
-            AddInputDataPin("InitialIndex", typeof(int));
-            AddInputDataPin("MaxIndex", typeof(int));
+            AddInputDataPin("InitialIndex", TypeSpecifier.FromType<int>());
+            AddInputDataPin("MaxIndex", TypeSpecifier.FromType<int>());
 
-            AddOutputDataPin("Index", typeof(int));
+            AddOutputDataPin("Index", TypeSpecifier.FromType<int>());
         }
     }
 }

@@ -15,8 +15,7 @@ namespace NetPrintsEditor.Models
             new LocalFrameworkAssemblyName("mscorlib", "v4.0"),
         };
 
-        private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(
-                typeof(Project), null, int.MaxValue, false, true, null);
+        private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(typeof(Project));
 
         [DataMember]
         public string Name

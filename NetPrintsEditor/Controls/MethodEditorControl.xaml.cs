@@ -178,9 +178,9 @@ namespace NetPrintsEditor.Controls
                     Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
                         GetPublicMethodsForType(Method.Class.SuperType))
                     {
-                        TypeSpecifier.Create<ForLoopNode>(),
-                        TypeSpecifier.Create<IfElseNode>(),
-                        TypeSpecifier.Create<ConstructorNode>(),
+                        TypeSpecifier.FromType<ForLoopNode>(),
+                        TypeSpecifier.FromType<IfElseNode>(),
+                        TypeSpecifier.FromType<ConstructorNode>(),
                     };
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
@@ -188,9 +188,9 @@ namespace NetPrintsEditor.Controls
                     Suggestions = new ObservableRangeCollection<object>(
                         ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
                     {
-                        TypeSpecifier.Create<ForLoopNode>(),
-                        TypeSpecifier.Create<IfElseNode>(),
-                        TypeSpecifier.Create<ConstructorNode>(),
+                        TypeSpecifier.FromType<ForLoopNode>(),
+                        TypeSpecifier.FromType<IfElseNode>(),
+                        TypeSpecifier.FromType<ConstructorNode>(),
                     };
                 }
                 else
@@ -262,9 +262,9 @@ namespace NetPrintsEditor.Controls
                 Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
                     GetStaticFunctions())
                 {
-                    TypeSpecifier.Create<ForLoopNode>(),
-                    TypeSpecifier.Create<IfElseNode>(),
-                    TypeSpecifier.Create<ConstructorNode>(),
+                    TypeSpecifier.FromType<ForLoopNode>(),
+                    TypeSpecifier.FromType<IfElseNode>(),
+                    TypeSpecifier.FromType<ConstructorNode>(),
                 };
             }
             else

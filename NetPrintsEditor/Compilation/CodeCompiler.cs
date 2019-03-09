@@ -1,8 +1,13 @@
-﻿using Microsoft.CSharp;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,22 +18,18 @@ namespace NetPrintsEditor.Compilation
         public CodeCompileResults CompileSources(string outputPath, IEnumerable<string> assemblyPaths,
             IEnumerable<string> sources, bool generateExecutable)
         {
-            CSharpCodeProvider csc = new CSharpCodeProvider();
+            IEnumerable<SyntaxTree> syntaxTrees = sources.Select(source => SyntaxFactory.ParseSyntaxTree(source));
+            IEnumerable<MetadataReference> references = assemblyPaths.Select(path => MetadataReference.CreateFromFile(path));
+            var compilationOptions = new CSharpCompilationOptions(generateExecutable ? OutputKind.ConsoleApplication : OutputKind.DynamicallyLinkedLibrary);
 
-            CompilerParameters parameters = new CompilerParameters(assemblyPaths.ToArray(), outputPath, true)
-            {
-                GenerateExecutable = generateExecutable,
-                CompilerOptions = generateExecutable ? "/platform:anycpu32bitpreferred" : null
-            };
+            CSharpCompilation compilation = CSharpCompilation.Create("NetPrintsOutput")
+                .WithOptions(compilationOptions)
+                .AddReferences(references)
+                .AddSyntaxTrees(syntaxTrees);
 
-            CompilerResults results = csc.CompileAssemblyFromSource(parameters, sources.ToArray());
+            var emitResult = compilation.Emit(outputPath);
 
-            IEnumerable<string> errors = results.Errors.Cast<CompilerError>().Select(err => err.ToString()).ToArray();
-
-            CodeCompileResults codeCompileResults = new CodeCompileResults(
-                !results.Errors.HasErrors, errors, results.PathToAssembly);
-
-            return codeCompileResults;
+            return new CodeCompileResults(emitResult.Success, new List<string>(), outputPath);
         }
     }
 }

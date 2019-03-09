@@ -31,7 +31,7 @@ namespace NetPrints.Graph
         {
             AddInputExecPin("Exec");
 
-            AddInputDataPin("Condition", typeof(bool));
+            AddInputDataPin("Condition", TypeSpecifier.FromType<bool>());
 
             AddOutputExecPin("True");
             AddOutputExecPin("False");

@@ -140,7 +140,7 @@ namespace NetPrintsEditor
 
         private void CommandAddAttribute_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.Class.Attributes.Add(new Variable(e.Parameter as string, typeof(object)));
+            Class.Class.Attributes.Add(new Variable(e.Parameter as string, TypeSpecifier.FromType<object>()));
         }
 
         // Remove Attribute

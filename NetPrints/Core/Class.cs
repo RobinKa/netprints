@@ -27,7 +27,7 @@ namespace NetPrints.Core
         public ObservableRangeCollection<Method> Methods { get; set; } = new ObservableRangeCollection<Method>();
 
         [DataMember]
-        public TypeSpecifier SuperType { get; set; } = typeof(object);
+        public TypeSpecifier SuperType { get; set; } = TypeSpecifier.FromType<object>();
 
         [DataMember]
         public string Namespace { get; set; }

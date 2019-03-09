@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using Microsoft.CodeAnalysis;
+using NetPrints.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,13 +27,6 @@ namespace NetPrints.Core
         {
             DeclaringType = declaringType;
             Arguments = arguments.ToList();
-        }
-
-        public static implicit operator ConstructorSpecifier(ConstructorInfo constructorInfo)
-        {
-            return new ConstructorSpecifier(
-                constructorInfo.GetParameters().Select(p => (TypeSpecifier)p.ParameterType),
-                constructorInfo.DeclaringType);
         }
     }
 }

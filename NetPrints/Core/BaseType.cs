@@ -34,17 +34,5 @@ namespace NetPrints.Core
         {
             return Name;
         }
-
-        public static implicit operator BaseType(Type type)
-        {
-            if (type.IsGenericParameter)
-            {
-                return (GenericType)type;
-            }
-            else
-            {
-                return (TypeSpecifier)type;
-            }
-        }
     }
 }

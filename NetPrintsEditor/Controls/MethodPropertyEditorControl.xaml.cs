@@ -28,12 +28,12 @@ namespace NetPrintsEditor.Controls
 
         private void OnAddArgumentTypeClick(object sender, RoutedEventArgs e)
         {
-            Method.ArgumentTypes.Add(typeof(object));
+            Method.ArgumentTypes.Add(TypeSpecifier.FromType<object>());
         }
 
         private void OnAddReturnTypeClick(object sender, RoutedEventArgs e)
         {
-            Method.ReturnTypes.Add(typeof(object));
+            Method.ReturnTypes.Add(TypeSpecifier.FromType<object>());
         }
 
         private int GetControlIndex(Control c, int childIndex)

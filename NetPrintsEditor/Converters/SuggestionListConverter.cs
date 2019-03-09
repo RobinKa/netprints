@@ -29,15 +29,15 @@ namespace NetPrintsEditor.Converters
             }
             else if (value is TypeSpecifier t)
             {
-                if (t == typeof(ForLoopNode))
+                if (t == TypeSpecifier.FromType<ForLoopNode>())
                 {
                     return "NetPrints - For Loop";
                 }
-                else if (t == typeof(IfElseNode))
+                else if (t == TypeSpecifier.FromType<IfElseNode>())
                 {
                     return "NetPrints - If Else";
                 }
-                else if(t == typeof(ConstructorNode))
+                else if(t == TypeSpecifier.FromType<ConstructorNode>())
                 {
                     return "NetPrints - Construct New Object";
                 }

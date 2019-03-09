@@ -24,7 +24,7 @@ namespace NetPrints.Graph
             }
             set
             {
-                if (value.GetType() != LiteralType)
+                if (TypeSpecifier.FromType(value.GetType()) != LiteralType)
                 {
                     throw new ArgumentException("Value is not of the same type as LiteralType");
                 }

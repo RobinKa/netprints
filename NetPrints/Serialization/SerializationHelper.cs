@@ -6,8 +6,11 @@ namespace NetPrints.Serialization
 {
     public class SerializationHelper
     {
-        private static DataContractSerializer classSerializer = new DataContractSerializer(
-                typeof(Class), null, int.MaxValue, false, true, null);
+        private static DataContractSerializer classSerializer = new DataContractSerializer(typeof(Class), new DataContractSerializerSettings()
+        {
+            PreserveObjectReferences = true,
+            MaxItemsInObjectGraph = int.MaxValue,
+        });
 
         public static void SaveClass(Class cls, string outputPath)
         {

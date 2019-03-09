@@ -146,7 +146,8 @@ namespace NetPrintsEditor.Controls
                         ));
                     }
                 }
-                else if(item.DataContext is TypeSpecifier t)
+                // TODO
+                /*else if(item.DataContext is TypeSpecifier t)
                 {
                     if(t == typeof(ForLoopNode))
                     {
@@ -175,7 +176,7 @@ namespace NetPrintsEditor.Controls
                         {
                             TypeSpecifier selectedType = selectTypeDialog.SelectedType;
 
-                            if(selectedType == null)
+                            if(selectedType.Equals(null))
                             {
                                 throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
                             }
@@ -204,7 +205,7 @@ namespace NetPrintsEditor.Controls
                             }
                         }
                     }
-                }
+                }*/
             }
         }
 

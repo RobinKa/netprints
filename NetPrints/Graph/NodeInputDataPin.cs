@@ -48,7 +48,7 @@ namespace NetPrints.Graph
 
                 if (value != null && (!UsesUnconnectedValue || 
                     (PinType is TypeSpecifier t && (
-                        (!t.IsEnum && value.GetType() != t) ||
+                        (!t.IsEnum && TypeSpecifier.FromType(value.GetType()) != t) ||
                         (t.IsEnum && value.GetType() != typeof(string))))))
                 {
                     throw new ArgumentException();

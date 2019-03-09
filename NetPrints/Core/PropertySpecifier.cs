@@ -57,19 +57,5 @@ namespace NetPrints.Core
             HasPublicSetter = HasPublicSetter;
             DeclaringType = declaringType;
         }
-
-        public static implicit operator PropertySpecifier(PropertyInfo propertyInfo)
-        {
-            MethodInfo[] publicAccessors = propertyInfo.GetAccessors();
-            bool hasPublicGetter = publicAccessors.Any(a => a.ReturnType != typeof(void));
-            bool hasPublicSetter = publicAccessors.Any(a => a.ReturnType == typeof(void));
-
-            return new PropertySpecifier(
-                propertyInfo.Name,
-                propertyInfo.PropertyType,
-                hasPublicGetter,
-                hasPublicSetter,
-                propertyInfo.DeclaringType);
-        }
     }
 }

@@ -7,42 +7,86 @@ using System.Threading.Tasks;
 using NetPrints.Core;
 using System.Xml;
 using System.IO;
+using System.Runtime.Loader;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace NetPrintsEditor.Reflection
 {
+    public static class ISymbolExtensions
+    {
+        public static bool IsPublic(this ISymbol symbol)
+        {
+            return symbol.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
+        }
+
+        public static IEnumerable<IMethodSymbol> GetMethods(this INamedTypeSymbol symbol)
+        {
+            return symbol.GetMembers()
+                    .Where(member => member.Kind == SymbolKind.Method)
+                    .Cast<IMethodSymbol>()
+                    .Where(method => method.MethodKind == MethodKind.Ordinary);
+        }
+
+        public static bool IsSubclassOf(this ITypeSymbol symbol, ITypeSymbol cls)
+        {
+            // TODO: Traverse base types
+            return cls?.BaseType == symbol;
+        }
+    }
+
     public class ReflectionProvider : IReflectionProvider
     {
-        public List<Assembly> Assemblies
+        private readonly CSharpCompilation compilation;
+
+        public ReflectionProvider(IEnumerable<string> assemblyPaths)
         {
-            get;
-            set;
+            compilation = CSharpCompilation.Create("C")
+                .AddReferences(assemblyPaths.Select(path => MetadataReference.CreateFromFile(path)));
         }
-        
-        public ReflectionProvider(List<Assembly> assemblies)
+
+        private IEnumerable<INamedTypeSymbol> GetValidTypes()
         {
-            Assemblies = assemblies;
+            return compilation.SourceModule.ReferencedAssemblySymbols.AsParallel().SelectMany(module =>
+                module.GlobalNamespace.GetMembers()
+                    .Where(member => member.IsNamespace)
+                    .SelectMany(member => member.GetTypeMembers()));
+        }
+
+        private IEnumerable<INamedTypeSymbol> GetValidTypes(string name)
+        {
+            return compilation.SourceModule.ReferencedAssemblySymbols.AsParallel().Select(module =>
+            {
+                try { return module.GetTypeByMetadataName(name); }
+                catch { return null; }
+            }).Where(t => t != null);
+        }
+
+        private IEnumerable<INamedTypeSymbol> GetValidTypes(string name, int arity)
+        {
+            return GetValidTypes(name).Where(t => t.Arity == arity);
         }
 
         #region IReflectionProvider
         public IEnumerable<TypeSpecifier> GetNonStaticTypes()
         {
-            return Assemblies.SelectMany(a => a.GetTypes().Where(
-                t => t.IsPublic && !(t.IsAbstract && t.IsSealed)).
-                Select(t => (TypeSpecifier)t));
+            return GetValidTypes().Where(
+                t => t.IsPublic() && !(t.IsAbstract && t.IsSealed)).
+                Select(t => ReflectionConverter.TypeSpecifierFromSymbol(t)).ToList();
         }
 
         public IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier)
         {
-            Type type = GetTypeFromSpecifier(typeSpecifier);
+            INamedTypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
 
             if (type != null)
             {
                 // Get all public instance methods, ignore special ones (properties / events),
                 // ignore those with generic parameters since we cant set those yet
 
-                return type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(m => !m.IsSpecialName && !m.ContainsGenericParameters)
-                    .Select(m => (MethodSpecifier)m);
+                return type.GetMethods()
+                    .Where(m => m.IsPublic() && !m.IsStatic && !m.IsGenericMethod)
+                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
             }
             else
             {
@@ -52,16 +96,16 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
         {
-            Type type = GetTypeFromSpecifier(typeSpecifier);
+            INamedTypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
 
             if (type != null)
             {
                 // Get all public static methods, ignore special ones (properties / events),
                 // ignore those with generic parameters since we cant set those yet
 
-                return type.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                    .Where(m => !m.IsSpecialName && !m.ContainsGenericParameters)
-                    .Select(m => (MethodSpecifier)m);
+                return type.GetMethods()
+                    .Where(m => m.IsPublic() && !m.IsStatic && !m.IsGenericMethod)
+                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
             }
             else
             {
@@ -71,61 +115,63 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier)?.GetProperties().Select(p => (PropertySpecifier)p);
+            return GetTypeFromSpecifier(typeSpecifier)
+                .GetMembers()
+                .Where(m => m.Kind == SymbolKind.Property)
+                .Cast<IPropertySymbol>()
+                .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p));
         }
 
         public IEnumerable<MethodSpecifier> GetStaticFunctions()
         {
-            return Assemblies.SelectMany(a =>
-                a.GetTypes().Where(t => t.IsPublic).SelectMany(t =>
-                    t.GetMethods(BindingFlags.Static | BindingFlags.Public)
+            return GetValidTypes().Where(t => t.IsPublic()).SelectMany(t =>
+                    t.GetMethods()
                     .Where(m => 
-                        !m.IsSpecialName && 
-                        m.GetParameters().All(p => !p.ParameterType.IsGenericParameter) &&
-                        !m.ReturnType.IsGenericParameter &&
-                        !m.IsGenericMethodDefinition &&
-                        !m.DeclaringType.ContainsGenericParameters)
-                    .Select(m => (MethodSpecifier)m)));
+                        m.IsStatic && m.IsPublic() &&
+                        //m.Parameters.All(p =>) &&
+                        //!m.ReturnType.IsGenericParameter &&
+                        !m.IsGenericMethod &&
+                        !m.ContainingType.IsUnboundGenericType)
+                        //!m.IsGenericMethodDefinition &&
+                        //!m.DeclaringType.ContainsGenericParameters)
+                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
         }
         
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier)?.GetConstructors().Select(c => (ConstructorSpecifier)c);
+            return GetTypeFromSpecifier(typeSpecifier)?.Constructors.Select(c => ReflectionConverter.ConstructorSpecifierFromSymbol(c));
         }
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier)?.GetEnumNames();
+            return GetTypeFromSpecifier(typeSpecifier).MemberNames;
         }
         
         public bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b)
         {
-            Type typeA = GetTypeFromSpecifier(a);
-            Type typeB = GetTypeFromSpecifier(b);
+            INamedTypeSymbol typeA = GetTypeFromSpecifier(a);
+            INamedTypeSymbol typeB = GetTypeFromSpecifier(b);
 
             return typeA != null && typeB != null && typeA.IsSubclassOf(typeB);
         }
 
-        private Type GetTypeFromSpecifier(TypeSpecifier specifier)
+        private INamedTypeSymbol GetTypeFromSpecifier(TypeSpecifier specifier)
         {
-            foreach (Assembly assembly in Assemblies)
-            {
-                string typeName = specifier.Name;
-                if(specifier.GenericArguments.Count > 0)
-                {
-                    typeName += $"`{specifier.GenericArguments.Count}";
-                }
+            IEnumerable<INamedTypeSymbol> types = GetValidTypes(specifier.Name, specifier.GenericArguments.Count);
+            List<INamedTypeSymbol> types2 = GetValidTypes(specifier.Name.Split(".")[1]).ToList();
 
-                Type t = assembly.GetType(typeName);
+            foreach (INamedTypeSymbol t in types)
+            {
                 if (t != null)
                 {
-                    if (specifier.GenericArguments.Count > 0 && t.IsGenericTypeDefinition)
+                    if (specifier.GenericArguments.Count > 0)
                     {
-                        return t.MakeGenericType(specifier.GenericArguments
+                        var typeArguments = specifier.GenericArguments
                             .Select(baseType => baseType is TypeSpecifier typeSpec ?
                                 GetTypeFromSpecifier(typeSpec) :
-                                t.GetGenericArguments()[specifier.GenericArguments.IndexOf(baseType)])
-                            .ToArray());
+                                t.TypeArguments[specifier.GenericArguments.IndexOf(baseType)])
+                            .ToArray();
+                        return t.Construct(typeArguments);
                     }
                     else
                     {
@@ -137,12 +183,12 @@ namespace NetPrintsEditor.Reflection
             return null;
         }
 
-        private MethodInfo GetMethodInfoFromSpecifier(MethodSpecifier specifier)
+        private IMethodSymbol GetMethodInfoFromSpecifier(MethodSpecifier specifier)
         {
-            Type declaringType = GetTypeFromSpecifier(specifier.DeclaringType);
+            INamedTypeSymbol declaringType = GetTypeFromSpecifier(specifier.DeclaringType);
             return declaringType?.GetMethods().Where(
                     m => m.Name == specifier.Name && 
-                    m.GetParameters().Select(p => (BaseType)p.ParameterType).SequenceEqual(specifier.Arguments))
+                    m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.Arguments))
                 .FirstOrDefault();
         }
 
@@ -150,33 +196,31 @@ namespace NetPrintsEditor.Reflection
         {
             // Find all public static methods
 
-            IEnumerable<MethodInfo> availableMethods = Assemblies
-                .SelectMany(a =>
-                    a.GetTypes()
-                        .Where(t => t.IsPublic)
+            IEnumerable<IMethodSymbol> availableMethods = GetValidTypes()
+                        .Where(t => t.IsPublic())
                         .SelectMany(t =>
-                            t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                            .Where(m => !m.IsSpecialName &&
-                                !m.DeclaringType.ContainsGenericParameters)));
+                            t.GetMethods()
+                            .Where(m => m.IsPublic() && m.IsStatic)
+                            .Where(m => !m.ContainingType.IsUnboundGenericType));
 
-            Type searchType = GetTypeFromSpecifier(searchTypeSpec);
+            INamedTypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
 
             List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
 
             // Find compatible methods
 
-            foreach (MethodInfo availableMethod in availableMethods)
+            foreach (IMethodSymbol availableMethod in availableMethods)
             {
-                MethodSpecifier availableMethodSpec = availableMethod;
+                MethodSpecifier availableMethodSpec = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
 
                 // Check the return type whether it can be replaced by the wanted type
 
-                Type retType = availableMethod.ReturnType;
-                BaseType ret = retType;
+                ITypeSymbol retType = availableMethod.ReturnType;
+                BaseType ret = ReflectionConverter.BaseTypeSpecifierFromSymbol(retType);
 
                 if (ret == searchTypeSpec || retType.IsSubclassOf(searchType))
                 {
-                    MethodSpecifier foundMethod = availableMethod;
+                    MethodSpecifier foundMethod = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
                     foundMethod = TryMakeClosedMethod(foundMethod, ret, searchTypeSpec);
 
                     // Only add fully closed methods
@@ -195,34 +239,31 @@ namespace NetPrintsEditor.Reflection
         {
             // Find all public static methods
 
-            IEnumerable<MethodInfo> availableMethods = Assemblies
-                .SelectMany(a =>
-                    a.GetTypes()
-                        .Where(t => t.IsPublic)
+            IEnumerable<IMethodSymbol> availableMethods = GetValidTypes()
+                        .Where(t => t.IsPublic())
                         .SelectMany(t =>
-                            t.GetMethods(BindingFlags.Static | BindingFlags.Public)
-                            .Where(m => !m.IsSpecialName && 
-                                !m.DeclaringType.ContainsGenericParameters)));
+                            t.GetMethods()
+                            .Where(m => m.IsPublic() && m.IsStatic && !m.ContainingType.IsUnboundGenericType));
 
-            Type searchType = GetTypeFromSpecifier(searchTypeSpec);
+            INamedTypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
 
             List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
 
             // Find compatible methods
 
-            foreach(MethodInfo availableMethod in availableMethods)
+            foreach (IMethodSymbol availableMethod in availableMethods)
             {
-                MethodSpecifier availableMethodSpec = availableMethod;
+                MethodSpecifier availableMethodSpec = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
 
                 // Check each argument whether it can be replaced by the wanted type
-                for(int i = 0; i < availableMethodSpec.Arguments.Count; i++) 
+                for (int i = 0; i < availableMethodSpec.Arguments.Count; i++) 
                 {
-                    Type argType = availableMethod.GetParameters()[i].ParameterType;
-                    BaseType arg = argType;
+                    ITypeSymbol argType = availableMethod.Parameters[i].Type;
+                    BaseType arg = ReflectionConverter.BaseTypeSpecifierFromSymbol(argType);
 
                     if (arg == searchTypeSpec || searchType.IsSubclassOf(argType))
                     {
-                        MethodSpecifier foundMethod = availableMethod;
+                        MethodSpecifier foundMethod = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
                         foundMethod = TryMakeClosedMethod(foundMethod, arg, searchTypeSpec);
 
                         // Only add fully closed methods
@@ -358,7 +399,7 @@ namespace NetPrintsEditor.Reflection
 
         public string GetMethodDocumentation(MethodSpecifier methodSpecifier)
         {
-            MethodInfo methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
+            IMethodSymbol methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
 
             if(methodInfo == null)
             {
@@ -370,21 +411,19 @@ namespace NetPrintsEditor.Reflection
 
         public string GetMethodParameterDocumentation(MethodSpecifier methodSpecifier, int parameterIndex)
         {
-            MethodInfo methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
+            IMethodSymbol methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
 
             if (methodInfo == null)
             {
                 return null;
             }
 
-            string parameterName = methodInfo.GetParameters()[parameterIndex].Name;
-
-            return DocumentationUtil.GetMethodParameterInfo(methodInfo, parameterName);
+            return DocumentationUtil.GetMethodParameterInfo(methodInfo.Parameters[parameterIndex]);
         }
 
         public string GetMethodReturnDocumentation(MethodSpecifier methodSpecifier, int returnIndex)
         {
-            MethodInfo methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
+            IMethodSymbol methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
 
             if (methodInfo == null)
             {

@@ -58,19 +58,6 @@ namespace NetPrints.Core
             return Name.GetHashCode();
         }
 
-        public static implicit operator GenericType(Type type)
-        {
-            if (!type.IsGenericParameter)
-            {
-                throw new ArgumentException(nameof(type));
-            }
-            
-            // TODO: Convert constraints
-            GenericType genericType = new GenericType(type.Name);
-
-            return genericType;
-        }
-
         public static bool operator ==(GenericType a, GenericType b)
         {
             return a.Equals(b);
@@ -89,66 +76,6 @@ namespace NetPrints.Core
         public static bool operator !=(GenericType a, TypeSpecifier b)
         {
             return !a.Equals(b);
-        }
-
-        public static bool operator ==(GenericType genType, Type type)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator !=(GenericType genType, Type type)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return !ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return !genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator ==(Type type, GenericType genType)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator !=(Type type, GenericType genType)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return !ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return !genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
         }
     }
 }

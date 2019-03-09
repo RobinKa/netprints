@@ -19,10 +19,7 @@ namespace NetPrints.Graph
             get { return OutputDataPins[0]; }
         }
 
-        public bool IsLocalVariable
-        {
-            get => TargetType == null;
-        }
+        public bool IsLocalVariable => TargetType.Equals(null);
 
         [DataMember]
         public string VariableName { get; private set; }
@@ -38,7 +35,7 @@ namespace NetPrints.Graph
 
             // TargetType null means local variable
 
-            if (targetType != null)
+            if (!targetType.Equals(null))
             {
                 AddInputDataPin("Target", targetType);
             }
