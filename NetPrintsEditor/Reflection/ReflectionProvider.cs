@@ -33,16 +33,51 @@ namespace NetPrintsEditor.Reflection
             // TODO: Traverse base types
             return cls?.BaseType == symbol;
         }
+
+        public static string GetFullName(this ITypeSymbol typeSymbol)
+        {
+            string fullName = typeSymbol.MetadataName;
+            if (typeSymbol.ContainingNamespace != null)
+            {
+                fullName = $"{typeSymbol.ContainingNamespace.MetadataName}.{fullName}";
+            }
+            return fullName;
+        }
     }
 
     public class ReflectionProvider : IReflectionProvider
     {
         private readonly CSharpCompilation compilation;
+        private readonly DocumentationUtil documentationUtil;
 
         public ReflectionProvider(IEnumerable<string> assemblyPaths)
         {
+            //assemblyPaths = new List<string>() { typeof(object).Assembly.Location };
+
             compilation = CSharpCompilation.Create("C")
-                .AddReferences(assemblyPaths.Select(path => MetadataReference.CreateFromFile(path)));
+                .AddReferences(assemblyPaths.Select(path =>
+                {
+                    DocumentationProvider documentationProvider = DocumentationProvider.Default;
+
+                    // Try to find the documentation in the framework doc path
+                    string docPath = Path.ChangeExtension(path, ".xml");
+                    if (!File.Exists(docPath))
+                    {
+                        docPath = Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                            "Reference Assemblies/Microsoft/Framework/.NETFramework/v4.X",
+                            $"{Path.GetFileNameWithoutExtension(path)}.xml");
+                    }
+
+                    if (File.Exists(docPath))
+                    {
+                        documentationProvider = XmlDocumentationProvider.CreateFromFile(docPath);
+                    }
+                   
+                    return MetadataReference.CreateFromFile(path, documentation: documentationProvider);
+                }));
+
+            documentationUtil = new DocumentationUtil(compilation);
         }
 
         private IEnumerable<INamedTypeSymbol> GetValidTypes()
@@ -406,7 +441,7 @@ namespace NetPrintsEditor.Reflection
                 return null;
             }
 
-            return DocumentationUtil.GetMethodSummary(methodInfo);
+            return documentationUtil.GetMethodSummary(methodInfo);
         }
 
         public string GetMethodParameterDocumentation(MethodSpecifier methodSpecifier, int parameterIndex)
@@ -418,7 +453,7 @@ namespace NetPrintsEditor.Reflection
                 return null;
             }
 
-            return DocumentationUtil.GetMethodParameterInfo(methodInfo.Parameters[parameterIndex]);
+            return documentationUtil.GetMethodParameterInfo(methodInfo.Parameters[parameterIndex]);
         }
 
         public string GetMethodReturnDocumentation(MethodSpecifier methodSpecifier, int returnIndex)
@@ -430,7 +465,7 @@ namespace NetPrintsEditor.Reflection
                 return null;
             }
 
-            return DocumentationUtil.GetMethodReturnInfo(methodInfo);
+            return documentationUtil.GetMethodReturnInfo(methodInfo);
         }
 
         #endregion

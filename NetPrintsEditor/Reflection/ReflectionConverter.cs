@@ -15,7 +15,7 @@ namespace NetPrintsEditor.Reflection
 
             if (type is IArrayTypeSymbol arrayType)
             {
-                typeName = "System.Array";
+                typeName = typeof(Array).FullName;
             }
             else
             {
@@ -46,7 +46,7 @@ namespace NetPrintsEditor.Reflection
                     }
                     else
                     {
-                        typeSpecifier.GenericArguments.Add(TypeSpecifierFromSymbol(genType as INamedTypeSymbol));
+                        typeSpecifier.GenericArguments.Add(TypeSpecifierFromSymbol(genType));
                     }
                 }
             }
