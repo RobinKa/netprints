@@ -1,15 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Host;
-using Microsoft.CSharp;
-using System;
-using System.CodeDom.Compiler;
+using Microsoft.CodeAnalysis.Emit;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Compilation
 {
@@ -27,9 +20,13 @@ namespace NetPrintsEditor.Compilation
                 .AddReferences(references)
                 .AddSyntaxTrees(syntaxTrees);
 
-            var emitResult = compilation.Emit(outputPath);
+            EmitResult emitResult = compilation.Emit(outputPath);
 
-            return new CodeCompileResults(emitResult.Success, new List<string>(), outputPath);
+            IEnumerable<string> errors = emitResult.Diagnostics
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .Select(d => d.GetMessage());
+
+            return new CodeCompileResults(emitResult.Success, errors, outputPath);
         }
     }
 }
