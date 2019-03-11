@@ -146,10 +146,9 @@ namespace NetPrintsEditor.Controls
                         ));
                     }
                 }
-                // TODO
-                /*else if(item.DataContext is TypeSpecifier t)
+                else if(item.DataContext is TypeSpecifier t)
                 {
-                    if(t == typeof(ForLoopNode))
+                    if(t == TypeSpecifier.FromType<ForLoopNode>())
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -159,7 +158,7 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
-                    else if(t == typeof(IfElseNode))
+                    else if(t == TypeSpecifier.FromType<IfElseNode>())
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -169,7 +168,7 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
-                    else if(t == typeof(ConstructorNode))
+                    else if(t == TypeSpecifier.FromType<ConstructorNode>())
                     {
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
                         if(selectTypeDialog.ShowDialog() == true)
@@ -205,7 +204,7 @@ namespace NetPrintsEditor.Controls
                             }
                         }
                     }
-                }*/
+                }
             }
         }
 

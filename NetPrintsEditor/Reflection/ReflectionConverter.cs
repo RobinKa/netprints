@@ -143,8 +143,8 @@ namespace NetPrintsEditor.Reflection
         public static ConstructorSpecifier ConstructorSpecifierFromSymbol(IMethodSymbol constructorMethodSymbol)
         {
             return new ConstructorSpecifier(
-                constructorMethodSymbol.Parameters.Select(p => (TypeSpecifier)p.Type),
-                (TypeSpecifier)constructorMethodSymbol.ContainingType);
+                constructorMethodSymbol.Parameters.Select(p => TypeSpecifierFromSymbol(p.Type)),
+                TypeSpecifierFromSymbol(constructorMethodSymbol.ContainingType));
         }
     }
 }
