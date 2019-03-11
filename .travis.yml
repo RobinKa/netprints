@@ -8,3 +8,4 @@ script:
   - choco install dotnetcore-sdk --pre
   - dotnet --version
   - dotnet build NetPrints.sln -c Release
+  - dotnet test
