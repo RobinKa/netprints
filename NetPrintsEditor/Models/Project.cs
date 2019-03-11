@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Models
 {
+    /// <summary>
+    /// Project model.
+    /// </summary>
     [DataContract]
     public class Project
     {
@@ -21,6 +24,9 @@ namespace NetPrintsEditor.Models
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(typeof(Project));
 
+        /// <summary>
+        /// Name of the project.
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -28,6 +34,9 @@ namespace NetPrintsEditor.Models
             set;
         }
 
+        /// <summary>
+        /// Path to the last successfully compiled assembly.
+        /// </summary>
         [DataMember]
         public string LastCompiledAssemblyPath
         {
@@ -35,12 +44,18 @@ namespace NetPrintsEditor.Models
             set;
         }
 
+        /// <summary>
+        /// Path to the project file.
+        /// </summary>
         public string Path
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Default namespace of newly created classes.
+        /// </summary>
         [DataMember]
         public string DefaultNamespace
         {
@@ -48,6 +63,9 @@ namespace NetPrintsEditor.Models
             set;
         }
 
+        /// <summary>
+        /// Paths to files for the class models within this project.
+        /// </summary>
         [DataMember]
         public ObservableRangeCollection<string> ClassPaths
         {
@@ -55,6 +73,9 @@ namespace NetPrintsEditor.Models
             set;
         } = new ObservableRangeCollection<string>();
 
+        /// <summary>
+        /// Assemblies referenced by this project.
+        /// </summary>
         [DataMember]
         public ObservableRangeCollection<LocalAssemblyName> Assemblies
         {
@@ -67,6 +88,9 @@ namespace NetPrintsEditor.Models
 
         }
 
+        /// <summary>
+        /// Saves the project to its path.
+        /// </summary>
         public void Save()
         {
             using (FileStream fileStream = File.Open(Path, FileMode.Create))
@@ -75,6 +99,13 @@ namespace NetPrintsEditor.Models
             }
         }
 
+        /// <summary>
+        /// Creates a new project.
+        /// </summary>
+        /// <param name="name">Name of the project.</param>
+        /// <param name="defaultNamespace">Default namespace of the project.</param>
+        /// <param name="addDefaultAssemblies">Whether to add default assemblies to the project.</param>
+        /// <returns>The created project.</returns>
         public static Project CreateNew(string name, string defaultNamespace, bool addDefaultAssemblies=true)
         {
             Project project = new Project()
@@ -91,6 +122,11 @@ namespace NetPrintsEditor.Models
             return project;
         }
 
+        /// <summary>
+        /// Loads a project from a path.
+        /// </summary>
+        /// <param name="path">Path to the project file.</param>
+        /// <returns>Loaded project or null if unsuccessful</returns>
         public static Project LoadFromPath(string path)
         {
             using (FileStream fileStream = File.OpenRead(path))

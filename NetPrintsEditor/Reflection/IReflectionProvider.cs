@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Reflection
 {
+    /// <summary>
+    /// Interface for reflecting on types, methods etc.
+    /// </summary>
     public interface IReflectionProvider
     {
         bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b);

@@ -4,9 +4,15 @@ using System.Runtime.Serialization;
 
 namespace NetPrintsEditor.Compilation
 {
+    /// <summary>
+    /// Metadata for framework assemblies.
+    /// </summary>
     [DataContract]
     public class LocalFrameworkAssemblyName : LocalAssemblyName
     {
+        /// <summary>
+        /// Version of the framework.
+        /// </summary>
         [DataMember]
         public string FrameworkVersion
         {
@@ -14,6 +20,9 @@ namespace NetPrintsEditor.Compilation
             set;
         }
 
+        /// <summary>
+        /// Assembly name.
+        /// </summary>
         [DataMember]
         public string FrameworkAssemblyName
         {
@@ -33,6 +42,10 @@ namespace NetPrintsEditor.Compilation
             }
         }
 
+        /// <summary>
+        /// Tries to fix an assembly path.
+        /// </summary>
+        /// <returns>Whether the assembly path is now valid.</returns>
         public override bool FixPath()
         {
             Path = System.IO.Path.Combine(

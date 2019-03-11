@@ -6,8 +6,19 @@ using System.Linq;
 
 namespace NetPrintsEditor.Compilation
 {
+    /// <summary>
+    /// Compiles code into binaries.
+    /// </summary>
     public class CodeCompiler : ICodeCompiler
     {
+        /// <summary>
+        /// Compiles code into a binary.
+        /// </summary>
+        /// <param name="outputPath">Output path for the compilation.</param>
+        /// <param name="assemblyPaths">Paths to assemblies to reference.</param>
+        /// <param name="sources">Source code to compile.</param>
+        /// <param name="generateExecutable">Whether to generate an executable or a dynamically linked library.</param>
+        /// <returns>Results for the compilation.</returns>
         public CodeCompileResults CompileSources(string outputPath, IEnumerable<string> assemblyPaths,
             IEnumerable<string> sources, bool generateExecutable)
         {

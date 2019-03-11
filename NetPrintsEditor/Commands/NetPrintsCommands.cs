@@ -8,16 +8,54 @@ using System.Windows.Input;
 
 namespace NetPrintsEditor.Commands
 {
+    /// <summary>
+    /// Commands for modifying the NetPrints structures.
+    /// </summary>
     public static class NetPrintsCommands
     {
+        /// <summary>
+        /// Command for adding a method to a class.
+        /// </summary>
         public static readonly RoutedUICommand AddMethod = new RoutedUICommand(nameof(AddMethod), nameof(AddMethod), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for removing a method from a class.
+        /// </summary>
         public static readonly RoutedUICommand RemoveMethod = new RoutedUICommand(nameof(RemoveMethod), nameof(RemoveMethod), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for adding an attribute to a class.
+        /// </summary>
         public static readonly RoutedUICommand AddAttribute = new RoutedUICommand(nameof(AddAttribute), nameof(AddAttribute), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for removing an attribute from a class.
+        /// </summary>
         public static readonly RoutedUICommand RemoveAttribute = new RoutedUICommand(nameof(RemoveAttribute), nameof(RemoveAttribute), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for setting the position of a node.
+        /// </summary>
         public static readonly RoutedUICommand SetNodePosition = new RoutedUICommand(nameof(SetNodePosition), nameof(SetNodePosition), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for connecting two pins.
+        /// </summary>
         public static readonly RoutedUICommand ConnectPins = new RoutedUICommand(nameof(ConnectPins), nameof(ConnectPins), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command that does nothing. Currently used in undoing when no undo is implemented.
+        /// </summary>
         public static readonly RoutedUICommand DoNothing = new RoutedUICommand(nameof(DoNothing), nameof(DoNothing), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for adding a node to a method.
+        /// </summary>
         public static readonly RoutedUICommand AddNode = new RoutedUICommand(nameof(AddNode), nameof(AddNode), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for selecting a node within a method.
+        /// </summary>
         public static readonly RoutedUICommand SelectNode = new RoutedUICommand(nameof(SelectNode), nameof(SelectNode), typeof(NetPrintsCommands));
 
         public class SetNodePositionParameters

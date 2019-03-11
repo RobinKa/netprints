@@ -117,6 +117,11 @@ namespace NetPrintsEditor.Reflection
             return null;
         }
 
+        /// <summary>
+        /// Gets the summary text for a method.
+        /// </summary>
+        /// <param name="methodInfo">Method to get summary text for.</param>
+        /// <returns>Summary text for a method.</returns>
         public string GetMethodSummary(IMethodSymbol methodInfo)
         {
             string methodKey = GetMethodInfoKey(methodInfo);
@@ -144,6 +149,11 @@ namespace NetPrintsEditor.Reflection
             return documentation;
         }
 
+        /// <summary>
+        /// Gets the summary text of a method's parameter.
+        /// </summary>
+        /// <param name="parameterSymbol">Parameter to get the summary text for.</param>
+        /// <returns>Summary text of a method's parameter.</returns>
         public string GetMethodParameterInfo(IParameterSymbol parameterSymbol)
         {
             IMethodSymbol methodSymbol = (IMethodSymbol)parameterSymbol.ContainingSymbol;
@@ -181,6 +191,11 @@ namespace NetPrintsEditor.Reflection
             return documentation;
         }
 
+        /// <summary>
+        /// Gets a method's return information.
+        /// </summary>
+        /// <param name="methodSymbol">Method to get return information for.</param>
+        /// <returns>Return information for the method.</returns>
         public string GetMethodReturnInfo(IMethodSymbol methodSymbol)
         {
             string methodKey = GetMethodInfoKey(methodSymbol);

@@ -4,10 +4,16 @@ using System.Runtime.Serialization;
 
 namespace NetPrintsEditor.Compilation
 {
+    /// <summary>
+    /// Metadata for an assembly.
+    /// </summary>
     [DataContract]
     [KnownType(typeof(LocalFrameworkAssemblyName))]
     public class LocalAssemblyName
     {
+        /// <summary>
+        /// Name of the assembly.
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -15,6 +21,9 @@ namespace NetPrintsEditor.Compilation
             set;
         }
 
+        /// <summary>
+        /// Path to the assembly.
+        /// </summary>
         [DataMember]
         public string Path
         {
@@ -33,17 +42,20 @@ namespace NetPrintsEditor.Compilation
             return $"{Name} at {Path}";
         }
 
+        /// <summary>
+        /// Creates a LocalAssemblyName from a path.
+        /// </summary>
+        /// <param name="path">Path to the assembly.</param>
+        /// <returns>LocalAssemblyName for the given path.</returns>
         public static LocalAssemblyName FromPath(string path)
         {
             return new LocalAssemblyName(System.IO.Path.GetFileNameWithoutExtension(path), path);
         }
 
-        public static LocalAssemblyName FromName(string name)
-        {
-            Assembly assembly = Assembly.Load(name);
-            return new LocalAssemblyName(assembly.FullName, assembly.Location);
-        }
-
+        /// <summary>
+        /// Tries to fix an assembly path.
+        /// </summary>
+        /// <returns>Whether the assembly path is now valid.</returns>
         public virtual bool FixPath()
         {
             return System.IO.File.Exists(Path);
