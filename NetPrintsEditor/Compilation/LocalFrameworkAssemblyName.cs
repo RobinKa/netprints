@@ -33,23 +33,17 @@ namespace NetPrintsEditor.Compilation
             }
         }
 
-        public override Assembly LoadAssembly()
-        {
-            return Assembly.LoadFrom(Path);
-        }
-
         public override bool FixPath()
         {
             Path = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                "Reference Assemblies/Microsoft/Framework/.NETFramework",
+                "Reference Assemblies/Microsoft/Framework/",
                 FrameworkVersion,
                 $"{FrameworkAssemblyName}.dll");
 
-            Assembly assembly = Assembly.UnsafeLoadFrom(Path);
-            Name = assembly.FullName;
+            Name = System.IO.Path.GetFileNameWithoutExtension(Path);
 
-            return true;
+            return System.IO.File.Exists(Path);
         }
     }
 }

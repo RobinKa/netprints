@@ -1,7 +1,11 @@
-﻿using NetPrints.Core;
+﻿using Microsoft.CodeAnalysis;
+using NetPrints.Core;
 using NetPrintsEditor.Compilation;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Models
 {
@@ -10,9 +14,9 @@ namespace NetPrintsEditor.Models
     {
         private static readonly LocalAssemblyName[] DefaultAssemblies = new LocalAssemblyName[]
         {
-            new LocalFrameworkAssemblyName("System", "v4.0"),
-            new LocalFrameworkAssemblyName("System.Core", "v4.0"),
-            new LocalFrameworkAssemblyName("mscorlib", "v4.0"),
+            new LocalFrameworkAssemblyName("System", ".NETFramework/v4.0"),
+            new LocalFrameworkAssemblyName("System.Core", ".NETFramework/v4.0"),
+            new LocalFrameworkAssemblyName("mscorlib", ".NETFramework/v4.0"),
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(typeof(Project));
@@ -79,7 +83,7 @@ namespace NetPrintsEditor.Models
                 DefaultNamespace = defaultNamespace
             };
 
-            if(addDefaultAssemblies)
+            if (addDefaultAssemblies)
             {
                 project.Assemblies.AddRange(DefaultAssemblies);
             }
