@@ -184,7 +184,7 @@ namespace NetPrintsEditor.Controls
                             IEnumerable<ConstructorSpecifier> constructors = 
                                 ProjectVM.Instance.ReflectionProvider.GetConstructors(selectedType);
 
-                            if (constructors.Count() > 0)
+                            if (constructors != null && constructors.Count() > 0)
                             {
                                 // Just choose the first constructor we find
                                 ConstructorSpecifier constructorSpecifier = constructors.ElementAt(0);
