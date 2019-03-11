@@ -1,8 +1,15 @@
-language: csharp
-dotnet: 3.0.0
-sudo: false
 env:
     global:
         - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+addons:
+  snaps:
+  - name: dotnet-sdk
+    classic: true
+    channel: latest/beta
+sudo: required
+language: csharp
+mono: none
 script:
-    - dotnet build NetPrints.sln -c Release
+  - sudo snap alias dotnet-sdk.dotnet dotnet
+  - dotnet --version
+  - dotnet build NetPrints.sln -c Release
