@@ -46,6 +46,34 @@ namespace NetPrints.Core
             }
         }
 
+        /// <summary>
+        /// Creates a GenericType from a type. Type must be a generic argument.
+        /// </summary>
+        /// <typeparam name="T">Type to generate GenericType for.</typeparam>
+        /// <returns>GenericType for the passed type.</returns>
+        public static GenericType FromType<T>()
+        {
+            return FromType(typeof(T));
+        }
+
+        /// <summary>
+        /// Creates a GenericType from a type. Type must be a generic argument.
+        /// </summary>
+        /// <param name="type">Type to generate GenericType for.</param>
+        /// <returns>GenericType for the passed type.</returns>
+        public static GenericType FromType(Type type)
+        {
+            if (!type.IsGenericParameter)
+            {
+                throw new ArgumentException(nameof(type));
+            }
+
+            // TODO: Convert constraints
+            GenericType genericType = new GenericType(type.Name);
+
+            return genericType;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is TypeSpecifier t)

@@ -112,7 +112,35 @@ namespace NetPrints.Core
         /// <returns>TypeSpecifier for the given type.</returns>
         public static TypeSpecifier FromType(Type type)
         {
-            return new TypeSpecifier(type.FullName, type.IsSubclassOf(typeof(Enum)), type.IsInterface);
+            if (type.IsGenericParameter)
+            {
+                throw new ArgumentException(nameof(type));
+            }
+
+            string typeName = type.Name.Split('`').First();
+            if (!string.IsNullOrEmpty(type.Namespace))
+            {
+                typeName = type.Namespace + "." + typeName;
+            }
+
+            TypeSpecifier typeSpecifier = new TypeSpecifier(typeName,
+                type.IsSubclassOf(typeof(Enum)),
+                type.IsInterface);
+
+            foreach (Type genType in type.GetGenericArguments())
+            {
+                if (genType.IsGenericParameter)
+                {
+                    // TODO: Convert and add constraints
+                    typeSpecifier.GenericArguments.Add(GenericType.FromType(genType));
+                }
+                else
+                {
+                    typeSpecifier.GenericArguments.Add(TypeSpecifier.FromType(genType));
+                }
+            }
+
+            return typeSpecifier;
         }
         
         public override bool Equals(object obj)
