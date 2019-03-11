@@ -1,15 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28705.295
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrints", "NetPrints\NetPrints.csproj", "{9F33E024-E65F-4954-9DF2-A1A26D68C0AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrints", "NetPrints\NetPrints.csproj", "{9F33E024-E65F-4954-9DF2-A1A26D68C0AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsUnitTests", "NetPrintsUnitTests\NetPrintsUnitTests.csproj", "{B45C37E8-A539-48E1-B714-774DB8645F9B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsEditor", "NetPrintsEditor\NetPrintsEditor.csproj", "{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsEditorUnitTests", "NetPrintsEditorUnitTests\NetPrintsEditorUnitTests.csproj", "{B4288686-0B8A-453C-B654-4257F56BAB33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsEditor", "NetPrintsEditor\NetPrintsEditor.csproj", "{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,20 +17,15 @@ Global
 		{9F33E024-E65F-4954-9DF2-A1A26D68C0AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F33E024-E65F-4954-9DF2-A1A26D68C0AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F33E024-E65F-4954-9DF2-A1A26D68C0AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4288686-0B8A-453C-B654-4257F56BAB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4288686-0B8A-453C-B654-4257F56BAB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4288686-0B8A-453C-B654-4257F56BAB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4288686-0B8A-453C-B654-4257F56BAB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {485EEF88-FD6B-41D8-834D-3056F6936722}
 	EndGlobalSection
 EndGlobal
