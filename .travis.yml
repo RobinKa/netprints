@@ -1,16 +1,10 @@
-dist: xenial
+os: windows
 env:
     global:
         - DOTNET_CLI_TELEMETRY_OPTOUT: 1
-addons:
-  snaps:
-  - name: dotnet-sdk
-    classic: true
-    channel: latest/beta
-sudo: required
 language: csharp
 mono: none
 script:
-  - sudo snap alias dotnet-sdk.dotnet dotnet
+  - choco install dotnetcore-sdk --pre
   - dotnet --version
   - dotnet build NetPrints.sln -c Release
