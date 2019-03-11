@@ -1,3 +1,4 @@
+dist: xenial
 env:
     global:
         - DOTNET_CLI_TELEMETRY_OPTOUT: 1
