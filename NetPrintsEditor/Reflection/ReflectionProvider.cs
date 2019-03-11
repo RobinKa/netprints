@@ -82,7 +82,7 @@ namespace NetPrintsEditor.Reflection
 
         private IEnumerable<INamedTypeSymbol> GetValidTypes()
         {
-            return compilation.SourceModule.ReferencedAssemblySymbols.AsParallel().SelectMany(module =>
+            return compilation.SourceModule.ReferencedAssemblySymbols.SelectMany(module =>
                 module.GlobalNamespace.GetMembers()
                     .Where(member => member.IsNamespace)
                     .SelectMany(member => member.GetTypeMembers()));
@@ -90,7 +90,7 @@ namespace NetPrintsEditor.Reflection
 
         private IEnumerable<INamedTypeSymbol> GetValidTypes(string name)
         {
-            return compilation.SourceModule.ReferencedAssemblySymbols.AsParallel().Select(module =>
+            return compilation.SourceModule.ReferencedAssemblySymbols.Select(module =>
             {
                 try { return module.GetTypeByMetadataName(name); }
                 catch { return null; }
