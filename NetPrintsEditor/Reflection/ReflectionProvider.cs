@@ -179,7 +179,10 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier).MemberNames;
+            var members = GetTypeFromSpecifier(typeSpecifier).GetMembers().ToList();
+            return GetTypeFromSpecifier(typeSpecifier).GetMembers()
+                .Where(member => member.Kind == SymbolKind.Field)
+                .Select(member => member.Name);
         }
         
         public bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b)
