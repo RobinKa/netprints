@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Constraint on generic types.
+    /// </summary>
     [Serializable]
     [DataContract]
     public class GenericTypeConstraint
@@ -14,10 +17,16 @@ namespace NetPrints.Core
         
     }
 
+    /// <summary>
+    /// An unbound generic type.
+    /// </summary>
     [DataContract]
     [Serializable]
     public class GenericType : BaseType
     {
+        /// <summary>
+        /// Constraints for this generic type.
+        /// </summary>
         public ObservableRangeCollection<GenericTypeConstraint> Constraints
         {
             get;

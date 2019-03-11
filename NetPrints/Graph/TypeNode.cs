@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
+    /// <summary>
+    /// Node describing a type.
+    /// </summary>
     [DataContract]
     public class TypeNode
     {

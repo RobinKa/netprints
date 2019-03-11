@@ -8,6 +8,9 @@ using System.Text;
 
 namespace NetPrints.Translator
 {
+    /// <summary>
+    /// Translates methods into C#.
+    /// </summary>
     public class MethodTranslator
     {
         private const string JumpStackVarName = "jumpStack";
@@ -242,6 +245,11 @@ namespace NetPrints.Translator
             builder.AppendLine("}"); // End switch
         }
 
+        /// <summary>
+        /// Translates a method to C#.
+        /// </summary>
+        /// <param name="method">Method to translate.</param>
+        /// <returns>C# code for the method.</returns>
         public string Translate(Method method)
         {
             this.method = method;

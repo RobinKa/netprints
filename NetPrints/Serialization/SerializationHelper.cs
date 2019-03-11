@@ -12,6 +12,11 @@ namespace NetPrints.Serialization
             MaxItemsInObjectGraph = int.MaxValue,
         });
 
+        /// <summary>
+        /// Saves a class to a path. The class can be loaded again using LoadClass.
+        /// </summary>
+        /// <param name="cls">Class to save.</param>
+        /// <param name="outputPath">Path to save the class at.</param>
         public static void SaveClass(Class cls, string outputPath)
         {
             using (FileStream fileStream = File.Open(outputPath, FileMode.Create))
@@ -20,6 +25,10 @@ namespace NetPrints.Serialization
             }
         }
 
+        /// <summary>
+        /// Loads a class from a path.
+        /// </summary>
+        /// <param name="outputPath">Path to load the class from. Throws a FileLoadException if the read object was not a class.</param>
         public static Class LoadClass(string path)
         {
             using (FileStream fileStream = File.OpenRead(path))
@@ -30,7 +39,7 @@ namespace NetPrints.Serialization
                 }
             }
 
-            return null;
+            throw new FileLoadException();
         }
     }
 }

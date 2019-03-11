@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Modifiers variables can have. Can be combined.
+    /// </summary>
     [Flags]
     public enum VariableModifiers
     {
@@ -16,9 +19,15 @@ namespace NetPrints.Core
         New = 64,
     }
 
+    /// <summary>
+    /// Variable type. Contains common things for variables such as their type and their name.
+    /// </summary>
     [DataContract]
     public class Variable
     {
+        /// <summary>
+        /// Specifier for the type of this variable.
+        /// </summary>
         [DataMember]
         public TypeSpecifier VariableType
         {
@@ -26,6 +35,9 @@ namespace NetPrints.Core
             set;
         }
 
+        /// <summary>
+        /// Name of this variable without any prefixes.
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -33,6 +45,9 @@ namespace NetPrints.Core
             set;
         }
 
+        /// <summary>
+        /// Modifiers for this variable.
+        /// </summary>
         [DataMember]
         public VariableModifiers Modifiers
         {
@@ -40,6 +55,11 @@ namespace NetPrints.Core
             set;
         } = VariableModifiers.Private;
 
+        /// <summary>
+        /// Creates a variable.
+        /// </summary>
+        /// <param name="name">Name of the variable.</param>
+        /// <param name="variableType">Specifier for the type of the variable.</param>
         public Variable(string name, TypeSpecifier variableType)
         {
             Name = name;

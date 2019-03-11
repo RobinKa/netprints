@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Specifier describing "real" types (not purely unbound generic).
+    /// </summary>
     [DataContract]
     [Serializable]
     public class TypeSpecifier : BaseType
     {
+        /// <summary>
+        /// Whether this type is an enum.
+        /// </summary>
         [DataMember]
         public bool IsEnum
         {
@@ -18,6 +24,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Whether this type is an interface.
+        /// </summary>
         [DataMember]
         public bool IsInterface
         {
@@ -25,6 +34,9 @@ namespace NetPrints.Core
             private set;
         }
         
+        /// <summary>
+        /// Generic arguments this type takes.
+        /// </summary>
         [DataMember]
         public ObservableRangeCollection<BaseType> GenericArguments
         {
@@ -32,6 +44,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Short name of the type (ie. name without namespace).
+        /// </summary>
         public override string ShortName
         {
             get
@@ -40,6 +55,9 @@ namespace NetPrints.Core
             }
         }
 
+        /// <summary>
+        /// Whether this type is a primitive type (eg. int, bool, float, Enum, ...).
+        /// </summary>
         public bool IsPrimitive
         {
             get
@@ -54,6 +72,13 @@ namespace NetPrints.Core
             }
         }
         
+        /// <summary>
+        /// Creates a TypeSpecifier describing a type.
+        /// </summary>
+        /// <param name="typeName">Full name of the type including the namespace (ie. Namespace.TypeName).</param>
+        /// <param name="isEnum">Whether the type is an enum.</param>
+        /// <param name="isInterface">Whether the type is an interface.</param>
+        /// <param name="genericArguments">Generic arguments the type takes.</param>
         public TypeSpecifier(string typeName, bool isEnum=false, bool isInterface=false, IList<BaseType> genericArguments=null)
             : base(typeName)
         {
@@ -70,11 +95,21 @@ namespace NetPrints.Core
             }
         }
 
+        /// <summary>
+        /// Creates a TypeSpecifier for a given type.
+        /// </summary>
+        /// <typeparam name="T">Type to create a TypeSpecifier for.</typeparam>
+        /// <returns>TypeSpecifier for the given type.</returns>
         public static TypeSpecifier FromType<T>()
         {
             return FromType(typeof(T));
         }
 
+        /// <summary>
+        /// Creates a TypeSpecifier for a given type.
+        /// </summary>
+        /// <param name="type">Type to create a TypeSpecifier for.</param>
+        /// <returns>TypeSpecifier for the given type.</returns>
         public static TypeSpecifier FromType(Type type)
         {
             return new TypeSpecifier(type.FullName, type.IsSubclassOf(typeof(Enum)), type.IsInterface);
@@ -105,6 +140,11 @@ namespace NetPrints.Core
             return false;
         }
 
+        /// <summary>
+        /// Returns whether the generic arguments for this type and a given type match.
+        /// </summary>
+        /// <param name="t">Specifier for the type to check.</param>
+        /// <returns>Whether the generic arguments for the types match.</returns>
         public bool GenericArgumentsEqual(TypeSpecifier t)
         {
             return GenericArguments.SequenceEqual(t.GenericArguments);

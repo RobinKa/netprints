@@ -4,6 +4,9 @@ using System.Text;
 
 namespace NetPrints.Translator
 {
+    /// <summary>
+    /// Class for translating a class into C#.
+    /// </summary>
     public class ClassTranslator
     {
         private const string CLASS_TEMPLATE =
@@ -24,6 +27,11 @@ namespace NetPrints.Translator
 
         }
 
+        /// <summary>
+        /// Translates a class into C#.
+        /// </summary>
+        /// <param name="c">Class to translate.</param>
+        /// <returns>C# code for the class.</returns>
         public string TranslateClass(Class c)
         {
             StringBuilder content = new StringBuilder();
@@ -75,6 +83,11 @@ namespace NetPrints.Translator
                 .Replace("%Content%", content.ToString());
         }
 
+        /// <summary>
+        /// Translates a variable into C#.
+        /// </summary>
+        /// <param name="variable">Variable to translate.</param>
+        /// <returns>C# code for the variable.</returns>
         public string TranslateVariable(Variable variable)
         {
             StringBuilder modifiers = new StringBuilder();
@@ -118,6 +131,11 @@ namespace NetPrints.Translator
                 .Replace("%VariableName%", variable.Name);
         }
 
+        /// <summary>
+        /// Translates a method to C#.
+        /// </summary>
+        /// <param name="m">Method to translate.</param>
+        /// <returns>C# code for the method.</returns>
         public string TranslateMethod(Method m)
         {
             return methodTranslator.Translate(m);

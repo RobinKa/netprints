@@ -12,9 +12,15 @@ namespace NetPrints.Graph
     public delegate void TypeNodeIncomingNodeChanged(
         NodeInputTypePin pin, TypeNode oldNode, TypeNode newNode);
 
+    /// <summary>
+    /// Pin which can receive types.
+    /// </summary>
     [DataContract]
     public class NodeInputTypePin
     {
+        /// <summary>
+        /// Constraints for the type.
+        /// </summary>
         [DataMember]
         public NodeTypeConstraints Constraints
         {

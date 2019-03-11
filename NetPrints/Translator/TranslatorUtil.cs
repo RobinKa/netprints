@@ -16,6 +16,10 @@ namespace NetPrints.Translator
 
         private const int TemporaryVariableNameLength = 16;
 
+        /// <summary>
+        /// Gets a temporary variable name.
+        /// </summary>
+        /// <returns>Temporary variable name.</returns>
         public static string GetTemporaryVariableName()
         {
             const string chars = "abcdefghijklmnopqrstuvwxyz";
@@ -32,6 +36,12 @@ namespace NetPrints.Translator
             return name;
         }
         
+        /// <summary>
+        /// Translates an object into a literal value (eg. a float 32.32 -> "32.32f")
+        /// </summary>
+        /// <param name="obj">Object value to translate.</param>
+        /// <param name="type">Specifier for the type of the literal.</param>
+        /// <returns></returns>
         public static string ObjectToLiteral(object obj, TypeSpecifier type)
         {
             // Interpret object string as enum field
@@ -79,6 +89,14 @@ namespace NetPrints.Translator
             }
         }
 
+        /// <summary>
+        /// Returns the first name not already contained in a list of names by
+        /// trying to generate a unique name based on the given name.
+        /// Includes a prefix in front of the name.
+        /// </summary>
+        /// <param name="name">Name to make unique.</param>
+        /// <param name="names">List of names already existing.</param>
+        /// <returns>Name based on name but not contained in names.</returns>
         public static string GetUniqueVariableName(string name, IList<string> names)
         {
             int i = 1;
@@ -117,6 +135,11 @@ namespace NetPrints.Translator
             }
         }
 
+        /// <summary>
+        /// Gets all nodes contained in a method.
+        /// </summary>
+        /// <param name="method">Method containing the nodes.</param>
+        /// <returns>Nodes contained in the method.</returns>
         public static IEnumerable<Node> GetAllNodesInMethod(Method method)
         {
             HashSet<Node> nodes = new HashSet<Node>();
@@ -139,6 +162,11 @@ namespace NetPrints.Translator
             }
         }
 
+        /// <summary>
+        /// Gets all execution contained nodes in a method
+        /// </summary>
+        /// <param name="method">Method containing the execution nodes.</param>
+        /// <returns>Execution nodes contained in them ethod.</returns>
         public static IEnumerable<Node> GetExecNodesInMethod(Method method)
         {
             HashSet<Node> nodes = new HashSet<Node>();
@@ -165,6 +193,11 @@ namespace NetPrints.Translator
             }
         }
 
+        /// <summary>
+        /// Gets all pure nodes a node depends on.
+        /// </summary>
+        /// <param name="node">Node whose dependent pure nodes to get.</param>
+        /// <returns>Pure nodes the node depends on.</returns>
         public static IEnumerable<Node> GetDependentPureNodes(Node node)
         {
             HashSet<Node> nodes = new HashSet<Node>();
@@ -174,6 +207,11 @@ namespace NetPrints.Translator
             return nodes;
         }
 
+        /// <summary>
+        /// Gets all pure nodes a node depends on sorted by depth.
+        /// </summary>
+        /// <param name="node">Node whose dependent pure nodes to get.</param>
+        /// <returns>Pure nodes the node depends on sorted by depth.</returns>
         public static IEnumerable<Node> GetSortedPureNodes(Node node)
         {
             var dependentNodes = GetDependentPureNodes(node);

@@ -2,6 +2,9 @@
 
 namespace NetPrints.Graph
 {
+    /// <summary>
+    /// Abstract base class for node pins.
+    /// </summary>
     [DataContract]
     [KnownType(typeof(NodeInputDataPin))]
     [KnownType(typeof(NodeOutputDataPin))]
@@ -9,6 +12,9 @@ namespace NetPrints.Graph
     [KnownType(typeof(NodeOutputExecPin))]
     public abstract class NodePin
     {
+        /// <summary>
+        /// Name of the pin.
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -16,6 +22,9 @@ namespace NetPrints.Graph
             set;
         }
 
+        /// <summary>
+        /// Node this pin is contained in.
+        /// </summary>
         [DataMember]
         public Node Node
         {

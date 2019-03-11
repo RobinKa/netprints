@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Abstract specifier describing types.
+    /// </summary>
     [Serializable]
     [DataContract]
     [KnownType(typeof(TypeSpecifier))]
     [KnownType(typeof(GenericType))]
     public abstract class BaseType
     {
+        /// <summary>
+        /// Full name of the type (ie. Namespace.TypeName).
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -20,6 +26,9 @@ namespace NetPrints.Core
             private set;
         }
         
+        /// <summary>
+        /// Short name of the type (ie. without namespace).
+        /// </summary>
         public virtual string ShortName
         {
             get => Name;
