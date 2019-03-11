@@ -163,12 +163,10 @@ namespace NetPrintsEditor.Reflection
                     t.GetMethods()
                     .Where(m => 
                         m.IsStatic && m.IsPublic() &&
-                        //m.Parameters.All(p =>) &&
-                        //!m.ReturnType.IsGenericParameter &&
+                        m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
+                        m.ReturnType.TypeKind != TypeKind.TypeParameter &&
                         !m.IsGenericMethod &&
                         !m.ContainingType.IsUnboundGenericType)
-                        //!m.IsGenericMethodDefinition &&
-                        //!m.DeclaringType.ContainsGenericParameters)
                     .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
         }
         
