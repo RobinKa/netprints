@@ -27,7 +27,7 @@ namespace NetPrints.Tests
 
             List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
-                typeof(Func<int, string, float>)
+                TypeSpecifier.FromType<Func<int, string, float>>(),
             };
 
             // Create method
@@ -40,10 +40,10 @@ namespace NetPrints.Tests
             delegateMethod.ReturnTypes.AddRange(returnTypes);
 
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
-                new BaseType[] { typeof(int), typeof(string) },
-                new BaseType[] { typeof(float) },
+                new BaseType[] { TypeSpecifier.FromType<int>(), TypeSpecifier.FromType<string>() },
+                new BaseType[] { TypeSpecifier.FromType<float>() },
                 MethodModifiers.Static,
-                typeof(double),
+                TypeSpecifier.FromType<double>(),
                 Array.Empty<BaseType>());
 
             // Create nodes

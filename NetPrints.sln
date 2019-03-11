@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrints", "NetPrints\NetP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsEditor", "NetPrintsEditor\NetPrintsEditor.csproj", "{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsUnitTests", "NetPrintsUnitTests\NetPrintsUnitTests.csproj", "{B45C37E8-A539-48E1-B714-774DB8645F9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsEditorUnitTests", "NetPrintsEditorUnitTests\NetPrintsEditorUnitTests.csproj", "{B4288686-0B8A-453C-B654-4257F56BAB33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45C37E8-A539-48E1-B714-774DB8645F9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4288686-0B8A-453C-B654-4257F56BAB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4288686-0B8A-453C-B654-4257F56BAB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4288686-0B8A-453C-B654-4257F56BAB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4288686-0B8A-453C-B654-4257F56BAB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

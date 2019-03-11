@@ -25,7 +25,7 @@ namespace NetPrintsUnitTests
             openClass.Namespace = "Namespace";
             openClass.DeclaredGenericArguments.Add(genericClassArg);
 
-            TypeSpecifier listType = typeof(List<>);
+            TypeSpecifier listType = TypeSpecifier.FromType(typeof(List<>));
 
             Assert.AreEqual(listType.GenericArguments.Count, 1);
 
@@ -43,7 +43,7 @@ namespace NetPrintsUnitTests
             closedClass.Name = "ClosedClass";
             closedClass.Namespace = "Namespace";
 
-            TypeSpecifier closedListType = typeof(List<string>);
+            TypeSpecifier closedListType = TypeSpecifier.FromType<string>();
 
             Method closedMethod = new Method("ClosedMethod");
             closedMethod.ArgumentTypes.Add(closedListType);
