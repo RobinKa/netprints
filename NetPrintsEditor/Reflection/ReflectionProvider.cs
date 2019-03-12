@@ -30,8 +30,21 @@ namespace NetPrintsEditor.Reflection
 
         public static bool IsSubclassOf(this ITypeSymbol symbol, ITypeSymbol cls)
         {
-            // TODO: Traverse base types
-            return cls?.BaseType == symbol;
+            // Traverse base types to find out if symbol inherits from cls
+
+            ITypeSymbol candidateBaseType = symbol;
+
+            while (candidateBaseType != null)
+            {
+                if (candidateBaseType == cls)
+                {
+                    return true;
+                }
+
+                candidateBaseType = candidateBaseType.BaseType;
+            }
+
+            return false;
         }
 
         public static string GetFullName(this ITypeSymbol typeSymbol)
