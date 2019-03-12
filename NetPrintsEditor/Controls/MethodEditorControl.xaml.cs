@@ -177,30 +177,34 @@ namespace NetPrintsEditor.Controls
                 {
                     pin.ConnectedPin = null;
 
-                    Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
-                        GetPublicMethodsForType(Method.Class.SuperType))
-                    {
+                    IEnumerable<object> builtIn = new List<object>() {
                         TypeSpecifier.FromType<ForLoopNode>(),
                         TypeSpecifier.FromType<IfElseNode>(),
                         TypeSpecifier.FromType<ConstructorNode>(),
                     };
+
+                    Suggestions = new ObservableRangeCollection<object>(builtIn
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
                 {
-                    Suggestions = new ObservableRangeCollection<object>(
-                        ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
-                    {
+                    IEnumerable<object> builtIn = new List<object>() {
                         TypeSpecifier.FromType<ForLoopNode>(),
                         TypeSpecifier.FromType<IfElseNode>(),
                         TypeSpecifier.FromType<ConstructorNode>(),
                     };
+
+                    Suggestions = new ObservableRangeCollection<object>(builtIn
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
                 }
                 else
                 {
                     // Unknown type, no suggestions
                     Suggestions = new ObservableRangeCollection<object>();
                 }
-                
+
                 // Open the context menu
                 grid.ContextMenu.PlacementTarget = grid;
                 grid.ContextMenu.IsOpen = true;
@@ -261,13 +265,14 @@ namespace NetPrintsEditor.Controls
         {
             if (Method != null)
             {
-                Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
-                    GetStaticFunctions())
-                {
+                IEnumerable<object> builtIn = new List<object>() {
                     TypeSpecifier.FromType<ForLoopNode>(),
                     TypeSpecifier.FromType<IfElseNode>(),
                     TypeSpecifier.FromType<ConstructorNode>(),
                 };
+
+                Suggestions = new ObservableRangeCollection<object>(builtIn.Concat(
+                    ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
             }
             else
             {
