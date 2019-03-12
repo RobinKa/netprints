@@ -122,7 +122,11 @@ namespace NetPrintsEditor.Reflection
                 // ignore those with generic parameters since we cant set those yet
 
                 return type.GetMethods()
-                    .Where(m => m.IsPublic() && !m.IsStatic && !m.IsGenericMethod)
+                    .Where(m => 
+                        m.IsPublic() &&
+                        !m.IsStatic &&
+                        !m.IsGenericMethod &&
+                        m.MethodKind == MethodKind.Ordinary)
                     .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
             }
             else
@@ -141,7 +145,11 @@ namespace NetPrintsEditor.Reflection
                 // ignore those with generic parameters since we cant set those yet
 
                 return type.GetMethods()
-                    .Where(m => m.IsPublic() && !m.IsStatic && !m.IsGenericMethod)
+                    .Where(m => 
+                        m.IsPublic() &&
+                        !m.IsStatic &&
+                        !m.IsGenericMethod &&
+                        m.MethodKind == MethodKind.Ordinary)
                     .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
             }
             else
