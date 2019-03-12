@@ -3,6 +3,7 @@ using NetPrints.Graph;
 using NetPrints.Serialization;
 using NetPrints.Translator;
 using NetPrintsEditor.Commands;
+using NetPrintsEditor.Controls;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.CodeDom.Compiler;
@@ -263,6 +264,19 @@ namespace NetPrintsEditor
                 method.SelectedNode = node;
             }
         }
+
+        // Open Variable Get / Set
+
+        private void CommandOpenVariableGetSet_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableGetSetInfo;
+        }
+
+        private void CommandOpenVariableGetSet_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            methodEditor.ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
+        }
+
         #endregion
 
         #region Standard Commands
