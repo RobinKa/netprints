@@ -52,8 +52,6 @@ namespace NetPrintsEditor.Reflection
 
         public ReflectionProvider(IEnumerable<string> assemblyPaths)
         {
-            //assemblyPaths = new List<string>() { typeof(object).Assembly.Location };
-
             compilation = CSharpCompilation.Create("C")
                 .AddReferences(assemblyPaths.Select(path =>
                 {
@@ -80,12 +78,16 @@ namespace NetPrintsEditor.Reflection
             documentationUtil = new DocumentationUtil(compilation);
         }
 
+        private IEnumerable<INamedTypeSymbol> GetNamespaceTypes(INamespaceSymbol namespaceSymbol)
+        {
+            IEnumerable<INamedTypeSymbol> types = namespaceSymbol.GetTypeMembers();
+            return types.Concat(namespaceSymbol.GetNamespaceMembers().SelectMany(ns => GetNamespaceTypes(ns)));
+        }
+
         private IEnumerable<INamedTypeSymbol> GetValidTypes()
         {
             return compilation.SourceModule.ReferencedAssemblySymbols.SelectMany(module =>
-                module.GlobalNamespace.GetMembers()
-                    .Where(member => member.IsNamespace)
-                    .SelectMany(member => member.GetTypeMembers()));
+                GetNamespaceTypes(module.GlobalNamespace));
         }
 
         private IEnumerable<INamedTypeSymbol> GetValidTypes(string name)
@@ -177,7 +179,6 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
         {
-            var members = GetTypeFromSpecifier(typeSpecifier).GetMembers().ToList();
             return GetTypeFromSpecifier(typeSpecifier).GetMembers()
                 .Where(member => member.Kind == SymbolKind.Field)
                 .Select(member => member.Name);
@@ -193,8 +194,11 @@ namespace NetPrintsEditor.Reflection
 
         private INamedTypeSymbol GetTypeFromSpecifier(TypeSpecifier specifier)
         {
-            IEnumerable<INamedTypeSymbol> types = GetValidTypes(specifier.Name, specifier.GenericArguments.Count);
-            List<INamedTypeSymbol> types2 = GetValidTypes(specifier.Name.Split(".")[1]).ToList();
+            string lookupName = specifier.Name;
+            if (specifier.GenericArguments.Count > 0)
+                lookupName += $"`{specifier.GenericArguments.Count}";
+
+            IEnumerable<INamedTypeSymbol> types = GetValidTypes(lookupName);
 
             foreach (INamedTypeSymbol t in types)
             {
