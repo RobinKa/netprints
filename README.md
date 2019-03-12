@@ -24,10 +24,10 @@ Any .NET binaries can be used with this editor. The recommended way to add new a
 ![](http://i.imgur.com/OnjPw36.png)
 
 ## Suggestions
-![](https://cdn.discordapp.com/attachments/132156376792170496/292695521754087426/unknown.png)
+![](https://i.imgur.com/ZuStkEJ.png)
 
-## Control Flow
-![](http://i.imgur.com/aWfEhvq.png)
+## Overloads & Control Flow
+![](https://i.imgur.com/ZADmF3t.png)
 
 ## Delegates
 ![](http://i.imgur.com/9GjrV49.png)
