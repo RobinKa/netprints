@@ -121,8 +121,10 @@ namespace NetPrintsEditor.Reflection
         public IEnumerable<TypeSpecifier> GetNonStaticTypes()
         {
             return GetValidTypes().Where(
-                t => t.IsPublic() && !(t.IsAbstract && t.IsSealed)).
-                Select(t => ReflectionConverter.TypeSpecifierFromSymbol(t)).ToList();
+                    t => t.IsPublic() && !(t.IsAbstract && t.IsSealed))
+                .OrderBy(t => t.ContainingNamespace?.Name)
+                .ThenBy(t => t.Name)
+                .Select(t => ReflectionConverter.TypeSpecifierFromSymbol(t));
         }
 
         public IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier)
@@ -140,6 +142,9 @@ namespace NetPrintsEditor.Reflection
                         !m.IsStatic &&
                         !m.IsGenericMethod &&
                         m.MethodKind == MethodKind.Ordinary)
+                    .OrderBy(m => m.ContainingNamespace?.Name)
+                    .ThenBy(m => m.ContainingType?.Name)
+                    .ThenBy(m => m.Name)
                     .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
             }
             else
@@ -163,6 +168,9 @@ namespace NetPrintsEditor.Reflection
                         !m.IsStatic &&
                         !m.IsGenericMethod &&
                         m.MethodKind == MethodKind.Ordinary)
+                    .OrderBy(m => m.ContainingNamespace?.Name)
+                    .ThenBy(m => m.ContainingType?.Name)
+                    .ThenBy(m => m.Name)
                     .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
             }
             else
@@ -177,6 +185,9 @@ namespace NetPrintsEditor.Reflection
                 .GetMembers()
                 .Where(m => m.Kind == SymbolKind.Property)
                 .Cast<IPropertySymbol>()
+                .OrderBy(p => p.ContainingNamespace?.Name)
+                .ThenBy(p => p.ContainingType?.Name)
+                .ThenBy(p => p.Name)
                 .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p));
         }
 
@@ -190,6 +201,9 @@ namespace NetPrintsEditor.Reflection
                         m.ReturnType.TypeKind != TypeKind.TypeParameter &&
                         !m.IsGenericMethod &&
                         !m.ContainingType.IsUnboundGenericType)
+                    .OrderBy(m => m.ContainingNamespace?.Name)
+                    .ThenBy(m => m.ContainingType?.Name)
+                    .ThenBy(m => m.Name)
                     .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
         }
         
@@ -262,7 +276,10 @@ namespace NetPrintsEditor.Reflection
                         .SelectMany(t =>
                             t.GetMethods()
                             .Where(m => m.IsPublic() && m.IsStatic)
-                            .Where(m => !m.ContainingType.IsUnboundGenericType));
+                            .Where(m => !m.ContainingType.IsUnboundGenericType))
+                        .OrderBy(m => m.ContainingNamespace?.Name)
+                        .ThenBy(m => m.ContainingType?.Name)
+                        .ThenBy(m => m.Name);
 
             INamedTypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
 
@@ -304,7 +321,10 @@ namespace NetPrintsEditor.Reflection
                         .Where(t => t.IsPublic())
                         .SelectMany(t =>
                             t.GetMethods()
-                            .Where(m => m.IsPublic() && m.IsStatic && !m.ContainingType.IsUnboundGenericType));
+                            .Where(m => m.IsPublic() && m.IsStatic && !m.ContainingType.IsUnboundGenericType))
+                        .OrderBy(m => m?.ContainingNamespace.Name)
+                        .ThenBy(m => m?.ContainingType.Name)
+                        .ThenBy(m => m.Name);
 
             INamedTypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
 
