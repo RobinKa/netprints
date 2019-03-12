@@ -5,11 +5,21 @@ namespace NetPrints.Graph
     public delegate void OutputExecPinOutgoingPinChangedDelegate(
         NodeOutputExecPin pin, NodeInputExecPin oldPin, NodeInputExecPin newPin);
 
+    /// <summary>
+    /// Pin which can be connected to an input execution pin to pass along execution.
+    /// </summary>
     [DataContract]
     public class NodeOutputExecPin : NodeExecPin
     {
+        /// <summary>
+        /// Called when the connected outgoing pin changed.
+        /// </summary>
         public event OutputExecPinOutgoingPinChangedDelegate OutgoingPinChanged;
 
+        /// <summary>
+        /// Connected input execution pin. Null if not connected.
+        /// Can trigger OutgoingPinChanged when set.
+        /// </summary>
         [DataMember]
         public NodeInputExecPin OutgoingPin
         {

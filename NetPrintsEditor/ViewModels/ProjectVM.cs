@@ -3,7 +3,6 @@ using NetPrints.Core;
 using NetPrints.Serialization;
 using NetPrints.Translator;
 using NetPrintsEditor.Compilation;
-using NetPrintsEditor.Interop;
 using NetPrintsEditor.Models;
 using NetPrintsEditor.Reflection;
 using System;
@@ -248,9 +247,9 @@ namespace NetPrintsEditor.ViewModels
 
         private Project project;
 
-        public IReflectionProvider ReflectionProvider
+        public ReflectionProvider ReflectionProvider
         {
-            get => reflectionProviderWrapper.Object;
+            get => reflectionProviderWrapper;
         }
 
         public ObservableRangeCollection<TypeSpecifier> NonStaticTypes
@@ -258,7 +257,7 @@ namespace NetPrintsEditor.ViewModels
             get;
         } = new ObservableRangeCollection<TypeSpecifier>();
 
-        private AppDomainObject<WrappedReflectionProvider> reflectionProviderWrapper;
+        private ReflectionProvider reflectionProviderWrapper;
 
         public ProjectVM(Project project)
         {
@@ -280,7 +279,6 @@ namespace NetPrintsEditor.ViewModels
             //  Unload the app domain of the previous assembly
             if (reflectionProviderWrapper != null)
             {
-                reflectionProviderWrapper.Unload();
                 reflectionProviderWrapper = null;
                 GC.Collect();
             }
@@ -318,13 +316,10 @@ namespace NetPrintsEditor.ViewModels
 
                 // Create compiler on other app domain, compile, unload the app domain
 
-                AppDomainObject<WrappedCodeCompiler> codeCompilerWrapper = 
-                    AppDomainHelper.Create<WrappedCodeCompiler>();
+                var codeCompiler = new Compilation.CodeCompiler();
                 
-                CodeCompileResults results = codeCompilerWrapper.Object.CompileSources(
+                CodeCompileResults results = codeCompiler.CompileSources(
                     outputPath, Assemblies.Select(a => a.Path).ToArray(), sources, generateExecutable);
-
-                codeCompilerWrapper.Unload();
 
                 // Write errors to file
 
@@ -357,13 +352,6 @@ namespace NetPrintsEditor.ViewModels
 
         private void ReloadReflectionProvider()
         {
-            //  Unload the app domain of the previous assembly
-            if (reflectionProviderWrapper != null)
-            {
-                reflectionProviderWrapper.Unload();
-                reflectionProviderWrapper = null;
-            }
-
             // Load newly compiled assembly and referenced assemblies
             List<string> assembliesToReflectOn = Assemblies.Select(a => a.Path).ToList();
             if(!string.IsNullOrEmpty(LastCompiledAssemblyPath) && File.Exists(LastCompiledAssemblyPath))
@@ -371,8 +359,7 @@ namespace NetPrintsEditor.ViewModels
                 assembliesToReflectOn.Add(LastCompiledAssemblyPath);
             }
 
-            reflectionProviderWrapper = AppDomainHelper.Create<WrappedReflectionProvider>();
-            reflectionProviderWrapper.Object.SetReflectionAssemblies(assembliesToReflectOn);
+            reflectionProviderWrapper = new ReflectionProvider(assembliesToReflectOn);
 
             NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
         }

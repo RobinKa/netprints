@@ -29,12 +29,12 @@ namespace NetPrints.Tests
         {
             List<TypeSpecifier> argumentTypes = new List<TypeSpecifier>()
             {
-                typeof(string),
+                TypeSpecifier.FromType<string>(),
             };
 
             List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
-                typeof(int),
+                TypeSpecifier.FromType<int>(),
             };
 
             // Create method
@@ -47,7 +47,7 @@ namespace NetPrints.Tests
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, typeof(string), "Length", typeof(int));
+            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, TypeSpecifier.FromType<string>(), "Length", TypeSpecifier.FromType<int>());
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNode.ReturnPin);
@@ -61,13 +61,13 @@ namespace NetPrints.Tests
         {
             List<TypeSpecifier> argumentTypes = new List<TypeSpecifier>()
             {
-                typeof(int),
-                typeof(bool),
+                TypeSpecifier.FromType<int>(),
+                TypeSpecifier.FromType<bool>(),
             };
 
             List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
-                typeof(int),
+                TypeSpecifier.FromType<int>(),
             };
 
             // Create method
@@ -80,7 +80,7 @@ namespace NetPrints.Tests
 
             // Create nodes
             IfElseNode ifElseNode = new IfElseNode(ifElseMethod);
-            LiteralNode literalNode = new LiteralNode(ifElseMethod, typeof(int), 123);
+            LiteralNode literalNode = new LiteralNode(ifElseMethod, TypeSpecifier.FromType<int>(), 123);
 
             // Connect exec nodes
             GraphUtil.ConnectExecPins(ifElseMethod.EntryNode.InitialExecutionPin, ifElseNode.ExecutionPin);
@@ -102,7 +102,7 @@ namespace NetPrints.Tests
             };
 
             // Create nodes
-            LiteralNode maxIndexLiteralNode = new LiteralNode(forLoopMethod, typeof(int), 10);
+            LiteralNode maxIndexLiteralNode = new LiteralNode(forLoopMethod, TypeSpecifier.FromType<int>(), 10);
             ForLoopNode forLoopNode = new ForLoopNode(forLoopMethod);
             
             // Connect exec nodes

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,86 +11,118 @@ using System.Xml;
 
 namespace NetPrintsEditor.Reflection
 {
-    public static class DocumentationUtil
+    public class DocumentationUtil
     {
-        private static Dictionary<string, XmlDocument> cachedDocuments =
+        private Dictionary<string, XmlDocument> cachedDocuments =
             new Dictionary<string, XmlDocument>();
 
-        private static Dictionary<string, string> cachedMethodSummaries =
+        private Dictionary<string, string> cachedMethodSummaries =
             new Dictionary<string, string>();
 
-        private static Dictionary<Tuple<string, string>, string> cachedMethodParameterInfos =
+        private Dictionary<Tuple<string, string>, string> cachedMethodParameterInfos =
             new Dictionary<Tuple<string, string>, string>();
 
-        private static Dictionary<string, string> cachedMethodReturnInfo =
+        private Dictionary<string, string> cachedMethodReturnInfo =
             new Dictionary<string, string>();
 
-        private static string GetMethodInfoKey(MethodInfo methodInfo)
-        {
-            string key = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
+        private readonly Microsoft.CodeAnalysis.Compilation compilation;
 
-            if (methodInfo.GetParameters().Length > 0)
+        public DocumentationUtil(Microsoft.CodeAnalysis.Compilation compilation)
+        {
+            this.compilation = compilation;
+        }
+
+        private string GetAssemblyPath(IAssemblySymbol assembly)
+        {
+            MetadataReference reference = compilation.GetMetadataReference(assembly);
+            if (reference is PortableExecutableReference peReference)
+            {
+                return peReference.FilePath;
+            }
+            return null;
+        }
+
+        private string GetMethodInfoKey(IMethodSymbol methodInfo)
+        {
+            string key = $"M:{methodInfo.ContainingType.GetFullName()}.{methodInfo.Name}";
+
+            if (methodInfo.Parameters.Length > 0)
             {
                 key += "(";
-                key += string.Join(",", methodInfo.GetParameters().Select(p => p.ParameterType.FullName));
+                key += string.Join(",", methodInfo.Parameters.Select(p => p.Type.GetFullName()));
                 key += ")";
             }
 
             return key;
         }
 
-        private static string GetAssemblyDocumentationPath(Assembly assembly)
+        private string GetAssemblyDocumentationPath(IAssemblySymbol assembly)
         {
-            // Try to find the documentation in the assembly's path
-            
-            string docPath = Path.ChangeExtension(assembly.Location, ".xml");
-        
-            // Try to find the documentation in the framework doc path
+            string assemblyPath = GetAssemblyPath(assembly);
 
-            if (!File.Exists(docPath))
+            if (assemblyPath != null)
             {
-                docPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                    "Reference Assemblies/Microsoft/Framework/.NETFramework/v4.X",
-                    $"{Path.GetFileNameWithoutExtension(assembly.Location)}.xml");
+                // Try to find the documentation in the framework doc path
+                string docPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                        "Reference Assemblies/Microsoft/Framework/.NETFramework/v4.X",
+                        $"{Path.GetFileNameWithoutExtension(assemblyPath)}.xml");
+
+                // Try to find the documentation in the assembly's path
+                if (!File.Exists(docPath))
+                {
+                    docPath = Path.ChangeExtension(assemblyPath, ".xml");
+                }
+
+                // Try to find the documentation in the current path
+                if (!File.Exists(docPath))
+                {
+                    docPath = $"{Path.GetFileNameWithoutExtension(assemblyPath)}.xml";
+                }
+
+                return docPath;
             }
 
-            // Try to find the documentation in the current path
-
-            if (!File.Exists(docPath))
-            {
-                docPath = $"{Path.GetFileNameWithoutExtension(assembly.Location)}.xml";
-            }
-
-            return docPath;
+            return null;
         }
 
-        private static XmlDocument GetAssemblyDocumentationDocument(Assembly assembly)
+        private XmlDocument GetAssemblyDocumentationDocument(IAssemblySymbol assembly)
         {
-            string key = Path.GetFileNameWithoutExtension(assembly.Location);
-
-            if (cachedDocuments.ContainsKey(key))
+            string assemblyPath = GetAssemblyPath(assembly);
+            if (assemblyPath != null)
             {
-                return cachedDocuments[key];
+                string key = Path.GetFileNameWithoutExtension(assemblyPath);
+
+                if (cachedDocuments.ContainsKey(key))
+                {
+                    return cachedDocuments[key];
+                }
+
+                try
+                {
+                    string docPath = GetAssemblyDocumentationPath(assembly);
+                    if (docPath != null)
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        doc.Load(File.OpenRead(docPath));
+
+                        cachedDocuments.Add(key, doc);
+
+                        return doc;
+                    }
+                }
+                catch { }
             }
 
-            try
-            {
-                string docPath = GetAssemblyDocumentationPath(assembly);
-                XmlDocument doc = new XmlDocument();
-                doc.Load(File.OpenRead(docPath));
-
-                cachedDocuments.Add(key, doc);
-
-                return doc;
-            }
-            catch
-            {
-                return null;
-            }
+            return null;
         }
 
-        public static string GetMethodSummary(MethodInfo methodInfo)
+        /// <summary>
+        /// Gets the summary text for a method.
+        /// </summary>
+        /// <param name="methodInfo">Method to get summary text for.</param>
+        /// <returns>Summary text for a method.</returns>
+        public string GetMethodSummary(IMethodSymbol methodInfo)
         {
             string methodKey = GetMethodInfoKey(methodInfo);
 
@@ -97,83 +131,103 @@ namespace NetPrintsEditor.Reflection
                 return cachedMethodSummaries[methodKey];
             }
 
-            XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
-            XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{methodKey}']/summary");
-
             string documentation = null;
 
-            if(nodes.Count > 0)
+            XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.ContainingAssembly);
+            if (doc != null)
             {
-                documentation = nodes.Item(0).InnerText;
-            }
+                XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{methodKey}']/summary");
 
-            cachedMethodSummaries.Add(methodKey, documentation);
+                if (nodes.Count > 0)
+                {
+                    documentation = nodes.Item(0).InnerText;
+                }
+
+                cachedMethodSummaries.Add(methodKey, documentation);
+            }
 
             return documentation;
         }
 
-        public static string GetMethodParameterInfo(MethodInfo methodInfo, string parameterName)
+        /// <summary>
+        /// Gets the summary text of a method's parameter.
+        /// </summary>
+        /// <param name="parameterSymbol">Parameter to get the summary text for.</param>
+        /// <returns>Summary text of a method's parameter.</returns>
+        public string GetMethodParameterInfo(IParameterSymbol parameterSymbol)
         {
-            string methodKey = GetMethodInfoKey(methodInfo);
-            Tuple<string, string> cacheKey = new Tuple<string, string>(methodKey, parameterName);
+            IMethodSymbol methodSymbol = (IMethodSymbol)parameterSymbol.ContainingSymbol;
+            string methodKey = GetMethodInfoKey(methodSymbol);
+            Tuple<string, string> cacheKey = new Tuple<string, string>(methodKey, parameterSymbol.Name);
             if (cachedMethodParameterInfos.ContainsKey(cacheKey))
             {
                 return cachedMethodParameterInfos[cacheKey];
             }
 
-            XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
-
-            string searchName = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
-            if (methodInfo.GetParameters().Length > 0)
-            {
-                searchName += "(";
-                searchName += string.Join(",", methodInfo.GetParameters().Select(p => p.ParameterType.FullName));
-                searchName += ")";
-            }
-
-            XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/param[@name='{parameterName}']");
-
             string documentation = null;
 
-            if (nodes.Count > 0)
+            XmlDocument doc = GetAssemblyDocumentationDocument(methodSymbol.ContainingAssembly);
+            if (doc != null)
             {
-                documentation = nodes.Item(0).InnerText;
-            }
 
-            cachedMethodParameterInfos.Add(cacheKey, documentation);
+                string searchName = $"M:{methodSymbol.ContainingType.GetFullName()}.{methodSymbol.Name}";
+                if (methodSymbol.Parameters.Length > 0)
+                {
+                    searchName += "(";
+                    searchName += string.Join(",", methodSymbol.Parameters.Select(p => p.Type.GetFullName()));
+                    searchName += ")";
+                }
+
+                XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/param[@name='{parameterSymbol.Name}']");
+
+                if (nodes.Count > 0)
+                {
+                    documentation = nodes.Item(0).InnerText;
+                }
+
+                cachedMethodParameterInfos.Add(cacheKey, documentation);
+            }
 
             return documentation;
         }
 
-        public static string GetMethodReturnInfo(MethodInfo methodInfo)
+        /// <summary>
+        /// Gets a method's return information.
+        /// </summary>
+        /// <param name="methodSymbol">Method to get return information for.</param>
+        /// <returns>Return information for the method.</returns>
+        public string GetMethodReturnInfo(IMethodSymbol methodSymbol)
         {
-            string methodKey = GetMethodInfoKey(methodInfo);
+            string methodKey = GetMethodInfoKey(methodSymbol);
 
             if (cachedMethodReturnInfo.ContainsKey(methodKey))
             {
                 return cachedMethodReturnInfo[methodKey];
             }
 
-            XmlDocument doc = GetAssemblyDocumentationDocument(methodInfo.DeclaringType.Assembly);
-
-            string searchName = $"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}";
-            if (methodInfo.GetParameters().Length > 0)
-            {
-                searchName += "(";
-                searchName += string.Join(",", methodInfo.GetParameters().Select(p => p.ParameterType.FullName));
-                searchName += ")";
-            }
-
-            XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/returns");
-
             string documentation = null;
 
-            if (nodes.Count > 0)
-            {
-                documentation = nodes.Item(0).InnerText;
-            }
+            XmlDocument doc = GetAssemblyDocumentationDocument(methodSymbol.ContainingType.ContainingAssembly);
 
-            cachedMethodReturnInfo.Add(methodKey, documentation);
+            if (doc != null)
+            {
+                string searchName = $"M:{methodSymbol.ContainingType.GetFullName()}.{methodSymbol.Name}";
+                if (methodSymbol.Parameters.Length > 0)
+                {
+                    searchName += "(";
+                    searchName += string.Join(",", methodSymbol.Parameters.Select(p => p.Type.GetFullName()));
+                    searchName += ")";
+                }
+
+                XmlNodeList nodes = doc.SelectNodes($"doc/members/member[@name='{searchName}']/returns");
+
+                if (nodes.Count > 0)
+                {
+                    documentation = nodes.Item(0).InnerText;
+                }
+
+                cachedMethodReturnInfo.Add(methodKey, documentation);
+            }
 
             return documentation;
         }

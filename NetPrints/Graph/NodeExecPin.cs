@@ -2,8 +2,11 @@
 
 namespace NetPrints.Graph
 {
+    /// <summary>
+    /// Abstract class for execution pins.
+    /// </summary>
     [DataContract]
-    public class NodeExecPin : NodePin
+    public abstract class NodeExecPin : NodePin
     {
         public NodeExecPin(Node node, string name)
             : base(node, name)

@@ -4,9 +4,15 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
 {
+    /// <summary>
+    /// Node that sets the value of a variable.
+    /// </summary>
     [DataContract]
     public class VariableSetterNode : VariableNode
     {
+        /// <summary>
+        /// Input data pin for the new value of the variable.
+        /// </summary>
         public NodeInputDataPin NewValuePin
         {
             get { return InputDataPins[1]; }

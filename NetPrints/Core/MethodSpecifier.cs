@@ -9,10 +9,16 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Specifier describing a method.
+    /// </summary>
     [Serializable]
     [DataContract]
     public class MethodSpecifier
     {
+        /// <summary>
+        /// Name of the method without any prefixes.
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -20,6 +26,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Specifier for the type this method is contained in.
+        /// </summary>
         [DataMember]
         public TypeSpecifier DeclaringType
         {
@@ -27,6 +36,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Specifiers for the types this method takes as arguments.
+        /// </summary>
         [DataMember]
         public IList<BaseType> Arguments
         {
@@ -34,6 +46,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Specifiers for the types this method returns.
+        /// </summary>
         [DataMember]
         public IList<BaseType> ReturnTypes
         {
@@ -41,6 +56,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Modifiers this method has.
+        /// </summary>
         [DataMember]
         public MethodModifiers Modifiers
         {
@@ -48,6 +66,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Generic arguments this method takes.
+        /// </summary>
         [DataMember]
         public IList<BaseType> GenericArguments
         {
@@ -55,6 +76,15 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Creates a MethodSpecifier.
+        /// </summary>
+        /// <param name="name">Name of the method without any prefixes.</param>
+        /// <param name="arguments">Specifiers for the arguments of the method.</param>
+        /// <param name="returnTypes">Specifiers for the return types of the method.</param>
+        /// <param name="modifiers">Modifiers of the method.</param>
+        /// <param name="declaringType">Specifier for the type this method is contained in.</param>
+        /// <param name="genericArguments">Generic arguments this method takes.</param>
         public MethodSpecifier(string name, IEnumerable<BaseType> arguments,
             IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType,
             IList<BaseType> genericArguments)
@@ -136,68 +166,6 @@ namespace NetPrints.Core
             }
 
             return !a.Equals(b);
-        }
-
-        public static implicit operator MethodSpecifier(MethodInfo methodInfo)
-        {
-            MethodModifiers modifiers = MethodModifiers.Private;
-
-            if (methodInfo.IsPublic)
-            {
-                modifiers |= MethodModifiers.Public;
-            }
-
-            if (methodInfo.IsVirtual)
-            {
-                modifiers |= MethodModifiers.Virtual;
-            }
-
-            if (methodInfo.IsFinal)
-            {
-                modifiers |= MethodModifiers.Sealed;
-            }
-
-            if (methodInfo.IsAbstract)
-            {
-                modifiers |= MethodModifiers.Abstract;
-            }
-
-            if (methodInfo.IsStatic)
-            {
-                modifiers |= MethodModifiers.Static;
-            }
-
-            // TODO: Protected / Internal
-
-            BaseType[] returnTypes;
-            if(methodInfo.ReturnType.IsGenericParameter)
-            {
-                returnTypes = new BaseType[] { (GenericType)methodInfo.ReturnType };
-            }
-            else
-            {
-                returnTypes = methodInfo.ReturnType == typeof(void) ?
-                    new BaseType[] { } :
-                    new BaseType[] { (TypeSpecifier)methodInfo.ReturnType };
-            }
-
-            BaseType[] parameterTypes = methodInfo.GetParameters().Select(
-                p => p.ParameterType.IsGenericParameter ?
-                    ((GenericType)p.ParameterType) as BaseType :
-                    ((TypeSpecifier)p.ParameterType) as BaseType).ToArray();
-
-            BaseType[] genericArgs = methodInfo.GetGenericArguments().Select(
-                p => p.IsGenericParameter ?
-                    ((GenericType)p) as BaseType :
-                    ((TypeSpecifier)p) as BaseType).ToArray();
-
-            return new MethodSpecifier(
-                methodInfo.Name,
-                parameterTypes,
-                returnTypes,
-                modifiers,
-                methodInfo.DeclaringType,
-                genericArgs);
         }
     }
 }

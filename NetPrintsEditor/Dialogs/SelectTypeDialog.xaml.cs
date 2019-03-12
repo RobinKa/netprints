@@ -33,7 +33,7 @@ namespace NetPrintsEditor.Dialogs
         {
             InitializeComponent();
 
-            SelectedType = typeof(object);
+            SelectedType = TypeSpecifier.FromType<object>();
         }
 
         private void OnSelectButtonClicked(object sender, RoutedEventArgs e)

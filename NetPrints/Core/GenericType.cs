@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Constraint on generic types.
+    /// </summary>
     [Serializable]
     [DataContract]
     public class GenericTypeConstraint
@@ -14,10 +17,16 @@ namespace NetPrints.Core
         
     }
 
+    /// <summary>
+    /// An unbound generic type.
+    /// </summary>
     [DataContract]
     [Serializable]
     public class GenericType : BaseType
     {
+        /// <summary>
+        /// Constraints for this generic type.
+        /// </summary>
         public ObservableRangeCollection<GenericTypeConstraint> Constraints
         {
             get;
@@ -35,6 +44,34 @@ namespace NetPrints.Core
             {
                 Constraints = new ObservableRangeCollection<GenericTypeConstraint>(constraints);
             }
+        }
+
+        /// <summary>
+        /// Creates a GenericType from a type. Type must be a generic argument.
+        /// </summary>
+        /// <typeparam name="T">Type to generate GenericType for.</typeparam>
+        /// <returns>GenericType for the passed type.</returns>
+        public static GenericType FromType<T>()
+        {
+            return FromType(typeof(T));
+        }
+
+        /// <summary>
+        /// Creates a GenericType from a type. Type must be a generic argument.
+        /// </summary>
+        /// <param name="type">Type to generate GenericType for.</param>
+        /// <returns>GenericType for the passed type.</returns>
+        public static GenericType FromType(Type type)
+        {
+            if (!type.IsGenericParameter)
+            {
+                throw new ArgumentException(nameof(type));
+            }
+
+            // TODO: Convert constraints
+            GenericType genericType = new GenericType(type.Name);
+
+            return genericType;
         }
 
         public override bool Equals(object obj)
@@ -58,19 +95,6 @@ namespace NetPrints.Core
             return Name.GetHashCode();
         }
 
-        public static implicit operator GenericType(Type type)
-        {
-            if (!type.IsGenericParameter)
-            {
-                throw new ArgumentException(nameof(type));
-            }
-            
-            // TODO: Convert constraints
-            GenericType genericType = new GenericType(type.Name);
-
-            return genericType;
-        }
-
         public static bool operator ==(GenericType a, GenericType b)
         {
             return a.Equals(b);
@@ -89,66 +113,6 @@ namespace NetPrints.Core
         public static bool operator !=(GenericType a, TypeSpecifier b)
         {
             return !a.Equals(b);
-        }
-
-        public static bool operator ==(GenericType genType, Type type)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator !=(GenericType genType, Type type)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return !ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return !genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator ==(Type type, GenericType genType)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator !=(Type type, GenericType genType)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return !ReferenceEquals(genType, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return !genType.Equals((GenericType)type);
-            }
-
-            return genType.Equals((TypeSpecifier)type);
         }
     }
 }

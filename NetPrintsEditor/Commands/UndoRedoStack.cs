@@ -4,14 +4,12 @@ using System.Windows.Input;
 
 namespace NetPrintsEditor.Commands
 {
+    /// <summary>
+    /// Stack that keeps track of commands and supports redoing and undoing them.
+    /// </summary>
     public class UndoRedoStack
     {
-        public static UndoRedoStack Instance
-        {
-            get => instance;
-        }
-
-        private static UndoRedoStack instance = new UndoRedoStack();
+        public static UndoRedoStack Instance { get; } = new UndoRedoStack();
 
         private UndoRedoStack() { }
 
@@ -27,6 +25,11 @@ namespace NetPrintsEditor.Commands
         private Stack<DoUndoPair> undoStack = new Stack<DoUndoPair>();
         private Stack<DoUndoPair> redoStack = new Stack<DoUndoPair>();
 
+        /// <summary>
+        /// Executes a command and adds it to the stack.
+        /// </summary>
+        /// <param name="doCommand">Command to execute.</param>
+        /// <param name="doParameters">Parameters for the command.</param>
         public void DoCommand(ICommand doCommand, object doParameters)
         {
             Tuple<ICommand, object> undoPair = NetPrintsCommands.MakeUndoCommand[doCommand](doParameters);
@@ -47,6 +50,10 @@ namespace NetPrintsEditor.Commands
             }
         }
 
+        /// <summary>
+        /// Undoes the last command.
+        /// </summary>
+        /// <returns>Whether a command was undone.</returns>
         public bool Undo()
         {
             if(undoStack.Count > 0)
@@ -66,6 +73,10 @@ namespace NetPrintsEditor.Commands
             return false;
         }
 
+        /// <summary>
+        /// Redoes the last undone command.
+        /// </summary>
+        /// <returns>Whether a command was redone.</returns>
         public bool Redo()
         {
             if (redoStack.Count > 0)

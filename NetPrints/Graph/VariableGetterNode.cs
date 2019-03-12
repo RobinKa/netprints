@@ -4,6 +4,9 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
 {
+    /// <summary>
+    /// Node that gets the value of a variable.
+    /// </summary>
     [DataContract]
     public class VariableGetterNode : VariableNode
     {

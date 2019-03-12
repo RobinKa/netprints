@@ -7,9 +7,15 @@ using System.Linq;
 
 namespace NetPrints.Graph
 {
+    /// <summary>
+    /// Node representing the initial execution node of a method.
+    /// </summary>
     [DataContract]
     public class EntryNode : Node
     {
+        /// <summary>
+        /// Output execution pin that initially executes when a method gets called.
+        /// </summary>
         public NodeOutputExecPin InitialExecutionPin
         {
             get { return OutputExecPins[0]; }
@@ -24,6 +30,11 @@ namespace NetPrints.Graph
             SetupArgumentTypesChangedEvent();
         }
 
+        /// <summary>
+        /// Updates the output data pins of this node to match the given list of types.
+        /// Keeps old pins connected to what they were connected to if they still exist.
+        /// </summary>
+        /// <param name="parameterTypes">List of specifiers for types this node should have as data outputs.</param>
         public void SetArgumentTypes(IEnumerable<BaseType> parameterTypes)
         {
             Dictionary<int, IEnumerable<NodeInputDataPin>> oldConnections =
@@ -42,6 +53,7 @@ namespace NetPrints.Graph
                 GraphUtil.DisconnectOutputDataPin(pin);
             }
 
+            // Clear the old data pins and create the new ones
             OutputDataPins.Clear();
 
             foreach (BaseType paramType in parameterTypes)
@@ -49,6 +61,7 @@ namespace NetPrints.Graph
                 AddOutputDataPin(paramType.ShortName, paramType);
             }
 
+            // Reconnect the pins as they were previously if they still exist
             foreach (var oldConn in oldConnections)
             {
                 foreach (NodeInputDataPin toPin in oldConn.Value)

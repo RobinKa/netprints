@@ -21,7 +21,7 @@ namespace NetPrints.Tests
         {
             List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
             {
-                typeof(int),
+                TypeSpecifier.FromType<int>(),
             };
 
             // Create method
@@ -34,8 +34,8 @@ namespace NetPrints.Tests
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
-            VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, cls.Type, "testVariable", typeof(string));
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, cls.Type, "Length", typeof(int));
+            VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, cls.Type, "testVariable", TypeSpecifier.FromType<string>());
+            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, cls.Type, "Length", TypeSpecifier.FromType<int>());
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNode.ReturnPin);
@@ -53,12 +53,14 @@ namespace NetPrints.Tests
                 Modifiers = MethodModifiers.Static
             };
 
-            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { typeof(int) }, MethodModifiers.Public, typeof(string), Array.Empty<BaseType>());
-            MethodSpecifier writeConsoleSpecifier = typeof(Console).GetMethods().Single(m => m.Name == "WriteLine" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
+            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new List<TypeSpecifier>(), new List<TypeSpecifier>() { TypeSpecifier.FromType<int>() }, MethodModifiers.Public, TypeSpecifier.FromType<string>(), Array.Empty<BaseType>());
+            //MethodSpecifier writeConsoleSpecifier = typeof(Console).GetMethods().Single(m => m.Name == "WriteLine" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
+            TypeSpecifier stringType = TypeSpecifier.FromType<string>();
+            MethodSpecifier writeConsoleSpecifier = new MethodSpecifier("WriteLine", new BaseType[] { stringType }, new BaseType[0], MethodModifiers.Public, TypeSpecifier.FromType(typeof(Console)), new BaseType[0]);
 
             // Create nodes
-            LiteralNode stringLiteralNode = new LiteralNode(mainMethod, typeof(string), "Hello World");
-            VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, "testVariable", typeof(string));
+            LiteralNode stringLiteralNode = new LiteralNode(mainMethod, TypeSpecifier.FromType<string>(), "Hello World");
+            VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, "testVariable", TypeSpecifier.FromType<string>());
             CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, stringLengthSpecifier);
             CallMethodNode writeConsoleNode = new CallMethodNode(mainMethod, writeConsoleSpecifier);
 
@@ -82,13 +84,13 @@ namespace NetPrints.Tests
             {
                 Name = "TestClass",
                 Namespace = "TestNamespace",
-                SuperType = typeof(object)
+                SuperType = TypeSpecifier.FromType<object>()
             };
 
             CreateStringLengthMethod();
             CreateMainMethod();
 
-            cls.Attributes.Add(new Variable("testVariable", typeof(string)));
+            cls.Attributes.Add(new Variable("testVariable", TypeSpecifier.FromType<string>()));
             cls.Methods.Add(stringLengthMethod);
             cls.Methods.Add(mainMethod);
         }

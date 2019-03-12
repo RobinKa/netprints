@@ -51,6 +51,8 @@ namespace NetPrintsEditor.Controls
                 throw new ArgumentException("variableInfo needs to have its Tag set to null because it is used for position");
             }
 
+            grid.ContextMenu.IsOpen = false;
+
             // Use current mouse position if position is not set
             Point pos = position ?? Mouse.GetPosition(drawCanvas);
 
@@ -175,30 +177,34 @@ namespace NetPrintsEditor.Controls
                 {
                     pin.ConnectedPin = null;
 
-                    Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
-                        GetPublicMethodsForType(Method.Class.SuperType))
-                    {
-                        TypeSpecifier.Create<ForLoopNode>(),
-                        TypeSpecifier.Create<IfElseNode>(),
-                        TypeSpecifier.Create<ConstructorNode>(),
+                    IEnumerable<object> builtIn = new List<object>() {
+                        TypeSpecifier.FromType<ForLoopNode>(),
+                        TypeSpecifier.FromType<IfElseNode>(),
+                        TypeSpecifier.FromType<ConstructorNode>(),
                     };
+
+                    Suggestions = new ObservableRangeCollection<object>(builtIn
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
                 {
-                    Suggestions = new ObservableRangeCollection<object>(
-                        ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
-                    {
-                        TypeSpecifier.Create<ForLoopNode>(),
-                        TypeSpecifier.Create<IfElseNode>(),
-                        TypeSpecifier.Create<ConstructorNode>(),
+                    IEnumerable<object> builtIn = new List<object>() {
+                        TypeSpecifier.FromType<ForLoopNode>(),
+                        TypeSpecifier.FromType<IfElseNode>(),
+                        TypeSpecifier.FromType<ConstructorNode>(),
                     };
+
+                    Suggestions = new ObservableRangeCollection<object>(builtIn
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
                 }
                 else
                 {
                     // Unknown type, no suggestions
                     Suggestions = new ObservableRangeCollection<object>();
                 }
-                
+
                 // Open the context menu
                 grid.ContextMenu.PlacementTarget = grid;
                 grid.ContextMenu.IsOpen = true;
@@ -259,32 +265,20 @@ namespace NetPrintsEditor.Controls
         {
             if (Method != null)
             {
-                Suggestions = new ObservableRangeCollection<object>(ProjectVM.Instance.ReflectionProvider.
-                    GetStaticFunctions())
-                {
-                    TypeSpecifier.Create<ForLoopNode>(),
-                    TypeSpecifier.Create<IfElseNode>(),
-                    TypeSpecifier.Create<ConstructorNode>(),
+                IEnumerable<object> builtIn = new List<object>() {
+                    TypeSpecifier.FromType<ForLoopNode>(),
+                    TypeSpecifier.FromType<IfElseNode>(),
+                    TypeSpecifier.FromType<ConstructorNode>(),
                 };
+
+                Suggestions = new ObservableRangeCollection<object>(builtIn.Concat(
+                    ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
             }
             else
             {
                 Suggestions?.Clear();
             }
         }
-        
-        #region Commands
-        private void OpenVariableGetSetCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = e.Parameter is VariableGetSetInfo variableInfo;
-        }
-
-        private void OpenVariableGetSetExecute(object sender, ExecutedRoutedEventArgs e)
-        {
-            grid.ContextMenu.IsOpen = false;
-            ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
-        }
-        #endregion
 
         #region DrawCanvas dragging and scaling
         private bool dragCanvas = false;

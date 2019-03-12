@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Graph for describing generic types.
+    /// </summary>
     public class TypeGraph
     {
+        /// <summary>
+        /// Node that returns the final type.
+        /// </summary>
         public TypeNode TypeReturnNode
         {
             get;

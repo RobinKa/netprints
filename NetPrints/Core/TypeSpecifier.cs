@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    /// <summary>
+    /// Specifier describing "real" types (not purely unbound generic).
+    /// </summary>
     [DataContract]
     [Serializable]
     public class TypeSpecifier : BaseType
     {
+        /// <summary>
+        /// Whether this type is an enum.
+        /// </summary>
         [DataMember]
         public bool IsEnum
         {
@@ -18,6 +24,9 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Whether this type is an interface.
+        /// </summary>
         [DataMember]
         public bool IsInterface
         {
@@ -25,6 +34,9 @@ namespace NetPrints.Core
             private set;
         }
         
+        /// <summary>
+        /// Generic arguments this type takes.
+        /// </summary>
         [DataMember]
         public ObservableRangeCollection<BaseType> GenericArguments
         {
@@ -32,28 +44,48 @@ namespace NetPrints.Core
             private set;
         }
 
+        /// <summary>
+        /// Short name of the type (ie. name without namespace).
+        /// </summary>
         public override string ShortName
         {
             get
             {
-                return Name.Split('.').Last();
+                string shortName = Name.Split('.').Last();
+
+                if (GenericArguments.Count > 0)
+                {
+                    shortName += $"<{string.Join(",", GenericArguments.Select(g => g.ShortName))}>";
+                }
+
+                return shortName;
             }
         }
 
+        /// <summary>
+        /// Whether this type is a primitive type (eg. int, bool, float, Enum, ...).
+        /// </summary>
         public bool IsPrimitive
         {
             get
             {
-                return this == typeof(byte) || this == typeof(char) ||
-                    this == typeof(short) || this == typeof(ushort) ||
-                    this == typeof(int) || this == typeof(uint) ||
-                    this == typeof(long) || this == typeof(ulong) ||
-                    this == typeof(float) || this == typeof(double) ||
-                    this == typeof(string) || this == typeof(bool) ||
+                return this == FromType<byte>() || this == FromType<char>() ||
+                    this == FromType<short>() || this == FromType<ushort>() ||
+                    this == FromType<int>() || this == FromType<uint>() ||
+                    this == FromType<long>() || this == FromType<ulong>() ||
+                    this == FromType<float>() || this == FromType<double>() ||
+                    this == FromType<string>() || this == FromType<bool>() ||
                     IsEnum;
             }
         }
         
+        /// <summary>
+        /// Creates a TypeSpecifier describing a type.
+        /// </summary>
+        /// <param name="typeName">Full name of the type including the namespace (ie. Namespace.TypeName).</param>
+        /// <param name="isEnum">Whether the type is an enum.</param>
+        /// <param name="isInterface">Whether the type is an interface.</param>
+        /// <param name="genericArguments">Generic arguments the type takes.</param>
         public TypeSpecifier(string typeName, bool isEnum=false, bool isInterface=false, IList<BaseType> genericArguments=null)
             : base(typeName)
         {
@@ -70,10 +102,52 @@ namespace NetPrints.Core
             }
         }
 
-        public static TypeSpecifier Create<T>()
+        /// <summary>
+        /// Creates a TypeSpecifier for a given type.
+        /// </summary>
+        /// <typeparam name="T">Type to create a TypeSpecifier for.</typeparam>
+        /// <returns>TypeSpecifier for the given type.</returns>
+        public static TypeSpecifier FromType<T>()
         {
-            Type t = typeof(T);
-            return new TypeSpecifier(t.FullName, t.IsSubclassOf(typeof(Enum)), t.IsInterface);
+            return FromType(typeof(T));
+        }
+
+        /// <summary>
+        /// Creates a TypeSpecifier for a given type.
+        /// </summary>
+        /// <param name="type">Type to create a TypeSpecifier for.</param>
+        /// <returns>TypeSpecifier for the given type.</returns>
+        public static TypeSpecifier FromType(Type type)
+        {
+            if (type.IsGenericParameter)
+            {
+                throw new ArgumentException(nameof(type));
+            }
+
+            string typeName = type.Name.Split('`').First();
+            if (!string.IsNullOrEmpty(type.Namespace))
+            {
+                typeName = type.Namespace + "." + typeName;
+            }
+
+            TypeSpecifier typeSpecifier = new TypeSpecifier(typeName,
+                type.IsSubclassOf(typeof(Enum)),
+                type.IsInterface);
+
+            foreach (Type genType in type.GetGenericArguments())
+            {
+                if (genType.IsGenericParameter)
+                {
+                    // TODO: Convert and add constraints
+                    typeSpecifier.GenericArguments.Add(GenericType.FromType(genType));
+                }
+                else
+                {
+                    typeSpecifier.GenericArguments.Add(TypeSpecifier.FromType(genType));
+                }
+            }
+
+            return typeSpecifier;
         }
         
         public override bool Equals(object obj)
@@ -101,6 +175,11 @@ namespace NetPrints.Core
             return false;
         }
 
+        /// <summary>
+        /// Returns whether the generic arguments for this type and a given type match.
+        /// </summary>
+        /// <param name="t">Specifier for the type to check.</param>
+        /// <returns>Whether the generic arguments for the types match.</returns>
         public bool GenericArgumentsEqual(TypeSpecifier t)
         {
             return GenericArguments.SequenceEqual(t.GenericArguments);
@@ -113,7 +192,7 @@ namespace NetPrints.Core
 
         public override string ToString()
         {
-            string s = Name;
+            string s = Name.Replace("+", ".");
 
             if(GenericArguments.Count > 0)
             {
@@ -126,39 +205,6 @@ namespace NetPrints.Core
         public static implicit operator TypeSpecifier(string typeName)
         {
             return new TypeSpecifier(typeName);
-        }
-
-        public static implicit operator TypeSpecifier(Type type)
-        {
-            if (type.IsGenericParameter)
-            {
-                throw new ArgumentException(nameof(type));
-            }
-
-            string typeName = type.Name.Split('`').First();
-            if(!string.IsNullOrEmpty(type.Namespace))
-            {
-                typeName = type.Namespace + "." + typeName;
-            }
-
-            TypeSpecifier typeSpecifier = new TypeSpecifier(typeName, 
-                type.IsSubclassOf(typeof(Enum)),
-                type.IsInterface);
-
-            foreach(Type genType in type.GetGenericArguments())
-            {
-                if (genType.IsGenericParameter)
-                {
-                    // TODO: Convert and add constraints
-                    typeSpecifier.GenericArguments.Add((GenericType)genType);
-                }
-                else
-                {
-                    typeSpecifier.GenericArguments.Add((TypeSpecifier)genType);
-                }
-            }
-            
-            return typeSpecifier;
         }
 
         public static implicit operator string(TypeSpecifier specifier)
@@ -244,66 +290,6 @@ namespace NetPrints.Core
             }
 
             return !a.Equals(b);
-        }
-
-        public static bool operator ==(TypeSpecifier typeSpecifier, Type type)
-        {
-            if(ReferenceEquals(type, null))
-            {
-                return ReferenceEquals(typeSpecifier, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return typeSpecifier.Equals((GenericType)type);
-            }
-
-            return typeSpecifier.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator !=(TypeSpecifier typeSpecifier, Type type)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return !ReferenceEquals(typeSpecifier, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return !typeSpecifier.Equals((GenericType)type);
-            }
-
-            return !typeSpecifier.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator ==(Type type, TypeSpecifier typeSpecifier)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return ReferenceEquals(typeSpecifier, null);
-            }
-            
-            if(type.IsGenericParameter)
-            {
-                return typeSpecifier.Equals((GenericType)type);
-            }
-
-            return typeSpecifier.Equals((TypeSpecifier)type);
-        }
-
-        public static bool operator !=(Type type, TypeSpecifier typeSpecifier)
-        {
-            if (ReferenceEquals(type, null))
-            {
-                return !ReferenceEquals(typeSpecifier, null);
-            }
-
-            if (type.IsGenericParameter)
-            {
-                return !typeSpecifier.Equals((GenericType)type);
-            }
-
-            return !typeSpecifier.Equals((TypeSpecifier)type);
         }
     }
 }

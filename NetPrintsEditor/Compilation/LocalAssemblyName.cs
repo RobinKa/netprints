@@ -4,10 +4,16 @@ using System.Runtime.Serialization;
 
 namespace NetPrintsEditor.Compilation
 {
+    /// <summary>
+    /// Metadata for an assembly.
+    /// </summary>
     [DataContract]
     [KnownType(typeof(LocalFrameworkAssemblyName))]
     public class LocalAssemblyName
     {
+        /// <summary>
+        /// Name of the assembly.
+        /// </summary>
         [DataMember]
         public string Name
         {
@@ -15,6 +21,9 @@ namespace NetPrintsEditor.Compilation
             set;
         }
 
+        /// <summary>
+        /// Path to the assembly.
+        /// </summary>
         [DataMember]
         public string Path
         {
@@ -33,72 +42,23 @@ namespace NetPrintsEditor.Compilation
             return $"{Name} at {Path}";
         }
 
+        /// <summary>
+        /// Creates a LocalAssemblyName from a path.
+        /// </summary>
+        /// <param name="path">Path to the assembly.</param>
+        /// <returns>LocalAssemblyName for the given path.</returns>
         public static LocalAssemblyName FromPath(string path)
         {
-            Assembly assembly = Assembly.UnsafeLoadFrom(path);
-            return new LocalAssemblyName(assembly.FullName, assembly.Location);
+            return new LocalAssemblyName(System.IO.Path.GetFileNameWithoutExtension(path), path);
         }
 
-        public static LocalAssemblyName FromName(string name)
-        {
-            Assembly assembly = Assembly.Load(name);
-            return new LocalAssemblyName(assembly.FullName, assembly.Location);
-        }
-
-        public virtual Assembly LoadAssembly()
-        {
-            // First try to load from name, then from path
-            // Make sure the name is correct when loading from path
-
-            if(!FixPath())
-            {
-                return null;
-            }
-
-            try
-            {
-                return Assembly.Load(Name);
-            }
-            catch
-            {
-                Assembly loadedAssembly = Assembly.UnsafeLoadFrom(Path);
-
-                if(loadedAssembly.FullName != Name)
-                {
-                    throw new Exception("Loaded assembly name doesnt equal name");
-                }
-
-                return loadedAssembly;
-            }
-        }
-
+        /// <summary>
+        /// Tries to fix an assembly path.
+        /// </summary>
+        /// <returns>Whether the assembly path is now valid.</returns>
         public virtual bool FixPath()
         {
-            try
-            {
-                // Check if assembly name at path matches Name
-                if (Assembly.UnsafeLoadFrom(Path).FullName == Name)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                try
-                {
-                    // Try to get path from assembly name
-                    Path = Assembly.Load(Name).Location ?? throw new Exception();
-
-                    return true;
-                }
-                catch
-                {
-                    // We couldnt get the name from the path nor the path from the name
-                    return false;
-                }
-            }
-
-            throw new Exception("This should never happen");
+            return System.IO.File.Exists(Path);
         }
     }
 }

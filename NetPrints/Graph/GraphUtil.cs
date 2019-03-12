@@ -6,11 +6,24 @@ namespace NetPrints.Graph
 {
     public static class GraphUtil
     {
+        /// <summary>
+        /// Splits camel-case names into words seperated by spaces.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static string SplitCamelCase(string input)
         {
             return Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
         }
 
+        /// <summary>
+        /// Determines whether two node pins can be connected to each other.
+        /// </summary>
+        /// <param name="pinA">First pin.</param>
+        /// <param name="pinB">Second pin.</param>
+        /// <param name="isSubclassOf">Function for determining whether one type is the subclass of another type.</param>
+        /// <param name="swapped">Whether we want pinB to be the first pin and vice versa.</param>
+        /// <returns></returns>
         public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, bool swapped=false)
         {
             if (pinA is NodeInputExecPin && pinB is NodeOutputExecPin)
@@ -65,6 +78,13 @@ namespace NetPrints.Graph
             return false;
         }
 
+        /// <summary>
+        /// Connects two node pins together. Makes sure any previous connections will be disconnected.
+        /// If the pin types are not compatible an ArgumentException will be thrown.
+        /// </summary>
+        /// <param name="pinA">First pin.</param>
+        /// <param name="pinB">Second pin.</param>
+        /// <param name="swapped">Whether we want pinB to be the first pin and vice versa.</param>
         public static void ConnectNodePins(NodePin pinA, NodePin pinB, bool swapped=false)
         {
             if (pinA is NodeInputExecPin exA && pinB is NodeOutputExecPin exB)
@@ -85,6 +105,11 @@ namespace NetPrints.Graph
             }
         }
 
+        /// <summary>
+        /// Connects two node execution pins. Removes any previous connection.
+        /// </summary>
+        /// <param name="fromPin">Output execution pin to connect.</param>
+        /// <param name="toPin">Input execution pin to connect.</param>
         public static void ConnectExecPins(NodeOutputExecPin fromPin, NodeInputExecPin toPin)
         {
             // Remove from old pin if any
@@ -97,6 +122,11 @@ namespace NetPrints.Graph
             toPin.IncomingPins.Add(fromPin);
         }
 
+        /// <summary>
+        /// Connects two node data pins. Removes any previous connection.
+        /// </summary>
+        /// <param name="fromPin">Output data pin to connect.</param>
+        /// <param name="toPin">Input data pin to connect.</param>
         public static void ConnectDataPins(NodeOutputDataPin fromPin, NodeInputDataPin toPin)
         {
             // Remove from old pin if any
@@ -109,6 +139,10 @@ namespace NetPrints.Graph
             toPin.IncomingPin = fromPin;
         }
 
+        /// <summary>
+        /// Disconnects all pins of a node.
+        /// </summary>
+        /// <param name="node">Node to have all its pins disconnected.</param>
         public static void DisconnectNodePins(Node node)
         {
             foreach (NodeInputDataPin pin in node.InputDataPins)

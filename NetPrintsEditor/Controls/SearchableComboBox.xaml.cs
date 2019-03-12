@@ -64,8 +64,14 @@ namespace NetPrintsEditor.Controls
             {
                 return true;
             }
-            
-            string itemText = suggestionConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture) as string;
+
+            string itemText = item.ToString();
+
+            object convertedItem = suggestionConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture);
+            if (convertedItem is SuggestionListItem listItem && listItem.Text is string listItemText)
+            {
+                itemText = listItemText;
+            }
 
             return searchText.Text.Split(' ').All(searchTerm =>
                 itemText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
@@ -107,7 +113,7 @@ namespace NetPrintsEditor.Controls
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
                     // and the return type of the accessor methods
-                    
+
                     VariableGetSetInfo variableInfo = new VariableGetSetInfo(
                         propertySpecifier.Name, propertySpecifier.Type, 
                         propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter, 
@@ -148,7 +154,7 @@ namespace NetPrintsEditor.Controls
                 }
                 else if(item.DataContext is TypeSpecifier t)
                 {
-                    if(t == typeof(ForLoopNode))
+                    if(t == TypeSpecifier.FromType<ForLoopNode>())
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -158,7 +164,7 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
-                    else if(t == typeof(IfElseNode))
+                    else if(t == TypeSpecifier.FromType<IfElseNode>())
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -168,14 +174,14 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
-                    else if(t == typeof(ConstructorNode))
+                    else if(t == TypeSpecifier.FromType<ConstructorNode>())
                     {
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
                         if(selectTypeDialog.ShowDialog() == true)
                         {
                             TypeSpecifier selectedType = selectTypeDialog.SelectedType;
 
-                            if(selectedType == null)
+                            if(selectedType.Equals(null))
                             {
                                 throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
                             }
@@ -184,7 +190,7 @@ namespace NetPrintsEditor.Controls
                             IEnumerable<ConstructorSpecifier> constructors = 
                                 ProjectVM.Instance.ReflectionProvider.GetConstructors(selectedType);
 
-                            if (constructors.Count() > 0)
+                            if (constructors != null && constructors.Count() > 0)
                             {
                                 // Just choose the first constructor we find
                                 ConstructorSpecifier constructorSpecifier = constructors.ElementAt(0);

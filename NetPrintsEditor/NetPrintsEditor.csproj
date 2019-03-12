@@ -1,222 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>NetPrintsEditor</RootNamespace>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>NetPrintsEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseWPF>True</UseWPF>
+    <StartupObject>NetPrintsEditor.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationFramework.Aero2" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <None Remove="ClassEditorWindow.xaml" />
+    <None Remove="Resources\Create_16x.png" />
+    <None Remove="Resources\Delegate_16x.png" />
+    <None Remove="Resources\If_16x.png" />
+    <None Remove="Resources\Loop_16x.png" />
+    <None Remove="Resources\Method_16x.png" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="AssemblyListWindow.xaml.cs">
-      <DependentUpon>AssemblyListWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Commands\EditorCommands.cs" />
-    <Compile Include="Commands\NetPrintsCommands.cs" />
-    <Compile Include="Commands\UndoRedoStack.cs" />
-    <Compile Include="Compilation\LocalFrameworkAssemblyName.cs" />
-    <Compile Include="Dialogs\MakeDelegateTypeInfo.cs" />
-    <Compile Include="Dialogs\SelectMethodDialog.xaml.cs">
-      <DependentUpon>SelectMethodDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Interop\AppDomainHelper.cs" />
-    <Compile Include="Compilation\CodeCompiler.cs" />
-    <Compile Include="Compilation\ICodeCompiler.cs" />
-    <Compile Include="Compilation\LocalAssemblyName.cs" />
-    <Compile Include="Interop\WrappedAppDomainObject.cs" />
-    <Compile Include="Interop\WrappedCodeCompiler.cs" />
-    <Compile Include="Reflection\DocumentationUtil.cs" />
-    <Compile Include="Reflection\IReflectionProvider.cs" />
-    <Compile Include="Reflection\ReflectionProvider.cs" />
-    <Compile Include="Interop\WrappedReflectionProvider.cs" />
-    <Compile Include="Controls\MethodEditorControl.xaml.cs">
-      <DependentUpon>MethodEditorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\SearchableComboBox.xaml.cs">
-      <DependentUpon>SearchableComboBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MethodPropertyEditorControl.xaml.cs">
-      <DependentUpon>MethodPropertyEditorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ClassPropertyEditorControl.xaml.cs">
-      <DependentUpon>ClassPropertyEditorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\VariableEditorControl.xaml.cs">
-      <DependentUpon>VariableEditorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\VariableGetSetControl.xaml.cs">
-      <DependentUpon>VariableGetSetControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\MethodSpecifierConverter.cs" />
-    <Compile Include="Converters\ClassModifierConverter.cs" />
-    <Compile Include="Converters\ModelToViewModelConverter.cs" />
-    <Compile Include="Converters\SuggestionListConverter.cs" />
-    <Compile Include="Converters\VariableModifierConverter.cs" />
-    <Compile Include="Converters\MethodModifierConverter.cs" />
-    <Compile Include="Dialogs\SelectTypeDialog.xaml.cs">
-      <DependentUpon>SelectTypeDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MainEditorWindow.xaml.cs">
-      <DependentUpon>MainEditorWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Project.cs" />
-    <Compile Include="ViewModels\MethodVM.cs" />
-    <Compile Include="ViewModels\NodePinVM.cs" />
-    <Compile Include="ViewModels\NodeVM.cs" />
-    <Compile Include="ViewModels\ObservableViewModelCollection.cs" />
-    <Compile Include="ViewModels\ProjectVM.cs" />
-    <Compile Include="ViewModels\VariableVM.cs" />
-    <Page Include="AssemblyListWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\MethodEditorControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\NodeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\PinControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClassEditorWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="Adorners\DragAdorner.cs" />
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetPrints\NetPrints.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Create_16x.png" />
+    <Resource Include="Resources\Delegate_16x.png" />
+    <Resource Include="Resources\If_16x.png" />
+    <Resource Include="Resources\Loop_16x.png" />
+    <Resource Include="Resources\Method_16x.png" />
+    <Resource Include="Resources\Property_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ClassEditorWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\NodeControl.xaml.cs">
-      <DependentUpon>NodeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PinControl.xaml.cs">
-      <DependentUpon>PinControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ClassEditorWindow.xaml.cs">
-      <DependentUpon>ClassEditorWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Controls\SearchableComboBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\MethodPropertyEditorControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\ClassPropertyEditorControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\VariableEditorControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\VariableGetSetControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SelectMethodDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dialogs\SelectTypeDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainEditorWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ViewModels\ClassVM.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NetPrints\NetPrints.csproj">
-      <Project>{9f33e024-e65f-4954-9df2-a1a26d68c0ad}</Project>
-      <Name>NetPrints</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

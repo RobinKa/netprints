@@ -6,15 +6,28 @@ using System.Windows.Media;
 
 namespace NetPrintsEditor.Adorners
 {
+    /// <summary>
+    /// Adorner for dragging UI elements with a mouse.
+    /// </summary>
     public class DragAdorner : Adorner
     {
         private bool dragging = false;
         private Point dragStartMousePosition;
         private Point dragStartElementPosition;
 
+        /// <summary>
+        /// Called when the dragging starts.
+        /// </summary>
         public event EventHandler OnDragStart;
+
+        /// <summary>
+        /// Called when the dragging ends.
+        /// </summary>
         public event EventHandler OnDragEnd;
 
+        /// <summary>
+        /// Size of a cell in the grid the UI element is movable on.
+        /// </summary>
         public double CellSize
         {
             get;

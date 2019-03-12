@@ -3,6 +3,7 @@ using NetPrints.Graph;
 using NetPrints.Serialization;
 using NetPrints.Translator;
 using NetPrintsEditor.Commands;
+using NetPrintsEditor.Controls;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.CodeDom.Compiler;
@@ -19,7 +20,7 @@ using static NetPrintsEditor.Commands.NetPrintsCommands;
 namespace NetPrintsEditor
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ClassEditorWindow.xaml
     /// </summary>
     public partial class ClassEditorWindow : Window
     {
@@ -140,7 +141,7 @@ namespace NetPrintsEditor
 
         private void CommandAddAttribute_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.Class.Attributes.Add(new Variable(e.Parameter as string, typeof(object)));
+            Class.Class.Attributes.Add(new Variable(e.Parameter as string, TypeSpecifier.FromType<object>()));
         }
 
         // Remove Attribute
@@ -263,6 +264,39 @@ namespace NetPrintsEditor
                 method.SelectedNode = node;
             }
         }
+
+        // Open Variable Get / Set
+
+        private void CommandOpenVariableGetSet_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableGetSetInfo;
+        }
+
+        private void CommandOpenVariableGetSet_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            methodEditor.ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
+        }
+
+        // Change node overload
+        private void CommandChangeNodeOverload_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is ChangeNodeOverloadParameters overloadParams &&
+                overloadParams.Node != null && overloadParams.Node.CurrentOverload != null
+                && overloadParams.Node.Overloads.Contains(overloadParams.NewOverload);
+        }
+
+        private void CommandChangeNodeOverload_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is ChangeNodeOverloadParameters overloadParams)
+            {
+                overloadParams.Node.ChangeOverload(overloadParams.NewOverload);
+            }
+            else
+            {
+                throw new ArgumentException("Expected type ChangeNodeOverloadParameters for e.Parameter.");
+            }
+        }
+
         #endregion
 
         #region Standard Commands

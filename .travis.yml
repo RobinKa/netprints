@@ -1,0 +1,11 @@
+os: windows
+env:
+    global:
+        - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+language: csharp
+mono: none
+script:
+  - choco install dotnetcore-sdk --pre
+  - dotnet --version
+  - dotnet build NetPrints.sln -c Release
+  - dotnet test

@@ -7,11 +7,21 @@ namespace NetPrints.Graph
     public delegate void InputDataPinIncomingPinChangedDelegate(
         NodeInputDataPin pin, NodeOutputDataPin oldPin, NodeOutputDataPin newPin);
 
+    /// <summary>
+    /// Input data pin which can be connected to up to one output data pin to receive a value.
+    /// </summary>
     [DataContract]
     public class NodeInputDataPin : NodeDataPin
     {
+        /// <summary>
+        /// Called when the node's incoming pin changed.
+        /// </summary>
         public event InputDataPinIncomingPinChangedDelegate IncomingPinChanged;
 
+        /// <summary>
+        /// Incoming data pin for this pin. Null when not connected.
+        /// Can trigger IncomingPinChanged when set.
+        /// </summary>
         [DataMember]
         public NodeOutputDataPin IncomingPin
         {
@@ -29,6 +39,10 @@ namespace NetPrints.Graph
             }
         }
 
+        /// <summary>
+        /// Whether this pin uses its unconnected value to output a value
+        /// when no pin is connected to it.
+        /// </summary>
         public bool UsesUnconnectedValue
         {
             get => PinType is TypeSpecifier t && t.IsPrimitive;
@@ -36,6 +50,11 @@ namespace NetPrints.Graph
 
         private NodeOutputDataPin incomingPin;
 
+        /// <summary>
+        /// Unconnected value of this pin when no pin is connected to it.
+        /// Setting this for types that don't support unconnected values will throw
+        /// an exception.
+        /// </summary>
         [DataMember]
         public object UnconnectedValue
         {
@@ -48,7 +67,7 @@ namespace NetPrints.Graph
 
                 if (value != null && (!UsesUnconnectedValue || 
                     (PinType is TypeSpecifier t && (
-                        (!t.IsEnum && value.GetType() != t) ||
+                        (!t.IsEnum && TypeSpecifier.FromType(value.GetType()) != t) ||
                         (t.IsEnum && value.GetType() != typeof(string))))))
                 {
                     throw new ArgumentException();

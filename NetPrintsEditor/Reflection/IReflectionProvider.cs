@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Reflection
 {
+    /// <summary>
+    /// Interface for reflecting on types, methods etc.
+    /// </summary>
     public interface IReflectionProvider
     {
         bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b);
@@ -15,6 +18,7 @@ namespace NetPrintsEditor.Reflection
         IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier);
         IEnumerable<TypeSpecifier> GetNonStaticTypes();
         IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier);
+        IEnumerable<MethodSpecifier> GetPublicMethodOverloads(MethodSpecifier methodSpecifier);
         IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier);
         IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier);
         IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier);

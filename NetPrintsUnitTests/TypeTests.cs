@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Core;
 
@@ -34,28 +35,28 @@ namespace NetPrintsUnitTests
         [TestMethod]
         public void TestTypeConversionEquality()
         {
-            TypeSpecifier typeInt = typeof(int);
+            TypeSpecifier typeInt = TypeSpecifier.FromType<int>();
 
-            Assert.AreEqual(typeInt, typeof(int));
-            Assert.AreEqual(typeof(int), typeInt);
+            Assert.AreEqual(typeInt, TypeSpecifier.FromType(typeof(int)));
+            Assert.AreEqual(TypeSpecifier.FromType(typeof(int)), typeInt);
 
-            Assert.AreNotEqual(typeof(string), typeInt);
-            Assert.AreNotEqual(typeInt, typeof(string));
+            Assert.AreNotEqual(TypeSpecifier.FromType(typeof(string)), typeInt);
+            Assert.AreNotEqual(typeInt, TypeSpecifier.FromType(typeof(string)));
         }
 
         [TestMethod]
         public void TestGenericTypeConversionEquality()
         {
-            TypeSpecifier typeInt = typeof(System.Collections.Generic.List<int>);
+            TypeSpecifier typeInt = TypeSpecifier.FromType<List<int>>();
 
-            Assert.AreEqual(typeInt, typeof(System.Collections.Generic.List<int>));
-            Assert.AreEqual(typeof(System.Collections.Generic.List<int>), typeInt);
+            Assert.AreEqual(typeInt, TypeSpecifier.FromType<List<int>>());
+            Assert.AreEqual(TypeSpecifier.FromType<List<int>>(), typeInt);
 
-            Assert.AreNotEqual(typeInt, typeof(System.Collections.Generic.List<string>));
-            Assert.AreNotEqual(typeof(System.Collections.Generic.List<string>), typeInt);
+            Assert.AreNotEqual(typeInt, TypeSpecifier.FromType<List<string>>());
+            Assert.AreNotEqual(TypeSpecifier.FromType<List<string>>(), typeInt);
 
-            Assert.AreNotEqual(typeInt, typeof(System.Collections.Generic.Stack<string>));
-            Assert.AreNotEqual(typeof(System.Collections.Generic.Stack<string>), typeInt);
+            Assert.AreNotEqual(typeInt, TypeSpecifier.FromType<Stack<string>>());
+            Assert.AreNotEqual(TypeSpecifier.FromType<Stack<string>>(), typeInt);
         }
     }
 }
