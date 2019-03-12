@@ -140,14 +140,23 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
+            string s;
+
             if (IsStatic)
             {
-                return $"Call Static {DeclaringType} {MethodName}";
+                s = $"Call Static {DeclaringType} {MethodName}";
             }
             else
             {
-                return $"Call {MethodName}";
+                s = $"Call {MethodName}";
             }
+
+            if (GenericArgumentTypes.Count > 0)
+            {
+                s += $"<{string.Join(", ", GenericArgumentTypes.Select(type => type.ShortName))}>";
+            }
+
+            return s;
         }
     }
 }

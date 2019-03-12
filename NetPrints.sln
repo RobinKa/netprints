@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrints", "NetPrints\NetP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsEditor", "NetPrintsEditor\NetPrintsEditor.csproj", "{D967186E-1D97-4CED-BC7B-DE5FBA3D5989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsUnitTests", "NetPrintsUnitTests\NetPrintsUnitTests.csproj", "{B45C37E8-A539-48E1-B714-774DB8645F9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsUnitTests", "NetPrintsUnitTests\NetPrintsUnitTests.csproj", "{B45C37E8-A539-48E1-B714-774DB8645F9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsEditorUnitTests", "NetPrintsEditorUnitTests\NetPrintsEditorUnitTests.csproj", "{B4288686-0B8A-453C-B654-4257F56BAB33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsEditorUnitTests", "NetPrintsEditorUnitTests\NetPrintsEditorUnitTests.csproj", "{B4288686-0B8A-453C-B654-4257F56BAB33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

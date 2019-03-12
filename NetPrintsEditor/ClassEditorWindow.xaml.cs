@@ -20,7 +20,7 @@ using static NetPrintsEditor.Commands.NetPrintsCommands;
 namespace NetPrintsEditor
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ClassEditorWindow.xaml
     /// </summary>
     public partial class ClassEditorWindow : Window
     {
