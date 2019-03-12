@@ -26,11 +26,6 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        private void OnInputExecPinsChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            
-        }
-
         #region Dragging
         private bool dragging = false;
         private Point dragStartMousePosition;
