@@ -51,7 +51,14 @@ namespace NetPrints.Core
         {
             get
             {
-                return Name.Split('.').Last();
+                string shortName = Name.Split('.').Last();
+
+                if (GenericArguments.Count > 0)
+                {
+                    shortName += $"<{string.Join(",", GenericArguments.Select(g => g.ShortName))}>";
+                }
+
+                return shortName;
             }
         }
 
