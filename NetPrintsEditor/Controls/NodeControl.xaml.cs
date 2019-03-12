@@ -1,4 +1,5 @@
-﻿using NetPrintsEditor.Commands;
+﻿using NetPrints.Core;
+using NetPrintsEditor.Commands;
 using NetPrintsEditor.ViewModels;
 using System.Collections.Specialized;
 using System.Windows;
@@ -86,5 +87,18 @@ namespace NetPrintsEditor.Controls
             }
         }
         #endregion
+
+        private void NodeVariants_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Change overload to selected overload
+            if (e.AddedItems.Count > 0)
+            {
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.ChangeNodeOverload, new NetPrintsCommands.ChangeNodeOverloadParameters
+                (
+                    Node,
+                    e.AddedItems[0]
+                ));
+            }
+        }
     }
 }

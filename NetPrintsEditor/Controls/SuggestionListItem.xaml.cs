@@ -40,5 +40,10 @@ namespace NetPrintsEditor.Controls
         {
             InitializeComponent();
         }
+
+        public override string ToString()
+        {
+            return Text.ToString();
+        }
     }
 }

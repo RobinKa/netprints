@@ -33,11 +33,21 @@
 
             <Rectangle Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}"  Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" />
 
-            <Label x:Name="nodeLabel" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 10" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
-                <Label.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
-                </Label.Effect>
-            </Label>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ComboBox x:Name="nodeVariants" Margin="2" Width="16" Grid.Column="0" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.Overloads, Mode=OneWay}" 
+                    SelectionChanged="NodeVariants_SelectionChanged" />
+                
+                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 10" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
+                    <Label.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
+                    </Label.Effect>
+                </Label>
+            </Grid>
 
             <Grid Grid.Row="1" Margin="5">
                 <Grid.ColumnDefinitions>

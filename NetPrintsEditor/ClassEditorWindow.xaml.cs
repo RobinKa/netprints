@@ -277,6 +277,26 @@ namespace NetPrintsEditor
             methodEditor.ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
         }
 
+        // Change node overload
+        private void CommandChangeNodeOverload_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is ChangeNodeOverloadParameters overloadParams &&
+                overloadParams.Node != null && overloadParams.Node.CurrentOverload != null
+                && overloadParams.Node.Overloads.Contains(overloadParams.NewOverload);
+        }
+
+        private void CommandChangeNodeOverload_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is ChangeNodeOverloadParameters overloadParams)
+            {
+                overloadParams.Node.ChangeOverload(overloadParams.NewOverload);
+            }
+            else
+            {
+                throw new ArgumentException("Expected type ChangeNodeOverloadParameters for e.Parameter.");
+            }
+        }
+
         #endregion
 
         #region Standard Commands

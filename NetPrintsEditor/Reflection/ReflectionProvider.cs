@@ -153,6 +153,32 @@ namespace NetPrintsEditor.Reflection
             }
         }
 
+        public IEnumerable<MethodSpecifier> GetPublicMethodOverloads(MethodSpecifier methodSpecifier)
+        {
+            INamedTypeSymbol type = GetTypeFromSpecifier(methodSpecifier.DeclaringType);
+
+            if (type != null)
+            {
+                // TODO: Handle generic methods instead of just ignoring them
+
+                return type.GetMethods()
+                        .Where(m =>
+                            m.Name == methodSpecifier.Name &&
+                            m.IsPublic() &&
+                            m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static) &&
+                            !m.IsGenericMethod &&
+                            m.MethodKind == MethodKind.Ordinary)
+                        .OrderBy(m => m.ContainingNamespace?.Name)
+                        .ThenBy(m => m.ContainingType?.Name)
+                        .ThenBy(m => m.Name)
+                        .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
+            }
+            else
+            {
+                return new MethodSpecifier[0];
+            }
+        }
+
         public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
         {
             INamedTypeSymbol type = GetTypeFromSpecifier(typeSpecifier);

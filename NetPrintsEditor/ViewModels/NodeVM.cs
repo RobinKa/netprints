@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Linq;
+using System;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -212,7 +213,96 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ToolTip));
+                    OnPropertyChanged(nameof(Overloads));
                 }
+            }
+        }
+
+        /// <summary>
+        /// Overloads for Constructor and CallMethod nodes
+        /// </summary>
+        public ObservableRangeCollection<object> Overloads
+        {
+            get => overloads;
+            set
+            {
+                overloads = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableRangeCollection<object> overloads = new ObservableRangeCollection<object>();
+        
+        /// <summary>
+        /// Currently overload or null if invalid for the node type.
+        /// </summary>
+        public object CurrentOverload
+        {
+            get
+            {
+                if (Node is CallMethodNode callMethodNode)
+                {
+                    return callMethodNode.MethodSpecifier;
+                }
+                else if (Node is ConstructorNode constructorNode)
+                {
+                    return constructorNode.ConstructorSpecifier;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Changes the called method of this node if it is a CallMethodNode.
+        /// Throws an exception if it is not.
+        /// </summary>
+        /// <param name="methodSpecifier">Method to change to.</param>
+        public void ChangeOverload(object overload)
+        {
+            Node newNode = null;
+
+            if (overload is MethodSpecifier methodSpecifier && Node is CallMethodNode callMethodNode)
+            {
+                newNode = new CallMethodNode(Node.Method, methodSpecifier);
+            }
+            else if (overload is ConstructorSpecifier constructorSpecifier && Node is ConstructorNode constructorNode)
+            {
+                newNode = new ConstructorNode(Node.Method, constructorSpecifier);
+            }
+
+            if (newNode != null)
+            {
+                // Remember old exec pins to reconnect them.
+                // Data pin's are trickier to reconnect (or impossible).
+                // They could be reconnected by heuristics (eg. name, type etc.).
+                NodeOutputExecPin[] oldIncomingPins = Node.InputExecPins[0].IncomingPins.ToArray();
+                NodeInputExecPin oldOutgoingPin = Node.OutputExecPins[0].OutgoingPin;
+
+                // Disconnect the old node from other nodes and remove it
+                GraphUtil.DisconnectNodePins(Node);
+                Node.Method.Nodes.Remove(Node);
+
+                // Move the new node to the same location
+                newNode.PositionX = Node.PositionX;
+                newNode.PositionY = Node.PositionY;
+
+                // Reconnect execution pins
+                if (oldOutgoingPin != null)
+                {
+                    GraphUtil.ConnectExecPins(newNode.OutputExecPins[0], oldOutgoingPin);
+                }
+
+                foreach (NodeOutputExecPin oldIncomingPin in oldIncomingPins)
+                {
+                    GraphUtil.ConnectExecPins(oldIncomingPin, newNode.InputExecPins[0]);
+                }
+
+                // Set the node of this view model which will trigger an update
+                Node = newNode;
+            }
+            else
+            {
+                throw new Exception("Tried to change overload for underlying node even though it does not support overloads.");
             }
         }
 
@@ -252,6 +342,28 @@ namespace NetPrintsEditor.ViewModels
         public NodeVM(Node node)
         {
             Node = node;
+            UpdateOverloads();
+        }
+
+        private void UpdateOverloads()
+        {
+            // Get the new overloads. Exclude the current method.
+            if (node is CallMethodNode callMethodNode && callMethodNode.MethodSpecifier != null)
+            {
+                Overloads.ReplaceRange(ProjectVM.Instance.ReflectionProvider
+                    .GetPublicMethodOverloads(callMethodNode.MethodSpecifier)
+                    .Except(new MethodSpecifier[] { callMethodNode.MethodSpecifier }));
+            }
+            else if (node is ConstructorNode constructorNode && constructorNode.ConstructorSpecifier != null)
+            {
+                Overloads.ReplaceRange(ProjectVM.Instance.ReflectionProvider
+                    .GetConstructors(constructorNode.ConstructorSpecifier.DeclaringType)
+                    .Except(new ConstructorSpecifier[] { constructorNode.ConstructorSpecifier }));
+            }
+            else
+            {
+                Overloads.Clear();
+            }
         }
 
         #region INotifyPropertyChanged
@@ -259,6 +371,8 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            UpdateOverloads();
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion

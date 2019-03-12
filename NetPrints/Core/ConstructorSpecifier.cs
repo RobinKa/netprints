@@ -42,5 +42,16 @@ namespace NetPrints.Core
             DeclaringType = declaringType;
             Arguments = arguments.ToList();
         }
+
+        public override string ToString()
+        {
+            string constructorString = "";
+
+            string argTypeString = string.Join(", ", Arguments);
+
+            constructorString += $"{DeclaringType.Name}({argTypeString})";
+
+            return constructorString;
+        }
     }
 }
