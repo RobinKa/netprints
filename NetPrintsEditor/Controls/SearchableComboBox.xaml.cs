@@ -64,8 +64,14 @@ namespace NetPrintsEditor.Controls
             {
                 return true;
             }
-            
-            string itemText = suggestionConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture) as string;
+
+            string itemText = item.ToString();
+
+            object convertedItem = suggestionConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture);
+            if (convertedItem is SuggestionListItem listItem && listItem.Text is string listItemText)
+            {
+                itemText = listItemText;
+            }
 
             return searchText.Text.Split(' ').All(searchTerm =>
                 itemText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
@@ -107,7 +113,7 @@ namespace NetPrintsEditor.Controls
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
                     // and the return type of the accessor methods
-                    
+
                     VariableGetSetInfo variableInfo = new VariableGetSetInfo(
                         propertySpecifier.Name, propertySpecifier.Type, 
                         propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter, 

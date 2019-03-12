@@ -6,31 +6,27 @@
     <UseWPF>True</UseWPF>
     <StartupObject>NetPrintsEditor.App</StartupObject>
   </PropertyGroup>
-  <ItemGroup><!--
-    <ApplicationDefinition Include="App.xaml" />
-    
-    <Page Include="AssemblyListWindow.xaml" />
-    <Page Include="Controls\MethodEditorControl.xaml" />
-    <Page Include="Controls\NodeControl.xaml" />
-    <Page Include="Controls\PinControl.xaml" />
-    <Page Include="ClassEditorWindow.xaml" />
-    <Page Include="Controls\SearchableComboBox.xaml" />
-    <Page Include="Controls\MethodPropertyEditorControl.xaml" />
-    <Page Include="Controls\ClassPropertyEditorControl.xaml" />
-    <Page Include="Controls\VariableEditorControl.xaml" />
-    <Page Include="Controls\VariableGetSetControl.xaml" />
-    <Page Include="Dialogs\SelectMethodDialog.xaml" />
-    <Page Include="Dialogs\SelectTypeDialog.xaml" />
-    <Page Include="MainEditorWindow.xaml" />
-    -->
-  
+  <ItemGroup>
     <None Remove="ClassEditorWindow.xaml" />
+    <None Remove="Resources\Create_16x.png" />
+    <None Remove="Resources\Delegate_16x.png" />
+    <None Remove="Resources\If_16x.png" />
+    <None Remove="Resources\Loop_16x.png" />
+    <None Remove="Resources\Method_16x.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetPrints\NetPrints.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Create_16x.png" />
+    <Resource Include="Resources\Delegate_16x.png" />
+    <Resource Include="Resources\If_16x.png" />
+    <Resource Include="Resources\Loop_16x.png" />
+    <Resource Include="Resources\Method_16x.png" />
+    <Resource Include="Resources\Property_16x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ClassEditorWindow.xaml.cs">

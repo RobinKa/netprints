@@ -134,7 +134,7 @@ namespace NetPrintsEditor.Reflection
 
             return new PropertySpecifier(
                 property.Name,
-                TypeSpecifierFromSymbol(property.Type as INamedTypeSymbol),
+                TypeSpecifierFromSymbol(property.Type),
                 hasPublicGetter,
                 hasPublicSetter,
                 TypeSpecifierFromSymbol(property.ContainingType));
