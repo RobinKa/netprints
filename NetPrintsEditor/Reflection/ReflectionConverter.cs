@@ -19,7 +19,17 @@ namespace NetPrintsEditor.Reflection
             }
             else
             {
-                typeName = type.Name.Split('`').First();
+                // Get the nested name (represented by + between classes)
+                // See https://stackoverflow.com/questions/2443244/having-a-in-the-class-name
+                string nestedPrefix = "";
+                ITypeSymbol containingType = type.ContainingType;
+                while (containingType != null)
+                {
+                    nestedPrefix = $"{containingType.Name}+{nestedPrefix}";
+                    containingType = containingType.ContainingType;
+                }
+
+                typeName = nestedPrefix + type.Name.Split('`').First();
                 if (type.ContainingNamespace != null)
                 {
                     typeName = type.ContainingNamespace + "." + typeName;
