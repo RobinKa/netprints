@@ -99,6 +99,9 @@ namespace NetPrints.Translator
         /// <returns>Name based on name but not contained in names.</returns>
         public static string GetUniqueVariableName(string name, IList<string> names)
         {
+            // Don't allow illegal characters in the name
+            name = name.Replace("+", "_");
+
             int i = 1;
 
             while(true)

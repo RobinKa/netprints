@@ -109,7 +109,7 @@ namespace NetPrints.Translator
         private string GetOrCreateTypedPinName(NodeOutputDataPin pin)
         {
             string pinName = GetOrCreatePinName(pin);
-            return $"{pin.PinType} {pinName}";
+            return $"{pin.PinType.FullCodeName} {pinName}";
         }
 
         private IEnumerable<string> GetOrCreateTypedPinNames(IEnumerable<NodeOutputDataPin> pins)
@@ -150,7 +150,7 @@ namespace NetPrints.Translator
 
                 if (!(pin.Node is EntryNode))
                 {
-                    builder.AppendLine($"{pin.PinType} {variableName};");
+                    builder.AppendLine($"{pin.PinType.FullCodeName} {variableName};");
                 }
             }
         }
@@ -199,14 +199,14 @@ namespace NetPrints.Translator
             if (method.ReturnTypes.Count() > 1)
             {
                 // Tuple<Types..> (won't be needed in the future)
-                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes) + ">";
+                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes.Select(t => t.FullCodeName)) + ">";
                 builder.Append(returnType + " ");
 
                 //builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
             }
             else if (method.ReturnTypes.Count() == 1)
             {
-                builder.Append($"{method.ReturnTypes[0]} ");
+                builder.Append($"{method.ReturnTypes[0].FullCodeName} ");
             }
             else
             {
@@ -409,7 +409,7 @@ namespace NetPrints.Translator
 
             if (node.IsStatic)
             {
-                builder.Append($"{node.DeclaringType}.");
+                builder.Append($"{node.DeclaringType.FullCodeName}.");
             }
             else
             {
@@ -420,7 +420,7 @@ namespace NetPrints.Translator
                 }
                 else
                 {
-                    // Default to thise
+                    // Default to this
                     builder.Append("this.");
                 }
             }

@@ -192,7 +192,7 @@ namespace NetPrints.Core
 
         public override string ToString()
         {
-            string s = Name;
+            string s = Name.Replace("+", ".");
 
             if(GenericArguments.Count > 0)
             {
