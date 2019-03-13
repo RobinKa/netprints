@@ -81,6 +81,22 @@ namespace NetPrints.Graph
         }
 
         /// <summary>
+        /// Pin that holds the exception when catch is executed.
+        /// </summary>
+        public NodeOutputDataPin ExceptionPin
+        {
+            get { return OutputDataPins[0]; }
+        }
+
+        /// <summary>
+        /// Pin that gets executed when an exception is caught.
+        /// </summary>
+        public NodeOutputExecPin CatchPin
+        {
+            get { return OutputExecPins[1]; }
+        }
+
+        /// <summary>
         /// List of node pins, one for each argument the method takes.
         /// </summary>
         public IList<NodeInputDataPin> ArgumentPins
@@ -97,6 +113,14 @@ namespace NetPrints.Graph
                     return InputDataPins.Skip(1).ToList();
                 }
             }
+        }
+
+        /// <summary>
+        /// List of node pins, one for each value the node's method returns (ie. no exception).
+        /// </summary>
+        public IList<NodeOutputDataPin> ReturnValuePins
+        {
+            get =>  OutputDataPins.Skip(1).ToList();
         }
 
         public CallMethodNode(Method method, MethodSpecifier methodSpecifier, 
@@ -126,6 +150,9 @@ namespace NetPrints.Graph
             {
                 AddInputDataPin("Target", DeclaringType);
             }
+
+            AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
+            AddOutputExecPin("Catch");
 
             foreach(BaseType argumentType in ArgumentTypes)
             {

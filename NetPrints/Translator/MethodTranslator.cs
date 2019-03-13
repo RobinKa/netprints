@@ -383,6 +383,13 @@ namespace NetPrints.Translator
         
         public void TranslateCallMethodNode(CallMethodNode node)
         {
+            // Wrap in try/catch if we have a catch handler
+            if (node.CatchPin.OutgoingPin != null)
+            {
+                builder.AppendLine("try");
+                builder.AppendLine("{");
+            }
+
             string temporaryReturnName = null;
 
             // Translate all the pure nodes this node depends on in
@@ -390,9 +397,9 @@ namespace NetPrints.Translator
             TranslateDependentPureNodes(node);
 
             // Write assignment of return values
-            if (node.OutputDataPins.Count == 1)
+            if (node.ReturnValuePins.Count == 1)
             {
-                string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
+                string returnName = GetOrCreatePinName(node.ReturnValuePins[0]);
 
                 builder.Append($"{returnName} = ");
             }
@@ -432,9 +439,9 @@ namespace NetPrints.Translator
             builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
 
             // Assign the real variables from the temporary tuple
-            if(node.OutputDataPins.Count > 1)
+            if(node.ReturnValuePins.Count > 1)
             {
-                var returnNames = GetOrCreatePinNames(node.OutputDataPins);
+                var returnNames = GetOrCreatePinNames(node.ReturnValuePins);
                 for(int i = 0; i < returnNames.Count(); i++)
                 {
                     builder.AppendLine($"{returnNames.ElementAt(i)} = {temporaryReturnName}.Item{i+1};");
@@ -443,6 +450,18 @@ namespace NetPrints.Translator
 
             // Go to the next state
             WriteGotoOutputPin(node.OutputExecPins[0]);
+
+            // Catch exceptions and execute catch pin
+            if (node.CatchPin.OutgoingPin != null)
+            {
+                string exceptionVarName = TranslatorUtil.GetTemporaryVariableName();
+                builder.AppendLine("}");
+                builder.AppendLine($"catch (System.Exception {exceptionVarName})");
+                builder.AppendLine("{");
+                builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = {exceptionVarName};");
+                WriteGotoOutputPin(node.CatchPin);
+                builder.AppendLine("}");
+            }
         }
 
         public void TranslateConstructorNode(ConstructorNode node)
@@ -469,14 +488,25 @@ namespace NetPrints.Translator
             // the correct order
             TranslateDependentPureNodes(node);
             
-            string valueName = GetOrCreatePinName(node.InputDataPins[1].IncomingPin);
+            string valueName = GetOrCreatePinName(node.NewValuePin.IncomingPin);
 
-            // Add target name or this if not a local variable
-            if (!node.IsLocalVariable)
+            // Add target name if there is a target (null for local and static variables)
+            if (node.IsStatic)
             {
-                if (node.InputDataPins[0].IncomingPin != null)
+                if (!(node.TargetType is null))
                 {
-                    string targetName = GetOrCreatePinName(node.InputDataPins[0].IncomingPin);
+                    builder.Append($"{node.TargetType.FullCodeName}.");
+                }
+                else
+                {
+                    builder.Append($"{node.Method.Class.Name}.");
+                }
+            }
+            if (node.TargetPin != null)
+            {
+                if (node.TargetPin.IncomingPin != null)
+                {
+                    string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
                     builder.Append($"{targetName}.");
                 }
                 else
@@ -573,15 +603,29 @@ namespace NetPrints.Translator
             
             builder.Append($"{valueName} = ");
 
-            if (node.TargetPin.IncomingPin != null)
+            if (node.IsStatic)
             {
-                string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
-                builder.Append($"{targetName}.");
+                if (!(node.TargetType is null))
+                {
+                    builder.Append($"{node.TargetType.FullCodeName}.");
+                }
+                else
+                {
+                    builder.Append($"{node.Method.Class.Name}.");
+                }
             }
             else
             {
-                // Default to this
-                builder.Append("this.");
+                if (node.TargetPin != null && node.TargetPin.IncomingPin != null)
+                {
+                    string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
+                    builder.Append($"{targetName}.");
+                }
+                else
+                {
+                    // Default to this
+                    builder.Append("this.");
+                }
             }
 
             builder.AppendLine($"{node.VariableName};");

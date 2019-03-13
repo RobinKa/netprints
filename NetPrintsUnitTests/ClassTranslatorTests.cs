@@ -34,8 +34,8 @@ namespace NetPrints.Tests
             stringLengthMethod.ReturnTypes.AddRange(returnTypes);
 
             // Create nodes
-            VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, cls.Type, "testVariable", TypeSpecifier.FromType<string>());
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, cls.Type, "Length", TypeSpecifier.FromType<int>());
+            VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, cls.Type, new Variable("testVariable", TypeSpecifier.FromType<string>()));
+            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, cls.Type, new Variable("Length", TypeSpecifier.FromType<int>()));
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNode.ReturnPin);
@@ -60,7 +60,7 @@ namespace NetPrints.Tests
 
             // Create nodes
             LiteralNode stringLiteralNode = new LiteralNode(mainMethod, TypeSpecifier.FromType<string>(), "Hello World");
-            VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, "testVariable", TypeSpecifier.FromType<string>());
+            VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, new Variable("testVariable", TypeSpecifier.FromType<string>()));
             CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, stringLengthSpecifier);
             CallMethodNode writeConsoleNode = new CallMethodNode(mainMethod, writeConsoleSpecifier);
 

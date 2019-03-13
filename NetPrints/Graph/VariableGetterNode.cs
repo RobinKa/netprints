@@ -10,14 +10,15 @@ namespace NetPrints.Graph
     [DataContract]
     public class VariableGetterNode : VariableNode
     {
-        public VariableGetterNode(Method method, TypeSpecifier targetType, string variableName, BaseType variableType) 
-            : base(method, targetType, variableName, variableType)
+        public VariableGetterNode(Method method, TypeSpecifier targetType, Variable variable) 
+            : base(method, targetType, variable)
         {
         }
 
         public override string ToString()
         {
-            return $"Get {VariableName}";
+            string staticText = IsStatic ? "Static " : "";
+            return $"Get {staticText}{VariableName}";
         }
     }
 }

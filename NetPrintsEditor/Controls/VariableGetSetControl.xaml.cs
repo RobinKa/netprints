@@ -49,13 +49,19 @@ namespace NetPrintsEditor.Controls
             get;
         }
 
-        public VariableGetSetInfo(string name, TypeSpecifier type, bool canGet, bool canSet, TypeSpecifier targetType = null)
+        public VariableModifiers Modifiers
+        {
+            get;
+        }
+
+        public VariableGetSetInfo(string name, TypeSpecifier type, bool canGet, bool canSet, VariableModifiers modifiers, TypeSpecifier targetType = null)
         {
             TargetType = targetType;
             Name = name;
             CanGet = canGet;
             CanSet = canSet;
             Type = type;
+            Modifiers = modifiers;
         }
     }
 

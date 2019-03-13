@@ -20,7 +20,7 @@ namespace NetPrints.Core
     }
 
     /// <summary>
-    /// Variable type. Contains common things for variables such as their type and their name.
+    /// Variable specifier type. Contains common things for variables such as their type and their name.
     /// </summary>
     [DataContract]
     public class Variable

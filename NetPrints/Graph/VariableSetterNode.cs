@@ -15,21 +15,22 @@ namespace NetPrints.Graph
         /// </summary>
         public NodeInputDataPin NewValuePin
         {
-            get { return InputDataPins[1]; }
+            get { return IsStatic ? InputDataPins[0] : InputDataPins[1]; }
         }
 
-        public VariableSetterNode(Method method, TypeSpecifier targetType, string variableName, BaseType variableType) 
-            : base(method, targetType, variableName, variableType)
+        public VariableSetterNode(Method method, TypeSpecifier targetType, Variable variable) 
+            : base(method, targetType, variable)
         {
             AddInputExecPin("Exec");
             AddOutputExecPin("Exec");
 
-            AddInputDataPin("NewValue", variableType);
+            AddInputDataPin("NewValue", variable.VariableType);
         }
 
         public override string ToString()
         {
-            return $"Set {VariableName}";
+            string staticText = IsStatic ? "Static " : "";
+            return $"Set {staticText}{VariableName}";
         }
     }
 }

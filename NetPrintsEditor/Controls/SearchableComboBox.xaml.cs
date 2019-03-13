@@ -113,11 +113,12 @@ namespace NetPrintsEditor.Controls
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
                     // and the return type of the accessor methods
+                    // TODO: Get correct variable modifiers
 
                     VariableGetSetInfo variableInfo = new VariableGetSetInfo(
                         propertySpecifier.Name, propertySpecifier.Type, 
-                        propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter, 
-                        propertySpecifier.DeclaringType);
+                        propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter,
+                        VariableModifiers.Public, propertySpecifier.DeclaringType);
 
                     if (EditorCommands.OpenVariableGetSet.CanExecute(variableInfo))
                     {

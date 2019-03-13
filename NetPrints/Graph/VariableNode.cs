@@ -18,7 +18,7 @@ namespace NetPrints.Graph
         /// </summary>
         public NodeInputDataPin TargetPin
         {
-            get { return InputDataPins[0]; }
+            get { return !IsLocalVariable && !IsStatic ? InputDataPins[0] : null; }
         }
 
         /// <summary>
@@ -32,13 +32,12 @@ namespace NetPrints.Graph
         /// <summary>
         /// Whether the variable is a local variable.
         /// </summary>
-        public bool IsLocalVariable => TargetType.Equals(null);
+        public bool IsLocalVariable => TargetType is null;
 
         /// <summary>
         /// Name of this variable.
         /// </summary>
-        [DataMember]
-        public string VariableName { get; private set; }
+        public string VariableName { get => Variable.Name; }
 
         /// <summary>
         /// Specifier for the type of the target object.
@@ -46,20 +45,33 @@ namespace NetPrints.Graph
         [DataMember]
         public TypeSpecifier TargetType { get; private set; }
 
-        public VariableNode(Method method, TypeSpecifier targetType, string variableName, BaseType variableType)
+        /// <summary>
+        /// Whether the variable is static.
+        /// </summary>
+        public bool IsStatic
+        {
+            get => Variable.Modifiers.HasFlag(VariableModifiers.Static);
+        }
+
+        /// <summary>
+        /// Specifier for the underlying variable.
+        /// </summary>
+        [DataMember]
+        public Variable Variable { get; private set; }
+
+        public VariableNode(Method method, TypeSpecifier targetType, Variable variable)
             : base(method)
         {
-            VariableName = variableName;
+            Variable = variable;
             TargetType = targetType;
-
-            // TargetType null means local variable
-
-            if (!targetType.Equals(null))
+            
+            // Add target input pin if not local or static
+            if (!IsLocalVariable && !Variable.Modifiers.HasFlag(VariableModifiers.Static))
             {
                 AddInputDataPin("Target", targetType);
             }
 
-            AddOutputDataPin(variableType.ShortName, variableType);
+            AddOutputDataPin(Variable.VariableType.ShortName, Variable.VariableType);
         }
     }
 }

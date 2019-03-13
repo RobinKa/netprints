@@ -93,6 +93,8 @@ namespace NetPrintsEditor.Controls
                 position = Mouse.GetPosition(drawCanvas);
             }
 
+            var variable = new Variable(variableInfo.Name, variableInfo.Type) { Modifiers = variableInfo.Modifiers };
+
             if (wasSet)
             {
                 // VariableSetterNode(Method method, TypeSpecifier targetType, 
@@ -101,7 +103,7 @@ namespace NetPrintsEditor.Controls
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(VariableSetterNode), Method.Method, position.X, position.Y,
-                    variableInfo.TargetType, variableInfo.Name, variableInfo.Type
+                    variableInfo.TargetType, variable
                 ));
             }
             else
@@ -112,7 +114,7 @@ namespace NetPrintsEditor.Controls
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(VariableGetterNode), Method.Method, position.X, position.Y,
-                    variableInfo.TargetType, variableInfo.Name, variableInfo.Type
+                    variableInfo.TargetType, variable
                 ));
             }
 
@@ -129,7 +131,7 @@ namespace NetPrintsEditor.Controls
                     variable.Modifiers.HasFlag(VariableModifiers.Const));
 
                 VariableGetSetInfo variableInfo = new VariableGetSetInfo(
-                    variable.Name, variable.VariableType, true, canSet, Method.Class.Type);
+                    variable.Name, variable.VariableType, true, canSet, variable.Modifiers, Method.Class.Type);
 
                 ShowVariableGetSet(variableInfo, e.GetPosition(drawCanvas));
 
