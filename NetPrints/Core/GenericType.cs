@@ -47,6 +47,14 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Blank for generic types.
+        /// </summary>
+        public override string FullCodeNameUnbound
+        {
+            get => "";
+        }
+
+        /// <summary>
         /// Creates a GenericType from a type. Type must be a generic argument.
         /// </summary>
         /// <typeparam name="T">Type to generate GenericType for.</typeparam>

@@ -28,15 +28,24 @@ namespace NetPrints.Core
 
         /// <summary>
         /// Full name of the type as it would appear in code.
-        /// The difference to Name is that nested classes
-        /// have a "+" in the backend, while they have a "."
+        /// In addition to specifying generic arguments, the difference to Name
+        /// is that nested classes have a "+" in the backend, while they have a "."
         /// when writing them in code.
         /// </summary>
-        public string FullCodeName
+        public virtual string FullCodeName
         {
             get => Name.Replace("+", ".");
         }
-        
+
+        /// <summary>
+        /// Same as <see cref="FullCodeName"/> but with unbound generic arguments replaced
+        /// by blank (eg. List<T> -> List<>). Needed when referring to unbound types in code.
+        /// </summary>
+        public virtual string FullCodeNameUnbound
+        {
+            get => Name.Replace("+", ".");
+        }
+
         /// <summary>
         /// Short name of the type (ie. without namespace).
         /// </summary>

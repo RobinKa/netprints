@@ -73,7 +73,7 @@ namespace NetPrints.Translator
                 return variableNames[pin];
             }
 
-            string pinName = TranslatorUtil.GetUniqueVariableName(pin.Name, variableNames.Values.ToList());
+            string pinName = TranslatorUtil.GetUniqueVariableName(pin.Name.Replace("<", "_").Replace(">", "_"), variableNames.Values.ToList());
             variableNames.Add(pin, pinName);
             return pinName;
         }
@@ -627,7 +627,7 @@ namespace NetPrints.Translator
 
         public void PureTranslateTypeOfNode(TypeOfNode node)
         {
-            builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.Type.FullCodeName});");
+            builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.Type.FullCodeNameUnbound});");
         }
     }
 }

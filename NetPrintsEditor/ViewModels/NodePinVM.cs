@@ -169,7 +169,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (Pin is NodeInputDataPin p && p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum)
                 {
-                    return ProjectVM.Instance.ReflectionProvider.GetEnumNames(typeSpec.Name);
+                    return ProjectVM.Instance.ReflectionProvider.GetEnumNames(typeSpec);
                 }
 
                 return null;

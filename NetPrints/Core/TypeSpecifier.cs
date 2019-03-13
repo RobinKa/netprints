@@ -63,6 +63,46 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Full name of the type as it would appear in code.
+        /// In addition to specifying generic arguments, the difference to Name
+        /// is that nested classes have a "+" in the backend, while they have a "."
+        /// when writing them in code.
+        /// </summary>
+        public override string FullCodeName
+        {
+            get
+            {
+                string codeName = base.FullCodeName;
+
+                if (GenericArguments.Count > 0)
+                {
+                    codeName += $"<{string.Join(",", GenericArguments.Select(g => g.FullCodeName))}>";
+                }
+
+                return codeName;
+            }
+        }
+
+        /// <summary>
+        /// Same as <see cref="FullCodeName"/> but with unbound generic arguments replaced
+        /// by blank (eg. List<T> -> List<>). Needed when referring to unbound types in code.
+        /// </summary>
+        public override string FullCodeNameUnbound
+        {
+            get
+            {
+                string codeName = base.FullCodeNameUnbound;
+
+                if (GenericArguments.Count > 0)
+                {
+                    codeName += $"<{string.Join(",", GenericArguments.Select(g => g.FullCodeNameUnbound))}>";
+                }
+
+                return codeName;
+            }
+        }
+
+        /// <summary>
         /// Whether this type is a primitive type (eg. int, bool, float, Enum, ...).
         /// </summary>
         public bool IsPrimitive
@@ -200,16 +240,6 @@ namespace NetPrints.Core
             }
 
             return s;
-        }
-
-        public static implicit operator TypeSpecifier(string typeName)
-        {
-            return new TypeSpecifier(typeName);
-        }
-
-        public static implicit operator string(TypeSpecifier specifier)
-        {
-            return specifier.Name;
         }
 
         public static bool operator ==(TypeSpecifier a, TypeSpecifier b)

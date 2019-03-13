@@ -70,7 +70,7 @@ namespace NetPrintsEditor.ViewModels
 
         public string FullName
         {
-            get => Type;
+            get => Type.Name;
         }
 
         public string Namespace

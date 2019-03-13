@@ -79,7 +79,7 @@ namespace NetPrints.Translator
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
                 .Replace("%GenericArguments%", genericArguments)
-                .Replace("%SuperType%", c.SuperType)
+                .Replace("%SuperType%", c.SuperType.FullCodeName)
                 .Replace("%Content%", content.ToString());
         }
 
@@ -127,7 +127,7 @@ namespace NetPrints.Translator
 
             return VARIABLE_TEMPLATE
                 .Replace("%VariableModifiers%", modifiers.ToString())
-                .Replace("%VariableType%", variable.VariableType)
+                .Replace("%VariableType%", variable.VariableType.FullCodeName)
                 .Replace("%VariableName%", variable.Name);
         }
 
