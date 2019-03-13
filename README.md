@@ -30,7 +30,7 @@ Any .NET binaries can be used with this editor. The recommended way to add new a
 ![](https://i.imgur.com/ZADmF3t.png)
 
 ## Exception Handling
-![](https://i.imgur.com/STgUtDe.png)
+![](https://i.imgur.com/vk4PHSr.png)
 
 ## Delegates
 ![](http://i.imgur.com/9GjrV49.png)
