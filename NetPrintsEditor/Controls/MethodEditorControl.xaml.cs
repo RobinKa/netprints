@@ -184,6 +184,7 @@ namespace NetPrintsEditor.Controls
                         TypeSpecifier.FromType<IfElseNode>(),
                         TypeSpecifier.FromType<ConstructorNode>(),
                         TypeSpecifier.FromType<TypeOfNode>(),
+                        TypeSpecifier.FromType<ExplicitCastNode>(),
                     };
 
                     Suggestions = new ObservableRangeCollection<object>(builtIn
@@ -197,6 +198,7 @@ namespace NetPrintsEditor.Controls
                         TypeSpecifier.FromType<IfElseNode>(),
                         TypeSpecifier.FromType<ConstructorNode>(),
                         TypeSpecifier.FromType<TypeOfNode>(),
+                        TypeSpecifier.FromType<ExplicitCastNode>(),
                     };
 
                     Suggestions = new ObservableRangeCollection<object>(builtIn
@@ -274,6 +276,7 @@ namespace NetPrintsEditor.Controls
                     TypeSpecifier.FromType<IfElseNode>(),
                     TypeSpecifier.FromType<ConstructorNode>(),
                     TypeSpecifier.FromType<TypeOfNode>(),
+                    TypeSpecifier.FromType<ExplicitCastNode>(),
                 };
 
                 Suggestions = new ObservableRangeCollection<object>(builtIn.Concat(

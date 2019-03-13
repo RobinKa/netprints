@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ClassEditorWindow.xaml" />
+    <None Remove="Resources\Convert_16x.png" />
     <None Remove="Resources\Create_16x.png" />
     <None Remove="Resources\Delegate_16x.png" />
     <None Remove="Resources\If_16x.png" />
@@ -29,6 +30,9 @@
     <Resource Include="Resources\Method_16x.png" />
     <Resource Include="Resources\Property_16x.png" />
     <Resource Include="Resources\Type_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Convert_16x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ClassEditorWindow.xaml.cs">
