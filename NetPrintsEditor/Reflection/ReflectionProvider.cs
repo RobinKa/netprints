@@ -227,18 +227,22 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<MethodSpecifier> GetStaticFunctions()
         {
-            return GetValidTypes().Where(t => t.IsPublic()).SelectMany(t =>
-                    t.GetMethods()
-                    .Where(m => 
-                        m.IsStatic && m.IsPublic() &&
-                        m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
-                        m.ReturnType.TypeKind != TypeKind.TypeParameter &&
-                        !m.IsGenericMethod &&
-                        !m.ContainingType.IsUnboundGenericType)
-                    .OrderBy(m => m.ContainingNamespace?.Name)
-                    .ThenBy(m => m.ContainingType?.Name)
-                    .ThenBy(m => m.Name)
-                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
+            return GetValidTypes()
+                    .Where(t => 
+                        t.IsPublic() &&
+                        !t.IsGenericType)
+                    .SelectMany(t =>
+                        t.GetMethods()
+                        .Where(m => 
+                            m.IsStatic && m.IsPublic() &&
+                            m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
+                            m.ReturnType.TypeKind != TypeKind.TypeParameter &&
+                            !m.IsGenericMethod &&
+                            !m.ContainingType.IsUnboundGenericType)
+                        .OrderBy(m => m.ContainingNamespace?.Name)
+                        .ThenBy(m => m.ContainingType?.Name)
+                        .ThenBy(m => m.Name)
+                        .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
         }
         
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
