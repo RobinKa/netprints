@@ -52,6 +52,11 @@ namespace NetPrintsEditor.Converters
                     text = "NetPrints - Construct New Object";
                     iconPath = "Create_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<TypeOfNode>())
+                {
+                    text = "NetPrints - Type Of";
+                    iconPath = "Type_16x.png";
+                }
             }
             else
             {

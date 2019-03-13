@@ -13,6 +13,7 @@
     <None Remove="Resources\If_16x.png" />
     <None Remove="Resources\Loop_16x.png" />
     <None Remove="Resources\Method_16x.png" />
+    <None Remove="Resources\Type_16x.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
@@ -27,6 +28,7 @@
     <Resource Include="Resources\Loop_16x.png" />
     <Resource Include="Resources\Method_16x.png" />
     <Resource Include="Resources\Property_16x.png" />
+    <Resource Include="Resources\Type_16x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ClassEditorWindow.xaml.cs">

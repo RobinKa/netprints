@@ -34,7 +34,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"Type of {Type.Name}";
+            return $"Type Of {Type.Name}";
         }
     }
 }
