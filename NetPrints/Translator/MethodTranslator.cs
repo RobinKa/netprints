@@ -47,6 +47,7 @@ namespace NetPrints.Translator
             { typeof(VariableGetterNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateVariableGetterNode(node as VariableGetterNode) } },
             { typeof(LiteralNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateLiteralNode(node as LiteralNode) } },
             { typeof(MakeDelegateNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeDelegateNode(node as MakeDelegateNode) } },
+            { typeof(TypeOfNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateTypeOfNode(node as TypeOfNode) } },
         };
 
         private int GetNextStateId()
@@ -622,6 +623,11 @@ namespace NetPrints.Translator
 
             // Write method name
             builder.AppendLine($"{node.MethodSpecifier.Name};");
+        }
+
+        public void PureTranslateTypeOfNode(TypeOfNode node)
+        {
+            builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.Type.FullCodeName});");
         }
     }
 }
