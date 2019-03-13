@@ -13,6 +13,7 @@ namespace NetPrintsEditor.Reflection
     public interface IReflectionProvider
     {
         bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b);
+        bool HasImplicitCast(TypeSpecifier fromType, TypeSpecifier toType);
         IEnumerable<MethodSpecifier> GetStaticFunctions();
         IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier);
         IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier);

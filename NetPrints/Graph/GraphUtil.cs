@@ -24,7 +24,7 @@ namespace NetPrints.Graph
         /// <param name="isSubclassOf">Function for determining whether one type is the subclass of another type.</param>
         /// <param name="swapped">Whether we want pinB to be the first pin and vice versa.</param>
         /// <returns></returns>
-        public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, bool swapped=false)
+        public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, Func<TypeSpecifier, TypeSpecifier, bool> hasImplicitCast, bool swapped=false)
         {
             if (pinA is NodeInputExecPin && pinB is NodeOutputExecPin)
             {
@@ -36,7 +36,7 @@ namespace NetPrints.Graph
 
                 if(datA.PinType is TypeSpecifier typeSpecA && 
                     datB.PinType is TypeSpecifier typeSpecB &&
-                    (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA)))
+                    (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA) || hasImplicitCast(typeSpecB, typeSpecA)))
                 {
                     return true;
                 }
@@ -72,7 +72,7 @@ namespace NetPrints.Graph
             else if(!swapped)
             {
                 // Try the same for swapped order
-                return CanConnectNodePins(pinB, pinA, isSubclassOf, true);
+                return CanConnectNodePins(pinB, pinA, isSubclassOf, hasImplicitCast, true);
             }
 
             return false;

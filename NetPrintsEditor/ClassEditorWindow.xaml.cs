@@ -194,7 +194,8 @@ namespace NetPrintsEditor
             
             e.CanExecute = e.Parameter is ConnectPinsParameters cp && 
                 GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin, 
-                (a, b) => ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b));
+                (a, b) => ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
+                (a, b) => ProjectVM.Instance.ReflectionProvider.HasImplicitCast(a, b));
         }
 
         private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)

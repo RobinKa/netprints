@@ -15,7 +15,10 @@ Any .NET binaries can be used with this editor. The recommended way to add new a
 # Screenshots
 
 ## Using External Libraries
+### SFML
 ![](http://i.imgur.com/BXLHSE3.png)
+### TensorFlowSharp
+![](https://i.imgur.com/DjRuPeR.png)
 
 ## Generics
 ![](http://i.imgur.com/OnjPw36.png)

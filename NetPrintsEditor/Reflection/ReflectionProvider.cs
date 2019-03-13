@@ -28,6 +28,14 @@ namespace NetPrintsEditor.Reflection
                     .Where(method => method.MethodKind == MethodKind.Ordinary);
         }
 
+        public static IEnumerable<IMethodSymbol> GetConverters(this INamedTypeSymbol symbol)
+        {
+            return symbol.GetMembers()
+                    .Where(member => member.Kind == SymbolKind.Method)
+                    .Cast<IMethodSymbol>()
+                    .Where(method => method.MethodKind == MethodKind.Conversion);
+        }
+
         public static bool IsSubclassOf(this ITypeSymbol symbol, ITypeSymbol cls)
         {
             // Traverse base types to find out if symbol inherits from cls
@@ -333,7 +341,6 @@ namespace NetPrintsEditor.Reflection
                         foundMethods.Add(foundMethod);
                     }
                 }
-                
             }
 
             return foundMethods;
@@ -538,6 +545,24 @@ namespace NetPrintsEditor.Reflection
             }
 
             return documentationUtil.GetMethodReturnInfo(methodInfo);
+        }
+
+        public bool HasImplicitCast(TypeSpecifier fromType, TypeSpecifier toType)
+        {
+            // Check if there are any operators defined that convert from a subclass (or the same class)
+            // of fromType to a subclass (or the same class) of toType
+
+            INamedTypeSymbol fromSymbol = GetTypeFromSpecifier(fromType);
+            INamedTypeSymbol toSymbol = GetTypeFromSpecifier(toType);
+
+            var operators = toSymbol.GetConverters().Concat(fromSymbol.GetConverters());
+
+            return operators.Any(m =>
+                    m.IsPublic() &&
+                    !m.IsGenericMethod &&
+                    m.Parameters.Length == 1 &&
+                    TypeSpecifierIsSubclassOf(fromType, ReflectionConverter.TypeSpecifierFromSymbol(m.Parameters[0].Type)) &&
+                    TypeSpecifierIsSubclassOf(toType, ReflectionConverter.TypeSpecifierFromSymbol(m.ReturnType)));
         }
 
         #endregion
