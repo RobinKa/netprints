@@ -39,6 +39,7 @@ namespace NetPrints.Translator
             { typeof(EntryNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateMethodEntry(node as EntryNode) } },
             { typeof(IfElseNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateIfElseNode(node as IfElseNode) } },
             { typeof(ConstructorNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateConstructorNode(node as ConstructorNode) } },
+            { typeof(ExplicitCastNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateExplicitCastNode(node as ExplicitCastNode) } },
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
@@ -480,6 +481,28 @@ namespace NetPrints.Translator
 
             // Go to the next state
             WriteGotoOutputPin(node.OutputExecPins[0]);
+        }
+
+        public void TranslateExplicitCastNode(ExplicitCastNode node)
+        {
+            // Translate all the pure nodes this node depends on in
+            // the correct order
+            TranslateDependentPureNodes(node);
+
+            // Try to cast the incoming object and go to next states.
+            // If no pin is connected fail by default.
+            if (node.ObjectToCast.IncomingPin != null)
+            {
+                string pinToCastName = GetOrCreatePinName(node.ObjectToCast.IncomingPin);
+                builder.AppendLine($"if ({pinToCastName} is {node.CastType.FullCodeNameUnbound})");
+                builder.AppendLine("{");
+                builder.AppendLine($"{GetOrCreatePinName(node.CastPin)} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
+                WriteGotoOutputPin(node.CastSuccessPin);
+                builder.AppendLine("}");
+                builder.AppendLine("else");
+            }
+
+            WriteGotoOutputPin(node.CastFailedPin);
         }
 
         public void TranslateVariableSetterNode(VariableSetterNode node)

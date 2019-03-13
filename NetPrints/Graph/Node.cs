@@ -20,6 +20,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(ConstructorNode))]
     [KnownType(typeof(MakeDelegateNode))]
     [KnownType(typeof(TypeOfNode))]
+    [KnownType(typeof(ExplicitCastNode))]
     public abstract class Node
     {
         /// <summary>
