@@ -17,9 +17,13 @@ namespace NetPrintsEditor.Models
     {
         private static readonly LocalAssemblyName[] DefaultAssemblies = new LocalAssemblyName[]
         {
-            new LocalFrameworkAssemblyName("System", ".NETFramework/v4.0"),
-            new LocalFrameworkAssemblyName("System.Core", ".NETFramework/v4.0"),
-            new LocalFrameworkAssemblyName("mscorlib", ".NETFramework/v4.0"),
+            new LocalFrameworkAssemblyName("System", ".NETFramework/v4.5"),
+            new LocalFrameworkAssemblyName("System.Core", ".NETFramework/v4.5"),
+            new LocalFrameworkAssemblyName("System.Collections", ".NETFramework/v4.5/Facades"),
+            new LocalFrameworkAssemblyName("System.IO", ".NETFramework/v4.5/Facades"),
+            new LocalFrameworkAssemblyName("System.Linq", ".NETFramework/v4.5/Facades"),
+            new LocalFrameworkAssemblyName("System.Threading", ".NETFramework/v4.5/Facades"),
+            new LocalFrameworkAssemblyName("mscorlib", ".NETFramework/v4.5"),
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(typeof(Project));

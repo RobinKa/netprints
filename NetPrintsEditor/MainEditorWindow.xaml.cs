@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using NetPrintsEditor.Models;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -155,6 +156,16 @@ namespace NetPrintsEditor
 
         private void OnSaveProjectClicked(object sender, RoutedEventArgs e)
         {
+            PromptProjectSave();
+        }
+
+        /// <summary>
+        /// Prompts a project save dialog if the project path was not
+        /// already set. Then saves the project and all its classes
+        /// into that directory.
+        /// </summary>
+        private bool PromptProjectSave()
+        {
             // Open the save dialog if no path is set yet
             if (Project.Path == null)
             {
@@ -173,15 +184,23 @@ namespace NetPrintsEditor
                 }
             }
 
-            if(Project.Path != null)
+            if (Project.Path != null)
             {
                 Project.Save();
+                return true;
             }
+
+            return false;
         }
 
         private void OnCreateProjectClicked(object sender, RoutedEventArgs e)
         {
+            ProjectVM oldProject = Project;
             Project = ProjectVM.CreateNew("MyProject", "MyNamespace");
+            if (!PromptProjectSave())
+            {
+                Project = oldProject;
+            }
         }
 
         private void OnCompileButtonClicked(object sender, RoutedEventArgs e)

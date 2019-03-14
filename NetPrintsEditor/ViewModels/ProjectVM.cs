@@ -435,7 +435,7 @@ namespace NetPrintsEditor.ViewModels
 
             Parallel.ForEach(p.ClassPaths, classPath =>
             {
-                Class cls = SerializationHelper.LoadClass(classPath);
+                Class cls = SerializationHelper.LoadClass(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(p.Path), classPath));
                 classes.Add(new ClassVM(cls) { Project = p });
             });
 
@@ -444,12 +444,25 @@ namespace NetPrintsEditor.ViewModels
             return p;
         }
 
+        /// <summary>
+        /// Saves the given class in the project directory.
+        /// </summary>
+        /// <param name="cls">Class to save.</param>
+        private void SaveClassInProjectDirectory(ClassVM cls)
+        {
+            // Save in same directory as project
+            SerializationHelper.SaveClass(cls.Class, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), cls.StoragePath));
+        }
+
+        /// <summary>
+        /// Saves the project and all its classes into the project directory.
+        /// </summary>
         public void Save()
         {
             // Save all classes
             foreach (ClassVM cls in Classes)
             {
-                SerializationHelper.SaveClass(cls.Class, cls.StoragePath);
+                SaveClassInProjectDirectory(cls);
             }
 
             // Set class paths from class storage paths
@@ -463,15 +476,31 @@ namespace NetPrintsEditor.ViewModels
         #region Creating and loading classes
         public ClassVM CreateNewClass()
         {
+            // Make a class name that isn't already a file and isn't
+            // already a class in the project.
+
+            IList<string> existingFiles = System.IO.Directory.GetFiles(System.IO.Path.GetDirectoryName(Path))
+                .Select(f => System.IO.Path.GetFileNameWithoutExtension(f))
+                .Concat(Classes.Select(c => System.IO.Path.GetFileNameWithoutExtension(c.StoragePath)))
+                .ToList();
+
+            string storageName = $"{DefaultNamespace}.MyClass";
+            storageName = NetPrintsUtil.GetUniqueName(storageName, existingFiles);
+
+            // TODO: Might break if GetUniqueName adds a dot
+            // (which it doesn't at the time of writing, it just adds
+            // numbers, but this is not guaranteed forever).
+            string name = storageName.Split(".").Last();
+
             Class cls = new Class()
             {
-                // TODO: Make name unique together with namespace instead of name alone
-                Name = NetPrintsUtil.GetUniqueName("MyClass", Classes.Select(c => c.Name).ToList()),
+                Name = name,
                 Namespace = DefaultNamespace
             };
 
             ClassVM clsVM = new ClassVM(cls) { Project = this };
 
+            SaveClassInProjectDirectory(clsVM);
             Classes.Add(clsVM);
 
             return clsVM;
@@ -479,16 +508,43 @@ namespace NetPrintsEditor.ViewModels
 
         public ClassVM AddExistingClass(string path)
         {
-            if(!Classes.Any(c => System.IO.Path.GetFullPath(c.StoragePath) == System.IO.Path.GetFullPath(path)))
+            // Check if a class with the same storage name is already loaded
+            string fileName = System.IO.Path.GetFileName(path);
+            ClassVM cls = Classes.FirstOrDefault(c => string.Equals(c.StoragePath, fileName, StringComparison.OrdinalIgnoreCase));
+
+            bool loadAndSave = false;
+
+            if (cls != null)
             {
-                ClassVM cls = new ClassVM(SerializationHelper.LoadClass(path)) { Project = this };
-                Classes.Add(cls);
-                return cls;
+                // Ask if we should overwrite if it already exists
+                // TODO: Probably want to move this into a view instead of here in
+                // the viewmodel.
+                MessageBoxResult result = MessageBox.Show($"File with name {fileName} already exists in this project. Overwrite it?", "File already exists",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                // Overwrite the class if chosen
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Remove the old class and load the new one
+                    Classes.Remove(cls);
+                    loadAndSave = true;
+                }
             }
             else
             {
-                return Classes.First(c => System.IO.Path.GetFullPath(c.StoragePath) == System.IO.Path.GetFullPath(path));
+                // Load the new class
+                loadAndSave = true;
             }
+
+            if (loadAndSave)
+            {
+                // Load the class and save it relative to the project
+                cls = new ClassVM(SerializationHelper.LoadClass(path)) { Project = this };
+                SaveClassInProjectDirectory(cls);
+                Classes.Add(cls);
+            }
+
+            return cls;
         }
         #endregion
 
