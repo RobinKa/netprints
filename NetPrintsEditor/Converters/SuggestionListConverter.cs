@@ -62,6 +62,11 @@ namespace NetPrintsEditor.Converters
                     text = "NetPrints - Explicit Cast";
                     iconPath = "Convert_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<ReturnNode>())
+                {
+                    text = "NetPrints - Return";
+                    iconPath = "Return_16x.png";
+                }
             }
             else
             {
