@@ -25,14 +25,14 @@ namespace NetPrints.Core
         private const string OperatorPrefix = "op_";
 
         /// <summary>
-        /// Mapping from operator method name to operator definitions (symbol, arity, position).
+        /// Mapping from operator method name to operator definitions (display name, symbol, arity, position).
         /// </summary>
         private static readonly Dictionary<string, OperatorInfo> operatorSymbols = new Dictionary<string, OperatorInfo>()
         {
             // Unary
             ["op_Increment"] = new OperatorInfo("Increment", "++", true, true),
             ["op_Decrement"] = new OperatorInfo("Decrement", "--", true, true),
-            ["op_UnaryAddition"] = new OperatorInfo("Unary Addition", "+", true),
+            ["op_UnaryPlus"] = new OperatorInfo("Unary Plus", "+", true),
             ["op_UnaryNegation"] = new OperatorInfo("Unary Negation", "-", true),
             ["op_LogicalNot"] = new OperatorInfo("Logical Not", "!", true),
 
