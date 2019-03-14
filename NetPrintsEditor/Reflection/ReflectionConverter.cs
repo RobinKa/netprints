@@ -150,6 +150,19 @@ namespace NetPrintsEditor.Reflection
                 TypeSpecifierFromSymbol(property.ContainingType));
         }
 
+        public static PropertySpecifier PropertySpecifierFromField(IFieldSymbol field)
+        {
+            // TODO: Create own specifier for fields / unify with properties
+
+            return new PropertySpecifier(
+                field.Name,
+                TypeSpecifierFromSymbol(field.Type),
+                field.IsPublic(),
+                field.IsPublic() ? !field.IsReadOnly : false,
+                TypeSpecifierFromSymbol(field.ContainingType)
+            );
+        }
+
         public static ConstructorSpecifier ConstructorSpecifierFromSymbol(IMethodSymbol constructorMethodSymbol)
         {
             return new ConstructorSpecifier(

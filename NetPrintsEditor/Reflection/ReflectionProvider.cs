@@ -15,6 +15,38 @@ namespace NetPrintsEditor.Reflection
 {
     public static class ISymbolExtensions
     {
+        /// <summary>
+        /// Gets all members of a symbol including inherited ones.
+        /// </summary>
+        public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol symbol)
+        {
+            List<ISymbol> members = new List<ISymbol>();
+            HashSet<ISymbol> overridenSymbols = new HashSet<ISymbol>();
+
+            while (symbol != null)
+            {
+                var symbolMembers = symbol.GetMembers();
+
+                // Add symbols which weren't overriden yet
+                List<ISymbol> newMembers = symbolMembers.Where(m => !overridenSymbols.Contains(m)).ToList();
+
+                members.AddRange(newMembers);
+
+                // Remember which symbols were overriden
+                foreach (ISymbol symbolMember in symbolMembers)
+                {
+                    if (!symbolMember.IsDefinition && symbolMember.OriginalDefinition != null)
+                    {
+                        overridenSymbols.Add(symbolMember.OriginalDefinition);
+                    }
+                }
+
+                symbol = symbol.BaseType;
+            }
+
+            return members;
+        }
+
         public static bool IsPublic(this ISymbol symbol)
         {
             return symbol.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
@@ -22,7 +54,7 @@ namespace NetPrintsEditor.Reflection
 
         public static IEnumerable<IMethodSymbol> GetMethods(this INamedTypeSymbol symbol)
         {
-            return symbol.GetMembers()
+            return symbol.GetAllMembers()
                     .Where(member => member.Kind == SymbolKind.Method)
                     .Cast<IMethodSymbol>()
                     .Where(method => method.MethodKind == MethodKind.Ordinary);
@@ -30,7 +62,7 @@ namespace NetPrintsEditor.Reflection
 
         public static IEnumerable<IMethodSymbol> GetConverters(this INamedTypeSymbol symbol)
         {
-            return symbol.GetMembers()
+            return symbol.GetAllMembers()
                     .Where(member => member.Kind == SymbolKind.Method)
                     .Cast<IMethodSymbol>()
                     .Where(method => method.MethodKind == MethodKind.Conversion);
@@ -215,14 +247,26 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier)
-                .GetMembers()
+            var members = GetTypeFromSpecifier(typeSpecifier)
+                .GetAllMembers();
+
+            var properties = members
                 .Where(m => m.Kind == SymbolKind.Property)
                 .Cast<IPropertySymbol>()
                 .OrderBy(p => p.ContainingNamespace?.Name)
                 .ThenBy(p => p.ContainingType?.Name)
                 .ThenBy(p => p.Name)
                 .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p));
+
+            // TODO: Move variables to seperate function / unify properties and variables in a better way.
+            return properties.Concat(members
+                .Where(m => m.Kind == SymbolKind.Field)
+                .Cast<IFieldSymbol>()
+                .OrderBy(f => f.ContainingNamespace?.Name)
+                .ThenBy(f => f.ContainingType?.Name)
+                .ThenBy(f => f.Name)
+                .Select(f => ReflectionConverter.PropertySpecifierFromField(f))
+            );
         }
 
         public IEnumerable<MethodSpecifier> GetStaticFunctions()
@@ -252,7 +296,7 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier).GetMembers()
+            return GetTypeFromSpecifier(typeSpecifier).GetAllMembers()
                 .Where(member => member.Kind == SymbolKind.Field)
                 .Select(member => member.Name);
         }

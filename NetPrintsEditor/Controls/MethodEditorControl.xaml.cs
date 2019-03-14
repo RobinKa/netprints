@@ -38,6 +38,14 @@ namespace NetPrintsEditor.Controls
             set => SetValue(SuggestionsProperty, value);
         }
 
+        private List<object> builtInNodes = new List<object>() {
+            TypeSpecifier.FromType<ForLoopNode>(),
+            TypeSpecifier.FromType<IfElseNode>(),
+            TypeSpecifier.FromType<ConstructorNode>(),
+            TypeSpecifier.FromType<TypeOfNode>(),
+            TypeSpecifier.FromType<ExplicitCastNode>(),
+        };
+
         public MethodEditorControl()
         {
             InitializeComponent();
@@ -147,63 +155,71 @@ namespace NetPrintsEditor.Controls
                 {
                     if (odp.PinType is TypeSpecifier pinTypeSpec)
                     {
-                        // Add public methods
-                        Suggestions = new ObservableRangeCollection<object>(
-                            ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(pinTypeSpec));
-
-                        if (!pinTypeSpec.IsInterface && !pinTypeSpec.IsEnum)
-                        {
-                            // Add properties
-                            Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicPropertiesForType(
-                                pinTypeSpec));
-                        }
-
-                        // Add static functions taking the type of the pin
-                        Suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithArgumentType(
-                            pinTypeSpec));
+                        List<object> suggestions = new List<object>();
 
                         // Add make delegate
-                        Suggestions.Add(new MakeDelegateTypeInfo(pinTypeSpec));
+                        suggestions.Add(new MakeDelegateTypeInfo(pinTypeSpec));
+
+                        // Add properties and methods of the pin type
+                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicPropertiesForType(
+                            pinTypeSpec));
+
+                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(pinTypeSpec));
+
+                        // Add methods of the super type that can accept the pin type as argument
+                        // TODO: Get protected
+                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(
+                            Method.Class.SuperType)
+                            .Where(m => m.Arguments.Any(a =>
+                            {
+                                if (a is TypeSpecifier aTypeSpec)
+                                {
+                                    return ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(pinTypeSpec, aTypeSpec);
+                                }
+
+                                return false;
+                            })));
+
+                        // Add static functions taking the type of the pin
+                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithArgumentType(
+                            pinTypeSpec));
+
+                        Suggestions = new ObservableRangeCollection<object>(suggestions.Distinct());
                     }
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
                     if (idp.PinType is TypeSpecifier pinTypeSpec)
                     {
+                        // Properties of base class that inherit from needed type
+                         IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider
+                            .GetPublicPropertiesForType(Method.Class.SuperType)
+                            .Where(p => ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(p.Type, pinTypeSpec));
+
                         Suggestions = new ObservableRangeCollection<object>(
+                            baseProperties.Concat(
                             ProjectVM.Instance.ReflectionProvider.GetStaticFunctionsWithReturnType(
-                                pinTypeSpec));
+                                pinTypeSpec))
+                            .Distinct());
                     }
                 }
                 else if (pin.Pin is NodeOutputExecPin oxp)
                 {
                     pin.ConnectedPin = null;
 
-                    IEnumerable<object> builtIn = new List<object>() {
-                        TypeSpecifier.FromType<ForLoopNode>(),
-                        TypeSpecifier.FromType<IfElseNode>(),
-                        TypeSpecifier.FromType<ConstructorNode>(),
-                        TypeSpecifier.FromType<TypeOfNode>(),
-                        TypeSpecifier.FromType<ExplicitCastNode>(),
-                    };
-
-                    Suggestions = new ObservableRangeCollection<object>(builtIn
+                    // TODO: Get protected from supertype
+                    Suggestions = new ObservableRangeCollection<object>(builtInNodes
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
+                        .Distinct());
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
                 {
-                    IEnumerable<object> builtIn = new List<object>() {
-                        TypeSpecifier.FromType<ForLoopNode>(),
-                        TypeSpecifier.FromType<IfElseNode>(),
-                        TypeSpecifier.FromType<ConstructorNode>(),
-                        TypeSpecifier.FromType<TypeOfNode>(),
-                        TypeSpecifier.FromType<ExplicitCastNode>(),
-                    };
-
-                    Suggestions = new ObservableRangeCollection<object>(builtIn
+                    // TODO: Get protected from supertype
+                    Suggestions = new ObservableRangeCollection<object>(builtInNodes
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
+                        .Distinct());
                 }
                 else
                 {
@@ -271,16 +287,18 @@ namespace NetPrintsEditor.Controls
         {
             if (Method != null)
             {
-                IEnumerable<object> builtIn = new List<object>() {
-                    TypeSpecifier.FromType<ForLoopNode>(),
-                    TypeSpecifier.FromType<IfElseNode>(),
-                    TypeSpecifier.FromType<ConstructorNode>(),
-                    TypeSpecifier.FromType<TypeOfNode>(),
-                    TypeSpecifier.FromType<ExplicitCastNode>(),
-                };
+                // Get properties and methods of base class.
+                // TODO: Get protected, not only public.
+                IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider
+                    .GetPublicPropertiesForType(Method.Class.SuperType);
 
-                Suggestions = new ObservableRangeCollection<object>(builtIn.Concat(
-                    ProjectVM.Instance.ReflectionProvider.GetStaticFunctions()));
+                IEnumerable<object> baseMethods = ProjectVM.Instance.ReflectionProvider
+                    .GetPublicMethodsForType(Method.Class.SuperType);
+
+                Suggestions = new ObservableRangeCollection<object>(builtInNodes.Concat(
+                    baseProperties.Concat(baseMethods.Concat(
+                    ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())))
+                    .Distinct());
             }
             else
             {
