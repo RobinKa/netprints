@@ -34,18 +34,11 @@ namespace NetPrintsEditor
 
         private UndoRedoStack undoRedoStack = UndoRedoStack.Instance;
 
-        private string previousStoragePath = null;
-
         public ClassEditorWindow(ClassVM cls)
         {
             InitializeComponent();
 
             Class = cls;
-
-            if(File.Exists(Class.StoragePath))
-            {
-                previousStoragePath = Class.StoragePath;
-            }
 
             classViewer.Class = Class;
         }
@@ -412,15 +405,10 @@ namespace NetPrintsEditor
 
         private void OnSaveButtonClicked(object sender, RoutedEventArgs e)
         {
-            SerializationHelper.SaveClass(Class.Class, Class.StoragePath);
-
-            // Delete old save file if different path and exists
-            if(previousStoragePath != null && previousStoragePath != Class.StoragePath && File.Exists(previousStoragePath))
-            {
-                File.Delete(previousStoragePath);
-            }
-
-            previousStoragePath = Class.StoragePath;
+            // Save the entire project. If we only save the class
+            // we could get issues like the project still referencing the
+            // old class if the project isn't saved.
+            ProjectVM.Instance.Save();
         }
     }
 }

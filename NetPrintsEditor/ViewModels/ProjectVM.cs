@@ -260,17 +260,16 @@ namespace NetPrintsEditor.ViewModels
 
         private Project project;
 
-        public ReflectionProvider ReflectionProvider
-        {
-            get => reflectionProviderWrapper;
-        }
+        public ReflectionProvider ReflectionProvider { get; private set; }
 
         public ObservableRangeCollection<TypeSpecifier> NonStaticTypes
         {
             get;
         } = new ObservableRangeCollection<TypeSpecifier>();
 
-        private ReflectionProvider reflectionProviderWrapper;
+        // Keep track of the save location of classes, so if they change their
+        // name we can delete the old file on saving.
+        private Dictionary<Class, string> previousStoragePath = new Dictionary<Class, string>();
 
         public ProjectVM(Project project)
         {
@@ -292,9 +291,9 @@ namespace NetPrintsEditor.ViewModels
             // Unload the app domain of the previous assembly
             // TODO: Remove this as it is not relevant anymore since
             // the .NET Core transition.
-            if (reflectionProviderWrapper != null)
+            if (ReflectionProvider != null)
             {
-                reflectionProviderWrapper = null;
+                ReflectionProvider = null;
                 GC.Collect();
             }
 
@@ -307,7 +306,22 @@ namespace NetPrintsEditor.ViewModels
                 string projectDir = System.IO.Path.GetDirectoryName(Path);
                 string compiledDir = System.IO.Path.Combine(projectDir, $"Compiled_{Name}");
 
-                if (!Directory.Exists(compiledDir))
+                
+                DirectoryInfo compiledDirInfo = new DirectoryInfo(compiledDir);
+                if (compiledDirInfo.Exists)
+                {
+                    // Delete existing compiled output
+                    foreach (FileInfo file in compiledDirInfo.EnumerateFiles())
+                    {
+                        file.Delete();
+                    }
+
+                    foreach (DirectoryInfo dir in compiledDirInfo.EnumerateDirectories())
+                    {
+                        dir.Delete(true);
+                    }
+                }
+                else
                 {
                     Directory.CreateDirectory(compiledDir);
                 }
@@ -394,7 +408,7 @@ namespace NetPrintsEditor.ViewModels
                 assembliesToReflectOn.Add(LastCompiledAssemblyPath);
             }
 
-            reflectionProviderWrapper = new ReflectionProvider(assembliesToReflectOn);
+            ReflectionProvider = new ReflectionProvider(assembliesToReflectOn);
 
             NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
         }
@@ -476,6 +490,11 @@ namespace NetPrintsEditor.ViewModels
 
             p.Classes = new ObservableRangeCollection<ClassVM>(classes.OrderBy(c => c.Name));
 
+            foreach (ClassVM cls in p.classes)
+            {
+                p.previousStoragePath[cls.Class] = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(p.Path), cls.StoragePath);
+            }
+
             return p;
         }
 
@@ -483,10 +502,24 @@ namespace NetPrintsEditor.ViewModels
         /// Saves the given class in the project directory.
         /// </summary>
         /// <param name="cls">Class to save.</param>
-        private void SaveClassInProjectDirectory(ClassVM cls)
+        public void SaveClassInProjectDirectory(ClassVM cls)
         {
+            string outputPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), cls.StoragePath);
+
+            // Delete old save file if different path and exists
+            if (previousStoragePath.TryGetValue(cls.Class, out string prevPath) &&
+                !string.Equals(
+                    System.IO.Path.GetFullPath(prevPath),
+                    System.IO.Path.GetFullPath(outputPath),
+                    StringComparison.OrdinalIgnoreCase) &&
+                File.Exists(prevPath))
+            {
+                File.Delete(prevPath);
+            }
+
             // Save in same directory as project
-            SerializationHelper.SaveClass(cls.Class, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), cls.StoragePath));
+            SerializationHelper.SaveClass(cls.Class, outputPath);
+            previousStoragePath[cls.Class] = outputPath;
         }
 
         /// <summary>
