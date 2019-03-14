@@ -37,7 +37,7 @@ namespace NetPrintsEditor.Compilation
                 .Where(d => d.Severity == DiagnosticSeverity.Error)
                 .Select(d => d.GetMessage());
 
-            return new CodeCompileResults(emitResult.Success, errors, outputPath);
+            return new CodeCompileResults(emitResult.Success, errors, emitResult.Success ? outputPath : null);
         }
     }
 }

@@ -166,6 +166,19 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public ProjectCompilationOutput CompilationOutput
+        {
+            get => project != null ? project.CompilationOutput : ProjectCompilationOutput.Nothing;
+            set
+            {
+                if (project.CompilationOutput != value)
+                {
+                    project.CompilationOutput = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public Project Project
         {
             get => project;
@@ -268,7 +281,7 @@ namespace NetPrintsEditor.ViewModels
         public void CompileProject(bool generateExecutable)
         {
             // Check if we are already compiling
-            if(!CanCompile)
+            if(!CanCompile || project.CompilationOutput == ProjectCompilationOutput.Nothing)
             {
                 return;
             }
@@ -309,8 +322,11 @@ namespace NetPrintsEditor.ViewModels
                     string fullClassName = $"{cls.Namespace}.{cls.Name}";
                     string code = classTranslator.TranslateClass(cls.Class);
 
-                    // Write source to file for examination
-                    File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{fullClassName}.cs"), code);
+                    // Write source to file
+                    if (CompilationOutput.HasFlag(ProjectCompilationOutput.SourceCode))
+                    {
+                        File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{fullClassName}.cs"), code);
+                    }
 
                     sources.Add(code);
                 });
@@ -322,14 +338,28 @@ namespace NetPrintsEditor.ViewModels
                 // Create compiler on other app domain, compile, unload the app domain
 
                 var codeCompiler = new Compilation.CodeCompiler();
-                
+
+                bool deleteBinaries = !CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries) && !File.Exists(outputPath);
+
                 CodeCompileResults results = codeCompiler.CompileSources(
                     outputPath, Assemblies.Select(a => a.Path).ToArray(), sources, generateExecutable);
 
-                // Write errors to file
+                // Delete the output binary if we don't want it.
+                // TODO: Don't generate it in the first place.
+                if (results.PathToAssembly != null && deleteBinaries)
+                {
+                    if (File.Exists(results.PathToAssembly))
+                    {
+                        File.Delete(results.PathToAssembly);
+                    }
+                }
 
-                File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{Project.Name}_errors.txt"), 
-                    string.Join(Environment.NewLine, results.Errors));
+                // Write errors to file
+                if (CompilationOutput.HasFlag(ProjectCompilationOutput.Errors))
+                {
+                    File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{Project.Name}_errors.txt"),
+                        string.Join(Environment.NewLine, results.Errors));
+                }
                 
                 // Notify UI that we are done and refresh reflection provider
 

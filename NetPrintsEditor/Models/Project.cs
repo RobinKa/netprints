@@ -2,6 +2,7 @@
 using NetPrints.Core;
 using NetPrintsEditor.Compilation;
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -9,6 +10,16 @@ using System.Threading.Tasks;
 
 namespace NetPrintsEditor.Models
 {
+    [Flags]
+    public enum ProjectCompilationOutput
+    {
+        Nothing = 0,
+        SourceCode = 1,
+        Binaries = 2,
+        Errors = 4,
+        All = SourceCode | Binaries | Errors,
+    }
+
     /// <summary>
     /// Project model.
     /// </summary>
@@ -87,6 +98,16 @@ namespace NetPrintsEditor.Models
             set;
         } = new ObservableRangeCollection<LocalAssemblyName>();
 
+        /// <summary>
+        /// Determines what gets output during compilation.
+        /// </summary>
+        [DataMember]
+        public ProjectCompilationOutput CompilationOutput
+        {
+            get;
+            set;
+        }
+
         private Project()
         {
 
@@ -110,12 +131,14 @@ namespace NetPrintsEditor.Models
         /// <param name="defaultNamespace">Default namespace of the project.</param>
         /// <param name="addDefaultAssemblies">Whether to add default assemblies to the project.</param>
         /// <returns>The created project.</returns>
-        public static Project CreateNew(string name, string defaultNamespace, bool addDefaultAssemblies=true)
+        public static Project CreateNew(string name, string defaultNamespace, bool addDefaultAssemblies=true,
+            ProjectCompilationOutput compilationOutput=ProjectCompilationOutput.All)
         {
             Project project = new Project()
             {
                 Name = name,
-                DefaultNamespace = defaultNamespace
+                DefaultNamespace = defaultNamespace,
+                CompilationOutput = compilationOutput
             };
 
             if (addDefaultAssemblies)

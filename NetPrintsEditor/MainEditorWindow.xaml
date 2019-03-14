@@ -4,17 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetPrintsEditor"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:ModelsAlias="clr-namespace:NetPrintsEditor.Models"
         mc:Ignorable="d"
         Background="#FF404040"
         Height="400" Width="600"
         Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
         x:Name="mainEditorWindow">
+
+    <!-- https://stackoverflow.com/a/6145957/4332314 -->
+    <Window.Resources>
+        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ModelsAlias:ProjectCompilationOutput"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="40" />
+            <RowDefinition Height="24" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -53,7 +66,12 @@
             <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
         </Grid>
 
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+        <ComboBox Grid.Row="4"
+            IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
+            ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+            SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
+
+        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
