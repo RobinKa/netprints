@@ -30,6 +30,11 @@ namespace NetPrintsEditor
             InitializeComponent();
 
             Project = new ProjectVM(null);
+
+            if (App.StartupArguments != null && App.StartupArguments.Length == 1 && App.StartupArguments[0] != null)
+            {
+                LoadProject(App.StartupArguments[0]);
+            }
         }
         
         private void OpenOrCreateClassEditorWindow(ClassVM cls)
@@ -133,6 +138,19 @@ namespace NetPrintsEditor
         }
         #endregion
 
+        private void LoadProject(string path)
+        {
+            try
+            {
+                Project = ProjectVM.LoadFromPath(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load project at path {path}:\n\n{ex}",
+                    "Failed to load project", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void OnOpenProjectClicked(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -142,15 +160,7 @@ namespace NetPrintsEditor
 
             if (openFileDialog.ShowDialog() == true)
             {
-                try
-                {
-                    Project = ProjectVM.LoadFromPath(openFileDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to load project at path {openFileDialog.FileName}:\n\n{ex}",
-                        "Failed to load project", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                LoadProject(openFileDialog.FileName);
             }
         }
 
