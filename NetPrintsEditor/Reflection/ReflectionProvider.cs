@@ -288,6 +288,23 @@ namespace NetPrintsEditor.Reflection
                         .ThenBy(m => m.Name)
                         .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
         }
+
+        public IEnumerable<PropertySpecifier> GetPublicStaticProperties()
+        {
+            return GetValidTypes()
+                    .Where(t =>
+                        t.IsPublic() &&
+                        !t.IsGenericType)
+                    .SelectMany(t =>
+                        t.GetMembers()
+                            .Where(m => m.Kind == SymbolKind.Property)
+                            .Cast<IPropertySymbol>()
+                            .Where(p => p.IsStatic && p.IsPublic() && !p.IsAbstract)
+                            .OrderBy(p => p.ContainingNamespace?.Name)
+                            .ThenBy(p => p.ContainingType?.Name)
+                            .ThenBy(p => p.Name)
+                            .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p)));
+        }
         
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {

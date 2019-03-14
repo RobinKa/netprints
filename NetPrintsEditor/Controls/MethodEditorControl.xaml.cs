@@ -212,6 +212,7 @@ namespace NetPrintsEditor.Controls
                     Suggestions = new ObservableRangeCollection<object>(builtInNodes
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                         .Distinct());
                 }
                 else if(pin.Pin is NodeInputExecPin ixp)
@@ -220,6 +221,7 @@ namespace NetPrintsEditor.Controls
                     Suggestions = new ObservableRangeCollection<object>(builtInNodes
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                         .Distinct());
                 }
                 else
@@ -296,9 +298,11 @@ namespace NetPrintsEditor.Controls
                 IEnumerable<object> baseMethods = ProjectVM.Instance.ReflectionProvider
                     .GetPublicMethodsForType(Method.Class.SuperType);
 
-                Suggestions = new ObservableRangeCollection<object>(builtInNodes.Concat(
-                    baseProperties.Concat(baseMethods.Concat(
-                    ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())))
+                Suggestions = new ObservableRangeCollection<object>(builtInNodes
+                    .Concat(baseProperties)
+                    .Concat(baseMethods)
+                    .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
+                    .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                     .Distinct());
             }
             else

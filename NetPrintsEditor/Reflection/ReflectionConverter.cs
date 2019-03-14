@@ -147,7 +147,8 @@ namespace NetPrintsEditor.Reflection
                 TypeSpecifierFromSymbol(property.Type),
                 hasPublicGetter,
                 hasPublicSetter,
-                TypeSpecifierFromSymbol(property.ContainingType));
+                TypeSpecifierFromSymbol(property.ContainingType),
+                property.IsStatic);
         }
 
         public static PropertySpecifier PropertySpecifierFromField(IFieldSymbol field)
@@ -159,7 +160,8 @@ namespace NetPrintsEditor.Reflection
                 TypeSpecifierFromSymbol(field.Type),
                 field.IsPublic(),
                 field.IsPublic() ? !field.IsReadOnly : false,
-                TypeSpecifierFromSymbol(field.ContainingType)
+                TypeSpecifierFromSymbol(field.ContainingType),
+                field.IsStatic
             );
         }
 

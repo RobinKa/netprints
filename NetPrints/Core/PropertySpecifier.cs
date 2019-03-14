@@ -67,6 +67,16 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Whether this property is static.
+        /// </summary>
+        [DataMember]
+        public bool IsStatic
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Creates a PropertySpecifier.
         /// </summary>
         /// <param name="name">Name of the property.</param>
@@ -75,13 +85,14 @@ namespace NetPrints.Core
         /// <param name="hasPublicSetter">Whether the property has a public setter.</param>
         /// <param name="declaringType">Specifier for the type the property is contained in.</param>
         public PropertySpecifier(string name, TypeSpecifier type, bool hasPublicGetter, 
-            bool hasPublicSetter, TypeSpecifier declaringType)
+            bool hasPublicSetter, TypeSpecifier declaringType, bool isStatic)
         {
             Name = name;
             Type = type;
             HasPublicGetter = hasPublicGetter;
             HasPublicSetter = hasPublicSetter;
             DeclaringType = declaringType;
+            IsStatic = isStatic;
         }
     }
 }

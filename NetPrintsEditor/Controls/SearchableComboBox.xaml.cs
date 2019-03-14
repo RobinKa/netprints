@@ -118,7 +118,8 @@ namespace NetPrintsEditor.Controls
                     VariableGetSetInfo variableInfo = new VariableGetSetInfo(
                         propertySpecifier.Name, propertySpecifier.Type, 
                         propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter,
-                        VariableModifiers.Public, propertySpecifier.DeclaringType);
+                        propertySpecifier.IsStatic ? (VariableModifiers.Static | VariableModifiers.Public) : VariableModifiers.Public,
+                        propertySpecifier.DeclaringType);
 
                     if (EditorCommands.OpenVariableGetSet.CanExecute(variableInfo))
                     {
