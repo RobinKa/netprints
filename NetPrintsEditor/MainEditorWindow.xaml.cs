@@ -120,7 +120,7 @@ namespace NetPrintsEditor
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
-                Filter = "Class Files (*.xml)|*.xml"
+                Filter = "Class Files (*.netpc)|*.netpc"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -155,7 +155,7 @@ namespace NetPrintsEditor
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
-                Filter = "Project Files (*.xml)|*.xml"
+                Filter = "Project Files (*.netpp)|*.netpp"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -181,11 +181,11 @@ namespace NetPrintsEditor
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog()
                 {
-                    DefaultExt = "xml",
+                    DefaultExt = "netpp",
                     AddExtension = true,
-                    Filter = "Project Files (*.xml)|*.xml",
+                    Filter = "Project Files (*.netpp)|*.netpp",
                     OverwritePrompt = true,
-                    FileName = $"{Project.Name}.xml"
+                    FileName = $"{Project.Name}.netpp"
                 };
 
                 if (saveFileDialog.ShowDialog() == true)

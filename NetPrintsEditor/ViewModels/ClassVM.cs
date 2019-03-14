@@ -124,7 +124,7 @@ namespace NetPrintsEditor.ViewModels
 
         public string StoragePath
         {
-            get => $"{Namespace}.{Name}.xml";
+            get => $"{Namespace}.{Name}.netpc";
         }
 
         private Class cls;
