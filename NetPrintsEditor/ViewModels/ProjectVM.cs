@@ -276,7 +276,9 @@ namespace NetPrintsEditor.ViewModels
             IsCompiling = true;
             CompilationMessage = "Compiling...";
 
-            //  Unload the app domain of the previous assembly
+            // Unload the app domain of the previous assembly
+            // TODO: Remove this as it is not relevant anymore since
+            // the .NET Core transition.
             if (reflectionProviderWrapper != null)
             {
                 reflectionProviderWrapper = null;
@@ -289,9 +291,12 @@ namespace NetPrintsEditor.ViewModels
             // Compile in another thread
             new Thread(() =>
             {
-                if (!Directory.Exists("Compiled"))
+                string projectDir = System.IO.Path.GetDirectoryName(Path);
+                string compiledDir = System.IO.Path.Combine(projectDir, $"Compiled_{Name}");
+
+                if (!Directory.Exists(compiledDir))
                 {
-                    Directory.CreateDirectory("Compiled");
+                    Directory.CreateDirectory(compiledDir);
                 }
 
                 ConcurrentBag<string> sources = new ConcurrentBag<string>();
@@ -305,14 +310,14 @@ namespace NetPrintsEditor.ViewModels
                     string code = classTranslator.TranslateClass(cls.Class);
 
                     // Write source to file for examination
-                    File.WriteAllText($"Compiled/{fullClassName}.txt", code);
+                    File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{fullClassName}.cs"), code);
 
                     sources.Add(code);
                 });
 
                 string ext = generateExecutable ? "exe" : "dll";
 
-                string outputPath = $"Compiled/{Project.Name}.{ext}";
+                string outputPath = System.IO.Path.Combine(compiledDir, $"{Project.Name}.{ext}");
 
                 // Create compiler on other app domain, compile, unload the app domain
 
@@ -323,7 +328,7 @@ namespace NetPrintsEditor.ViewModels
 
                 // Write errors to file
 
-                File.WriteAllText($"Compiled/{Project.Name}_errors.txt", 
+                File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{Project.Name}_errors.txt"), 
                     string.Join(Environment.NewLine, results.Errors));
                 
                 // Notify UI that we are done and refresh reflection provider
