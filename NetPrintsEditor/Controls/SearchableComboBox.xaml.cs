@@ -65,16 +65,16 @@ namespace NetPrintsEditor.Controls
                 return true;
             }
 
-            string itemText = item.ToString();
-
             object convertedItem = suggestionConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture);
-            if (convertedItem is SuggestionListItem listItem && listItem.Text is string listItemText)
+            if (convertedItem is string listItemText)
             {
-                itemText = listItemText;
+                return searchText.Text.Split(' ').All(searchTerm =>
+                    listItemText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
             }
-
-            return searchText.Text.Split(' ').All(searchTerm =>
-                itemText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
+            else
+            {
+                throw new Exception("Expected string type after conversion");
+            }
         }
 
         private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
