@@ -80,7 +80,7 @@ namespace NetPrints.Core
             Name = name;
             Type = type;
             HasPublicGetter = hasPublicGetter;
-            HasPublicSetter = HasPublicSetter;
+            HasPublicSetter = hasPublicSetter;
             DeclaringType = declaringType;
         }
     }
