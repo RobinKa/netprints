@@ -14,6 +14,7 @@
     <None Remove="Resources\If_16x.png" />
     <None Remove="Resources\Loop_16x.png" />
     <None Remove="Resources\Method_16x.png" />
+    <None Remove="Resources\Operator_16x.png" />
     <None Remove="Resources\Return_16x.png" />
     <None Remove="Resources\Type_16x.png" />
   </ItemGroup>
@@ -29,6 +30,7 @@
     <Resource Include="Resources\If_16x.png" />
     <Resource Include="Resources\Loop_16x.png" />
     <Resource Include="Resources\Method_16x.png" />
+    <Resource Include="Resources\Operator_16x.png" />
     <Resource Include="Resources\Property_16x.png" />
     <Resource Include="Resources\Return_16x.png" />
     <Resource Include="Resources\Type_16x.png" />

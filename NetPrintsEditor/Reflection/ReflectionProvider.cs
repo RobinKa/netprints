@@ -57,7 +57,7 @@ namespace NetPrintsEditor.Reflection
             return symbol.GetAllMembers()
                     .Where(member => member.Kind == SymbolKind.Method)
                     .Cast<IMethodSymbol>()
-                    .Where(method => method.MethodKind == MethodKind.Ordinary);
+                    .Where(method => method.MethodKind == MethodKind.Ordinary || method.MethodKind == MethodKind.BuiltinOperator || method.MethodKind == MethodKind.UserDefinedOperator);
         }
 
         public static IEnumerable<IMethodSymbol> GetConverters(this INamedTypeSymbol symbol)
@@ -181,7 +181,7 @@ namespace NetPrintsEditor.Reflection
                         m.IsPublic() &&
                         !m.IsStatic &&
                         !m.IsGenericMethod &&
-                        m.MethodKind == MethodKind.Ordinary)
+                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
                     .ThenBy(m => m.Name)
@@ -207,7 +207,7 @@ namespace NetPrintsEditor.Reflection
                             m.IsPublic() &&
                             m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static) &&
                             !m.IsGenericMethod &&
-                            m.MethodKind == MethodKind.Ordinary)
+                            m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)
                         .ThenBy(m => m.Name)
@@ -233,7 +233,7 @@ namespace NetPrintsEditor.Reflection
                         m.IsPublic() &&
                         !m.IsStatic &&
                         !m.IsGenericMethod &&
-                        m.MethodKind == MethodKind.Ordinary)
+                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
                     .ThenBy(m => m.Name)

@@ -23,7 +23,8 @@ namespace NetPrintsEditor.Converters
             if (value is MethodSpecifier methodSpecifier)
             {
                 text = methodSpecifierConverter.Convert(methodSpecifier, typeof(string), parameter, culture) as string;
-                iconPath = "Method_16x.png";
+
+                iconPath = OperatorUtil.IsOperator(methodSpecifier) ? "Operator_16x.png" : "Method_16x.png";
             }
             else if (value is PropertySpecifier propertySpecifier)
             {

@@ -413,31 +413,65 @@ namespace NetPrints.Translator
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
-            // Static: Write class name / target, default to own class name
-            // Instance: Write target, default to this
+            // Get arguments for method call
+            var argumentNames = GetPinIncomingValues(node.ArgumentPins);
 
-            if (node.IsStatic)
+            // Check whether the method is an operator and we need to translate its name
+            // into operator symbols. Otherwise just call the method normally.
+            if (OperatorUtil.TryGetOperatorInfo(node.MethodSpecifier, out OperatorInfo operatorInfo))
             {
-                builder.Append($"{node.DeclaringType.FullCodeName}.");
-            }
-            else
-            {
-                if (node.TargetPin.IncomingPin != null)
+                if (operatorInfo.Unary)
                 {
-                    string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
-                    builder.Append($"{targetName}.");
+                    if (argumentNames.Count() != 1)
+                    {
+                        throw new Exception($"Unary operator was found but did not have one argument: {node.MethodName}");
+                    }
+
+                    if (operatorInfo.UnaryRightPosition)
+                    {
+                        builder.AppendLine($"{argumentNames.ElementAt(0)}{operatorInfo.Symbol};");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"{operatorInfo.Symbol}{argumentNames.ElementAt(0)};");
+                    }
                 }
                 else
                 {
-                    // Default to this
-                    builder.Append("this.");
+                    if (argumentNames.Count() != 2)
+                    {
+                        throw new Exception($"Binary operator was found but did not have two arguments: {node.MethodName}");
+                    }
+
+                    builder.AppendLine($"{argumentNames.ElementAt(0)}{operatorInfo.Symbol}{argumentNames.ElementAt(1)};");
                 }
             }
+            else
+            {
+                // Static: Write class name / target, default to own class name
+                // Instance: Write target, default to this
 
-            // Write function call with arguments
-            var argumentNames = GetPinIncomingValues(node.ArgumentPins);
+                if (node.IsStatic)
+                {
+                    builder.Append($"{node.DeclaringType.FullCodeName}.");
+                }
+                else
+                {
+                    if (node.TargetPin.IncomingPin != null)
+                    {
+                        string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
+                        builder.Append($"{targetName}.");
+                    }
+                    else
+                    {
+                        // Default to this
+                        builder.Append("this.");
+                    }
+                }
 
-            builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
+                // Write the method call
+                builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
+            }
 
             // Assign the real variables from the temporary tuple
             if(node.ReturnValuePins.Count > 1)

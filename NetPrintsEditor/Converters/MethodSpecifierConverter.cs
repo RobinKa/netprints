@@ -15,9 +15,20 @@ namespace NetPrintsEditor.Converters
         {
             if(value is MethodSpecifier methodSpecifier)
             {
-                string paramTypeNames = string.Join(", ", methodSpecifier.Arguments);
+                string name;
 
-                string s = $"{methodSpecifier.DeclaringType} {methodSpecifier.Name} ({paramTypeNames})";
+                // Check if the method is an operator
+                if (OperatorUtil.TryGetOperatorInfo(methodSpecifier, out OperatorInfo operatorInfo))
+                {
+                    name = $"Operator {operatorInfo.DisplayName}";
+                }
+                else
+                {
+                    name = methodSpecifier.Name;
+                }
+
+                string paramTypeNames = string.Join(", ", methodSpecifier.Arguments);
+                string s = $"{methodSpecifier.DeclaringType} {name} ({paramTypeNames})";
 
                 if(methodSpecifier.ReturnTypes.Count > 0)
                 {

@@ -167,15 +167,15 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            string s;
+            string s = IsStatic ? "Static " : "";
 
-            if (IsStatic)
+            if (OperatorUtil.TryGetOperatorInfo(MethodSpecifier, out OperatorInfo operatorInfo))
             {
-                s = $"Call Static {DeclaringType} {MethodName}";
+                s += $"Operator {operatorInfo.DisplayName}";
             }
             else
             {
-                s = $"Call {MethodName}";
+                s += $"Call {MethodName}";
             }
 
             if (GenericArgumentTypes.Count > 0)
