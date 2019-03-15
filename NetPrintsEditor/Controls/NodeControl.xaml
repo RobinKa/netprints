@@ -16,9 +16,12 @@
 
     <UserControl.Resources>
         <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
+        <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
+        <converters:BoolToGridLengthConverter x:Key="BoolToLength" True="220" False="100" />
     </UserControl.Resources>
 
-    <Grid MinWidth="220" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
+    <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToLength}}" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
         <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#AA202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>
@@ -27,13 +30,23 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+               
+            <!--
+            Padding for reroute nodes so the cables line up straight, should ideally just make
+            the pins line up with the grid.
+            -->
+            <Rectangle Height="6.5" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}" Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}"
+                       StrokeThickness="2" />
 
-            <Rectangle Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}"  Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" />
+            <Rectangle Height="40" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
+                       Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}" Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}"
+                       StrokeThickness="2" />
 
-            <Grid>
+            <Grid Height="40" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -42,7 +55,8 @@
                 <ComboBox x:Name="nodeVariants" Margin="2" Width="16" Grid.Column="0" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.Overloads, Mode=OneWay}" 
                     SelectionChanged="NodeVariants_SelectionChanged" />
                 
-                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 10" FontFamily="Lucida Sans Unicode" FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
+                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Node}" Padding="10, 10" FontFamily="Lucida Sans Unicode"
+                       FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                     <Label.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
                     </Label.Effect>

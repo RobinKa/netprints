@@ -32,6 +32,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush MakeDelegateNodeBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x7A, 0x20));
 
+        /// <summary>
+        /// Brush for the header of the node.
+        /// </summary>
         public SolidColorBrush Brush
         {
             get
@@ -74,6 +77,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush SelectedBorderBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xEE, 0x50));
 
+        /// <summary>
+        /// Brush for the border of the node.
+        /// </summary>
         public SolidColorBrush BorderBrush
         {
             get => IsSelected ? SelectedBorderBrush : DeselectedBorderBrush;
@@ -84,6 +90,9 @@ namespace NetPrintsEditor.ViewModels
             get => IsSelected ? 1 : 0;
         }
 
+        /// <summary>
+        /// Whether the node is currently selected.
+        /// </summary>
         public bool IsSelected
         {
             get => isSelected;
@@ -99,8 +108,19 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Whether this node is a reroute node.
+        /// </summary>
+        public bool IsRerouteNode
+        {
+            get => node is RerouteNode;
+        }
+
         private bool isSelected;
 
+        /// <summary>
+        /// Tool tip of the node shown when hovering over it.
+        /// </summary>
         public string ToolTip
         {
             get
@@ -116,6 +136,10 @@ namespace NetPrintsEditor.ViewModels
 
 
         // Wrapped attributes of Node
+
+        /// <summary>
+        /// Name of the node.
+        /// </summary>
         public string Name
         {
             get => node.Name;
@@ -214,6 +238,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ToolTip));
                     OnPropertyChanged(nameof(Overloads));
+                    OnPropertyChanged(nameof(IsRerouteNode));
                 }
             }
         }

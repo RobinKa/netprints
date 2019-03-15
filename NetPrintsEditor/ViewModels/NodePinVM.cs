@@ -112,8 +112,14 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(ShowEnumValue));
                     OnPropertyChanged(nameof(PossibleEnumNames));
                     OnPropertyChanged(nameof(ToolTip));
+                    OnPropertyChanged(nameof(IsRerouteNodePin));
                 }
             }
+        }
+
+        public bool IsRerouteNodePin
+        {
+            get => Node is RerouteNode;
         }
 
         public object UnconnectedValue
