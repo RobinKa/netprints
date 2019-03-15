@@ -19,7 +19,7 @@
     </UserControl.Resources>
 
     <Grid MinWidth="220" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
-        <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#FF202020">
+        <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#AA202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>
             </Rectangle.Effect>

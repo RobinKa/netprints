@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace NetPrintsEditor.Controls
 {
@@ -444,5 +445,21 @@ namespace NetPrintsEditor.Controls
             }
         }
         #endregion
+
+        private void CablePath_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (sender is Path path)
+            {
+                path.Opacity = 1;
+            }
+        }
+
+        private void CablePath_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (sender is Path path)
+            {
+                path.Opacity = 0.7;
+            }
+        }
     }
 }
