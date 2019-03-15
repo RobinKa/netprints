@@ -415,6 +415,30 @@ namespace NetPrintsEditor.ViewModels
             Pin = pin;
         }
 
+        /// <summary>
+        /// Adds a reroute node for this pin. Only valid
+        /// for input data pins and output execution pins.
+        /// </summary>
+        public void AddRerouteNode()
+        {
+            if (Pin is NodeInputDataPin dataPin)
+            {
+                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(dataPin);
+                rerouteNode.PositionX = (Pin.Node.PositionX + dataPin.IncomingPin.Node.PositionX) / 2;
+                rerouteNode.PositionY = (Pin.Node.PositionY + dataPin.IncomingPin.Node.PositionY) / 2;
+            }
+            else if (Pin is NodeOutputExecPin execPin)
+            {
+                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(execPin);
+                rerouteNode.PositionX = (Pin.Node.PositionX + execPin.OutgoingPin.Node.PositionX) / 2;
+                rerouteNode.PositionY = (Pin.Node.PositionY + execPin.OutgoingPin.Node.PositionY) / 2;
+            }
+            else
+            {
+                throw new Exception("Can't add reroute node for invalid pin type");
+            }
+        }
+
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 

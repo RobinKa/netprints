@@ -70,7 +70,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Path MouseEnter="CablePath_MouseEnter" MouseLeave="CablePath_MouseLeave" x:Name="cablePath" Visibility="{Binding IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}"
+                        <Path MouseDown="CablePath_MouseDown" MouseEnter="CablePath_MouseEnter" MouseLeave="CablePath_MouseLeave" x:Name="cablePath" Visibility="{Binding IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}"
                               Stroke="{Binding Brush}" StrokeThickness="4" Opacity="0.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                             <Path.Data>
                                 <PathGeometry>

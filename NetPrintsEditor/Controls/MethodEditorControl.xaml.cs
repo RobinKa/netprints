@@ -461,5 +461,21 @@ namespace NetPrintsEditor.Controls
                 path.Opacity = 0.7;
             }
         }
+
+        private void CablePath_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var pin = element?.DataContext as NodePinVM;
+
+            if (pin == null)
+            {
+                throw new Exception("Could not find cable's pin.");
+            }
+
+            if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed &&e.ClickCount == 2)
+            {
+                pin.AddRerouteNode();
+            }
+        }
     }
 }

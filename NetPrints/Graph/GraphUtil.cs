@@ -197,5 +197,48 @@ namespace NetPrints.Graph
 
             pin.IncomingPins.Clear();
         }
+
+        /// <summary>
+        /// Adds a data reroute node and does the necessary rewiring.
+        /// </summary>
+        /// <param name="pin">Data pin to add reroute node for.</param>
+        /// <returns>Reroute node created for the data pin.</returns>
+        public static RerouteNode AddRerouteNode(NodeInputDataPin pin)
+        {
+            if (pin?.IncomingPin == null)
+            {
+                throw new ArgumentException("Pin or its connected pin were null");
+            }
+
+            var rerouteNode = new RerouteNode(pin.Node.Method, 0, new Tuple<BaseType, BaseType>[]
+            {
+                new Tuple<BaseType, BaseType>(pin.PinType, pin.IncomingPin.PinType)
+            });
+
+            GraphUtil.ConnectDataPins(pin.IncomingPin, rerouteNode.InputDataPins[0]);
+            GraphUtil.ConnectDataPins(rerouteNode.OutputDataPins[0], pin);
+
+            return rerouteNode;
+        }
+
+        /// <summary>
+        /// Adds an execution reroute node and does the necessary rewiring.
+        /// </summary>
+        /// <param name="pin">Execution pin to add reroute node for.</param>
+        /// <returns>Reroute node created for the execution pin.</returns>
+        public static RerouteNode AddRerouteNode(NodeOutputExecPin pin)
+        {
+            if (pin?.OutgoingPin == null)
+            {
+                throw new ArgumentException("Pin or its connected pin were null");
+            }
+
+            var rerouteNode = new RerouteNode(pin.Node.Method, 1, null);
+
+            GraphUtil.ConnectExecPins(rerouteNode.OutputExecPins[0], pin.OutgoingPin);
+            GraphUtil.ConnectExecPins(pin, rerouteNode.InputExecPins[0]);
+
+            return rerouteNode;
+        }
     }
 }

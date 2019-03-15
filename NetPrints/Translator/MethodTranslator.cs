@@ -45,6 +45,8 @@ namespace NetPrints.Translator
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
                 (translator, node) => translator.TranslateContinueForLoopNode(node as ForLoopNode)} },
 
+            { typeof(RerouteNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateRerouteNode(node as RerouteNode) } },
+
             { typeof(VariableGetterNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateVariableGetterNode(node as VariableGetterNode) } },
             { typeof(LiteralNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateLiteralNode(node as LiteralNode) } },
             { typeof(MakeDelegateNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeDelegateNode(node as MakeDelegateNode) } },
@@ -729,6 +731,23 @@ namespace NetPrints.Translator
         public void PureTranslateTypeOfNode(TypeOfNode node)
         {
             builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.Type.FullCodeNameUnbound});");
+        }
+
+        public void TranslateRerouteNode(RerouteNode node)
+        {
+            if ((node.ExecRerouteCount != 1 && node.DataRerouteCount != 1) || (node.ExecRerouteCount == 1 && node.DataRerouteCount == 1))
+            {
+                throw new NotImplementedException("Only implemented reroute nodes with 1 execution or 1 data pin.");
+            }
+
+            if (node.DataRerouteCount == 1)
+            {
+                builder.AppendLine($"{GetOrCreatePinName(node.OutputDataPins[0])} = {GetOrCreatePinName(node.InputDataPins[0].IncomingPin)};");
+            }
+            else if (node.ExecRerouteCount == 1)
+            {
+                WriteGotoOutputPin(node.OutputExecPins[0]);
+            }
         }
     }
 }
