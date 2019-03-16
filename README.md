@@ -11,7 +11,7 @@ NetPrints is a visual programming language inspired by Unreal Engine 4's Bluepri
 [Unity tutorial](https://github.com/RobinKa/NetPrintsUnityTutorial)
 
 # Download
-Version 0.0.2 of the editor binaries can be found [here](https://github.com/RobinKa/netprints/releases/tag/0.0.2). You can also download the source code and compile the binaries (requires Visual Studio 2019 and .NET Core 3).
+Version 0.0.2-update1 of the editor binaries can be found [here](https://github.com/RobinKa/netprints/releases/tag/0.0.2-update1). You can also download the source code and compile the binaries (requires Visual Studio 2019 and .NET Core 3).
 
 # Requirements
 The editor itself requires .NET Core 3 (since this is the first version to support WPF), although we provide self-contained binaries for Windows x86. Binaries compiled by the editor require any dependencies you added as references.
