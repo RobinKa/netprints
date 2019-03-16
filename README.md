@@ -3,6 +3,8 @@
 # Description
 NetPrints is a visual programming language inspired by Unreal Engine 4's Blueprints which compiles into .NET binaries or alternatively C# source code. These can be used from any other .NET language (eg. C#) or used as standalone programs. Furthermore any .NET binaries (both .NET Framework and .NET Core, and ideally .NET Standard) can be referenced and used. Its goal is to support using anything that is made in C#. Currently there are several limitations, the most major ones being delegate and generics support not being 100% complete.
 
+[Unity tutorial](https://github.com/RobinKa/NetPrintsUnityTutorial)
+
 # Download
 Version 0.0.2 of the editor binaries can be found [here](https://github.com/RobinKa/netprints/releases/tag/0.0.2). You can also download the source code and compile the binaries (requires Visual Studio 2019 and .NET Core 3).
 
@@ -19,7 +21,7 @@ Any contributions are welcome. If you notice bugs or have feature suggestions ju
 
 ## Using External Libraries
 ### Unity
-![](https://i.imgur.com/IcuX6Zo.png)
+![](https://raw.githubusercontent.com/RobinKa/NetPrintsUnityTutorial/master/Screenshots/MethodFixedUpdate.png)
 ### SFML
 ![](http://i.imgur.com/BXLHSE3.png)
 ### TensorFlowSharp
