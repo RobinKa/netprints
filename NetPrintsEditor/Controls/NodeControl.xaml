@@ -18,10 +18,10 @@
         <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
         <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
-        <converters:BoolToGridLengthConverter x:Key="BoolToLength" True="220" False="100" />
+        <converters:BoolToDoubleConverter x:Key="BoolToDouble" True="40" False="220" />
     </UserControl.Resources>
 
-    <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToLength}}" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
+    <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToDouble}}" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
         <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#AA202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>

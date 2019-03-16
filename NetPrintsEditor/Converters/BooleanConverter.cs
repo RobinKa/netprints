@@ -38,10 +38,10 @@ namespace NetPrintsEditor.Converters
         }
     }
 
-    public sealed class BoolToGridLengthConverter : BooleanConverter<GridLength>
+    public sealed class BoolToDoubleConverter : BooleanConverter<double>
     {
-        public BoolToGridLengthConverter() :
-            base(GridLength.Auto, GridLength.Auto)
+        public BoolToDoubleConverter() :
+            base(0, 0)
         {
         }
     }
