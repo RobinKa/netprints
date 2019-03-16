@@ -19,7 +19,7 @@ Any contributions are welcome. If you notice bugs or have feature suggestions ju
 
 ## Using External Libraries
 ### Unity
-![](https://i.imgur.com/dn2kHXZ.png)
+![](https://i.imgur.com/IcuX6Zo.png)
 ### SFML
 ![](http://i.imgur.com/BXLHSE3.png)
 ### TensorFlowSharp
