@@ -4,6 +4,7 @@ using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -211,6 +212,7 @@ namespace NetPrintsEditor
             {
                 Project = oldProject;
             }
+            Project.Name = Path.GetFileNameWithoutExtension(Project.Path);
         }
 
         private void OnCompileButtonClicked(object sender, RoutedEventArgs e)
