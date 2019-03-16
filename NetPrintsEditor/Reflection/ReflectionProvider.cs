@@ -152,11 +152,6 @@ namespace NetPrintsEditor.Reflection
             }).Where(t => t != null);
         }
 
-        private IEnumerable<INamedTypeSymbol> GetValidTypes(string name, int arity)
-        {
-            return GetValidTypes(name).Where(t => t.Arity == arity);
-        }
-
         #region IReflectionProvider
         public IEnumerable<TypeSpecifier> GetNonStaticTypes()
         {
@@ -362,7 +357,7 @@ namespace NetPrintsEditor.Reflection
             INamedTypeSymbol declaringType = GetTypeFromSpecifier(specifier.DeclaringType);
             return declaringType?.GetMethods().Where(
                     m => m.Name == specifier.Name && 
-                    m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.Arguments))
+                    m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.ArgumentTypes))
                 .FirstOrDefault();
         }
 
@@ -460,6 +455,8 @@ namespace NetPrintsEditor.Reflection
         private static MethodSpecifier TryMakeClosedMethod(MethodSpecifier method, 
             BaseType typeToReplace, TypeSpecifier replacementType)
         {
+            
+
             // Create a list of generic types to replace with another type
             // These will then look for those generic types in the argument-
             // and return types and replace them with the new type
@@ -485,7 +482,15 @@ namespace NetPrintsEditor.Reflection
                 }
             }
 
-            ReplaceGenericTypes(method.Arguments, replacedGenericTypes);
+            IList<BaseType> methodArgTypes = method.ArgumentTypes.ToList();
+            ReplaceGenericTypes(methodArgTypes, replacedGenericTypes);
+
+            // Replace method arguments' types by the replaced ones
+            for (int i = 0; i < method.Arguments.Count; i++)
+            {
+                method.Arguments[i].Value = methodArgTypes[i];
+            }
+
             ReplaceGenericTypes(method.ReturnTypes, replacedGenericTypes);
 
             // Remove the replaced generic arguments from the method

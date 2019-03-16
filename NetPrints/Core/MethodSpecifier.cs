@@ -37,13 +37,21 @@ namespace NetPrints.Core
         }
 
         /// <summary>
-        /// Specifiers for the types this method takes as arguments.
+        /// Named specifiers for the types this method takes as arguments.
         /// </summary>
         [DataMember]
-        public IList<BaseType> Arguments
+        public IList<Named<BaseType>> Arguments
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Specifiers for the types this method takes as arguments.
+        /// </summary>
+        public IReadOnlyList<BaseType> ArgumentTypes
+        {
+            get => Arguments.Select(t => (BaseType)t).ToArray();
         }
 
         /// <summary>
@@ -85,7 +93,7 @@ namespace NetPrints.Core
         /// <param name="modifiers">Modifiers of the method.</param>
         /// <param name="declaringType">Specifier for the type this method is contained in.</param>
         /// <param name="genericArguments">Generic arguments this method takes.</param>
-        public MethodSpecifier(string name, IEnumerable<BaseType> arguments,
+        public MethodSpecifier(string name, IEnumerable<Named<BaseType>> arguments,
             IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType,
             IList<BaseType> genericArguments)
         {
@@ -132,7 +140,7 @@ namespace NetPrints.Core
                 return
                     methodSpec.Name == Name &&
                     methodSpec.DeclaringType == DeclaringType &&
-                    methodSpec.Arguments.SequenceEqual(Arguments) &&
+                    methodSpec.ArgumentTypes.SequenceEqual(ArgumentTypes) &&
                     methodSpec.ReturnTypes.SequenceEqual(ReturnTypes) &&
                     methodSpec.Modifiers == Modifiers &&
                     methodSpec.GenericArguments.SequenceEqual(GenericArguments);

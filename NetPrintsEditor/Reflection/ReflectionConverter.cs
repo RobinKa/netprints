@@ -7,6 +7,9 @@ using System.Text;
 
 namespace NetPrintsEditor.Reflection
 {
+    /// <summary>
+    /// Helper class for converting from Roslyn symbols to NetPrints specifiers.
+    /// </summary>
     public static class ReflectionConverter
     {
         public static TypeSpecifier TypeSpecifierFromSymbol(ITypeSymbol type)
@@ -86,6 +89,11 @@ namespace NetPrintsEditor.Reflection
             }
         }
 
+        public static Named<BaseType> NamedBaseTypeSpecifierFromSymbol(IParameterSymbol paramSymbol)
+        {
+            return new Named<BaseType>(paramSymbol.Name, BaseTypeSpecifierFromSymbol(paramSymbol.Type));
+        }
+
         public static MethodSpecifier MethodSpecifierFromSymbol(IMethodSymbol method)
         {
             MethodModifiers modifiers = MethodModifiers.Private;
@@ -120,10 +128,9 @@ namespace NetPrintsEditor.Reflection
             BaseType[] returnTypes = method.ReturnsVoid ?
                 new BaseType[] { } :
                 new BaseType[] { BaseTypeSpecifierFromSymbol(method.ReturnType) };
-            
 
-            BaseType[] parameterTypes = method.Parameters.Select(
-                p => BaseTypeSpecifierFromSymbol(p.Type)).ToArray();
+            Named<BaseType>[] parameterTypes = method.Parameters.Select(
+                p => NamedBaseTypeSpecifierFromSymbol(p)).ToArray();
 
             BaseType[] genericArgs = method.TypeParameters.Select(
                 p => BaseTypeSpecifierFromSymbol(p)).ToArray();

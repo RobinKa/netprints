@@ -49,10 +49,15 @@ namespace NetPrints.Graph
         /// <summary>
         /// List of type specifiers the method takes.
         /// </summary>
-        public IList<BaseType> ArgumentTypes
+        public IReadOnlyList<BaseType> ArgumentTypes
         {
-            get => MethodSpecifier.Arguments;
+            get => MethodSpecifier.ArgumentTypes;
         }
+
+        // <summary>
+        /// List of named type specifiers the method takes.
+        /// </summary>
+        public IList<Named<BaseType>> Arguments => MethodSpecifier.Arguments;
 
         /// <summary>
         /// List of type specifiers the method returns.
@@ -154,12 +159,12 @@ namespace NetPrints.Graph
             AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
             AddOutputExecPin("Catch");
 
-            foreach(BaseType argumentType in ArgumentTypes)
+            foreach (Named<BaseType> argument in Arguments)
             {
-                AddInputDataPin(argumentType.ShortName, argumentType);
+                AddInputDataPin(argument.Name, argument.Value);
             }
 
-            foreach(BaseType returnType in ReturnTypes)
+            foreach (BaseType returnType in ReturnTypes)
             {
                 AddOutputDataPin(returnType.ShortName, returnType);
             }

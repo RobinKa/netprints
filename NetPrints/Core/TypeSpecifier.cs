@@ -126,7 +126,7 @@ namespace NetPrints.Core
         /// <param name="isEnum">Whether the type is an enum.</param>
         /// <param name="isInterface">Whether the type is an interface.</param>
         /// <param name="genericArguments">Generic arguments the type takes.</param>
-        public TypeSpecifier(string typeName, bool isEnum=false, bool isInterface=false, IList<BaseType> genericArguments=null)
+        public TypeSpecifier(string typeName, bool isEnum=false, bool isInterface=false, IEnumerable<BaseType> genericArguments=null)
             : base(typeName)
         {
             IsEnum = isEnum;
