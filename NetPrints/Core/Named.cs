@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace NetPrints.Core
@@ -10,9 +11,13 @@ namespace NetPrints.Core
     /// converted to the class itself.
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>
+    [DataContract]
     public class Named<T>
     {
+        [DataMember]
         public string Name { get; set; }
+
+        [DataMember]
         public T Value { get; set; }
 
         public Named(string name, T type)
