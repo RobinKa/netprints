@@ -1,6 +1,11 @@
+# NetPrints
+
+<p align="center">
+  <img width="128" height="128" src="https://raw.githubusercontent.com/RobinKa/RobinKa.github.io/master/NetPrintsLogo.png">
+</p>
+
 [![Build Status](https://travis-ci.org/RobinKa/netprints.svg)](https://travis-ci.org/RobinKa/netprints)
 
-# Description
 NetPrints is a visual programming language inspired by Unreal Engine 4's Blueprints which compiles into .NET binaries or alternatively C# source code. These can be used from any other .NET language (eg. C#) or used as standalone programs. Furthermore any .NET binaries (both .NET Framework and .NET Core, and ideally .NET Standard) can be referenced and used. Its goal is to support using anything that is made in C#. Currently there are several limitations, the most major ones being delegate and generics support not being 100% complete.
 
 [Unity tutorial](https://github.com/RobinKa/NetPrintsUnityTutorial)
