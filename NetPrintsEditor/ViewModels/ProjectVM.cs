@@ -415,7 +415,8 @@ namespace NetPrintsEditor.ViewModels
 
         public void RunProject()
         {
-            string exePath = System.IO.Path.GetFullPath($"Compiled/{Project.Name}.exe");
+            string projectDir = System.IO.Path.GetDirectoryName(Path);
+            string exePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(projectDir, $"Compiled_{Name}", $"{Project.Name}.exe"));
 
             if(!File.Exists(exePath))
             {
