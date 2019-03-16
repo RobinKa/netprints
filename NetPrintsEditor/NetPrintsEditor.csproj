@@ -8,6 +8,7 @@
     <Version>0.0.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Robin Kahlow 2018</Copyright>
+    <ApplicationIcon>NetPrintsLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ClassEditorWindow.xaml" />
