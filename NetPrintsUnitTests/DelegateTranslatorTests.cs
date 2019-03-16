@@ -40,7 +40,7 @@ namespace NetPrints.Tests
             delegateMethod.ReturnTypes.AddRange(returnTypes);
 
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
-                new BaseType[] { TypeSpecifier.FromType<int>(), TypeSpecifier.FromType<string>() },
+                new Named<BaseType>[] { new Named<BaseType>("arg1", TypeSpecifier.FromType<int>()), new Named<BaseType>("arg2", TypeSpecifier.FromType<string>()) },
                 new BaseType[] { TypeSpecifier.FromType<float>() },
                 MethodModifiers.Static,
                 TypeSpecifier.FromType<double>(),
