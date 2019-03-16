@@ -17,8 +17,13 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if(Pin is NodeDataPin dataPin)
+                string toolTip = "";
+
+                if (Pin is NodeDataPin dataPin)
                 {
+                    toolTip = $"{dataPin.PinType}: {dataPin.Name}";
+                    string documentation = null;
+
                     if (dataPin.Node is CallMethodNode callMethodNode)
                     {
                         if (dataPin is NodeInputDataPin inputDataPin)
@@ -26,7 +31,7 @@ namespace NetPrintsEditor.ViewModels
                             int paramIndex = callMethodNode.ArgumentPins.IndexOf(inputDataPin);
                             if (paramIndex >= 0)
                             {
-                                return ProjectVM.Instance.ReflectionProvider.GetMethodParameterDocumentation(callMethodNode.MethodSpecifier, paramIndex);
+                                documentation = ProjectVM.Instance.ReflectionProvider.GetMethodParameterDocumentation(callMethodNode.MethodSpecifier, paramIndex);
                             }
                         }
                         else if(dataPin is NodeOutputDataPin outputDataPin)
@@ -34,15 +39,32 @@ namespace NetPrintsEditor.ViewModels
                             int returnIndex = callMethodNode.OutputDataPins.IndexOf(outputDataPin);
                             if (returnIndex >= 0)
                             {
-                                return ProjectVM.Instance.ReflectionProvider.GetMethodReturnDocumentation(callMethodNode.MethodSpecifier, returnIndex);
+                                documentation = ProjectVM.Instance.ReflectionProvider.GetMethodReturnDocumentation(callMethodNode.MethodSpecifier, returnIndex);
                             }
                         }
                     }
 
-                    return $"{dataPin.PinType} {dataPin.Name}";
+                    if (!string.IsNullOrWhiteSpace(documentation))
+                    {
+                        toolTip += Environment.NewLine + Environment.NewLine + documentation;
+                    }
+                }
+                else if (Pin is NodeInputExecPin)
+                {
+                    toolTip = "Can be connected to output execution pins to receive execution.";
+                }
+                else if (Pin is NodeOutputExecPin)
+                {
+                    toolTip = "Can be connected to input execution pins to pass on execution.";
+
+                    // TODO: Don't hardcode this / let execution pins have proper tooltips
+                    if (Pin.Name == "Catch")
+                    {
+                        toolTip += Environment.NewLine + Environment.NewLine + "Executed when an exception is thrown on this node. The Exception output data pin will be set to the caught exception. If unconnected the exception will get thrown.";
+                    }
                 }
 
-                return null;
+                return toolTip;
             }
         }
 
