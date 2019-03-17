@@ -81,7 +81,7 @@ namespace NetPrints.Tests
 
             // Create nodes
             IfElseNode ifElseNode = new IfElseNode(ifElseMethod);
-            LiteralNode literalNode = new LiteralNode(ifElseMethod, TypeSpecifier.FromType<int>(), 123);
+            LiteralNode literalNode = LiteralNode.WithValue(ifElseMethod, 123);
 
             // Connect exec nodes
             GraphUtil.ConnectExecPins(ifElseMethod.EntryNode.InitialExecutionPin, ifElseNode.ExecutionPin);
@@ -103,7 +103,7 @@ namespace NetPrints.Tests
             };
 
             // Create nodes
-            LiteralNode maxIndexLiteralNode = new LiteralNode(forLoopMethod, TypeSpecifier.FromType<int>(), 10);
+            LiteralNode maxIndexLiteralNode = LiteralNode.WithValue(forLoopMethod, 10);
             ForLoopNode forLoopNode = new ForLoopNode(forLoopMethod);
             
             // Connect exec nodes

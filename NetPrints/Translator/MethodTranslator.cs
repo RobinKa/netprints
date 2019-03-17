@@ -738,9 +738,7 @@ namespace NetPrints.Translator
 
         public void PureTranslateLiteralNode(LiteralNode node)
         {
-            string literalString = TranslatorUtil.ObjectToLiteral(node.Value, node.LiteralType);
-
-            builder.AppendLine($"{GetOrCreatePinName(node.ValuePin)} = {literalString};");
+            builder.AppendLine($"{GetOrCreatePinName(node.ValuePin)} = {GetPinIncomingValue(node.InputDataPins[0])};");
         }
 
         public void PureTranslateMakeDelegateNode(MakeDelegateNode node)

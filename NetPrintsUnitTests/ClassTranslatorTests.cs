@@ -59,7 +59,7 @@ namespace NetPrints.Tests
             MethodSpecifier writeConsoleSpecifier = new MethodSpecifier("WriteLine", new Named<BaseType>[] { new Named<BaseType>("argName", stringType) }, new BaseType[0], MethodModifiers.Public, TypeSpecifier.FromType(typeof(Console)), new BaseType[0]);
 
             // Create nodes
-            LiteralNode stringLiteralNode = new LiteralNode(mainMethod, TypeSpecifier.FromType<string>(), "Hello World");
+            LiteralNode stringLiteralNode = LiteralNode.WithValue(mainMethod, "Hello World");
             VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, new Variable("testVariable", TypeSpecifier.FromType<string>()));
             CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, stringLengthSpecifier);
             CallMethodNode writeConsoleNode = new CallMethodNode(mainMethod, writeConsoleSpecifier);

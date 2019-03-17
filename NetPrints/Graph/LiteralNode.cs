@@ -19,41 +19,39 @@ namespace NetPrints.Graph
         }
 
         /// <summary>
+        /// Input data pin for the value of this literal.
+        /// </summary>
+        public NodeInputDataPin InputValuePin
+        {
+            get { return InputDataPins[0]; }
+        }
+
+        /// <summary>
         /// Specifier for the type of this literal.
         /// </summary>
         [DataMember]
         public TypeSpecifier LiteralType { get; private set; }
 
-        /// <summary>
-        /// Value of the literal.
-        /// </summary>
-        [DataMember]
-        public object Value
-        {
-            get
-            {
-                return val;
-            }
-            set
-            {
-                if (TypeSpecifier.FromType(value.GetType()) != LiteralType)
-                {
-                    throw new ArgumentException("Value is not of the same type as LiteralType");
-                }
-
-                val = value;
-            }
-        }
-
-        private object val;
-
-        public LiteralNode(Method method, TypeSpecifier literalType, object value)
+        public LiteralNode(Method method, TypeSpecifier literalType)
             : base(method)
         {
             LiteralType = literalType;
-            Value = value;
 
+            AddInputDataPin("Value", literalType);
             AddOutputDataPin("Value", literalType);
+        }
+
+        /// <summary>
+        /// Creates a literal node and gives it an unconnected value.
+        /// </summary>
+        /// <typeparam name="T">Type of the unconnected value.</typeparam>
+        /// <param name="val">Value when the input pin is unconnected.</param>
+        /// <returns>Literal node with the specified unconnected value.</returns>
+        public static LiteralNode WithValue<T>(Method method, T val)
+        {
+            LiteralNode node = new LiteralNode(method, TypeSpecifier.FromType<T>());
+            node.InputValuePin.UnconnectedValue = val;
+            return node;
         }
 
         public override string ToString()

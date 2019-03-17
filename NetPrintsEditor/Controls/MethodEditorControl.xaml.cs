@@ -47,6 +47,7 @@ namespace NetPrintsEditor.Controls
             TypeSpecifier.FromType<ExplicitCastNode>(),
             TypeSpecifier.FromType<ReturnNode>(),
             TypeSpecifier.FromType<MakeArrayNode>(),
+            TypeSpecifier.FromType<LiteralNode>(),
         };
 
         public MethodEditorControl()

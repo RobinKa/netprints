@@ -286,11 +286,37 @@ namespace NetPrintsEditor.Controls
                                 throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
                             }
 
-                            // TypeOfNode(Method method, TypeSpecifier type)
+                            // MakeArrayNode(Method method, TypeSpecifier elementType)
 
                             UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                             (
                                 typeof(MakeArrayNode),
+                                null,
+                                0,
+                                0,
+
+                                // Parameters
+                                selectedType
+                            ));
+                        }
+                    }
+                    else if (t == TypeSpecifier.FromType<LiteralNode>())
+                    {
+                        SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
+                        if (selectTypeDialog.ShowDialog() == true)
+                        {
+                            TypeSpecifier selectedType = selectTypeDialog.SelectedType;
+
+                            if (selectedType.Equals(null))
+                            {
+                                throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
+                            }
+
+                            // LiteralNode(Method method, TypeSpecifier literalType)
+
+                            UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                            (
+                                typeof(LiteralNode),
                                 null,
                                 0,
                                 0,
