@@ -16,6 +16,7 @@
     <None Remove="Resources\Create_16x.png" />
     <None Remove="Resources\Delegate_16x.png" />
     <None Remove="Resources\If_16x.png" />
+    <None Remove="Resources\ListView_16x.png" />
     <None Remove="Resources\Loop_16x.png" />
     <None Remove="Resources\Method_16x.png" />
     <None Remove="Resources\Operator_16x.png" />
@@ -32,6 +33,7 @@
     <Resource Include="Resources\Create_16x.png" />
     <Resource Include="Resources\Delegate_16x.png" />
     <Resource Include="Resources\If_16x.png" />
+    <Resource Include="Resources\ListView_16x.png" />
     <Resource Include="Resources\Loop_16x.png" />
     <Resource Include="Resources\Method_16x.png" />
     <Resource Include="Resources\Operator_16x.png" />

@@ -274,6 +274,32 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
+                    else if (t == TypeSpecifier.FromType<MakeArrayNode>())
+                    {
+                        SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
+                        if (selectTypeDialog.ShowDialog() == true)
+                        {
+                            TypeSpecifier selectedType = selectTypeDialog.SelectedType;
+
+                            if (selectedType.Equals(null))
+                            {
+                                throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
+                            }
+
+                            // TypeOfNode(Method method, TypeSpecifier type)
+
+                            UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                            (
+                                typeof(MakeArrayNode),
+                                null,
+                                0,
+                                0,
+
+                                // Parameters
+                                selectedType
+                            ));
+                        }
+                    }
                 }
             }
         }

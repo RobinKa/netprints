@@ -239,6 +239,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(ToolTip));
                     OnPropertyChanged(nameof(Overloads));
                     OnPropertyChanged(nameof(IsRerouteNode));
+                    OnPropertyChanged(nameof(ShowLeftPinButtons));
                 }
             }
         }
@@ -360,6 +361,31 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        /// <summary>
+        /// Whether we should show the +/- buttons under the
+        /// left pins.
+        /// </summary>
+        public bool ShowLeftPinButtons
+        {
+            get => node is MakeArrayNode;
+        }
+
+        /// <summary>
+        /// Called when the left pins' plus button was clicked.
+        /// </summary>
+        public void LeftPinsPlusClicked()
+        {
+            (node as MakeArrayNode)?.AddElementPin();
+        }
+
+        /// <summary>
+        /// Called when the right pins' minus button was clicked.
+        /// </summary>
+        public void LeftPinsMinusClicked()
+        {
+            (node as MakeArrayNode)?.RemoveElementPin();
         }
 
         private Node node;

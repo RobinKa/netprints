@@ -100,5 +100,15 @@ namespace NetPrintsEditor.Controls
                 ));
             }
         }
+
+        private void OnLeftPinsPlusClicked(object sender, RoutedEventArgs e)
+        {
+            Node.LeftPinsPlusClicked();
+        }
+
+        private void OnLeftPinsMinusClicked(object sender, RoutedEventArgs e)
+        {
+            Node.LeftPinsMinusClicked();
+        }
     }
 }

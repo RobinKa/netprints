@@ -22,6 +22,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(TypeOfNode))]
     [KnownType(typeof(ExplicitCastNode))]
     [KnownType(typeof(RerouteNode))]
+    [KnownType(typeof(MakeArrayNode))]
     public abstract class Node
     {
         /// <summary>

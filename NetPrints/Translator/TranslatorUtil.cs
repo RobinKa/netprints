@@ -100,7 +100,8 @@ namespace NetPrints.Translator
         public static string GetUniqueVariableName(string name, IList<string> names)
         {
             // Don't allow illegal characters in the name
-            name = name.Replace("+", "_");
+            // TODO: Make this more general
+            name = name.Replace("+", "_").Replace("[", "").Replace("]", "Array").Replace(",", "");
 
             int i = 1;
 

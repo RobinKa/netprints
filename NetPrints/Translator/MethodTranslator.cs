@@ -51,6 +51,7 @@ namespace NetPrints.Translator
             { typeof(LiteralNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateLiteralNode(node as LiteralNode) } },
             { typeof(MakeDelegateNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeDelegateNode(node as MakeDelegateNode) } },
             { typeof(TypeOfNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateTypeOfNode(node as TypeOfNode) } },
+            { typeof(MakeArrayNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeArrayNode(node as MakeArrayNode) } },
         };
 
         private int GetNextStateId()
@@ -756,6 +757,19 @@ namespace NetPrints.Translator
         public void PureTranslateTypeOfNode(TypeOfNode node)
         {
             builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.Type.FullCodeNameUnbound});");
+        }
+
+        public void PureTranslateMakeArrayNode(MakeArrayNode node)
+        {
+            builder.AppendLine($"{GetOrCreatePinName(node.OutputDataPins[0])} = new {node.ArrayType.FullCodeName}");
+            builder.AppendLine("{");
+
+            foreach (var inputDataPin in node.InputDataPins)
+            {
+                builder.AppendLine($"{GetPinIncomingValue(inputDataPin)},");
+            }
+
+            builder.AppendLine("};");
         }
 
         public void TranslateRerouteNode(RerouteNode node)

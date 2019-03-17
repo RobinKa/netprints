@@ -68,6 +68,11 @@ namespace NetPrintsEditor.Converters
                     text = "NetPrints - Return";
                     iconPath = "Return_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<MakeArrayNode>())
+                {
+                    text = "NetPrints - Make Array";
+                    iconPath = "ListView_16x.png";
+                }
             }
             else
             {
