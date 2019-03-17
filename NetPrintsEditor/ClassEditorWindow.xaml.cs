@@ -105,9 +105,9 @@ namespace NetPrintsEditor
 
             newMethod.EntryNode.PositionX = 100;
             newMethod.EntryNode.PositionY = 100;
-            newMethod.ReturnNode.PositionX = newMethod.EntryNode.PositionX + 400;
-            newMethod.ReturnNode.PositionY = newMethod.EntryNode.PositionY;
-            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.ReturnNode.ReturnPin);
+            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + 400;
+            newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
+            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.ReturnNodes.First().ReturnPin);
 
             Class.Class.Methods.Add(newMethod);
             methodEditor.Method = Class.Methods.Single(m => m.Method == newMethod);
@@ -296,11 +296,13 @@ namespace NetPrintsEditor
         #region Standard Commands
         private void CommandDelete_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            // TODO: Move logic into model / view model
+
             // Delete the currently selected node in the currently open method
-            // Only delete the node if it is not an entry or return node
+            // Only delete the node if it is not an entry or the last return node
             if(methodEditor?.Method?.SelectedNode != null &&
                 !(methodEditor.Method.SelectedNode.Node is EntryNode) &&
-                !(methodEditor.Method.SelectedNode.Node is ReturnNode))
+                !(methodEditor.Method.SelectedNode.Node is ReturnNode && methodEditor.Method.Method.ReturnNodes.Count() <= 1))
             {
                 NodeVM deletedNode = methodEditor.Method.SelectedNode;
                 methodEditor.Method.SelectedNode = null;

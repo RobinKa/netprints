@@ -1,6 +1,7 @@
 ﻿using NetPrints.Graph;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -41,11 +42,9 @@ namespace NetPrints.Core
         /// <summary>
         /// Return node of this method that when executed will return from the method.
         /// </summary>
-        [DataMember]
-        public ReturnNode ReturnNode
+        public IEnumerable<ReturnNode> ReturnNodes
         {
-            get;
-            private set;
+            get => Nodes.Where(node => node is ReturnNode).Cast<ReturnNode>();
         }
 
         /// <summary>
@@ -126,14 +125,17 @@ namespace NetPrints.Core
         {
             Name = name;
             EntryNode = new EntryNode(this);
-            ReturnNode = new ReturnNode(this);
+            new ReturnNode(this);
         }
 
         [OnDeserialized]
         private void OnDeserializing(StreamingContext c)
         {
             EntryNode.SetupArgumentTypesChangedEvent();
-            ReturnNode.SetupReturnTypesChangedEvent();
+            foreach (var returnNode in ReturnNodes)
+            {
+                returnNode.SetupReturnTypesChangedEvent();
+            }
         }
     }
 }

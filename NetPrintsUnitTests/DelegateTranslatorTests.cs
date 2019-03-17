@@ -4,6 +4,7 @@ using NetPrints.Graph;
 using NetPrints.Translator;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NetPrints.Tests
 {
@@ -50,10 +51,10 @@ namespace NetPrints.Tests
             MakeDelegateNode makeDelegateNode = new MakeDelegateNode(delegateMethod, delegateMethodSpecifier);
 
             // Connect node execs
-            GraphUtil.ConnectExecPins(delegateMethod.EntryNode.InitialExecutionPin, delegateMethod.ReturnNode.ReturnPin);
+            GraphUtil.ConnectExecPins(delegateMethod.EntryNode.InitialExecutionPin, delegateMethod.ReturnNodes.First().ReturnPin);
 
             // Connect node data
-            GraphUtil.ConnectDataPins(makeDelegateNode.OutputDataPins[0], delegateMethod.ReturnNode.InputDataPins[0]);
+            GraphUtil.ConnectDataPins(makeDelegateNode.OutputDataPins[0], delegateMethod.ReturnNodes.First().InputDataPins[0]);
 
             string translated = methodTranslator.Translate(delegateMethod);
         }

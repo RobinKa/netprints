@@ -38,11 +38,11 @@ namespace NetPrints.Tests
             VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, cls.Type, new Variable("Length", TypeSpecifier.FromType<int>()));
 
             // Connect node execs
-            GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNode.ReturnPin);
+            GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNodes.First().ReturnPin);
 
             // Connect node data
             GraphUtil.ConnectDataPins(getStringNode.ValuePin, getLengthNode.TargetPin);
-            GraphUtil.ConnectDataPins(getLengthNode.ValuePin, stringLengthMethod.ReturnNode.InputDataPins[0]);
+            GraphUtil.ConnectDataPins(getLengthNode.ValuePin, stringLengthMethod.ReturnNodes.First().InputDataPins[0]);
         }
 
         public void CreateMainMethod()
@@ -68,7 +68,7 @@ namespace NetPrints.Tests
             GraphUtil.ConnectExecPins(mainMethod.EntryNode.InitialExecutionPin, setStringNode.InputExecPins[0]);
             GraphUtil.ConnectExecPins(setStringNode.OutputExecPins[0], getStringLengthNode.InputExecPins[0]);
             GraphUtil.ConnectExecPins(getStringLengthNode.OutputExecPins[0], writeConsoleNode.InputExecPins[0]);
-            GraphUtil.ConnectExecPins(writeConsoleNode.OutputExecPins[0], mainMethod.ReturnNode.InputExecPins[0]);
+            GraphUtil.ConnectExecPins(writeConsoleNode.OutputExecPins[0], mainMethod.ReturnNodes.First().InputExecPins[0]);
 
             // Connect node data
             GraphUtil.ConnectDataPins(stringLiteralNode.ValuePin, setStringNode.NewValuePin);

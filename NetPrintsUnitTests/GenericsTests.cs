@@ -33,7 +33,7 @@ namespace NetPrintsUnitTests
 
             Method openMethod = new Method("OpenMethod");
             openMethod.ArgumentTypes.Add(listType);
-            GraphUtil.ConnectExecPins(openMethod.EntryNode.InitialExecutionPin, openMethod.ReturnNode.ReturnPin);
+            GraphUtil.ConnectExecPins(openMethod.EntryNode.InitialExecutionPin, openMethod.ReturnNodes.First().ReturnPin);
 
             openClass.Methods.Add(openMethod);
 
@@ -47,7 +47,7 @@ namespace NetPrintsUnitTests
 
             Method closedMethod = new Method("ClosedMethod");
             closedMethod.ArgumentTypes.Add(closedListType);
-            GraphUtil.ConnectExecPins(closedMethod.EntryNode.InitialExecutionPin, closedMethod.ReturnNode.ReturnPin);
+            GraphUtil.ConnectExecPins(closedMethod.EntryNode.InitialExecutionPin, closedMethod.ReturnNodes.First().ReturnPin);
 
             closedClass.Methods.Add(closedMethod);
 
