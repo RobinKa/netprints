@@ -562,11 +562,11 @@ namespace NetPrints.Translator
             {
                 if (!(node.TargetType is null))
                 {
-                    builder.Append($"{node.TargetType.FullCodeName}.");
+                    builder.Append(node.TargetType.FullCodeName);
                 }
                 else
                 {
-                    builder.Append($"{node.Method.Class.Name}.");
+                    builder.Append(node.Method.Class.Name);
                 }
             }
             if (node.TargetPin != null)
@@ -574,15 +574,25 @@ namespace NetPrints.Translator
                 if (node.TargetPin.IncomingPin != null)
                 {
                     string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
-                    builder.Append($"{targetName}.");
+                    builder.Append(targetName);
                 }
                 else
                 {
-                    builder.Append("this.");
+                    builder.Append("this");
                 }
             }
 
-            builder.AppendLine($"{node.VariableName} = {valueName};");
+            // Add index if needed
+            if (node.IsIndexer)
+            {
+                builder.Append($"[{GetPinIncomingValue(node.IndexPin)}]");
+            }
+            else
+            {
+                builder.Append($".{node.VariableName}");
+            }
+
+            builder.AppendLine($" = {valueName};");
 
             // Set output pin of this node to the same value
             builder.AppendLine($"{GetOrCreatePinName(node.OutputDataPins[0])} = {valueName};");
@@ -692,11 +702,11 @@ namespace NetPrints.Translator
             {
                 if (!(node.TargetType is null))
                 {
-                    builder.Append($"{node.TargetType.FullCodeName}.");
+                    builder.Append(node.TargetType.FullCodeName);
                 }
                 else
                 {
-                    builder.Append($"{node.Method.Class.Name}.");
+                    builder.Append(node.Method.Class.Name);
                 }
             }
             else
@@ -704,16 +714,26 @@ namespace NetPrints.Translator
                 if (node.TargetPin != null && node.TargetPin.IncomingPin != null)
                 {
                     string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
-                    builder.Append($"{targetName}.");
+                    builder.Append(targetName);
                 }
                 else
                 {
                     // Default to this
-                    builder.Append("this.");
+                    builder.Append("this");
                 }
             }
 
-            builder.AppendLine($"{node.VariableName};");
+            // Add index if needed
+            if (node.IsIndexer)
+            {
+                builder.Append($"[{GetPinIncomingValue(node.IndexPin)}]");
+            }
+            else
+            {
+                builder.Append($".{node.VariableName}");
+            }
+
+            builder.AppendLine(";");
         }
 
         public void PureTranslateLiteralNode(LiteralNode node)
