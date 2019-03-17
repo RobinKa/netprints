@@ -52,7 +52,7 @@ namespace NetPrintsEditor.Reflection
             return symbol.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
         }
 
-        public static IEnumerable<IMethodSymbol> GetMethods(this INamedTypeSymbol symbol)
+        public static IEnumerable<IMethodSymbol> GetMethods(this ITypeSymbol symbol)
         {
             return symbol.GetAllMembers()
                     .Where(member => member.Kind == SymbolKind.Method)
@@ -60,7 +60,7 @@ namespace NetPrintsEditor.Reflection
                     .Where(method => method.MethodKind == MethodKind.Ordinary || method.MethodKind == MethodKind.BuiltinOperator || method.MethodKind == MethodKind.UserDefinedOperator);
         }
 
-        public static IEnumerable<IMethodSymbol> GetConverters(this INamedTypeSymbol symbol)
+        public static IEnumerable<IMethodSymbol> GetConverters(this ITypeSymbol symbol)
         {
             return symbol.GetAllMembers()
                     .Where(member => member.Kind == SymbolKind.Method)
@@ -164,7 +164,7 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier)
         {
-            INamedTypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
+            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
 
             if (type != null)
             {
@@ -190,7 +190,7 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<MethodSpecifier> GetPublicMethodOverloads(MethodSpecifier methodSpecifier)
         {
-            INamedTypeSymbol type = GetTypeFromSpecifier(methodSpecifier.DeclaringType);
+            ITypeSymbol type = GetTypeFromSpecifier(methodSpecifier.DeclaringType);
 
             if (type != null)
             {
@@ -216,7 +216,7 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
         {
-            INamedTypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
+            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
 
             if (type != null)
             {
@@ -303,7 +303,7 @@ namespace NetPrintsEditor.Reflection
         
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier)?.Constructors.Select(c => ReflectionConverter.ConstructorSpecifierFromSymbol(c));
+            return GetTypeFromSpecifier<INamedTypeSymbol>(typeSpecifier)?.Constructors.Select(c => ReflectionConverter.ConstructorSpecifierFromSymbol(c));
         }
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
@@ -315,19 +315,49 @@ namespace NetPrintsEditor.Reflection
         
         public bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b)
         {
-            INamedTypeSymbol typeA = GetTypeFromSpecifier(a);
-            INamedTypeSymbol typeB = GetTypeFromSpecifier(b);
+            ITypeSymbol typeA = GetTypeFromSpecifier(a);
+            ITypeSymbol typeB = GetTypeFromSpecifier(b);
 
             return typeA != null && typeB != null && typeA.IsSubclassOf(typeB);
         }
 
-        private INamedTypeSymbol GetTypeFromSpecifier(TypeSpecifier specifier)
+        private T GetTypeFromSpecifier<T>(TypeSpecifier specifier)
+        {
+            return (T)GetTypeFromSpecifier(specifier);
+        }
+
+        private ITypeSymbol GetTypeFromSpecifier(TypeSpecifier specifier)
         {
             string lookupName = specifier.Name;
+
+            // Find array ranks and remove them from the lookup name.
+            // Example: int[][,] -> arrayRanks: { 1, 2 }, lookupName: int
+            Stack<int> arrayRanks = new Stack<int>();
+            while (lookupName.EndsWith("]"))
+            {
+                lookupName = lookupName.Remove(lookupName.Length - 1);
+                int arrayRank = 1;
+                while (lookupName.EndsWith(","))
+                {
+                    arrayRank++;
+                    lookupName = lookupName.Remove(lookupName.Length - 1);
+                }
+                arrayRanks.Push(arrayRank);
+
+                if (lookupName.Last() != '[')
+                {
+                    throw new Exception("Expected [ in lookupName");
+                }
+
+                lookupName = lookupName.Remove(lookupName.Length - 1);
+            }
+
             if (specifier.GenericArguments.Count > 0)
                 lookupName += $"`{specifier.GenericArguments.Count}";
 
             IEnumerable<INamedTypeSymbol> types = GetValidTypes(lookupName);
+
+            ITypeSymbol foundType = null;
 
             foreach (INamedTypeSymbol t in types)
             {
@@ -340,21 +370,32 @@ namespace NetPrintsEditor.Reflection
                                 GetTypeFromSpecifier(typeSpec) :
                                 t.TypeArguments[specifier.GenericArguments.IndexOf(baseType)])
                             .ToArray();
-                        return t.Construct(typeArguments);
+                        foundType = t.Construct(typeArguments);
                     }
                     else
                     {
-                        return t;
+                        foundType = t;
                     }
+
+                    break;
                 }
             }
 
-            return null;
+            if (foundType != null)
+            {
+                // Make array
+                while (arrayRanks.TryPop(out int arrayRank))
+                {
+                    foundType = compilation.CreateArrayTypeSymbol(foundType, arrayRank);
+                }
+            }
+
+            return foundType;
         }
 
         private IMethodSymbol GetMethodInfoFromSpecifier(MethodSpecifier specifier)
         {
-            INamedTypeSymbol declaringType = GetTypeFromSpecifier(specifier.DeclaringType);
+            INamedTypeSymbol declaringType = GetTypeFromSpecifier<INamedTypeSymbol>(specifier.DeclaringType);
             return declaringType?.GetMethods().Where(
                     m => m.Name == specifier.Name && 
                     m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.ArgumentTypes))
@@ -375,7 +416,7 @@ namespace NetPrintsEditor.Reflection
                         .ThenBy(m => m.ContainingType?.Name)
                         .ThenBy(m => m.Name);
 
-            INamedTypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
+            ITypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
 
             List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
 
@@ -419,7 +460,7 @@ namespace NetPrintsEditor.Reflection
                         .ThenBy(m => m?.ContainingType.Name)
                         .ThenBy(m => m.Name);
 
-            INamedTypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
+            ITypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
 
             List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
 
@@ -622,17 +663,19 @@ namespace NetPrintsEditor.Reflection
             // Check if there are any operators defined that convert from a subclass (or the same class)
             // of fromType to a subclass (or the same class) of toType
 
-            INamedTypeSymbol fromSymbol = GetTypeFromSpecifier(fromType);
-            INamedTypeSymbol toSymbol = GetTypeFromSpecifier(toType);
+            ITypeSymbol fromSymbol = GetTypeFromSpecifier(fromType);
+            ITypeSymbol toSymbol = GetTypeFromSpecifier(toType);
 
-            var operators = toSymbol.GetConverters().Concat(fromSymbol.GetConverters());
+            return compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
+
+            /*var operators = toSymbol.GetConverters().Concat(fromSymbol.GetConverters());
 
             return operators.Any(m =>
                     m.IsPublic() &&
                     !m.IsGenericMethod &&
                     m.Parameters.Length == 1 &&
                     TypeSpecifierIsSubclassOf(fromType, ReflectionConverter.TypeSpecifierFromSymbol(m.Parameters[0].Type)) &&
-                    TypeSpecifierIsSubclassOf(toType, ReflectionConverter.TypeSpecifierFromSymbol(m.ReturnType)));
+                    TypeSpecifierIsSubclassOf(toType, ReflectionConverter.TypeSpecifierFromSymbol(m.ReturnType)));*/
         }
 
         #endregion
