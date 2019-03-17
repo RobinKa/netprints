@@ -529,7 +529,7 @@ namespace NetPrints.Translator
             // If no pin is connected fail by default.
             if (node.ObjectToCast.IncomingPin != null)
             {
-                string pinToCastName = GetOrCreatePinName(node.ObjectToCast.IncomingPin);
+                string pinToCastName = GetPinIncomingValue(node.ObjectToCast);
                 builder.AppendLine($"if ({pinToCastName} is {node.CastType.FullCodeNameUnbound})");
                 builder.AppendLine("{");
                 builder.AppendLine($"{GetOrCreatePinName(node.CastPin)} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
@@ -554,7 +554,7 @@ namespace NetPrints.Translator
             // the correct order
             TranslateDependentPureNodes(node);
             
-            string valueName = GetOrCreatePinName(node.NewValuePin.IncomingPin);
+            string valueName = GetPinIncomingValue(node.NewValuePin);
 
             // Add target name if there is a target (null for local and static variables)
             if (node.IsStatic)
@@ -620,8 +620,7 @@ namespace NetPrints.Translator
             // the correct order
             TranslateDependentPureNodes(node);
 
-            string conditionVar = node.ConditionPin.IncomingPin != null ? 
-                GetOrCreatePinName(node.ConditionPin.IncomingPin) : "false";
+            string conditionVar = GetPinIncomingValue(node.ConditionPin);
 
             builder.AppendLine($"if ({conditionVar})");
             builder.AppendLine("{");
@@ -768,7 +767,7 @@ namespace NetPrints.Translator
 
             if (node.DataRerouteCount == 1)
             {
-                builder.AppendLine($"{GetOrCreatePinName(node.OutputDataPins[0])} = {GetOrCreatePinName(node.InputDataPins[0].IncomingPin)};");
+                builder.AppendLine($"{GetOrCreatePinName(node.OutputDataPins[0])} = {GetPinIncomingValue(node.InputDataPins[0])};");
             }
             else if (node.ExecRerouteCount == 1)
             {
