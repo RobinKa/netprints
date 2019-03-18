@@ -4,36 +4,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
-    /// <summary>
-    /// Node describing a type.
-    /// </summary>
     [DataContract]
-    public class TypeNode
+    public class TypeNode : Node
     {
         [DataMember]
-        public ObservableRangeCollection<NodeInputTypePin> InputTypePins { get; private set; } = new ObservableRangeCollection<NodeInputTypePin>();
-
-        public TypeSpecifier Type
+        public BaseType Type
         {
             get;
             private set;
         }
 
-        public TypeNode(TypeGraph typeGraph, TypeSpecifier type)
+        public TypeNode(Method method, BaseType type)
+            : base(method)
         {
-            foreach(TypeSpecifier genArg in type.GenericArguments)
+            Type = type;
+            
+            // Add type pins for each generic argument of the literal type
+            // and monitor them for changes to reconstruct the actual pin types.
+            if (Type is TypeSpecifier typeSpecifier)
             {
-                AddInputTypePin(null);
+                foreach (var genericArg in typeSpecifier.GenericArguments.OfType<GenericType>())
+                {
+                    AddInputTypePin(genericArg.Name);
+                }
             }
-        }
 
-        protected void AddInputTypePin(NodeTypeConstraints constraints)
-        {
-            InputTypePins.Add(new NodeInputTypePin(this, constraints));
+            AddOutputTypePin("OutputType", () =>
+            {
+                return GenericsHelper.ConstructWithTypePins(Type, InputTypePins);
+            });
         }
     }
 }

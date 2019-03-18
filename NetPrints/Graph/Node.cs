@@ -23,6 +23,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(ExplicitCastNode))]
     [KnownType(typeof(RerouteNode))]
     [KnownType(typeof(MakeArrayNode))]
+    [KnownType(typeof(TypeNode))]
     public abstract class Node
     {
         /// <summary>
@@ -48,6 +49,18 @@ namespace NetPrints.Graph
         /// </summary>
         [DataMember]
         public ObservableRangeCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableRangeCollection<NodeOutputExecPin>();
+
+        /// <summary>
+        /// Input type pins of this node.
+        /// </summary>
+        [DataMember]
+        public ObservableRangeCollection<NodeInputTypePin> InputTypePins { get; private set; } = new ObservableRangeCollection<NodeInputTypePin>();
+
+        /// <summary>
+        /// Output type pins of this node.
+        /// </summary>
+        [DataMember]
+        public ObservableRangeCollection<NodeOutputTypePin> OutputTypePins { get; private set; } = new ObservableRangeCollection<NodeOutputTypePin>();
 
         /// <summary>
         /// Delegate for the event of a position change of a node.
@@ -173,6 +186,25 @@ namespace NetPrints.Graph
         protected void AddOutputExecPin(string pinName)
         {
             OutputExecPins.Add(new NodeOutputExecPin(this, pinName));
+        }
+
+        /// <summary>
+        /// Adds an input data pin to this node.
+        /// </summary>
+        /// <param name="pinName">Name of the pin.</param>
+        protected void AddInputTypePin(string pinName)
+        {
+            InputTypePins.Add(new NodeInputTypePin(this, pinName));
+        }
+
+        /// <summary>
+        /// Adds an output data pin to this node.
+        /// </summary>
+        /// <param name="pinName">Name of the pin.</param>
+        /// <param name="getOutputTypeFunc">Function that generates the output type.</param>
+        protected void AddOutputTypePin(string pinName, Func<BaseType> getOutputTypeFunc)
+        {
+            OutputTypePins.Add(new NodeOutputTypePin(this, pinName, getOutputTypeFunc));
         }
     }
 }

@@ -59,5 +59,23 @@ namespace NetPrintsUnitTests
 
             string closedClassTranslated = translator.TranslateClass(closedClass);
         }
+
+        [TestMethod]
+        public void TestTypeGraph()
+        {
+            Method method = new Method("Method");
+
+            var unboundListType = new TypeSpecifier("System.Collections.Generic.List", genericArguments: new BaseType[] { new GenericType("T") });
+
+            var literalNode = new LiteralNode(method, unboundListType);
+            Assert.AreEqual(literalNode.InputTypePins.Count, 1);
+
+            var typeNode = new TypeNode(method, TypeSpecifier.FromType<int>());
+            Assert.AreEqual(literalNode.InputTypePins.Count, 1);
+
+            GraphUtil.ConnectTypePins(typeNode.OutputTypePins[0], literalNode.InputTypePins[0]);
+            Assert.AreEqual(literalNode.InputTypePins[0].InferredType, new TypeSpecifier("System.Int32"));
+            Assert.AreEqual(literalNode.OutputDataPins[0].PinType, new TypeSpecifier("System.Collections.Generic.List", genericArguments: new BaseType[] { new TypeSpecifier("System.Int32") }));
+        }
     }
 }

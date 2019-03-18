@@ -205,11 +205,39 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public ObservableViewModelCollection<NodePinVM, NodeInputTypePin> InputTypePins
+        {
+            get => inputTypePins;
+            set
+            {
+                if (inputTypePins != value)
+                {
+                    inputTypePins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> OutputTypePins
+        {
+            get => outputTypePins;
+            set
+            {
+                if (outputTypePins != value)
+                {
+                    outputTypePins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private ObservableViewModelCollection<NodePinVM, NodeInputDataPin> inputDataPins;
         private ObservableViewModelCollection<NodePinVM, NodeOutputDataPin> outputDataPins;
         private ObservableViewModelCollection<NodePinVM, NodeInputExecPin> inputExecPins;
         private ObservableViewModelCollection<NodePinVM, NodeOutputExecPin> outputExecPins;
-        
+        private ObservableViewModelCollection<NodePinVM, NodeInputTypePin> inputTypePins;
+        private ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> outputTypePins;
+
         public bool IsPure { get => node.IsPure; }
 
         // Wrapped Node

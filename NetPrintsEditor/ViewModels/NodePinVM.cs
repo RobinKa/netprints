@@ -63,6 +63,10 @@ namespace NetPrintsEditor.ViewModels
                         toolTip += Environment.NewLine + Environment.NewLine + "Executed when an exception is thrown on this node. The Exception output data pin will be set to the caught exception. If unconnected the exception will get thrown.";
                     }
                 }
+                else
+                {
+                    toolTip += Pin.Name;
+                }
 
                 return toolTip;
             }
@@ -94,8 +98,8 @@ namespace NetPrintsEditor.ViewModels
                     isBeingConnected = value;
 
                     // Disconnect pin if its being connected
-                    // and is an IDP or OXP
-                    if(value && (Pin is NodeInputDataPin || Pin is NodeOutputExecPin))
+                    // and is an IDP, OXP or ITP
+                    if(value && (Pin is NodeInputDataPin || Pin is NodeOutputExecPin || Pin is NodeInputTypePin))
                     {
                         ConnectedPin = null;
                     }
@@ -309,13 +313,14 @@ namespace NetPrintsEditor.ViewModels
 
         // = Incoming pin for data input
         // = Outgoing pin for exec output
+        // = Incoming pin for type input
         // = null for rest
         public NodePinVM ConnectedPin
         {
             get => connectedPin;
             set
             {
-                if(!(Pin is NodeOutputExecPin || Pin is NodeInputDataPin))
+                if(!(Pin is NodeOutputExecPin || Pin is NodeInputDataPin || Pin is NodeInputTypePin))
                 {
                     throw new Exception("Can only set connected pin of NodeOutputExecPin and NodeInputDataPin");
                 }
@@ -334,13 +339,17 @@ namespace NetPrintsEditor.ViewModels
                     }
                     else
                     {
-                        if(Pin is NodeOutputExecPin oxp)
+                        if (Pin is NodeOutputExecPin oxp)
                         {
                             GraphUtil.DisconnectOutputExecPin(oxp);
                         }
-                        else if(Pin is NodeInputDataPin idp)
+                        else if (Pin is NodeInputDataPin idp)
                         {
                             GraphUtil.DisconnectInputDataPin(idp);
+                        }
+                        else if (Pin is NodeInputTypePin itp)
+                        {
+                            GraphUtil.DisconnectInputTypePin(itp);
                         }
                     }
 
@@ -391,7 +400,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin)
+                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
                 {
                     return new Point(AbsolutePosition.X + CPOffset, AbsolutePosition.Y);
                 }
@@ -406,7 +415,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin)
+                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
                 {
                     return new Point(ConnectedAbsolutePosition.X - CPOffset, ConnectedAbsolutePosition.Y);
                 }
@@ -460,6 +469,12 @@ namespace NetPrintsEditor.ViewModels
                 RerouteNode rerouteNode = GraphUtil.AddRerouteNode(execPin);
                 rerouteNode.PositionX = (Pin.Node.PositionX + execPin.OutgoingPin.Node.PositionX) / 2;
                 rerouteNode.PositionY = (Pin.Node.PositionY + execPin.OutgoingPin.Node.PositionY) / 2;
+            }
+            else if (Pin is NodeInputTypePin typePin)
+            {
+                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(typePin);
+                rerouteNode.PositionX = (Pin.Node.PositionX + typePin.IncomingPin.Node.PositionX) / 2;
+                rerouteNode.PositionY = (Pin.Node.PositionY + typePin.IncomingPin.Node.PositionY) / 2;
             }
             else
             {

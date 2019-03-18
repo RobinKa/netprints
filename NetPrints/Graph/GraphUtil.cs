@@ -1,5 +1,7 @@
 ﻿using NetPrints.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace NetPrints.Graph
@@ -28,6 +30,11 @@ namespace NetPrints.Graph
         {
             if (pinA is NodeInputExecPin && pinB is NodeOutputExecPin)
             {
+                return true;
+            }
+            else if (pinA is NodeInputTypePin && pinB is NodeOutputTypePin)
+            {
+                // TODO: Check for constraints
                 return true;
             }
             else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
@@ -140,6 +147,23 @@ namespace NetPrints.Graph
         }
 
         /// <summary>
+        /// Connects two node type pins. Removes any previous connection.
+        /// </summary>
+        /// <param name="fromPin">Output type pin to connect.</param>
+        /// <param name="toPin">Input type pin to connect.</param>
+        public static void ConnectTypePins(NodeOutputTypePin fromPin, NodeInputTypePin toPin)
+        {
+            // Remove from old pin if any
+            if (toPin.IncomingPin != null)
+            {
+                toPin.IncomingPin.OutgoingPins.Remove(toPin);
+            }
+
+            fromPin.OutgoingPins.Add(toPin);
+            toPin.IncomingPin = fromPin;
+        }
+
+        /// <summary>
         /// Disconnects all pins of a node.
         /// </summary>
         /// <param name="node">Node to have all its pins disconnected.</param>
@@ -164,6 +188,16 @@ namespace NetPrints.Graph
             {
                 DisconnectOutputExecPin(pin);
             }
+
+            foreach (NodeInputTypePin pin in node.InputTypePins)
+            {
+                DisconnectInputTypePin(pin);
+            }
+
+            foreach (NodeOutputTypePin pin in node.OutputTypePins)
+            {
+                DisconnectOutputTypePin(pin);
+            }
         }
 
         public static void DisconnectInputDataPin(NodeInputDataPin pin)
@@ -175,6 +209,22 @@ namespace NetPrints.Graph
         public static void DisconnectOutputDataPin(NodeOutputDataPin pin)
         {
             foreach(NodeInputDataPin outgoingPin in pin.OutgoingPins)
+            {
+                outgoingPin.IncomingPin = null;
+            }
+
+            pin.OutgoingPins.Clear();
+        }
+
+        public static void DisconnectInputTypePin(NodeInputTypePin pin)
+        {
+            pin.IncomingPin?.OutgoingPins.Remove(pin);
+            pin.IncomingPin = null;
+        }
+
+        public static void DisconnectOutputTypePin(NodeOutputTypePin pin)
+        {
+            foreach (NodeInputTypePin outgoingPin in pin.OutgoingPins)
             {
                 outgoingPin.IncomingPin = null;
             }
@@ -239,6 +289,16 @@ namespace NetPrints.Graph
             GraphUtil.ConnectExecPins(pin, rerouteNode.InputExecPins[0]);
 
             return rerouteNode;
+        }
+
+        /// <summary>
+        /// Adds a type reroute node and does the necessary rewiring.
+        /// </summary>
+        /// <param name="pin">Type pin to add reroute node for.</param>
+        /// <returns>Reroute node created for the type pin.</returns>
+        public static RerouteNode AddRerouteNode(NodeInputTypePin pin)
+        {
+            throw new NotImplementedException();
         }
     }
 }

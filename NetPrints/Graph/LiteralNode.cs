@@ -1,5 +1,7 @@
 ﻿using NetPrints.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -37,8 +39,37 @@ namespace NetPrints.Graph
         {
             LiteralType = literalType;
 
+            // Add type pins for each generic argument of the literal type
+            // and monitor them for changes to reconstruct the actual pin types.
+            foreach (var genericArg in literalType.GenericArguments.OfType<GenericType>())
+            {
+                AddInputTypePin(genericArg.Name);
+                InputTypePins.Last().IncomingPinChanged += (pin, oldNode, newNode) => UpdatePinTypes();
+            }
+
             AddInputDataPin("Value", literalType);
             AddOutputDataPin("Value", literalType);
+        }
+
+        private void UpdatePinTypes()
+        {
+            // Construct type with generic arguments replaced by our input type pins
+            BaseType constructedType = GenericsHelper.ConstructWithTypePins(LiteralType, InputTypePins);
+
+            // Set pin types
+            // TODO: Check if we can leave the pins connected
+
+            if (constructedType != InputValuePin.PinType)
+            {
+                GraphUtil.DisconnectInputDataPin(InputValuePin);
+                InputValuePin.PinType = constructedType;
+            }
+
+            if (constructedType != ValuePin.PinType)
+            {
+                GraphUtil.DisconnectOutputDataPin(ValuePin);
+                ValuePin.PinType = constructedType;
+            }
         }
 
         /// <summary>

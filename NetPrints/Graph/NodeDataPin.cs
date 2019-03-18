@@ -10,11 +10,13 @@ namespace NetPrints.Graph
     [DataContract]
     public abstract class NodeDataPin : NodePin
     {
+        // TODO: Add pin type changed event
+
         /// <summary>
         /// Specifier for the type of this data pin.
         /// </summary>
         [DataMember]
-        public BaseType PinType { get; private set; }
+        public BaseType PinType { get; set; }
 
         public NodeDataPin(Node node, string name, BaseType pinType)
             : base(node, name)

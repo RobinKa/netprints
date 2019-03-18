@@ -10,6 +10,8 @@ namespace NetPrints.Graph
     [KnownType(typeof(NodeOutputDataPin))]
     [KnownType(typeof(NodeInputExecPin))]
     [KnownType(typeof(NodeOutputExecPin))]
+    [KnownType(typeof(NodeInputTypePin))]
+    [KnownType(typeof(NodeOutputTypePin))]
     public abstract class NodePin
     {
         /// <summary>
