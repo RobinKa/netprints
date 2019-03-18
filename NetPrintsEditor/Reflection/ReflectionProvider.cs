@@ -168,14 +168,12 @@ namespace NetPrintsEditor.Reflection
 
             if (type != null)
             {
-                // Get all public instance methods, ignore special ones (properties / events),
-                // ignore those with generic parameters since we cant set those yet
+                // Get all public instance methods, ignore special ones (properties / events)
 
                 return type.GetMethods()
                     .Where(m => 
                         m.IsPublic() &&
                         !m.IsStatic &&
-                        !m.IsGenericMethod &&
                         m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
@@ -194,14 +192,11 @@ namespace NetPrintsEditor.Reflection
 
             if (type != null)
             {
-                // TODO: Handle generic methods instead of just ignoring them
-
                 return type.GetMethods()
                         .Where(m =>
                             m.Name == methodSpecifier.Name &&
                             m.IsPublic() &&
                             m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static) &&
-                            !m.IsGenericMethod &&
                             m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)
@@ -227,7 +222,6 @@ namespace NetPrintsEditor.Reflection
                     .Where(m => 
                         m.IsPublic() &&
                         !m.IsStatic &&
-                        !m.IsGenericMethod &&
                         m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
@@ -274,9 +268,6 @@ namespace NetPrintsEditor.Reflection
                         t.GetMethods()
                         .Where(m => 
                             m.IsStatic && m.IsPublic() &&
-                            //m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
-                            //m.ReturnType.TypeKind != TypeKind.TypeParameter &&
-                            //!m.IsGenericMethod &&
                             !m.ContainingType.IsUnboundGenericType)
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)

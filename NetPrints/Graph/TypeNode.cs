@@ -82,11 +82,8 @@ namespace NetPrints.Graph
         {
             base.OnInputTypeChanged(sender, eventArgs);
 
-            UpdateConstructedOutputType();
-        }
-
-        private void UpdateConstructedOutputType()
-        {
+            // Set the type of the output type pin by constructing
+            // the type of this node with the input type pins.
             constructedType.Value = GetConstructedOutputType();
         }
 

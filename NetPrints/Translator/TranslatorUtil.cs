@@ -122,7 +122,7 @@ namespace NetPrints.Translator
         {
             nodes.Add(node);
 
-            foreach(NodeOutputExecPin pin in node.OutputExecPins)
+            foreach (NodeOutputExecPin pin in node.OutputExecPins)
             {
                 if(pin.OutgoingPin != null && !nodes.Contains(pin.OutgoingPin.Node))
                 {
@@ -130,9 +130,17 @@ namespace NetPrints.Translator
                 }
             }
 
-            foreach(NodeInputDataPin pin in node.InputDataPins)
+            foreach (NodeInputDataPin pin in node.InputDataPins)
             {
                 if(pin.IncomingPin != null && !nodes.Contains(pin.IncomingPin.Node))
+                {
+                    AddAllNodes(pin.IncomingPin.Node, ref nodes);
+                }
+            }
+
+            foreach (NodeInputTypePin pin in node.InputTypePins)
+            {
+                if (pin.IncomingPin != null && !nodes.Contains(pin.IncomingPin.Node))
                 {
                     AddAllNodes(pin.IncomingPin.Node, ref nodes);
                 }

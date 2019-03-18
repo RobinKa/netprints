@@ -178,7 +178,7 @@ namespace NetPrintsEditor.ViewModels
                     oxp.OutgoingPinChanged -= OnOutputExecPinIncomingPinChanged;
                 }
             }
-            if (pin.Pin is NodeInputTypePin itp)
+            else if (pin.Pin is NodeInputTypePin itp)
             {
                 if (add)
                 {
@@ -200,8 +200,10 @@ namespace NetPrintsEditor.ViewModels
                     if (add)
                     {
                         NodeOutputDataPin connPin = idp.IncomingPin as NodeOutputDataPin;
-                        pin.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
-                            OutputDataPins.Single(x => x.Pin == connPin);
+                        pin.ConnectedPin = Nodes
+                            .Single(n => n.Node == connPin.Node)
+                            .OutputDataPins
+                            .Single(x => x.Pin == connPin);
                     }
                     else
                     {
@@ -216,8 +218,10 @@ namespace NetPrintsEditor.ViewModels
                     if (add)
                     {
                         NodeInputExecPin connPin = oxp.OutgoingPin as NodeInputExecPin;
-                        pin.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
-                            InputExecPins.Single(x => x.Pin == connPin);
+                        pin.ConnectedPin = Nodes
+                            .Single(n => n.Node == connPin.Node)
+                            .InputExecPins
+                            .Single(x => x.Pin == connPin);
                     }
                     else
                     {
@@ -232,8 +236,10 @@ namespace NetPrintsEditor.ViewModels
                     if (add)
                     {
                         NodeOutputTypePin connPin = itp.IncomingPin as NodeOutputTypePin;
-                        pin.ConnectedPin = Nodes.Where(n => n.Node == connPin.Node).Single().
-                            OutputDataPins.Single(x => x.Pin == connPin);
+                        pin.ConnectedPin = Nodes
+                            .Single(n => n.Node == connPin.Node)
+                            .OutputTypePins
+                            .Single(x => x.Pin == connPin);
                     }
                     else
                     {
@@ -247,11 +253,12 @@ namespace NetPrintsEditor.ViewModels
         {
             node.OutputExecPins.ToList().ForEach(p => SetupPinConnection(p, add));
             node.InputDataPins.ToList().ForEach(p => SetupPinConnection(p, add));
+            node.InputTypePins.ToList().ForEach(p => SetupPinConnection(p, add));
 
             // Make sure to remove the IXP and ODP connections 
             // any other nodes are connecting to too
 
-            if(!add)
+            if (!add)
             {
                 AllPins.Where(p =>
                     node.InputExecPins.Contains(p.ConnectedPin) ||
