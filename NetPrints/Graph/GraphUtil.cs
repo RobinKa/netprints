@@ -41,8 +41,8 @@ namespace NetPrints.Graph
             {
                 // Both are TypeSpecifier
 
-                if(datA.PinType is TypeSpecifier typeSpecA && 
-                    datB.PinType is TypeSpecifier typeSpecB &&
+                if(datA.PinType.Value is TypeSpecifier typeSpecA && 
+                    datB.PinType.Value is TypeSpecifier typeSpecB &&
                     (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA) || hasImplicitCast(typeSpecB, typeSpecA)))
                 {
                     return true;
@@ -50,13 +50,13 @@ namespace NetPrints.Graph
                 
                 // A is GenericType, B is whatever
 
-                if (datA.PinType is GenericType genTypeA)
+                if (datA.PinType.Value is GenericType genTypeA)
                 {
-                    if(datB.PinType is GenericType genTypeB)
+                    if(datB.PinType.Value is GenericType genTypeB)
                     {
                         return genTypeA == genTypeB;
                     }
-                    else if(datB.PinType is TypeSpecifier typeSpecB2)
+                    else if(datB.PinType.Value is TypeSpecifier typeSpecB2)
                     {
                         return genTypeA == typeSpecB2;
                     }
@@ -64,13 +64,13 @@ namespace NetPrints.Graph
 
                 // B is GenericType, A is whatever
 
-                if (datB.PinType is GenericType genTypeB2)
+                if (datB.PinType.Value is GenericType genTypeB2)
                 {
-                    if (datA.PinType is GenericType genTypeA2)
+                    if (datA.PinType.Value is GenericType genTypeA2)
                     {
                         return genTypeA2 == genTypeB2;
                     }
-                    else if (datA.PinType is TypeSpecifier typeSpecA2)
+                    else if (datA.PinType.Value is TypeSpecifier typeSpecA2)
                     {
                         return genTypeB2 == typeSpecA2;
                     }
@@ -101,6 +101,10 @@ namespace NetPrints.Graph
             else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
             {
                 ConnectDataPins(datB, datA);
+            }
+            else if (pinA is NodeInputTypePin typA && pinB is NodeOutputTypePin typB)
+            {
+                ConnectTypePins(typB, typA);
             }
             else if (!swapped)
             {

@@ -17,17 +17,23 @@ namespace NetPrints.Graph
         public ObservableRangeCollection<NodeInputTypePin> OutgoingPins { get; private set; } 
             = new ObservableRangeCollection<NodeInputTypePin>();
 
-        public override BaseType InferredType
+        public override ObservableValue<BaseType> InferredType
         {
-            get => getOutputType();
+            get => outputType;
         }
 
-        private Func<BaseType> getOutputType;
+        [DataMember]
+        private ObservableValue<BaseType> outputType;
 
-        public NodeOutputTypePin(Node node, string name, Func<BaseType> getOutputTypeFunc)
+        public NodeOutputTypePin(Node node, string name, ObservableValue<BaseType> outputType)
             : base(node, name)
         {
-            getOutputType = getOutputTypeFunc;
+            this.outputType = outputType;
+        }
+
+        public override string ToString()
+        {
+            return outputType.Value.ShortName;
         }
     }
 }

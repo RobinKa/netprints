@@ -29,6 +29,21 @@ namespace NetPrints.Graph
         {
             get => MethodSpecifier.Name;
         }
+
+        public string BoundMethodName
+        {
+            get
+            {
+                string boundName = MethodSpecifier.Name;
+
+                if (InputTypePins.Count > 0)
+                {
+                    boundName += $"<{string.Join(",", InputTypePins.Select(p => p.InferredType?.Value.FullCodeName ?? p.Name))}>";
+                }
+
+                return boundName;
+            }
+        }
         
         /// <summary>
         /// Whether the method is static.
@@ -51,30 +66,23 @@ namespace NetPrints.Graph
         /// </summary>
         public IReadOnlyList<BaseType> ArgumentTypes
         {
-            get => MethodSpecifier.ArgumentTypes;
+            get => InputDataPins.Select(p => p.PinType.Value).ToList();
         }
 
         // <summary>
         /// List of named type specifiers the method takes.
         /// </summary>
-        public IList<Named<BaseType>> Arguments => MethodSpecifier.Arguments;
+        public IReadOnlyList<Named<BaseType>> Arguments
+        {
+            get => InputDataPins.Select(p => new Named<BaseType>(p.Name, p.PinType.Value)).ToList();
+        }
 
         /// <summary>
         /// List of type specifiers the method returns.
         /// </summary>
-        public IList<BaseType> ReturnTypes
+        public IReadOnlyList<BaseType> ReturnTypes
         {
-            get => MethodSpecifier.ReturnTypes;
-        }
-        
-        /// <summary>
-        /// List of generic arguments the method takes.
-        /// </summary>
-        [DataMember]
-        public IList<BaseType> GenericArgumentTypes
-        {
-            get;
-            private set;
+            get => OutputDataPins.Select(p => p.PinType.Value).ToList();
         }
         
         /// <summary>
@@ -134,21 +142,10 @@ namespace NetPrints.Graph
         {
             MethodSpecifier = methodSpecifier;
 
-            // TODO: Check that genericArgumentTypes fullfils GenericArguments constraints
-            if (MethodSpecifier.GenericArguments.Count > 0 && genericArgumentTypes != null
-                || (genericArgumentTypes != null && 
-                MethodSpecifier.GenericArguments.Count != genericArgumentTypes.Count))
+            // Add type pins for each generic argument of the method type parameters.
+            foreach (var genericArg in MethodSpecifier.GenericArguments.OfType<GenericType>())
             {
-                throw new ArgumentException(nameof(genericArgumentTypes));
-            }
-
-            if (genericArgumentTypes == null)
-            {
-                GenericArgumentTypes = new List<BaseType>();
-            }
-            else
-            {
-                GenericArgumentTypes = genericArgumentTypes;
+                AddInputTypePin(genericArg.Name);
             }
             
             if (!IsStatic)
@@ -159,14 +156,54 @@ namespace NetPrints.Graph
             AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
             AddOutputExecPin("Catch");
 
-            foreach (Named<BaseType> argument in Arguments)
+            foreach (Named<BaseType> argument in MethodSpecifier.Arguments)
             {
                 AddInputDataPin(argument.Name, argument.Value);
             }
 
-            foreach (BaseType returnType in ReturnTypes)
+            foreach (BaseType returnType in MethodSpecifier.ReturnTypes)
             {
                 AddOutputDataPin(returnType.ShortName, returnType);
+            }
+
+            // TODO: Set the correct types to begin with.
+            UpdateTypes();
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            UpdateTypes();
+        }
+
+        private void UpdateTypes()
+        {
+            for (int i = 0; i < MethodSpecifier.Arguments.Count; i++)
+            {
+                BaseType type = MethodSpecifier.Arguments[i];
+
+                // Construct type with generic arguments replaced by our input type pins
+                BaseType constructedType = GenericsHelper.ConstructWithTypePins(type, InputTypePins);
+
+                if (InputDataPins[i].PinType.Value != constructedType)
+                {
+                    InputDataPins[i].PinType.Value = constructedType;
+                }
+            }
+
+            for (int i = 0; i < MethodSpecifier.ReturnTypes.Count; i++)
+            {
+                BaseType type = MethodSpecifier.ReturnTypes[i];
+
+                // Construct type with generic arguments replaced by our input type pins
+                BaseType constructedType = GenericsHelper.ConstructWithTypePins(type, InputTypePins);
+
+                // +1 because the first pin is the exception pin
+                if (OutputDataPins[i+1].PinType.Value != constructedType)
+                {
+                    OutputDataPins[i+1].PinType.Value = constructedType;
+                }
             }
         }
 
@@ -180,12 +217,7 @@ namespace NetPrints.Graph
             }
             else
             {
-                s += $"Call {MethodName}";
-            }
-
-            if (GenericArgumentTypes.Count > 0)
-            {
-                s += $"<{string.Join(", ", GenericArgumentTypes.Select(type => type.ShortName))}>";
+                s += $"Call {BoundMethodName}";
             }
 
             return s;

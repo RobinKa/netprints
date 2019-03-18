@@ -59,7 +59,7 @@ namespace NetPrintsEditor.Controls
 
             if (e.Property == PinProperty && Pin != null)
             {
-                if (Pin.Pin is NodeInputDataPin || Pin.Pin is NodeInputExecPin)
+                if (Pin.Pin is NodeInputDataPin || Pin.Pin is NodeInputExecPin || Pin.Pin is NodeInputTypePin)
                 {
                     grid.ColumnDefinitions[0].Width = new GridLength(20, GridUnitType.Pixel);
                     grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);

@@ -274,9 +274,9 @@ namespace NetPrintsEditor.Reflection
                         t.GetMethods()
                         .Where(m => 
                             m.IsStatic && m.IsPublic() &&
-                            m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
-                            m.ReturnType.TypeKind != TypeKind.TypeParameter &&
-                            !m.IsGenericMethod &&
+                            //m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
+                            //m.ReturnType.TypeKind != TypeKind.TypeParameter &&
+                            //!m.IsGenericMethod &&
                             !m.ContainingType.IsUnboundGenericType)
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)

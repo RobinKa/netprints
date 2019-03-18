@@ -12,7 +12,7 @@ namespace NetPrints.Graph
     [DataContract]
     public abstract class NodeTypePin : NodePin
     {
-        public abstract BaseType InferredType
+        public abstract ObservableValue<BaseType> InferredType
         {
             get;
         }

@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
@@ -21,7 +22,7 @@ namespace NetPrintsEditor.ViewModels
 
                 if (Pin is NodeDataPin dataPin)
                 {
-                    toolTip = $"{dataPin.PinType}: {dataPin.Name}";
+                    toolTip = $"{dataPin.PinType.Value}: {dataPin.Name}";
                     string documentation = null;
 
                     if (dataPin.Node is CallMethodNode callMethodNode)
@@ -123,6 +124,7 @@ namespace NetPrintsEditor.ViewModels
                     if(pin != null)
                     {
                         pin.Node.OnPositionChanged -= OnNodePositionChanged;
+                        pin.Node.InputTypeChanged -= OnInputTypeChanged;
                     }
 
                     pin = value;
@@ -130,6 +132,7 @@ namespace NetPrintsEditor.ViewModels
                     if (pin != null)
                     {
                         pin.Node.OnPositionChanged += OnNodePositionChanged;
+                        pin.Node.InputTypeChanged += OnInputTypeChanged;
                     }
 
                     OnPropertyChanged();
@@ -141,6 +144,14 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(IsRerouteNodePin));
                 }
             }
+        }
+
+        private void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            OnPropertyChanged(nameof(PossibleEnumNames));
+            OnPropertyChanged(nameof(ShowUnconnectedValue));
+            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(ToolTip));
         }
 
         public bool IsRerouteNodePin
@@ -162,7 +173,7 @@ namespace NetPrintsEditor.ViewModels
             set
             {
                 if (Pin is NodeInputDataPin p && p.UnconnectedValue != value
-                    && p.PinType is TypeSpecifier typeSpecifier)
+                    && p.PinType.Value is TypeSpecifier typeSpecifier)
                 {
                     // Try to convert to the correct type first if it can be found
                     // Dont do this for enums as they just use a string
@@ -186,20 +197,20 @@ namespace NetPrintsEditor.ViewModels
         public bool ShowUnconnectedValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
-                !(p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum);
+                !(p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum);
         }
 
         public bool ShowEnumValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
-                (p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum);
+                (p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum);
         }
 
         public IEnumerable<string> PossibleEnumNames
         {
             get
             {
-                if (Pin is NodeInputDataPin p && p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum)
+                if (Pin is NodeInputDataPin p && p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum)
                 {
                     return ProjectVM.Instance.ReflectionProvider.GetEnumNames(typeSpec);
                 }
@@ -215,15 +226,15 @@ namespace NetPrintsEditor.ViewModels
 
         public string Name
         {
-            get => pin.Name;
-            set
+            get => pin.ToString();
+            /*set
             {
                 if(pin.Name != value)
                 {
                     pin.Name = value;
                     OnPropertyChanged();
                 }
-            }
+            }*/
         }
 
         private void OnNodePositionChanged(Node node, double positionX, double positionY)
@@ -268,15 +279,16 @@ namespace NetPrintsEditor.ViewModels
             get => new Point(PositionX, PositionY);
         }
 
-        private static readonly SolidColorBrush ExecPinBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0));
-
-        private static readonly SolidColorBrush DataPinBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF));
+        private static readonly Dictionary<Type, Brush> typeBrushes = new Dictionary<Type, Brush>()
+        {
+            [typeof(NodeExecPin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0)),
+            [typeof(NodeDataPin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF)),
+            [typeof(NodeTypePin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xE0, 0xE0)),
+        };
 
         public Brush Brush
         {
-            get => (Pin is NodeDataPin) ? DataPinBrush : ExecPinBrush;
+            get => typeBrushes.Single(x => Pin.GetType().IsSubclassOf(x.Key)).Value;
         }
 
         public Point AbsolutePosition

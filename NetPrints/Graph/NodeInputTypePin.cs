@@ -39,7 +39,7 @@ namespace NetPrints.Graph
             }
         }
 
-        public override BaseType InferredType
+        public override ObservableValue<BaseType> InferredType
         {
             get => IncomingPin?.InferredType;
         }

@@ -105,7 +105,7 @@ namespace NetPrintsEditor.Controls
 
                         // Parameters
                         methodSpecifier,
-                        Array.Empty<GenericType>()
+                        methodSpecifier.GenericArguments.Select(genArg => new GenericType(genArg.Name)).Cast<BaseType>().ToList()
                     ));
                 }
                 else if(item.DataContext is PropertySpecifier propertySpecifier)
@@ -317,6 +317,32 @@ namespace NetPrintsEditor.Controls
                             UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                             (
                                 typeof(LiteralNode),
+                                null,
+                                0,
+                                0,
+
+                                // Parameters
+                                selectedType
+                            ));
+                        }
+                    }
+                    else if (t == TypeSpecifier.FromType<TypeNode>())
+                    {
+                        SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
+                        if (selectTypeDialog.ShowDialog() == true)
+                        {
+                            TypeSpecifier selectedType = selectTypeDialog.SelectedType;
+
+                            if (selectedType.Equals(null))
+                            {
+                                throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
+                            }
+
+                            // LiteralNode(Method method, TypeSpecifier literalType)
+
+                            UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                            (
+                                typeof(TypeNode),
                                 null,
                                 0,
                                 0,

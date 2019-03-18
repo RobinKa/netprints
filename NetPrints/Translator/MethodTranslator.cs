@@ -88,11 +88,11 @@ namespace NetPrints.Translator
             {
                 if (pin.UsesUnconnectedValue && pin.UnconnectedValue != null)
                 {
-                    return TranslatorUtil.ObjectToLiteral(pin.UnconnectedValue, (TypeSpecifier)pin.PinType);
+                    return TranslatorUtil.ObjectToLiteral(pin.UnconnectedValue, (TypeSpecifier)pin.PinType.Value);
                 }
                 else
                 {
-                    return $"default({pin.PinType})";
+                    return $"default({pin.PinType.Value.FullCodeName})";
                 }
             }
             else
@@ -114,7 +114,7 @@ namespace NetPrints.Translator
         private string GetOrCreateTypedPinName(NodeOutputDataPin pin)
         {
             string pinName = GetOrCreatePinName(pin);
-            return $"{pin.PinType.FullCodeName} {pinName}";
+            return $"{pin.PinType.Value.FullCodeName} {pinName}";
         }
 
         private IEnumerable<string> GetOrCreateTypedPinNames(IEnumerable<NodeOutputDataPin> pins)
@@ -155,7 +155,7 @@ namespace NetPrints.Translator
 
                 if (!(pin.Node is EntryNode))
                 {
-                    builder.AppendLine($"{pin.PinType.FullCodeName} {variableName};");
+                    builder.AppendLine($"{pin.PinType.Value.FullCodeName} {variableName};");
                 }
             }
         }
@@ -411,7 +411,7 @@ namespace NetPrints.Translator
             {
                 temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
 
-                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType));
+                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.Value.FullCodeName));
                 
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
@@ -473,7 +473,7 @@ namespace NetPrints.Translator
                 }
 
                 // Write the method call
-                builder.AppendLine($"{node.MethodName}({string.Join(", ", argumentNames)});");
+                builder.AppendLine($"{node.BoundMethodName}({string.Join(", ", argumentNames)});");
             }
 
             // Assign the real variables from the temporary tuple
@@ -620,7 +620,7 @@ namespace NetPrints.Translator
                 var returnValues = node.InputDataPins.Select(pin => GetPinIncomingValue(pin));
 
                 // Tuple<Types..> (won't be needed in the future)
-                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", node.InputDataPins.Select(pin => pin.PinType)) + ">";
+                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", node.InputDataPins.Select(pin => pin.PinType.Value.FullCodeName)) + ">";
                 builder.AppendLine($"return new {returnType}({string.Join(",", returnValues)});");
             }
         }

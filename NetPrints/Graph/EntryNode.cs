@@ -45,7 +45,7 @@ namespace NetPrints.Graph
             {
                 // Remember pins with same type as before
                 int i = OutputDataPins.IndexOf(pin);
-                if (i < parameterTypes.Count() && pin.PinType == parameterTypes.ElementAt(i))
+                if (i < parameterTypes.Count() && pin.PinType.Value == parameterTypes.ElementAt(i))
                 {
                     oldConnections.Add(i, new List<NodeInputDataPin>(pin.OutgoingPins));
                 }

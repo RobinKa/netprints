@@ -33,7 +33,7 @@ namespace NetPrints.Graph
         /// </summary>
         [DataMember]
         public TypeSpecifier LiteralType { get; private set; }
-
+        
         public LiteralNode(Method method, TypeSpecifier literalType)
             : base(method)
         {
@@ -44,11 +44,19 @@ namespace NetPrints.Graph
             foreach (var genericArg in literalType.GenericArguments.OfType<GenericType>())
             {
                 AddInputTypePin(genericArg.Name);
-                InputTypePins.Last().IncomingPinChanged += (pin, oldNode, newNode) => UpdatePinTypes();
             }
 
             AddInputDataPin("Value", literalType);
             AddOutputDataPin("Value", literalType);
+
+            UpdatePinTypes();
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            UpdatePinTypes();
         }
 
         private void UpdatePinTypes()
@@ -59,16 +67,16 @@ namespace NetPrints.Graph
             // Set pin types
             // TODO: Check if we can leave the pins connected
 
-            if (constructedType != InputValuePin.PinType)
+            if (constructedType != InputValuePin.PinType.Value)
             {
                 GraphUtil.DisconnectInputDataPin(InputValuePin);
-                InputValuePin.PinType = constructedType;
+                InputValuePin.PinType.Value = constructedType;
             }
 
-            if (constructedType != ValuePin.PinType)
+            if (constructedType != ValuePin.PinType.Value)
             {
                 GraphUtil.DisconnectOutputDataPin(ValuePin);
-                ValuePin.PinType = constructedType;
+                ValuePin.PinType.Value = constructedType;
             }
         }
 
@@ -87,7 +95,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"{LiteralType.Name}";
+            return $"Literal - {ValuePin.PinType.Value.ShortName}";
         }
     }
 }

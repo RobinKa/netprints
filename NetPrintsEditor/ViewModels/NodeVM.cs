@@ -248,28 +248,55 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (node != value)
                 {
+                    if (node != null)
+                    {
+                        node.InputTypeChanged -= OnInputTypeChanged;
+                    }
+
                     node = value;
 
-                    InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
-                        Node.InputDataPins, p => new NodePinVM(p));
+                    if (node != null)
+                    {
+                        node.InputTypeChanged += OnInputTypeChanged;
 
-                    OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
-                        Node.OutputDataPins, p => new NodePinVM(p));
+                        InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
+                            Node.InputDataPins, p => new NodePinVM(p));
 
-                    InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
-                        Node.InputExecPins, p => new NodePinVM(p));
+                        OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
+                            Node.OutputDataPins, p => new NodePinVM(p));
 
-                    OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
-                        Node.OutputExecPins, p => new NodePinVM(p));
-                    
+                        InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
+                            Node.InputExecPins, p => new NodePinVM(p));
+
+                        OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
+                            Node.OutputExecPins, p => new NodePinVM(p));
+
+                        InputTypePins = new ObservableViewModelCollection<NodePinVM, NodeInputTypePin>(
+                            Node.InputTypePins, p => new NodePinVM(p));
+
+                        OutputTypePins = new ObservableViewModelCollection<NodePinVM, NodeOutputTypePin>(
+                            Node.OutputTypePins, p => new NodePinVM(p));
+                    }
+
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ToolTip));
                     OnPropertyChanged(nameof(Overloads));
                     OnPropertyChanged(nameof(IsRerouteNode));
                     OnPropertyChanged(nameof(ShowLeftPinButtons));
+                    OnPropertyChanged(nameof(Label));
                 }
             }
+        }
+
+        private void OnInputTypeChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Label));
+        }
+
+        public string Label
+        {
+            get => Node.ToString();
         }
 
         /// <summary>

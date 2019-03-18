@@ -1,12 +1,51 @@
 ﻿using NetPrints.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
 namespace NetPrints.Graph
 {
+    [DataContract]
+    public class ObservableValue<T> : INotifyPropertyChanged
+    {
+        public delegate void ObservableValueChangedEventHandler(object sender, EventArgs eventArgs);
+
+        [DataMember]
+        public T Value
+        {
+            get => value;
+            set
+            {
+                this.value = value;
+                OnValueChanged?.Invoke(this, new EventArgs());
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+            }
+        }
+
+        private T value;
+
+        public ObservableValue(T value)
+        {
+            this.value = value;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event ObservableValueChangedEventHandler OnValueChanged;
+
+        public static implicit operator T (ObservableValue<T> observableValue)
+        {
+            return observableValue.Value;
+        }
+
+        public static implicit operator ObservableValue<T>(T value)
+        {
+            return new ObservableValue<T>(value);
+        }
+    }
+
     [DataContract]
     public class TypeNode : Node
     {
@@ -16,6 +55,9 @@ namespace NetPrints.Graph
             get;
             private set;
         }
+
+        [DataMember]
+        private ObservableValue<BaseType> constructedType;
 
         public TypeNode(Method method, BaseType type)
             : base(method)
@@ -32,10 +74,30 @@ namespace NetPrints.Graph
                 }
             }
 
-            AddOutputTypePin("OutputType", () =>
-            {
-                return GenericsHelper.ConstructWithTypePins(Type, InputTypePins);
-            });
+            constructedType = new ObservableValue<BaseType>(GetConstructedOutputType());
+            AddOutputTypePin("OutputType", constructedType);
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            UpdateConstructedOutputType();
+        }
+
+        private void UpdateConstructedOutputType()
+        {
+            constructedType.Value = GetConstructedOutputType();
+        }
+
+        private BaseType GetConstructedOutputType()
+        {
+            return GenericsHelper.ConstructWithTypePins(Type, InputTypePins);
+        }
+
+        public override string ToString()
+        {
+            return $"Type - {Type.ShortName}";
         }
     }
 }

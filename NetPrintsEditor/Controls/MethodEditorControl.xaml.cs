@@ -48,6 +48,7 @@ namespace NetPrintsEditor.Controls
             TypeSpecifier.FromType<ReturnNode>(),
             TypeSpecifier.FromType<MakeArrayNode>(),
             TypeSpecifier.FromType<LiteralNode>(),
+            TypeSpecifier.FromType<TypeNode>(),
         };
 
         public MethodEditorControl()
@@ -157,7 +158,7 @@ namespace NetPrintsEditor.Controls
                 
                 if (pin.Pin is NodeOutputDataPin odp)
                 {
-                    if (odp.PinType is TypeSpecifier pinTypeSpec)
+                    if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
                     {
                         List<object> suggestions = new List<object>();
 
@@ -193,7 +194,7 @@ namespace NetPrintsEditor.Controls
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
-                    if (idp.PinType is TypeSpecifier pinTypeSpec)
+                    if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
                     {
                         // Properties of base class that inherit from needed type
                          IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider
