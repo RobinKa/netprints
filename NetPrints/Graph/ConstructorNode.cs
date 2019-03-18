@@ -1,6 +1,7 @@
 ﻿using NetPrints.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -24,17 +25,17 @@ namespace NetPrints.Graph
         /// <summary>
         /// Specifier for the type this constructor creates.
         /// </summary>
-        public TypeSpecifier ClassType
+        public BaseType ClassType
         {
-            get => ConstructorSpecifier.DeclaringType;
+            get => OutputDataPins[0].PinType.Value;
         }
 
         /// <summary>
-        /// List of specifiers for the types this constructor takes.
+        /// List of type specifiers the constructor takes.
         /// </summary>
-        public IList<TypeSpecifier> ArgumentTypes
+        public IReadOnlyList<BaseType> ArgumentTypes
         {
-            get => ConstructorSpecifier.Arguments;
+            get => ArgumentPins.Select(p => p.PinType.Value).ToList();
         }
 
         /// <summary>
@@ -50,17 +51,56 @@ namespace NetPrints.Graph
         {
             ConstructorSpecifier = specifier;
 
+            // Add type pins for each generic arguments of the type being constructed.
+            foreach (var genericArg in ConstructorSpecifier.DeclaringType.GenericArguments.OfType<GenericType>())
+            {
+                AddInputTypePin(genericArg.Name);
+            }
+
             foreach (TypeSpecifier argumentType in ArgumentTypes)
             {
                 AddInputDataPin(argumentType.ShortName, argumentType);
             }
             
-            AddOutputDataPin(ClassType.ShortName, ClassType);
+            AddOutputDataPin(ConstructorSpecifier.DeclaringType.ShortName, ConstructorSpecifier.DeclaringType);
+
+            // TODO: Set the correct types to begin with.
+            UpdateTypes();
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            UpdateTypes();
+        }
+
+        private void UpdateTypes()
+        {
+            // Construct data input
+            for (int i = 0; i < ConstructorSpecifier.Arguments.Count; i++)
+            {
+                BaseType type = ConstructorSpecifier.Arguments[i];
+
+                // Construct type with generic arguments replaced by our input type pins
+                BaseType constructedType = GenericsHelper.ConstructWithTypePins(type, InputTypePins);
+
+                if (InputDataPins[i].PinType.Value != constructedType)
+                {
+                    InputDataPins[i].PinType.Value = constructedType;
+                }
+            }
+
+            // Construct data output
+            {
+                BaseType constructedType = GenericsHelper.ConstructWithTypePins(ConstructorSpecifier.DeclaringType, InputTypePins);
+                OutputDataPins[0].PinType.Value = constructedType;
+            }
         }
 
         public override string ToString()
         {
-            return $"Construct New {ClassType}";
+            return $"Construct New {ClassType.FullCodeNameUnbound}";
         }
     }
 }
