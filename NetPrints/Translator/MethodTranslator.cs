@@ -792,9 +792,9 @@ namespace NetPrints.Translator
 
         public void TranslateRerouteNode(RerouteNode node)
         {
-            if ((node.ExecRerouteCount != 1 && node.DataRerouteCount != 1) || (node.ExecRerouteCount == 1 && node.DataRerouteCount == 1))
+            if (node.ExecRerouteCount + node.TypeRerouteCount + node.DataRerouteCount != 1)
             {
-                throw new NotImplementedException("Only implemented reroute nodes with 1 execution or 1 data pin.");
+                throw new NotImplementedException("Only implemented reroute nodes with exactly 1 type of pin.");
             }
 
             if (node.DataRerouteCount == 1)

@@ -33,7 +33,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return outputType.Value.ShortName;
+            return outputType.Value?.ShortName ?? "None";
         }
     }
 }
