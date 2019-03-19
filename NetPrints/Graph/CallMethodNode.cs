@@ -190,9 +190,9 @@ namespace NetPrints.Graph
                 // Construct type with generic arguments replaced by our input type pins
                 BaseType constructedType = GenericsHelper.ConstructWithTypePins(type, InputTypePins);
 
-                if (InputDataPins[i].PinType.Value != constructedType)
+                if (ArgumentPins[i].PinType.Value != constructedType)
                 {
-                    InputDataPins[i].PinType.Value = constructedType;
+                    ArgumentPins[i].PinType.Value = constructedType;
                 }
             }
 
@@ -204,9 +204,9 @@ namespace NetPrints.Graph
                 BaseType constructedType = GenericsHelper.ConstructWithTypePins(type, InputTypePins);
 
                 // +1 because the first pin is the exception pin
-                if (OutputDataPins[i+1].PinType.Value != constructedType)
+                if (ReturnValuePins[i].PinType.Value != constructedType)
                 {
-                    OutputDataPins[i+1].PinType.Value = constructedType;
+                    ReturnValuePins[i].PinType.Value = constructedType;
                 }
             }
         }
