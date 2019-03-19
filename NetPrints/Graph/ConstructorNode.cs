@@ -57,7 +57,7 @@ namespace NetPrints.Graph
                 AddInputTypePin(genericArg.Name);
             }
 
-            foreach (TypeSpecifier argumentType in ArgumentTypes)
+            foreach (TypeSpecifier argumentType in ConstructorSpecifier.Arguments)
             {
                 AddInputDataPin(argumentType.ShortName, argumentType);
             }
