@@ -83,6 +83,11 @@ namespace NetPrintsEditor.Converters
                     text = "NetPrints - Type";
                     iconPath = "Type_16x.png";
                 }
+                else
+                {
+                    text = t.FullCodeName;
+                    iconPath = "Type_16x.png";
+                }
             }
             else
             {

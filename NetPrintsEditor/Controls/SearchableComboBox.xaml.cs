@@ -352,6 +352,20 @@ namespace NetPrintsEditor.Controls
                             ));
                         }
                     }
+                    else
+                    {
+                        // Build a type node
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(TypeNode),
+                            null,
+                            0,
+                            0,
+
+                            // Parameters
+                            t
+                        ));
+                    }
                 }
             }
         }
