@@ -221,7 +221,7 @@ namespace NetPrintsEditor.Reflection
                 return type.GetMethods()
                     .Where(m => 
                         m.IsPublic() &&
-                        !m.IsStatic &&
+                        m.IsStatic &&
                         m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
