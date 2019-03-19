@@ -6,7 +6,7 @@
 
 ### Master [![Build Status](https://travis-ci.org/RobinKa/netprints.svg?branch=master)](https://travis-ci.org/RobinKa/netprints) Latest [![Build Status](https://travis-ci.org/RobinKa/netprints.svg)](https://travis-ci.org/RobinKa/netprints)
 
-NetPrints is a visual programming language inspired by Unreal Engine 4's Blueprints which compiles into .NET binaries or alternatively C# source code. These can be used from any other .NET language (eg. C#) or used as standalone programs. Furthermore any .NET binaries (both .NET Framework and .NET Core, and ideally .NET Standard) can be referenced and used. Its goal is to support using anything that is made in C#. Currently there are several limitations, the most major ones being delegate and generics support not being 100% complete.
+NetPrints is a visual programming language inspired by Unreal Engine 4's Blueprints which compiles into .NET binaries or alternatively C# source code. These can be used from any other .NET language (eg. C#) or used as standalone programs. Furthermore any .NET binaries (both .NET Framework and .NET Core, and ideally .NET Standard) can be referenced and used. Its goal is to support using anything that is made in C#.
 
 [Unity tutorial](https://github.com/RobinKa/NetPrintsUnityTutorial)
 
@@ -35,7 +35,7 @@ Any contributions are welcome. If you notice bugs or have feature suggestions ju
 ![](https://i.imgur.com/DjRuPeR.png)
 
 ## Generics
-![](http://i.imgur.com/OnjPw36.png)
+![](https://i.imgur.com/DuqhDuR.png)
 
 ## Suggestions
 ![](https://i.imgur.com/ZuStkEJ.png)
