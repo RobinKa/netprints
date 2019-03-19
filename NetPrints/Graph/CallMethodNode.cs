@@ -30,6 +30,10 @@ namespace NetPrints.Graph
             get => MethodSpecifier.Name;
         }
 
+        /// <summary>
+        /// Name of the method with generic arguments fully expanded as it
+        /// would appear in code. (eg. SomeMethod&lt;System.Object, System.Int32&gt;).
+        /// </summary>
         public string BoundMethodName
         {
             get
@@ -38,7 +42,7 @@ namespace NetPrints.Graph
 
                 if (InputTypePins.Count > 0)
                 {
-                    boundName += $"<{string.Join(",", InputTypePins.Select(p => p.InferredType?.Value.FullCodeName ?? p.Name))}>";
+                    boundName += $"<{string.Join(",", InputTypePins.Select(p => p.InferredType?.Value?.FullCodeName ?? p.Name))}>";
                 }
 
                 return boundName;
@@ -209,18 +213,21 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            string s = IsStatic ? "Static " : "";
-
             if (OperatorUtil.TryGetOperatorInfo(MethodSpecifier, out OperatorInfo operatorInfo))
             {
-                s += $"Operator {operatorInfo.DisplayName}";
+                return $"Operator {operatorInfo.DisplayName}";
             }
             else
             {
-                s += $"Call {BoundMethodName}";
-            }
+                string s = "";
 
-            return s;
+                if (IsStatic)
+                {
+                    s += $"{MethodSpecifier.DeclaringType.ShortName}.";
+                }
+
+                return s + MethodSpecifier.Name;
+            }
         }
     }
 }

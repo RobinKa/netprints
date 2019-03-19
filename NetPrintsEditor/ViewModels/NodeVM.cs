@@ -32,6 +32,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush MakeDelegateNodeBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x7A, 0x20));
 
+        private static readonly SolidColorBrush TypeNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x30, 0x20));
+
         /// <summary>
         /// Brush for the header of the node.
         /// </summary>
@@ -39,15 +42,15 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if(Node is EntryNode)
+                if (Node is EntryNode)
                 {
                     return EntryNodeBrush;
                 }
-                else if(Node is ReturnNode)
+                else if (Node is ReturnNode)
                 {
                     return ReturnNodeBrush;
                 }
-                else if(Node is CallMethodNode callMethodNode)
+                else if (Node is CallMethodNode callMethodNode)
                 {
                     if (callMethodNode.IsStatic)
                     {
@@ -58,13 +61,17 @@ namespace NetPrintsEditor.ViewModels
                         return CallMethodBrush;
                     }
                 }
-                else if(Node is ConstructorNode)
+                else if (Node is ConstructorNode)
                 {
                     return ConstructorNodeBrush;
                 }
-                else if(Node is MakeDelegateNode)
+                else if (Node is MakeDelegateNode)
                 {
                     return MakeDelegateNodeBrush;
+                }
+                else if (Node is TypeNode)
+                {
+                    return TypeNodeBrush;
                 }
 
                 return DefaultNodeBrush;

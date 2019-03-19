@@ -100,7 +100,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"Construct New {ClassType.FullCodeNameUnbound}";
+            return $"Construct {ClassType.ShortName}";
         }
     }
 }

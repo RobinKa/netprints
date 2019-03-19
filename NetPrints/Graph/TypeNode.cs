@@ -94,7 +94,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"Type - {Type.ShortName}";
+            return Type.ShortName;
         }
     }
 }
