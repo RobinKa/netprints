@@ -74,8 +74,8 @@ namespace NetPrintsUnitTests
             Assert.AreEqual(literalNode.InputTypePins.Count, 1);
 
             GraphUtil.ConnectTypePins(typeNode.OutputTypePins[0], literalNode.InputTypePins[0]);
-            Assert.AreEqual(literalNode.InputTypePins[0].InferredType, new TypeSpecifier("System.Int32"));
-            Assert.AreEqual(literalNode.OutputDataPins[0].PinType, new TypeSpecifier("System.Collections.Generic.List", genericArguments: new BaseType[] { new TypeSpecifier("System.Int32") }));
+            Assert.AreEqual(literalNode.InputTypePins[0].InferredType.Value, new TypeSpecifier("System.Int32"));
+            Assert.AreEqual(literalNode.OutputDataPins[0].PinType.Value, new TypeSpecifier("System.Collections.Generic.List", genericArguments: new BaseType[] { new TypeSpecifier("System.Int32") }));
         }
     }
 }
