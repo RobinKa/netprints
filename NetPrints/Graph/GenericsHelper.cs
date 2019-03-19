@@ -9,7 +9,7 @@ namespace NetPrints.Graph
 {
     public static class GenericsHelper
     {
-        public static TypeSpecifier DetermineTypeNodeType(TypeNode node)
+        /*public static TypeSpecifier DetermineTypeNodeType(TypeNode node)
         {
             // TODO: Copy node.Type
 
@@ -24,6 +24,49 @@ namespace NetPrints.Graph
             }
 
             return node.Type;
+        }*/
+
+        public static BaseType ConstructWithTypePins(BaseType type, IEnumerable<NodeInputTypePin> inputTypePins)
+        {
+            if (type is TypeSpecifier typeSpecifier)
+            {
+                // Find types to replace and build dictionary
+                Dictionary<GenericType, BaseType> replacementTypes = new Dictionary<GenericType, BaseType>();
+
+                foreach (var inputTypePin in inputTypePins)
+                {
+                    if (inputTypePin.InferredType?.Value is BaseType replacementType && !(replacementType is null))
+                    {
+                        GenericType typeToReplace = (GenericType)typeSpecifier.GenericArguments.SingleOrDefault(arg => arg.Name == inputTypePin.Name);
+
+                        // If we can not replace all 
+                        if (!(typeToReplace is null))
+                        {
+                            replacementTypes.Add(typeToReplace, replacementType);
+                        }
+                    }
+                }
+
+                try
+                {
+                    var constructedType = typeSpecifier.Construct(replacementTypes);
+                    return constructedType;
+                }
+                catch
+                {
+                    return typeSpecifier;
+                }
+            }
+            else if (type is GenericType genericType)
+            {
+                BaseType replacementType = inputTypePins.SingleOrDefault(t => t.Name == type.Name).InferredType?.Value;
+                if (replacementType != null)
+                {
+                    return replacementType;
+                }
+            }
+
+            return type;
         }
     }
 }

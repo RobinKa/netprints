@@ -195,7 +195,7 @@ namespace NetPrintsEditor
         {
             ConnectPinsParameters cp = e.Parameter as ConnectPinsParameters;
 
-            if (cp.PinA.Pin is NodeInputDataPin || cp.PinA.Pin is NodeOutputExecPin)
+            if (cp.PinA.Pin is NodeInputDataPin || cp.PinA.Pin is NodeOutputExecPin || cp.PinA.Pin is NodeInputTypePin)
             {
                 cp.PinA.ConnectedPin = cp.PinB;
             }

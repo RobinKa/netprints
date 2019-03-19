@@ -111,22 +111,24 @@ namespace NetPrints.Core
 
             if (Modifiers.HasFlag(MethodModifiers.Static))
             {
-                methodString += "Static ";
+                methodString += $"{DeclaringType.ShortName}.";
             }
 
-            string argTypeString = string.Join(", ", Arguments);
+            methodString += Name;
 
-            methodString += $"{Name}({argTypeString})";
+            string argTypeString = string.Join(", ", Arguments.Select(a => a.Value.ShortName));
+
+            methodString += $"({argTypeString})";
 
             if(GenericArguments.Count > 0)
             {
-                string genArgTypeString = string.Join(", ", GenericArguments);
+                string genArgTypeString = string.Join(", ", GenericArguments.Select(s => s.ShortName));
                 methodString += $"<{genArgTypeString}>";
             }
 
             if(ReturnTypes.Count > 0)
             {
-                string returnTypeString = string.Join(", ", ReturnTypes);
+                string returnTypeString = string.Join(", ", ReturnTypes.Select(s => s.ShortName));
                 methodString += $" : {returnTypeString}";
             }
 

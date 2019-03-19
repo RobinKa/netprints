@@ -1,5 +1,7 @@
 ﻿using NetPrints.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace NetPrints.Graph
@@ -30,12 +32,17 @@ namespace NetPrints.Graph
             {
                 return true;
             }
+            else if (pinA is NodeInputTypePin && pinB is NodeOutputTypePin)
+            {
+                // TODO: Check for constraints
+                return true;
+            }
             else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
             {
                 // Both are TypeSpecifier
 
-                if(datA.PinType is TypeSpecifier typeSpecA && 
-                    datB.PinType is TypeSpecifier typeSpecB &&
+                if(datA.PinType.Value is TypeSpecifier typeSpecA && 
+                    datB.PinType.Value is TypeSpecifier typeSpecB &&
                     (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA) || hasImplicitCast(typeSpecB, typeSpecA)))
                 {
                     return true;
@@ -43,13 +50,13 @@ namespace NetPrints.Graph
                 
                 // A is GenericType, B is whatever
 
-                if (datA.PinType is GenericType genTypeA)
+                if (datA.PinType.Value is GenericType genTypeA)
                 {
-                    if(datB.PinType is GenericType genTypeB)
+                    if(datB.PinType.Value is GenericType genTypeB)
                     {
                         return genTypeA == genTypeB;
                     }
-                    else if(datB.PinType is TypeSpecifier typeSpecB2)
+                    else if(datB.PinType.Value is TypeSpecifier typeSpecB2)
                     {
                         return genTypeA == typeSpecB2;
                     }
@@ -57,13 +64,13 @@ namespace NetPrints.Graph
 
                 // B is GenericType, A is whatever
 
-                if (datB.PinType is GenericType genTypeB2)
+                if (datB.PinType.Value is GenericType genTypeB2)
                 {
-                    if (datA.PinType is GenericType genTypeA2)
+                    if (datA.PinType.Value is GenericType genTypeA2)
                     {
                         return genTypeA2 == genTypeB2;
                     }
-                    else if (datA.PinType is TypeSpecifier typeSpecA2)
+                    else if (datA.PinType.Value is TypeSpecifier typeSpecA2)
                     {
                         return genTypeB2 == typeSpecA2;
                     }
@@ -94,6 +101,10 @@ namespace NetPrints.Graph
             else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
             {
                 ConnectDataPins(datB, datA);
+            }
+            else if (pinA is NodeInputTypePin typA && pinB is NodeOutputTypePin typB)
+            {
+                ConnectTypePins(typB, typA);
             }
             else if (!swapped)
             {
@@ -140,6 +151,23 @@ namespace NetPrints.Graph
         }
 
         /// <summary>
+        /// Connects two node type pins. Removes any previous connection.
+        /// </summary>
+        /// <param name="fromPin">Output type pin to connect.</param>
+        /// <param name="toPin">Input type pin to connect.</param>
+        public static void ConnectTypePins(NodeOutputTypePin fromPin, NodeInputTypePin toPin)
+        {
+            // Remove from old pin if any
+            if (toPin.IncomingPin != null)
+            {
+                toPin.IncomingPin.OutgoingPins.Remove(toPin);
+            }
+
+            fromPin.OutgoingPins.Add(toPin);
+            toPin.IncomingPin = fromPin;
+        }
+
+        /// <summary>
         /// Disconnects all pins of a node.
         /// </summary>
         /// <param name="node">Node to have all its pins disconnected.</param>
@@ -164,6 +192,16 @@ namespace NetPrints.Graph
             {
                 DisconnectOutputExecPin(pin);
             }
+
+            foreach (NodeInputTypePin pin in node.InputTypePins)
+            {
+                DisconnectInputTypePin(pin);
+            }
+
+            foreach (NodeOutputTypePin pin in node.OutputTypePins)
+            {
+                DisconnectOutputTypePin(pin);
+            }
         }
 
         public static void DisconnectInputDataPin(NodeInputDataPin pin)
@@ -175,6 +213,22 @@ namespace NetPrints.Graph
         public static void DisconnectOutputDataPin(NodeOutputDataPin pin)
         {
             foreach(NodeInputDataPin outgoingPin in pin.OutgoingPins)
+            {
+                outgoingPin.IncomingPin = null;
+            }
+
+            pin.OutgoingPins.Clear();
+        }
+
+        public static void DisconnectInputTypePin(NodeInputTypePin pin)
+        {
+            pin.IncomingPin?.OutgoingPins.Remove(pin);
+            pin.IncomingPin = null;
+        }
+
+        public static void DisconnectOutputTypePin(NodeOutputTypePin pin)
+        {
+            foreach (NodeInputTypePin outgoingPin in pin.OutgoingPins)
             {
                 outgoingPin.IncomingPin = null;
             }
@@ -210,7 +264,7 @@ namespace NetPrints.Graph
                 throw new ArgumentException("Pin or its connected pin were null");
             }
 
-            var rerouteNode = new RerouteNode(pin.Node.Method, 0, new Tuple<BaseType, BaseType>[]
+            var rerouteNode = RerouteNode.MakeData(pin.Node.Method, new Tuple<BaseType, BaseType>[]
             {
                 new Tuple<BaseType, BaseType>(pin.PinType, pin.IncomingPin.PinType)
             });
@@ -233,10 +287,30 @@ namespace NetPrints.Graph
                 throw new ArgumentException("Pin or its connected pin were null");
             }
 
-            var rerouteNode = new RerouteNode(pin.Node.Method, 1, null);
+            var rerouteNode = RerouteNode.MakeExecution(pin.Node.Method, 1);
 
             GraphUtil.ConnectExecPins(rerouteNode.OutputExecPins[0], pin.OutgoingPin);
             GraphUtil.ConnectExecPins(pin, rerouteNode.InputExecPins[0]);
+
+            return rerouteNode;
+        }
+
+        /// <summary>
+        /// Adds a type reroute node and does the necessary rewiring.
+        /// </summary>
+        /// <param name="pin">Type pin to add reroute node for.</param>
+        /// <returns>Reroute node created for the type pin.</returns>
+        public static RerouteNode AddRerouteNode(NodeInputTypePin pin)
+        {
+            if (pin?.IncomingPin == null)
+            {
+                throw new ArgumentException("Pin or its connected pin were null");
+            }
+
+            var rerouteNode = RerouteNode.MakeType(pin.Node.Method, 1);
+
+            GraphUtil.ConnectTypePins(pin.IncomingPin, rerouteNode.InputTypePins[0]);
+            GraphUtil.ConnectTypePins(rerouteNode.OutputTypePins[0], pin);
 
             return rerouteNode;
         }

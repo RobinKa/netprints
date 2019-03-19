@@ -168,14 +168,12 @@ namespace NetPrintsEditor.Reflection
 
             if (type != null)
             {
-                // Get all public instance methods, ignore special ones (properties / events),
-                // ignore those with generic parameters since we cant set those yet
+                // Get all public instance methods, ignore special ones (properties / events)
 
                 return type.GetMethods()
                     .Where(m => 
                         m.IsPublic() &&
                         !m.IsStatic &&
-                        !m.IsGenericMethod &&
                         m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
@@ -194,14 +192,11 @@ namespace NetPrintsEditor.Reflection
 
             if (type != null)
             {
-                // TODO: Handle generic methods instead of just ignoring them
-
                 return type.GetMethods()
                         .Where(m =>
                             m.Name == methodSpecifier.Name &&
                             m.IsPublic() &&
                             m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static) &&
-                            !m.IsGenericMethod &&
                             m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)
@@ -227,7 +222,6 @@ namespace NetPrintsEditor.Reflection
                     .Where(m => 
                         m.IsPublic() &&
                         !m.IsStatic &&
-                        !m.IsGenericMethod &&
                         m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
@@ -274,9 +268,6 @@ namespace NetPrintsEditor.Reflection
                         t.GetMethods()
                         .Where(m => 
                             m.IsStatic && m.IsPublic() &&
-                            m.Parameters.All(p => p.Type.TypeKind != TypeKind.TypeParameter) &&
-                            m.ReturnType.TypeKind != TypeKind.TypeParameter &&
-                            !m.IsGenericMethod &&
                             !m.ContainingType.IsUnboundGenericType)
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)
@@ -424,20 +415,18 @@ namespace NetPrintsEditor.Reflection
 
             foreach (IMethodSymbol availableMethod in availableMethods)
             {
-                MethodSpecifier availableMethodSpec = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
-
                 // Check the return type whether it can be replaced by the wanted type
+                // or if the return type is one of the type parameters.
 
                 ITypeSymbol retType = availableMethod.ReturnType;
                 BaseType ret = ReflectionConverter.BaseTypeSpecifierFromSymbol(retType);
 
-                if (ret == searchTypeSpec || retType.IsSubclassOf(searchType))
+                if (ret == searchTypeSpec || retType.IsSubclassOf(searchType) || retType.TypeKind == TypeKind.TypeParameter)
                 {
+                    // Find method and add it
                     MethodSpecifier foundMethod = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
-                    foundMethod = TryMakeClosedMethod(foundMethod, ret, searchTypeSpec);
 
-                    // Only add fully closed methods
-                    if (foundMethod != null && !foundMethods.Contains(foundMethod))
+                    if (foundMethod != null)
                     {
                         foundMethods.Add(foundMethod);
                     }
@@ -471,17 +460,18 @@ namespace NetPrintsEditor.Reflection
                 MethodSpecifier availableMethodSpec = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
 
                 // Check each argument whether it can be replaced by the wanted type
+                // or if the argument type is one of the type parameters.
+
                 for (int i = 0; i < availableMethodSpec.Arguments.Count; i++) 
                 {
                     ITypeSymbol argType = availableMethod.Parameters[i].Type;
                     BaseType arg = ReflectionConverter.BaseTypeSpecifierFromSymbol(argType);
 
-                    if (arg == searchTypeSpec || searchType.IsSubclassOf(argType))
+                    if (arg == searchTypeSpec || searchType.IsSubclassOf(argType) || argType.TypeKind == TypeKind.TypeParameter)
                     {
+                        // Find method and add it
                         MethodSpecifier foundMethod = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
-                        foundMethod = TryMakeClosedMethod(foundMethod, arg, searchTypeSpec);
 
-                        // Only add fully closed methods
                         if (foundMethod != null && !foundMethods.Contains(foundMethod))
                         {
                             foundMethods.Add(foundMethod);
@@ -491,133 +481,6 @@ namespace NetPrintsEditor.Reflection
             }
 
             return foundMethods;
-        }
-
-        private static MethodSpecifier TryMakeClosedMethod(MethodSpecifier method, 
-            BaseType typeToReplace, TypeSpecifier replacementType)
-        {
-            
-
-            // Create a list of generic types to replace with another type
-            // These will then look for those generic types in the argument-
-            // and return types and replace them with the new type
-
-            Dictionary<GenericType, BaseType> replacedGenericTypes =
-                    new Dictionary<GenericType, BaseType>();
-
-            // If the arg is already generic itself, replace it directly with the 
-            // passed type specifier
-            // Otherwise, recursively check if the generic arguments should
-            // be replaced
-
-            if (typeToReplace is GenericType genType)
-            {
-                replacedGenericTypes.Add(genType, replacementType);
-            }
-            else if (typeToReplace is TypeSpecifier argTypeSpec)
-            {
-                if(!FindGenericArgumentsToReplace(argTypeSpec.GenericArguments,
-                    replacementType.GenericArguments, ref replacedGenericTypes))
-                {
-                    return null;
-                }
-            }
-
-            IList<BaseType> methodArgTypes = method.ArgumentTypes.ToList();
-            ReplaceGenericTypes(methodArgTypes, replacedGenericTypes);
-
-            // Replace method arguments' types by the replaced ones
-            for (int i = 0; i < method.Arguments.Count; i++)
-            {
-                method.Arguments[i].Value = methodArgTypes[i];
-            }
-
-            ReplaceGenericTypes(method.ReturnTypes, replacedGenericTypes);
-
-            // Remove the replaced generic arguments from the method
-            replacedGenericTypes.Keys.ToList().ForEach(g =>
-                method.GenericArguments.Remove(g));
-
-            // Only add fully closed methods
-            if (!method.GenericArguments.Any(a => a is GenericType))
-            {
-                return method;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Takes two topologically identical lists of types and 
-        /// finds the replacement for the generic types of the first 
-        /// with the type of the second at the same position
-        /// </summary>
-        private static bool FindGenericArgumentsToReplace(IList<BaseType> toReplace, 
-                IList<BaseType> replaceWith, ref Dictionary<GenericType, BaseType> replacedGenericTypes)
-        {
-            for (int index = 0; index < toReplace.Count; index++)
-            {
-                // Replace the generic type directly if it is one
-                // Otherwise, recursively replace generic arguments
-
-                if (toReplace[index] is GenericType genType)
-                {
-                    // If there are two different types trying to replace
-                    // the same generic parameter the method can not be
-                    // made compatible
-                    if (replacedGenericTypes.ContainsKey(genType) &&
-                        replacedGenericTypes[genType] != replaceWith[index])
-                    {
-                        return false;
-                    }
-
-                    replacedGenericTypes.Add(genType, replaceWith[index]);
-                }
-                else if (toReplace[index] is TypeSpecifier typeSpec &&
-                    replaceWith[index] is TypeSpecifier replaceWithTypeSpec)
-                {
-                    if (typeSpec.GenericArguments.Count != replaceWithTypeSpec.GenericArguments.Count)
-                    {
-                        throw new Exception();
-                    }
-
-                    for (int i = 0; i < typeSpec.GenericArguments.Count; i++)
-                    {
-                        if(!FindGenericArgumentsToReplace(typeSpec.GenericArguments,
-                            replaceWithTypeSpec.GenericArguments, ref replacedGenericTypes))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Takes a list of types and a list of replacement types
-        /// and replaces all types in the list with their replacements
-        /// </summary>
-        private static void ReplaceGenericTypes(IList<BaseType> types,
-            Dictionary<GenericType, BaseType> replacedGenericTypes)
-        {
-            for(int i = 0; i < types.Count; i++)
-            {
-                BaseType t = types[i];
-
-                if (t is GenericType genType)
-                {
-                    if (replacedGenericTypes.ContainsKey(genType))
-                    {
-                        types[i] = replacedGenericTypes[genType];
-                    }
-                }
-                else if(t is TypeSpecifier typeSpec)
-                {
-                    ReplaceGenericTypes(typeSpec.GenericArguments, replacedGenericTypes);
-                }
-            }
         }
 
         // Documentation
@@ -660,22 +523,12 @@ namespace NetPrintsEditor.Reflection
 
         public bool HasImplicitCast(TypeSpecifier fromType, TypeSpecifier toType)
         {
-            // Check if there are any operators defined that convert from a subclass (or the same class)
-            // of fromType to a subclass (or the same class) of toType
+            // Check if there exists a conversion that is implicit between the types.
 
             ITypeSymbol fromSymbol = GetTypeFromSpecifier(fromType);
             ITypeSymbol toSymbol = GetTypeFromSpecifier(toType);
 
             return compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
-
-            /*var operators = toSymbol.GetConverters().Concat(fromSymbol.GetConverters());
-
-            return operators.Any(m =>
-                    m.IsPublic() &&
-                    !m.IsGenericMethod &&
-                    m.Parameters.Length == 1 &&
-                    TypeSpecifierIsSubclassOf(fromType, ReflectionConverter.TypeSpecifierFromSymbol(m.Parameters[0].Type)) &&
-                    TypeSpecifierIsSubclassOf(toType, ReflectionConverter.TypeSpecifierFromSymbol(m.ReturnType)));*/
         }
 
         #endregion

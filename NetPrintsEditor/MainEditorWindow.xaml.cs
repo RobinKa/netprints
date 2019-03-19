@@ -208,11 +208,17 @@ namespace NetPrintsEditor
         {
             ProjectVM oldProject = Project;
             Project = ProjectVM.CreateNew("MyProject", "MyNamespace");
+
             if (!PromptProjectSave())
             {
+                // Restore old project if we didn't create a new one.
                 Project = oldProject;
             }
-            Project.Name = Path.GetFileNameWithoutExtension(Project.Path);
+
+            if (Project != null)
+            {
+                Project.Name = Path.GetFileNameWithoutExtension(Project.Path);
+            }
         }
 
         private void OnCompileButtonClicked(object sender, RoutedEventArgs e)

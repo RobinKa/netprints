@@ -48,6 +48,7 @@ namespace NetPrintsEditor.Controls
             TypeSpecifier.FromType<ReturnNode>(),
             TypeSpecifier.FromType<MakeArrayNode>(),
             TypeSpecifier.FromType<LiteralNode>(),
+            TypeSpecifier.FromType<TypeNode>(),
         };
 
         public MethodEditorControl()
@@ -149,7 +150,7 @@ namespace NetPrintsEditor.Controls
 
                 e.Handled = true;
             }
-            else if(e.Data.GetDataPresent(typeof(NodePinVM)))
+            else if (e.Data.GetDataPresent(typeof(NodePinVM)))
             {
                 // Show all relevant methods for the type of the pin if its a data pin
 
@@ -157,7 +158,7 @@ namespace NetPrintsEditor.Controls
                 
                 if (pin.Pin is NodeOutputDataPin odp)
                 {
-                    if (odp.PinType is TypeSpecifier pinTypeSpec)
+                    if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
                     {
                         List<object> suggestions = new List<object>();
 
@@ -193,7 +194,7 @@ namespace NetPrintsEditor.Controls
                 }
                 else if (pin.Pin is NodeInputDataPin idp)
                 {
-                    if (idp.PinType is TypeSpecifier pinTypeSpec)
+                    if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
                     {
                         // Properties of base class that inherit from needed type
                          IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider
@@ -218,7 +219,7 @@ namespace NetPrintsEditor.Controls
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                         .Distinct());
                 }
-                else if(pin.Pin is NodeInputExecPin ixp)
+                else if (pin.Pin is NodeInputExecPin ixp)
                 {
                     // TODO: Get protected from supertype
                     Suggestions = new ObservableRangeCollection<object>(builtInNodes
@@ -226,6 +227,17 @@ namespace NetPrintsEditor.Controls
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                         .Distinct());
+                }
+                else if (pin.Pin is NodeInputTypePin itp)
+                {
+                    Suggestions = new ObservableRangeCollection<object>(
+                        ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
+                    );
+                }
+                else if (pin.Pin is NodeOutputTypePin otp)
+                {
+                    // TODO: Show methods and types that have type-input
+                    Suggestions = new ObservableRangeCollection<object>();
                 }
                 else
                 {

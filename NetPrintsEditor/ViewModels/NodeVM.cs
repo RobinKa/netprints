@@ -32,6 +32,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush MakeDelegateNodeBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x7A, 0x20));
 
+        private static readonly SolidColorBrush TypeNodeBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x30, 0x20));
+
         /// <summary>
         /// Brush for the header of the node.
         /// </summary>
@@ -39,15 +42,15 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if(Node is EntryNode)
+                if (Node is EntryNode)
                 {
                     return EntryNodeBrush;
                 }
-                else if(Node is ReturnNode)
+                else if (Node is ReturnNode)
                 {
                     return ReturnNodeBrush;
                 }
-                else if(Node is CallMethodNode callMethodNode)
+                else if (Node is CallMethodNode callMethodNode)
                 {
                     if (callMethodNode.IsStatic)
                     {
@@ -58,13 +61,17 @@ namespace NetPrintsEditor.ViewModels
                         return CallMethodBrush;
                     }
                 }
-                else if(Node is ConstructorNode)
+                else if (Node is ConstructorNode)
                 {
                     return ConstructorNodeBrush;
                 }
-                else if(Node is MakeDelegateNode)
+                else if (Node is MakeDelegateNode)
                 {
                     return MakeDelegateNodeBrush;
+                }
+                else if (Node is TypeNode)
+                {
+                    return TypeNodeBrush;
                 }
 
                 return DefaultNodeBrush;
@@ -205,11 +212,39 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public ObservableViewModelCollection<NodePinVM, NodeInputTypePin> InputTypePins
+        {
+            get => inputTypePins;
+            set
+            {
+                if (inputTypePins != value)
+                {
+                    inputTypePins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> OutputTypePins
+        {
+            get => outputTypePins;
+            set
+            {
+                if (outputTypePins != value)
+                {
+                    outputTypePins = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private ObservableViewModelCollection<NodePinVM, NodeInputDataPin> inputDataPins;
         private ObservableViewModelCollection<NodePinVM, NodeOutputDataPin> outputDataPins;
         private ObservableViewModelCollection<NodePinVM, NodeInputExecPin> inputExecPins;
         private ObservableViewModelCollection<NodePinVM, NodeOutputExecPin> outputExecPins;
-        
+        private ObservableViewModelCollection<NodePinVM, NodeInputTypePin> inputTypePins;
+        private ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> outputTypePins;
+
         public bool IsPure { get => node.IsPure; }
 
         // Wrapped Node
@@ -220,28 +255,55 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (node != value)
                 {
+                    if (node != null)
+                    {
+                        node.InputTypeChanged -= OnInputTypeChanged;
+                    }
+
                     node = value;
 
-                    InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
-                        Node.InputDataPins, p => new NodePinVM(p));
+                    if (node != null)
+                    {
+                        node.InputTypeChanged += OnInputTypeChanged;
 
-                    OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
-                        Node.OutputDataPins, p => new NodePinVM(p));
+                        InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
+                            Node.InputDataPins, p => new NodePinVM(p));
 
-                    InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
-                        Node.InputExecPins, p => new NodePinVM(p));
+                        OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
+                            Node.OutputDataPins, p => new NodePinVM(p));
 
-                    OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
-                        Node.OutputExecPins, p => new NodePinVM(p));
-                    
+                        InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
+                            Node.InputExecPins, p => new NodePinVM(p));
+
+                        OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
+                            Node.OutputExecPins, p => new NodePinVM(p));
+
+                        InputTypePins = new ObservableViewModelCollection<NodePinVM, NodeInputTypePin>(
+                            Node.InputTypePins, p => new NodePinVM(p));
+
+                        OutputTypePins = new ObservableViewModelCollection<NodePinVM, NodeOutputTypePin>(
+                            Node.OutputTypePins, p => new NodePinVM(p));
+                    }
+
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ToolTip));
                     OnPropertyChanged(nameof(Overloads));
                     OnPropertyChanged(nameof(IsRerouteNode));
                     OnPropertyChanged(nameof(ShowLeftPinButtons));
+                    OnPropertyChanged(nameof(Label));
                 }
             }
+        }
+
+        private void OnInputTypeChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Label));
+        }
+
+        public string Label
+        {
+            get => Node.ToString();
         }
 
         /// <summary>

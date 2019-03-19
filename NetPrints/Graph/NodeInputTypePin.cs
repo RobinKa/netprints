@@ -4,62 +4,51 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
 {
-    public class NodeTypeConstraints
-    {
-        // TODO: Add constraints
-    }
-
-    public delegate void TypeNodeIncomingNodeChanged(
-        NodeInputTypePin pin, TypeNode oldNode, TypeNode newNode);
+    public delegate void InputTypePinIncomingPinChangedDelegate(
+        NodeInputTypePin pin, NodeOutputTypePin oldPin, NodeOutputTypePin newPin);
 
     /// <summary>
     /// Pin which can receive types.
     /// </summary>
     [DataContract]
-    public class NodeInputTypePin
+    public class NodeInputTypePin : NodeTypePin
     {
         /// <summary>
-        /// Constraints for the type.
+        /// Called when the node's incoming pin changed.
+        /// </summary>
+        public event InputTypePinIncomingPinChangedDelegate IncomingPinChanged;
+
+        /// <summary>
+        /// Incoming type pin for this pin. Null when not connected.
+        /// Can trigger IncomingPinChanged when set.
         /// </summary>
         [DataMember]
-        public NodeTypeConstraints Constraints
+        public NodeOutputTypePin IncomingPin
         {
-            get;
-            private set;
-        }
-
-        public event TypeNodeIncomingNodeChanged IncomingNodeChanged;
-
-        [DataMember]
-        public TypeNode IncomingNode
-        {
-            get => incomingNode;
+            get => incomingPin;
             set
             {
-                if (incomingNode != value)
+                if (incomingPin != value)
                 {
-                    var oldNode = incomingNode;
+                    var oldPin = incomingPin;
 
-                    incomingNode = value;
+                    incomingPin = value;
 
-                    IncomingNodeChanged?.Invoke(this, oldNode, incomingNode);
+                    IncomingPinChanged?.Invoke(this, oldPin, incomingPin);
                 }
             }
         }
 
-        private TypeNode incomingNode;
-
-        [DataMember]
-        public TypeNode Node
+        public override ObservableValue<BaseType> InferredType
         {
-            get;
-            private set;
+            get => IncomingPin?.InferredType;
         }
 
-        public NodeInputTypePin(TypeNode node, NodeTypeConstraints constraints)
+        private NodeOutputTypePin incomingPin;
+
+        public NodeInputTypePin(Node node, string name)
+            : base(node, name)
         {
-            Node = node;
-            Constraints = constraints;
         }
     }
 }

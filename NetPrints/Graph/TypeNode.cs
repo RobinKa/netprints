@@ -1,39 +1,100 @@
 ﻿using NetPrints.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NetPrints.Graph
 {
-    /// <summary>
-    /// Node describing a type.
-    /// </summary>
     [DataContract]
-    public class TypeNode
+    public class ObservableValue<T> : INotifyPropertyChanged
+    {
+        public delegate void ObservableValueChangedEventHandler(object sender, EventArgs eventArgs);
+
+        [DataMember]
+        public T Value
+        {
+            get => value;
+            set
+            {
+                this.value = value;
+                OnValueChanged?.Invoke(this, new EventArgs());
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+            }
+        }
+
+        private T value;
+
+        public ObservableValue(T value)
+        {
+            this.value = value;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event ObservableValueChangedEventHandler OnValueChanged;
+
+        public static implicit operator T (ObservableValue<T> observableValue)
+        {
+            return observableValue.Value;
+        }
+
+        public static implicit operator ObservableValue<T>(T value)
+        {
+            return new ObservableValue<T>(value);
+        }
+    }
+
+    [DataContract]
+    public class TypeNode : Node
     {
         [DataMember]
-        public ObservableRangeCollection<NodeInputTypePin> InputTypePins { get; private set; } = new ObservableRangeCollection<NodeInputTypePin>();
-
-        public TypeSpecifier Type
+        public BaseType Type
         {
             get;
             private set;
         }
 
-        public TypeNode(TypeGraph typeGraph, TypeSpecifier type)
+        [DataMember]
+        private ObservableValue<BaseType> constructedType;
+
+        public TypeNode(Method method, BaseType type)
+            : base(method)
         {
-            foreach(TypeSpecifier genArg in type.GenericArguments)
+            Type = type;
+            
+            // Add type pins for each generic argument of the literal type
+            // and monitor them for changes to reconstruct the actual pin types.
+            if (Type is TypeSpecifier typeSpecifier)
             {
-                AddInputTypePin(null);
+                foreach (var genericArg in typeSpecifier.GenericArguments.OfType<GenericType>())
+                {
+                    AddInputTypePin(genericArg.Name);
+                }
             }
+
+            constructedType = new ObservableValue<BaseType>(GetConstructedOutputType());
+            AddOutputTypePin("OutputType", constructedType);
         }
 
-        protected void AddInputTypePin(NodeTypeConstraints constraints)
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
         {
-            InputTypePins.Add(new NodeInputTypePin(this, constraints));
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            // Set the type of the output type pin by constructing
+            // the type of this node with the input type pins.
+            constructedType.Value = GetConstructedOutputType();
+        }
+
+        private BaseType GetConstructedOutputType()
+        {
+            return GenericsHelper.ConstructWithTypePins(Type, InputTypePins);
+        }
+
+        public override string ToString()
+        {
+            return Type.ShortName;
         }
     }
 }

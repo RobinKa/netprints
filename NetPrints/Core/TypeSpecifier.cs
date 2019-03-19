@@ -242,6 +242,37 @@ namespace NetPrints.Core
             return s;
         }
 
+        /// <summary>
+        /// Constructs this type by replacing all its generic arguments with the given types.
+        /// </summary>
+        /// <param name="typeSpecifiers">
+        /// Specifiers for the types to replace the generic
+        /// type arguments with
+        /// </param>
+        /// <returns>Constructed type with generic type arguments replaced by the given ones.</returns>
+        public TypeSpecifier Construct(IReadOnlyDictionary<GenericType, BaseType> typeSpecifiers)
+        {
+            if (GenericArguments.Count != typeSpecifiers.Count())
+            {
+                throw new ArgumentException("Need to replace all generic arguments when constructing type.");
+            }
+
+            // Replace by dictionary
+            var newGenericArgs = new List<BaseType>(GenericArguments);
+            for (int i = 0; i < newGenericArgs.Count; i++)
+            {
+                if (newGenericArgs[i] is GenericType oldGenericType &&
+                    typeSpecifiers.TryGetValue(oldGenericType, out BaseType newType))
+                {
+                    newGenericArgs[i] = newType;
+                }
+            }
+
+            // TODO: Make sure all dictionary values were used.
+
+            return new TypeSpecifier(Name, IsEnum, IsInterface, newGenericArgs);
+        }
+
         public static bool operator ==(TypeSpecifier a, TypeSpecifier b)
         {
             if (ReferenceEquals(b, null))

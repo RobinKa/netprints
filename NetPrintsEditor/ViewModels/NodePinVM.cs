@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
@@ -21,7 +22,7 @@ namespace NetPrintsEditor.ViewModels
 
                 if (Pin is NodeDataPin dataPin)
                 {
-                    toolTip = $"{dataPin.PinType}: {dataPin.Name}";
+                    toolTip = $"{dataPin.PinType.Value}: {dataPin.Name}";
                     string documentation = null;
 
                     if (dataPin.Node is CallMethodNode callMethodNode)
@@ -63,6 +64,10 @@ namespace NetPrintsEditor.ViewModels
                         toolTip += Environment.NewLine + Environment.NewLine + "Executed when an exception is thrown on this node. The Exception output data pin will be set to the caught exception. If unconnected the exception will get thrown.";
                     }
                 }
+                else
+                {
+                    toolTip += Pin.Name;
+                }
 
                 return toolTip;
             }
@@ -94,8 +99,8 @@ namespace NetPrintsEditor.ViewModels
                     isBeingConnected = value;
 
                     // Disconnect pin if its being connected
-                    // and is an IDP or OXP
-                    if(value && (Pin is NodeInputDataPin || Pin is NodeOutputExecPin))
+                    // and is an IDP, OXP or ITP
+                    if(value && (Pin is NodeInputDataPin || Pin is NodeOutputExecPin || Pin is NodeInputTypePin))
                     {
                         ConnectedPin = null;
                     }
@@ -119,6 +124,7 @@ namespace NetPrintsEditor.ViewModels
                     if(pin != null)
                     {
                         pin.Node.OnPositionChanged -= OnNodePositionChanged;
+                        pin.Node.InputTypeChanged -= OnInputTypeChanged;
                     }
 
                     pin = value;
@@ -126,6 +132,7 @@ namespace NetPrintsEditor.ViewModels
                     if (pin != null)
                     {
                         pin.Node.OnPositionChanged += OnNodePositionChanged;
+                        pin.Node.InputTypeChanged += OnInputTypeChanged;
                     }
 
                     OnPropertyChanged();
@@ -137,6 +144,14 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(IsRerouteNodePin));
                 }
             }
+        }
+
+        private void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            OnPropertyChanged(nameof(PossibleEnumNames));
+            OnPropertyChanged(nameof(ShowUnconnectedValue));
+            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(ToolTip));
         }
 
         public bool IsRerouteNodePin
@@ -158,7 +173,7 @@ namespace NetPrintsEditor.ViewModels
             set
             {
                 if (Pin is NodeInputDataPin p && p.UnconnectedValue != value
-                    && p.PinType is TypeSpecifier typeSpecifier)
+                    && p.PinType.Value is TypeSpecifier typeSpecifier)
                 {
                     // Try to convert to the correct type first if it can be found
                     // Dont do this for enums as they just use a string
@@ -182,20 +197,20 @@ namespace NetPrintsEditor.ViewModels
         public bool ShowUnconnectedValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
-                !(p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum);
+                !(p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum);
         }
 
         public bool ShowEnumValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
-                (p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum);
+                (p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum);
         }
 
         public IEnumerable<string> PossibleEnumNames
         {
             get
             {
-                if (Pin is NodeInputDataPin p && p.PinType is TypeSpecifier typeSpec && typeSpec.IsEnum)
+                if (Pin is NodeInputDataPin p && p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum)
                 {
                     return ProjectVM.Instance.ReflectionProvider.GetEnumNames(typeSpec);
                 }
@@ -211,15 +226,15 @@ namespace NetPrintsEditor.ViewModels
 
         public string Name
         {
-            get => pin.Name;
-            set
+            get => pin.ToString();
+            /*set
             {
                 if(pin.Name != value)
                 {
                     pin.Name = value;
                     OnPropertyChanged();
                 }
-            }
+            }*/
         }
 
         private void OnNodePositionChanged(Node node, double positionX, double positionY)
@@ -264,15 +279,16 @@ namespace NetPrintsEditor.ViewModels
             get => new Point(PositionX, PositionY);
         }
 
-        private static readonly SolidColorBrush ExecPinBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0));
-
-        private static readonly SolidColorBrush DataPinBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF));
+        private static readonly Dictionary<Type, Brush> typeBrushes = new Dictionary<Type, Brush>()
+        {
+            [typeof(NodeExecPin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xFF, 0xE0)),
+            [typeof(NodeDataPin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xE0, 0xE0, 0xFF)),
+            [typeof(NodeTypePin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xE0, 0xE0)),
+        };
 
         public Brush Brush
         {
-            get => (Pin is NodeDataPin) ? DataPinBrush : ExecPinBrush;
+            get => typeBrushes.Single(x => Pin.GetType().IsSubclassOf(x.Key)).Value;
         }
 
         public Point AbsolutePosition
@@ -309,13 +325,14 @@ namespace NetPrintsEditor.ViewModels
 
         // = Incoming pin for data input
         // = Outgoing pin for exec output
+        // = Incoming pin for type input
         // = null for rest
         public NodePinVM ConnectedPin
         {
             get => connectedPin;
             set
             {
-                if(!(Pin is NodeOutputExecPin || Pin is NodeInputDataPin))
+                if(!(Pin is NodeOutputExecPin || Pin is NodeInputDataPin || Pin is NodeInputTypePin))
                 {
                     throw new Exception("Can only set connected pin of NodeOutputExecPin and NodeInputDataPin");
                 }
@@ -334,13 +351,17 @@ namespace NetPrintsEditor.ViewModels
                     }
                     else
                     {
-                        if(Pin is NodeOutputExecPin oxp)
+                        if (Pin is NodeOutputExecPin oxp)
                         {
                             GraphUtil.DisconnectOutputExecPin(oxp);
                         }
-                        else if(Pin is NodeInputDataPin idp)
+                        else if (Pin is NodeInputDataPin idp)
                         {
                             GraphUtil.DisconnectInputDataPin(idp);
+                        }
+                        else if (Pin is NodeInputTypePin itp)
+                        {
+                            GraphUtil.DisconnectInputTypePin(itp);
                         }
                     }
 
@@ -391,7 +412,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin)
+                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
                 {
                     return new Point(AbsolutePosition.X + CPOffset, AbsolutePosition.Y);
                 }
@@ -406,7 +427,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin)
+                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
                 {
                     return new Point(ConnectedAbsolutePosition.X - CPOffset, ConnectedAbsolutePosition.Y);
                 }
@@ -460,6 +481,12 @@ namespace NetPrintsEditor.ViewModels
                 RerouteNode rerouteNode = GraphUtil.AddRerouteNode(execPin);
                 rerouteNode.PositionX = (Pin.Node.PositionX + execPin.OutgoingPin.Node.PositionX) / 2;
                 rerouteNode.PositionY = (Pin.Node.PositionY + execPin.OutgoingPin.Node.PositionY) / 2;
+            }
+            else if (Pin is NodeInputTypePin typePin)
+            {
+                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(typePin);
+                rerouteNode.PositionX = (Pin.Node.PositionX + typePin.IncomingPin.Node.PositionX) / 2;
+                rerouteNode.PositionY = (Pin.Node.PositionY + typePin.IncomingPin.Node.PositionY) / 2;
             }
             else
             {

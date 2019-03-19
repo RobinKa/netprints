@@ -1,5 +1,7 @@
 ﻿using NetPrints.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -31,14 +33,51 @@ namespace NetPrints.Graph
         /// </summary>
         [DataMember]
         public TypeSpecifier LiteralType { get; private set; }
-
+        
         public LiteralNode(Method method, TypeSpecifier literalType)
             : base(method)
         {
             LiteralType = literalType;
 
+            // Add type pins for each generic argument of the literal type
+            // and monitor them for changes to reconstruct the actual pin types.
+            foreach (var genericArg in literalType.GenericArguments.OfType<GenericType>())
+            {
+                AddInputTypePin(genericArg.Name);
+            }
+
             AddInputDataPin("Value", literalType);
             AddOutputDataPin("Value", literalType);
+
+            UpdatePinTypes();
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            UpdatePinTypes();
+        }
+
+        private void UpdatePinTypes()
+        {
+            // Construct type with generic arguments replaced by our input type pins
+            BaseType constructedType = GenericsHelper.ConstructWithTypePins(LiteralType, InputTypePins);
+
+            // Set pin types
+            // TODO: Check if we can leave the pins connected
+
+            if (constructedType != InputValuePin.PinType.Value)
+            {
+                GraphUtil.DisconnectInputDataPin(InputValuePin);
+                InputValuePin.PinType.Value = constructedType;
+            }
+
+            if (constructedType != ValuePin.PinType.Value)
+            {
+                GraphUtil.DisconnectOutputDataPin(ValuePin);
+                ValuePin.PinType.Value = constructedType;
+            }
         }
 
         /// <summary>
@@ -56,7 +95,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"{LiteralType.Name}";
+            return $"Literal - {ValuePin.PinType.Value.ShortName}";
         }
     }
 }

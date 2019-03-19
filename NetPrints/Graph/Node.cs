@@ -23,6 +23,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(ExplicitCastNode))]
     [KnownType(typeof(RerouteNode))]
     [KnownType(typeof(MakeArrayNode))]
+    [KnownType(typeof(TypeNode))]
     public abstract class Node
     {
         /// <summary>
@@ -48,6 +49,18 @@ namespace NetPrints.Graph
         /// </summary>
         [DataMember]
         public ObservableRangeCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableRangeCollection<NodeOutputExecPin>();
+
+        /// <summary>
+        /// Input type pins of this node.
+        /// </summary>
+        [DataMember]
+        public ObservableRangeCollection<NodeInputTypePin> InputTypePins { get; private set; } = new ObservableRangeCollection<NodeInputTypePin>();
+
+        /// <summary>
+        /// Output type pins of this node.
+        /// </summary>
+        [DataMember]
+        public ObservableRangeCollection<NodeOutputTypePin> OutputTypePins { get; private set; } = new ObservableRangeCollection<NodeOutputTypePin>();
 
         /// <summary>
         /// Delegate for the event of a position change of a node.
@@ -142,7 +155,7 @@ namespace NetPrints.Graph
         /// </summary>
         /// <param name="pinName">Name of the pin.</param>
         /// <param name="pinType">Specifier for the type of this pin.</param>
-        protected void AddInputDataPin(string pinName, BaseType pinType)
+        protected void AddInputDataPin(string pinName, ObservableValue<BaseType> pinType)
         {
             InputDataPins.Add(new NodeInputDataPin(this, pinName, pinType));
         }
@@ -152,7 +165,7 @@ namespace NetPrints.Graph
         /// </summary>
         /// <param name="pinName">Name of the pin.</param>
         /// <param name="pinType">Specifier for the type of this pin.</param>
-        protected void AddOutputDataPin(string pinName, BaseType pinType)
+        protected void AddOutputDataPin(string pinName, ObservableValue<BaseType> pinType)
         {
             OutputDataPins.Add(new NodeOutputDataPin(this, pinName, pinType));
         }
@@ -173,6 +186,67 @@ namespace NetPrints.Graph
         protected void AddOutputExecPin(string pinName)
         {
             OutputExecPins.Add(new NodeOutputExecPin(this, pinName));
+        }
+
+        /// <summary>
+        /// Adds an input data pin to this node.
+        /// </summary>
+        /// <param name="pinName">Name of the pin.</param>
+        protected void AddInputTypePin(string pinName)
+        {
+            var typePin = new NodeInputTypePin(this, pinName);
+            typePin.IncomingPinChanged += OnIncomingTypePinChanged;
+            InputTypePins.Add(typePin);
+        }
+
+        /// <summary>
+        /// Adds an output data pin to this node.
+        /// </summary>
+        /// <param name="pinName">Name of the pin.</param>
+        /// <param name="getOutputTypeFunc">Function that generates the output type.</param>
+        protected void AddOutputTypePin(string pinName, ObservableValue<BaseType> outputType)
+        {
+            OutputTypePins.Add(new NodeOutputTypePin(this, pinName, outputType));
+        }
+
+        private void OnIncomingTypePinChanged(NodeInputTypePin pin, NodeOutputTypePin oldPin, NodeOutputTypePin newPin)
+        {
+            if (oldPin != null && oldPin.InferredType != null)
+                oldPin.InferredType.OnValueChanged -= EventInputTypeChanged;
+
+            if (newPin != null && newPin.InferredType != null)
+                newPin.InferredType.OnValueChanged += EventInputTypeChanged;
+
+            EventInputTypeChanged(this, new EventArgs());
+        }
+
+        /// <summary>
+        /// Called when anything about the input type arguments changes.
+        /// </summary>
+        public event EventHandler InputTypeChanged;
+
+        private void EventInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            OnInputTypeChanged(sender, eventArgs);
+
+            // Notify others afterwards, since the above call might have updated something
+            InputTypeChanged?.Invoke(sender, eventArgs);
+        }
+
+        protected virtual void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            
+        }
+
+        [OnDeserialized]
+        private void OnDeserializing(StreamingContext context)
+        {
+            foreach (var inputTypePin in InputTypePins)
+            {
+                if (inputTypePin.InferredType != null)
+                    inputTypePin.InferredType.OnValueChanged += EventInputTypeChanged;
+                inputTypePin.IncomingPinChanged += OnIncomingTypePinChanged;
+            }
         }
     }
 }

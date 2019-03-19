@@ -14,12 +14,17 @@ namespace NetPrints.Graph
         /// Specifier for the type of this data pin.
         /// </summary>
         [DataMember]
-        public BaseType PinType { get; private set; }
+        public ObservableValue<BaseType> PinType { get; private set; }
 
-        public NodeDataPin(Node node, string name, BaseType pinType)
+        public NodeDataPin(Node node, string name, ObservableValue<BaseType> pinType)
             : base(node, name)
         {
             PinType = pinType;
+        }
+
+        public override string ToString()
+        {
+            return $"{Name}: {PinType.Value.ShortName}";
         }
     }
 }

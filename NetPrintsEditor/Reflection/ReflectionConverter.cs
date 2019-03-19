@@ -42,7 +42,7 @@ namespace NetPrintsEditor.Reflection
             TypeSpecifier typeSpecifier = new TypeSpecifier(typeName,
                     type.TypeKind == TypeKind.Enum,
                     type.TypeKind == TypeKind.Interface);
-
+            
             if (type is INamedTypeSymbol namedType)
             {
                 if (namedType.IsUnboundGenericType)

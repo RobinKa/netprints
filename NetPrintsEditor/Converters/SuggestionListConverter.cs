@@ -78,6 +78,16 @@ namespace NetPrintsEditor.Converters
                     text = "NetPrints - Literal";
                     iconPath = "Literal_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<TypeNode>())
+                {
+                    text = "NetPrints - Type";
+                    iconPath = "Type_16x.png";
+                }
+                else
+                {
+                    text = t.FullCodeName;
+                    iconPath = "Type_16x.png";
+                }
             }
             else
             {
