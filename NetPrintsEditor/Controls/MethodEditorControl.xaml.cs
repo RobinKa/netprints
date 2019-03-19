@@ -237,7 +237,14 @@ namespace NetPrintsEditor.Controls
                 else if (pin.Pin is NodeOutputTypePin otp)
                 {
                     // TODO: Show methods and types that have type-input
-                    Suggestions = new ObservableRangeCollection<object>();
+                    var suggestions = new List<object>();
+
+                    if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
+                    {
+                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicStaticFunctionsForType(typeSpecifier));
+                    }
+
+                    Suggestions = new ObservableRangeCollection<object>(suggestions);
                 }
                 else
                 {
