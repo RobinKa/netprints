@@ -44,7 +44,15 @@ namespace NetPrints.Core
         /// </summary>
         public IEnumerable<ReturnNode> ReturnNodes
         {
-            get => Nodes.Where(node => node is ReturnNode).Cast<ReturnNode>();
+            get => Nodes.OfType<ReturnNode>();
+        }
+
+        /// <summary>
+        /// Main return node that determines the return types of all other return nodes.
+        /// </summary>
+        public ReturnNode MainReturnNode
+        {
+            get => Nodes?.OfType<ReturnNode>()?.FirstOrDefault();
         }
 
         /// <summary>
@@ -70,22 +78,18 @@ namespace NetPrints.Core
         /// <summary>
         /// Ordered argument types this method takes.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<BaseType> ArgumentTypes
+        public IEnumerable<BaseType> ArgumentTypes
         {
-            get;
-            private set;
-        } = new ObservableRangeCollection<BaseType>();
+            get => EntryNode != null ? EntryNode.InputTypePins.Select(pin => pin.InferredType?.Value ?? TypeSpecifier.FromType<object>()).ToList() : new List<BaseType>();
+        }
 
         /// <summary>
         /// Ordered return types this method returns.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<BaseType> ReturnTypes
+        public IEnumerable<BaseType> ReturnTypes
         {
-            get;
-            private set;
-        } = new ObservableRangeCollection<BaseType>();
+            get => MainReturnNode?.InputTypePins?.Select(pin => pin.InferredType?.Value ?? TypeSpecifier.FromType<object>())?.ToList() ?? new List<BaseType>();
+        }
 
         /// <summary>
         /// Modifiers this method has.
@@ -129,12 +133,11 @@ namespace NetPrints.Core
         }
 
         [OnDeserialized]
-        private void OnDeserializing(StreamingContext c)
+        private void OnDeserialized(StreamingContext context)
         {
-            EntryNode.SetupArgumentTypesChangedEvent();
-            foreach (var returnNode in ReturnNodes)
+            foreach (ReturnNode returnNode in ReturnNodes)
             {
-                returnNode.SetupReturnTypesChangedEvent();
+                returnNode.OnMethodDeserialized(context);
             }
         }
     }

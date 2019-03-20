@@ -431,7 +431,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool ShowLeftPinButtons
         {
-            get => node is MakeArrayNode;
+            get => node is MakeArrayNode || node is EntryNode || (node is ReturnNode && node == Method.MainReturnNode);
         }
 
         /// <summary>
@@ -439,7 +439,18 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void LeftPinsPlusClicked()
         {
-            (node as MakeArrayNode)?.AddElementPin();
+            if (node is MakeArrayNode makeArrayNode)
+            {
+                makeArrayNode.AddElementPin();
+            }
+            else if (node is EntryNode entryNode)
+            {
+                entryNode.AddArgument();
+            }
+            else if (node is ReturnNode returnNode)
+            {
+                returnNode.AddReturnType();
+            }
         }
 
         /// <summary>
@@ -447,7 +458,18 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void LeftPinsMinusClicked()
         {
-            (node as MakeArrayNode)?.RemoveElementPin();
+            if (node is MakeArrayNode makeArrayNode)
+            {
+                makeArrayNode.RemoveElementPin();
+            }
+            else if (node is EntryNode entryNode)
+            {
+                entryNode.RemoveArgument();
+            }
+            else if (node is ReturnNode returnNode)
+            {
+                returnNode.RemoveReturnType();
+            }
         }
 
         private Node node;

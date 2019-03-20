@@ -211,7 +211,7 @@ namespace NetPrints.Translator
             }
             else if (method.ReturnTypes.Count() == 1)
             {
-                builder.Append($"{method.ReturnTypes[0].FullCodeName} ");
+                builder.Append($"{method.ReturnTypes.Single().FullCodeName} ");
             }
             else
             {

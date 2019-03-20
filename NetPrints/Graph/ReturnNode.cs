@@ -26,54 +26,104 @@ namespace NetPrints.Graph
         {
             AddInputExecPin("Exec");
 
-            SetReturnTypes(method.ReturnTypes);
-            SetupReturnTypesChangedEvent();
+            SetupSecondaryNodeEvents();
         }
 
-        /// <summary>
-        /// Updates the input data pins of this node to match the given list of types.
-        /// Keeps old pins connected to what they were connected to if they still exist.
-        /// </summary>
-        /// <param name="returnTypes">List of specifiers for types this node should have as data inputs.</param>
-        public void SetReturnTypes(IEnumerable<BaseType> returnTypes)
+        private void UpdateInputDataPins()
         {
-            Dictionary<int, NodeOutputDataPin> oldConnections = new Dictionary<int, NodeOutputDataPin>();
+            if (this == Method.MainReturnNode)
+            {
+                return;
+            }
 
+            // Get new return types
+            NodeInputDataPin[] mainInputPins = Method.MainReturnNode.InputDataPins.ToArray();
+
+            var oldConnections = new Dictionary<int, NodeOutputDataPin>();
+
+            // Remember pins with same type as before
             foreach (NodeInputDataPin pin in InputDataPins)
             {
-                // Remember pins with same type as before
                 int i = InputDataPins.IndexOf(pin);
-                if (i < returnTypes.Count() && pin.PinType.Value == returnTypes.ElementAt(i)
-                    && pin.IncomingPin != null)
+                if (i < mainInputPins.Length && pin.PinType.Value == mainInputPins[i].PinType.Value && pin.IncomingPin != null)
                 {
                     oldConnections.Add(i, pin.IncomingPin);
                 }
-
+                
                 GraphUtil.DisconnectInputDataPin(pin);
             }
-
+            
             InputDataPins.Clear();
-
-            foreach (TypeSpecifier returnType in returnTypes)
+            
+            foreach (NodeInputDataPin mainInputPin in mainInputPins)
             {
-                AddInputDataPin(returnType.ShortName, returnType);
+                AddInputDataPin(mainInputPin.Name, mainInputPin.PinType.Value);
             }
-
+            
+            // Restore old connections
             foreach (var oldConn in oldConnections)
             {
                 GraphUtil.ConnectDataPins(oldConn.Value, InputDataPins[oldConn.Key]);
             }
         }
 
-        // Called in constructor or after method has been deserialized
-        public void SetupReturnTypesChangedEvent()
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
         {
-            Method.ReturnTypes.CollectionChanged += OnReturnTypesChanged;
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            for (int i = 0; i < InputTypePins.Count; i++)
+            {
+                InputDataPins[i].PinType.Value = InputTypePins[i].InferredType?.Value ?? TypeSpecifier.FromType<object>();
+            }
         }
 
-        private void OnReturnTypesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public void AddReturnType()
         {
-            SetReturnTypes(Method.ReturnTypes);
+            if (this != Method.MainReturnNode)
+            {
+                throw new InvalidOperationException("Can only add return types on the main return node.");
+            }
+
+            int returnIndex = InputDataPins.Count;
+
+            AddInputDataPin($"Output{returnIndex}", new ObservableValue<BaseType>(TypeSpecifier.FromType<object>()));
+            AddInputTypePin($"Output{returnIndex}Type");
+        }
+
+        public void RemoveReturnType()
+        {
+            if (this != Method.MainReturnNode)
+            {
+                throw new InvalidOperationException("Can only remove return types on the main return node.");
+            }
+
+            if (InputDataPins.Count > 0)
+            {
+                NodeInputDataPin idpToRemove = InputDataPins.Last();
+                NodeInputTypePin itpToRemove = InputTypePins.Last();
+
+                GraphUtil.DisconnectInputDataPin(idpToRemove);
+                GraphUtil.DisconnectInputTypePin(itpToRemove);
+
+                InputDataPins.Remove(idpToRemove);
+                InputTypePins.Remove(itpToRemove);
+            }
+        }
+
+        private void SetupSecondaryNodeEvents()
+        {
+            if (Method.MainReturnNode != null)
+            {
+                Method.MainReturnNode.InputDataPins.CollectionChanged += (sender, e) => UpdateInputDataPins();
+                Method.MainReturnNode.InputTypeChanged += (sender, e) => UpdateInputDataPins();
+
+                UpdateInputDataPins();
+            }
+        }
+
+        public void OnMethodDeserialized(StreamingContext context)
+        {
+            SetupSecondaryNodeEvents();
         }
     }
 }

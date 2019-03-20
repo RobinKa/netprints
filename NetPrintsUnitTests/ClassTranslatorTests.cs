@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrints.Translator;
@@ -19,11 +19,6 @@ namespace NetPrints.Tests
 
         public void CreateStringLengthMethod()
         {
-            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
-            {
-                TypeSpecifier.FromType<int>(),
-            };
-
             // Create method
             stringLengthMethod = new Method("StringLength")
             {
@@ -31,7 +26,16 @@ namespace NetPrints.Tests
                 Modifiers = MethodModifiers.Public
             };
 
-            stringLengthMethod.ReturnTypes.AddRange(returnTypes);
+            List<TypeNode> returnTypeNodes = new List<TypeNode>()
+            {
+                new TypeNode(stringLengthMethod, TypeSpecifier.FromType<int>()),
+            };
+
+            for (int i = 0; i < returnTypeNodes.Count; i++)
+            {
+                stringLengthMethod.MainReturnNode.AddReturnType();
+                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], stringLengthMethod.MainReturnNode.InputTypePins[i]);
+            }
 
             // Create nodes
             VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, cls.Type, new Variable("testVariable", TypeSpecifier.FromType<string>()));

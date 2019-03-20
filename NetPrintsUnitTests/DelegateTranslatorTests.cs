@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrints.Translator;
@@ -22,23 +22,22 @@ namespace NetPrints.Tests
         [TestMethod]
         public void TestDelegate()
         {
-            List<TypeSpecifier> argumentTypes = new List<TypeSpecifier>()
-            {
-            };
-
-            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
-            {
-                TypeSpecifier.FromType<Func<int, string, float>>(),
-            };
-
             // Create method
             Method delegateMethod = new Method("DelegateMethod")
             {
                 Modifiers = MethodModifiers.Public
             };
 
-            delegateMethod.ArgumentTypes.AddRange(argumentTypes);
-            delegateMethod.ReturnTypes.AddRange(returnTypes);
+            List<TypeNode> returnTypeNodes = new List<TypeNode>()
+            {
+                new TypeNode(delegateMethod, TypeSpecifier.FromType<Func<int, string, float>>()),
+            };
+
+            for (int i = 0; i < returnTypeNodes.Count; i++)
+            {
+                delegateMethod.MainReturnNode.AddReturnType();
+                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], delegateMethod.MainReturnNode.InputTypePins[i]);
+            }
 
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
                 new Named<BaseType>[] { new Named<BaseType>("arg1", TypeSpecifier.FromType<int>()), new Named<BaseType>("arg2", TypeSpecifier.FromType<string>()) },

@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrints.Translator;
@@ -33,19 +33,35 @@ namespace NetPrints.Tests
                 TypeSpecifier.FromType<string>(),
             };
 
-            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
-            {
-                TypeSpecifier.FromType<int>(),
-            };
-
             // Create method
             stringLengthMethod = new Method("StringLength")
             {
                 Modifiers = MethodModifiers.Public
             };
 
-            stringLengthMethod.ArgumentTypes.AddRange(argumentTypes);
-            stringLengthMethod.ReturnTypes.AddRange(returnTypes);
+            // Add arguments
+            List<TypeNode> argTypeNodes = new List<TypeNode>()
+            {
+                new TypeNode(stringLengthMethod, TypeSpecifier.FromType<string>()),
+            };
+
+            for (int i = 0; i < argTypeNodes.Count; i++)
+            {
+                stringLengthMethod.EntryNode.AddArgument();
+                GraphUtil.ConnectTypePins(argTypeNodes[i].OutputTypePins[0], stringLengthMethod.EntryNode.InputTypePins[i]);
+            }
+
+            // Add return types
+            List<TypeNode> returnTypeNodes = new List<TypeNode>()
+            {
+                new TypeNode(stringLengthMethod, TypeSpecifier.FromType<int>()),
+            };
+
+            for (int i = 0; i < returnTypeNodes.Count; i++)
+            {
+                stringLengthMethod.MainReturnNode.AddReturnType();
+                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], stringLengthMethod.MainReturnNode.InputTypePins[i]);
+            }
 
             // Create nodes
             VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, TypeSpecifier.FromType<string>(), new Variable("Length", TypeSpecifier.FromType<int>()));
@@ -60,24 +76,36 @@ namespace NetPrints.Tests
         
         public void CreateIfElseMethod()
         {
-            List<TypeSpecifier> argumentTypes = new List<TypeSpecifier>()
-            {
-                TypeSpecifier.FromType<int>(),
-                TypeSpecifier.FromType<bool>(),
-            };
-
-            List<TypeSpecifier> returnTypes = new List<TypeSpecifier>()
-            {
-                TypeSpecifier.FromType<int>(),
-            };
-
             // Create method
             ifElseMethod = new Method("IfElse")
             {
                 Modifiers = MethodModifiers.Public
             };
-            ifElseMethod.ArgumentTypes.AddRange(argumentTypes);
-            ifElseMethod.ReturnTypes.AddRange(returnTypes);
+
+            // Add arguments
+            List<TypeNode> argTypeNodes = new List<TypeNode>()
+            {
+                new TypeNode(ifElseMethod, TypeSpecifier.FromType<int>()),
+                new TypeNode(ifElseMethod, TypeSpecifier.FromType<bool>()),
+            };
+
+            for (int i = 0; i < argTypeNodes.Count; i++)
+            {
+                ifElseMethod.EntryNode.AddArgument();
+                GraphUtil.ConnectTypePins(argTypeNodes[i].OutputTypePins[0], ifElseMethod.EntryNode.InputTypePins[i]);
+            }
+
+            // Add return types
+            List<TypeNode> returnTypeNodes = new List<TypeNode>()
+            {
+                new TypeNode(ifElseMethod, TypeSpecifier.FromType<int>()),
+            };
+
+            for (int i = 0; i < returnTypeNodes.Count; i++)
+            {
+                ifElseMethod.MainReturnNode.AddReturnType();
+                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], ifElseMethod.MainReturnNode.InputTypePins[i]);
+            }
 
             // Create nodes
             IfElseNode ifElseNode = new IfElseNode(ifElseMethod);

@@ -35,7 +35,7 @@
 
             <Label Grid.Row="0" Content="Name" />
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        
+
             <Label Grid.Row="1" Content="Public" />
             <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Public}}" VerticalContentAlignment="Center" />
 
@@ -50,7 +50,7 @@
 
             <Label Grid.Row="5" Content="Abstract" />
             <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
-        
+
             <Label Grid.Row="6" Content="Static" />
             <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
 
@@ -59,74 +59,6 @@
 
             <Label Grid.Row="8" Content="Override" />
             <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Override}}" VerticalContentAlignment="Center" />
-        </Grid>
-
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="30" />
-                </Grid.ColumnDefinitions>
-                <Label Content="Argument Types" HorizontalContentAlignment="Stretch" />
-                <Button Grid.Column="1" Content="+" HorizontalAlignment="Stretch" Click="OnAddArgumentTypeClick"/>
-            </Grid>
-
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=wnd, Path=Method.ArgumentTypes}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="30" />
-                            </Grid.ColumnDefinitions>
-                            <ComboBox Text="{Binding Mode=OneWay}" 
-                                      SelectedItem="{Binding Mode=OneWay}"
-                                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"
-                                      HorizontalContentAlignment="Stretch" 
-                                      SelectionChanged="OnArgumentTypeChanged">
-                            </ComboBox>
-                            <Button Grid.Column="1" Content="-" HorizontalAlignment="Stretch" Click="OnRemoveArgumentTypeClick"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="30" />
-                </Grid.ColumnDefinitions>
-                <Label Content="Return Types" HorizontalContentAlignment="Stretch" />
-                <Button Grid.Column="1" Content="+" HorizontalAlignment="Stretch" Click="OnAddReturnTypeClick" />
-            </Grid>
-
-            <ItemsControl Grid.Row="3" ItemsSource="{Binding ElementName=wnd, Path=Method.ReturnTypes}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="30" />
-                            </Grid.ColumnDefinitions>
-                            <ComboBox Text="{Binding Mode=OneWay}" 
-                                      SelectedItem="{Binding Mode=OneWay}"
-                                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"
-                                      HorizontalContentAlignment="Stretch" 
-                                      SelectionChanged="OnReturnTypeChanged">
-                            </ComboBox>
-                            <Button Grid.Column="1" Content="-" HorizontalAlignment="Stretch" Click="OnRemoveReturnTypeClick"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
         </Grid>
     </StackPanel>
 </UserControl>

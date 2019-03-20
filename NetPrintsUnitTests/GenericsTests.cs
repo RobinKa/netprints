@@ -32,7 +32,12 @@ namespace NetPrintsUnitTests
             listType.GenericArguments[0] = genericClassArg;
 
             Method openMethod = new Method("OpenMethod");
-            openMethod.ArgumentTypes.Add(listType);
+
+            // Add open list parameter
+            TypeNode listTypeNode = new TypeNode(openMethod, listType);
+            openMethod.MainReturnNode.AddReturnType();
+            GraphUtil.ConnectTypePins(listTypeNode.OutputTypePins[0], openMethod.MainReturnNode.InputTypePins[0]);
+
             GraphUtil.ConnectExecPins(openMethod.EntryNode.InitialExecutionPin, openMethod.ReturnNodes.First().ReturnPin);
 
             openClass.Methods.Add(openMethod);
@@ -46,7 +51,12 @@ namespace NetPrintsUnitTests
             TypeSpecifier closedListType = TypeSpecifier.FromType<string>();
 
             Method closedMethod = new Method("ClosedMethod");
-            closedMethod.ArgumentTypes.Add(closedListType);
+
+            // Add closed list parameter
+            TypeNode closedListTypeNode = new TypeNode(closedMethod, closedListType);
+            closedMethod.MainReturnNode.AddReturnType();
+            GraphUtil.ConnectTypePins(closedListTypeNode.OutputTypePins[0], closedMethod.MainReturnNode.InputTypePins[0]);
+
             GraphUtil.ConnectExecPins(closedMethod.EntryNode.InitialExecutionPin, closedMethod.ReturnNodes.First().ReturnPin);
 
             closedClass.Methods.Add(closedMethod);

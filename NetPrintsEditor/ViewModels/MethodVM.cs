@@ -65,9 +65,14 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<NodeVM, Node> nodes;
 
-        public ObservableRangeCollection<BaseType> ArgumentTypes
+        public IEnumerable<BaseType> ArgumentTypes
         {
             get => method.ArgumentTypes;
+        }
+
+        public IEnumerable<BaseType> ReturnTypes
+        {
+            get => method.ReturnTypes;
         }
 
         public ClassVM Class
@@ -84,11 +89,6 @@ namespace NetPrintsEditor.ViewModels
         }
 
         private ClassVM classVM;
-
-        public ObservableRangeCollection<BaseType> ReturnTypes
-        {
-            get => method.ReturnTypes;
-        }
 
         public MethodModifiers Modifiers
         {
