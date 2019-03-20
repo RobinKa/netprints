@@ -222,9 +222,9 @@ namespace NetPrints.Translator
             builder.Append(method.Name);
 
             // Write generic arguments if any
-            if(method.DeclaredGenericArguments.Count > 0)
+            if(method.GenericArgumentTypes.Any())
             {
-                builder.Append("<" + string.Join(", ", method.DeclaredGenericArguments) + ">");
+                builder.Append("<" + string.Join(", ", method.GenericArgumentTypes.Select(arg => arg.FullCodeName)) + ">");
             }
 
             // Write parameters
@@ -621,7 +621,7 @@ namespace NetPrints.Translator
 
                 // Tuple<Types..> (won't be needed in the future)
                 string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", node.InputDataPins.Select(pin => pin.PinType.Value.FullCodeName)) + ">";
-                builder.AppendLine($"return new {returnType}({string.Join(",", returnValues)});");
+                builder.AppendLine($"return new {returnType}({string.Join(", ", returnValues)});");
             }
         }
 

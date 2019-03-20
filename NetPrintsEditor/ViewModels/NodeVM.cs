@@ -435,6 +435,15 @@ namespace NetPrintsEditor.ViewModels
         }
 
         /// <summary>
+        /// Whether we should show the +/- buttons under the
+        /// right pins.
+        /// </summary>
+        public bool ShowRightPinButtons
+        {
+            get => node is EntryNode;
+        }
+
+        /// <summary>
         /// Called when the left pins' plus button was clicked.
         /// </summary>
         public void LeftPinsPlusClicked()
@@ -454,7 +463,7 @@ namespace NetPrintsEditor.ViewModels
         }
 
         /// <summary>
-        /// Called when the right pins' minus button was clicked.
+        /// Called when the left pins' minus button was clicked.
         /// </summary>
         public void LeftPinsMinusClicked()
         {
@@ -469,6 +478,28 @@ namespace NetPrintsEditor.ViewModels
             else if (node is ReturnNode returnNode)
             {
                 returnNode.RemoveReturnType();
+            }
+        }
+
+        /// <summary>
+        /// Called when the right pins' plus button was clicked.
+        /// </summary>
+        public void RightPinsPlusClicked()
+        {
+            if (node is EntryNode entryNode)
+            {
+                entryNode.AddGenericArgument();
+            }
+        }
+
+        /// <summary>
+        /// Called when the right pins' minus button was clicked.
+        /// </summary>
+        public void RightPinsMinusClicked()
+        {
+            if (node is EntryNode entryNode)
+            {
+                entryNode.RemoveGenericArgument();
             }
         }
 

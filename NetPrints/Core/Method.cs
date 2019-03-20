@@ -84,6 +84,14 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Generic type arguments of the method.
+        /// </summary>
+        public IEnumerable<GenericType> GenericArgumentTypes
+        {
+            get => EntryNode != null ? EntryNode.OutputTypePins.Select(pin => pin.InferredType.Value).Cast<GenericType>().ToList() : new List<GenericType>();
+        }
+
+        /// <summary>
         /// Ordered return types this method returns.
         /// </summary>
         public IEnumerable<BaseType> ReturnTypes
@@ -110,16 +118,6 @@ namespace NetPrints.Core
             get;
             set;
         }
-
-        /// <summary>
-        /// Generic arguments this method takes.
-        /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<GenericType> DeclaredGenericArguments
-        {
-            get;
-            private set;
-        } = new ObservableRangeCollection<GenericType>();
 
         /// <summary>
         /// Creates a method given its name.

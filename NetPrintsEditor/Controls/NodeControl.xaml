@@ -124,6 +124,11 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
+                        <Button Width="24" Height="24" Content="+" Click="OnRightPinsPlusClicked" />
+                        <Button Width="24" Height="24" Content="-" Click="OnRightPinsMinusClicked" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Grid>

@@ -61,5 +61,16 @@ namespace NetPrints.Graph
                 InputTypePins.Remove(itpToRemove);
             }
         }
+
+        public void AddGenericArgument()
+        {
+            string name = $"T{OutputTypePins.Count}";
+            AddOutputTypePin(name, new GenericType(name));
+        }
+
+        public void RemoveGenericArgument()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
