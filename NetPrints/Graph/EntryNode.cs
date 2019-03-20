@@ -70,7 +70,14 @@ namespace NetPrints.Graph
 
         public void RemoveGenericArgument()
         {
-            throw new NotImplementedException();
+            if (OutputTypePins.Count > 0)
+            {
+                NodeOutputTypePin otpToRemove = OutputTypePins.Last();
+
+                GraphUtil.DisconnectOutputTypePin(otpToRemove);
+
+                OutputTypePins.Remove(otpToRemove);
+            }
         }
     }
 }
