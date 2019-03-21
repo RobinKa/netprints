@@ -29,6 +29,8 @@ namespace NetPrints.Translator
 
         private Method method;
 
+        private Random random;
+
         private delegate void NodeTypeHandler(MethodTranslator translator, Node node);
 
         private Dictionary<Type, List<NodeTypeHandler>> nodeTypeHandlers = new Dictionary<Type, List<NodeTypeHandler>>()
@@ -265,6 +267,7 @@ namespace NetPrints.Translator
             pinsJumpedTo.Clear();
             nextStateId = 0;
             builder.Clear();
+            random = new Random(0);
 
             nodes = TranslatorUtil.GetAllNodesInMethod(method);
             execNodes = TranslatorUtil.GetExecNodesInMethod(method);
@@ -409,7 +412,7 @@ namespace NetPrints.Translator
             }
             else if (node.OutputDataPins.Count > 1)
             {
-                temporaryReturnName = TranslatorUtil.GetTemporaryVariableName();
+                temporaryReturnName = TranslatorUtil.GetTemporaryVariableName(random);
 
                 var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.Value.FullCodeName));
                 
@@ -492,7 +495,7 @@ namespace NetPrints.Translator
             // Catch exceptions and execute catch pin
             if (node.CatchPin.OutgoingPin != null)
             {
-                string exceptionVarName = TranslatorUtil.GetTemporaryVariableName();
+                string exceptionVarName = TranslatorUtil.GetTemporaryVariableName(random);
                 builder.AppendLine("}");
                 builder.AppendLine($"catch (System.Exception {exceptionVarName})");
                 builder.AppendLine("{");

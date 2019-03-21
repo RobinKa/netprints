@@ -15,15 +15,13 @@ namespace NetPrints.Translator
         public const string VariablePrefix = "var";
         public const string TemporaryVariablePrefix = "temp";
 
-        private static Random random = new Random();
-
         private const int TemporaryVariableNameLength = 16;
 
         /// <summary>
         /// Gets a temporary variable name.
         /// </summary>
         /// <returns>Temporary variable name.</returns>
-        public static string GetTemporaryVariableName()
+        public static string GetTemporaryVariableName(Random random)
         {
             const string chars = "abcdefghijklmnopqrstuvwxyz";
 
