@@ -29,7 +29,10 @@ namespace NetPrints.Graph
             SetupSecondaryNodeEvents();
         }
 
-        private void UpdateInputDataPins()
+        /// <summary>
+        /// Sets the data pin types to the same as the main nodes' data pin types.
+        /// </summary>
+        private void ReplicateMainNodeInputTypes()
         {
             if (this == Method.MainReturnNode)
             {
@@ -67,14 +70,26 @@ namespace NetPrints.Graph
             }
         }
 
-        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        /// <summary>
+        /// Sets the data pin types to the input type pin types.
+        /// </summary>
+        private void UpdateMainNodeInputTypes()
         {
-            base.OnInputTypeChanged(sender, eventArgs);
+            if (this != Method.MainReturnNode)
+            {
+                return;
+            }
 
             for (int i = 0; i < InputTypePins.Count; i++)
             {
                 InputDataPins[i].PinType.Value = InputTypePins[i].InferredType?.Value ?? TypeSpecifier.FromType<object>();
             }
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+            UpdateMainNodeInputTypes();
         }
 
         public void AddReturnType()
@@ -114,10 +129,16 @@ namespace NetPrints.Graph
         {
             if (Method.MainReturnNode != null)
             {
-                Method.MainReturnNode.InputDataPins.CollectionChanged += (sender, e) => UpdateInputDataPins();
-                Method.MainReturnNode.InputTypeChanged += (sender, e) => UpdateInputDataPins();
-
-                UpdateInputDataPins();
+                if (this == Method.MainReturnNode)
+                {
+                    UpdateMainNodeInputTypes();
+                }
+                else
+                {
+                    Method.MainReturnNode.InputDataPins.CollectionChanged += (sender, e) => ReplicateMainNodeInputTypes();
+                    Method.MainReturnNode.InputTypeChanged += (sender, e) => ReplicateMainNodeInputTypes();
+                    ReplicateMainNodeInputTypes();
+                }
             }
         }
 
