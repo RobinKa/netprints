@@ -18,6 +18,12 @@ namespace NetPrints.Translator
                 }
             }";
 
+        private const string CLASS_TEMPLATE_NO_NAMESPACE =
+            @"%ClassModifiers%class %ClassName%%GenericArguments% : %SuperType%
+            {
+                %Content%
+            }";
+
         private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName%;";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
@@ -74,7 +80,7 @@ namespace NetPrints.Translator
                 genericArguments = "<" + string.Join(", ", c.DeclaredGenericArguments) + ">";
             }
 
-            string generatedCode = CLASS_TEMPLATE
+            string generatedCode = (string.IsNullOrWhiteSpace(c.Namespace) ? CLASS_TEMPLATE_NO_NAMESPACE : CLASS_TEMPLATE)
                 .Replace("%Namespace%", c.Namespace)
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
