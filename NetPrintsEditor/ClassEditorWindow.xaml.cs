@@ -298,11 +298,11 @@ namespace NetPrintsEditor
         {
             // TODO: Move logic into model / view model
 
-            // Delete the currently selected node in the currently open method
-            // Only delete the node if it is not an entry or the last return node
+            // Delete the currently selected node in the currently open method.
+            // Only delete the node if it is not an entry or the main return node.
             if(methodEditor?.Method?.SelectedNode != null &&
                 !(methodEditor.Method.SelectedNode.Node is EntryNode) &&
-                !(methodEditor.Method.SelectedNode.Node is ReturnNode && methodEditor.Method.Method.ReturnNodes.Count() <= 1))
+                methodEditor.Method.SelectedNode.Node != methodEditor.Method.Method.MainReturnNode)
             {
                 NodeVM deletedNode = methodEditor.Method.SelectedNode;
                 methodEditor.Method.SelectedNode = null;
