@@ -150,6 +150,8 @@ namespace NetPrints.Translator
 
         private void TranslateVariables()
         {
+            builder.AppendLine("// Variables");
+
             foreach (var v in variableNames)
             {
                 NodeOutputDataPin pin = v.Key;
@@ -164,6 +166,8 @@ namespace NetPrints.Translator
 
         private void TranslateSignature()
         {
+            builder.AppendLine($"// Method {method.Name}");
+
             // Write modifiers
             if (method.Modifiers.HasFlag(MethodModifiers.Protected))
             {
@@ -235,6 +239,8 @@ namespace NetPrints.Translator
 
         private void TranslateJumpStack()
         {
+            builder.AppendLine("// Jump stack");
+
             builder.AppendLine($"State{jumpStackStateId}:");
             builder.AppendLine($"if({JumpStackVarName}.Count == 0) throw new System.Exception();");
             builder.AppendLine($"switch({JumpStackVarName}.Pop())");
@@ -294,9 +300,11 @@ namespace NetPrints.Translator
             TranslateVariables();
             builder.AppendLine();
 
-            // Start at node after method entry
-            WriteGotoOutputPin(method.EntryNode.OutputExecPins[0]);
-            builder.AppendLine();
+            // Start at node after method entry if necessary (id!=0)
+            if (method.EntryNode.OutputExecPins[0].OutgoingPin != null && GetExecPinStateId(method.EntryNode.OutputExecPins[0].OutgoingPin) != 0)
+            {
+                WriteGotoOutputPin(method.EntryNode.OutputExecPins[0]);
+            }
             
             // Translate every exec node
             foreach (Node node in execNodes)
@@ -326,11 +334,34 @@ namespace NetPrints.Translator
             
             builder.AppendLine("}"); // Method end
 
-            return builder.ToString();
+            string code = builder.ToString();
+
+            // Remove unused labels
+            code = RemoveUnnecessaryLabels(code);
+
+            return code;
+        }
+
+        private string RemoveUnnecessaryLabels(string code)
+        {
+            foreach (int stateId in nodeStateIds.Values.SelectMany(i => i))
+            {
+                if (!code.Contains($"goto State{stateId};"))
+                {
+                    code = code.Replace($"State{stateId}:", "");
+                }
+            }
+
+            return code;
         }
 
         public void TranslateNode(Node node, int pinIndex)
         {
+            if (!(node is RerouteNode))
+            {
+                builder.AppendLine($"// {node.ToString()}");
+            }
+
             if (nodeTypeHandlers.ContainsKey(node.GetType()))
             {
                 nodeTypeHandlers[node.GetType()][pinIndex](this, node);
@@ -373,6 +404,32 @@ namespace NetPrints.Translator
             }
         }
 
+        private void WriteGotoOutputPinIfNecessary(NodeOutputExecPin pin, NodeInputExecPin fromPin)
+        {
+            int fromId = GetExecPinStateId(fromPin);
+            int nextId = fromId + 1;
+
+            if (pin.OutgoingPin == null)
+            {
+                if (nextId != jumpStackStateId)
+                {
+                    WriteGotoJumpStack();
+                }
+            }
+            else
+            {
+                
+                int toId = GetExecPinStateId(pin.OutgoingPin);
+
+                // Only write the goto if the next state is not
+                // the state we want to go to.
+                if (nextId != toId)
+                {
+                    WriteGotoInputPin(pin.OutgoingPin);
+                }
+            }
+        }
+
         public void TranslateDependentPureNodes(Node node)
         {
             var sortedPureNodes = TranslatorUtil.GetSortedPureNodes(node);
@@ -384,8 +441,12 @@ namespace NetPrints.Translator
 
         public void TranslateMethodEntry(EntryNode node)
         {
-            // Go to the next state
-            WriteGotoOutputPin(node.OutputExecPins[0]);
+            /*// Go to the next state.
+            // Only write if it's not the initial state (id==0) anyway.
+            if (node.OutputExecPins[0].OutgoingPin != null && GetExecPinStateId(node.OutputExecPins[0].OutgoingPin) != 0)
+            {
+                WriteGotoOutputPin(node.OutputExecPins[0]);
+            }*/
         }
         
         public void TranslateCallMethodNode(CallMethodNode node)
@@ -490,7 +551,7 @@ namespace NetPrints.Translator
             }
 
             // Go to the next state
-            WriteGotoOutputPin(node.OutputExecPins[0]);
+            WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
 
             // Catch exceptions and execute catch pin
             if (node.CatchPin.OutgoingPin != null)
@@ -500,7 +561,7 @@ namespace NetPrints.Translator
                 builder.AppendLine($"catch (System.Exception {exceptionVarName})");
                 builder.AppendLine("{");
                 builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = {exceptionVarName};");
-                WriteGotoOutputPin(node.CatchPin);
+                WriteGotoOutputPinIfNecessary(node.CatchPin, node.InputExecPins[0]);
                 builder.AppendLine("}");
             }
         }
@@ -520,7 +581,7 @@ namespace NetPrints.Translator
             builder.AppendLine($"({string.Join(", ", argumentNames)});");
 
             // Go to the next state
-            WriteGotoOutputPin(node.OutputExecPins[0]);
+            WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
         }
 
         public void TranslateExplicitCastNode(ExplicitCastNode node)
@@ -537,14 +598,14 @@ namespace NetPrints.Translator
                 builder.AppendLine($"if ({pinToCastName} is {node.CastType.FullCodeNameUnbound})");
                 builder.AppendLine("{");
                 builder.AppendLine($"{GetOrCreatePinName(node.CastPin)} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
-                WriteGotoOutputPin(node.CastSuccessPin);
+                WriteGotoOutputPinIfNecessary(node.CastSuccessPin, node.InputExecPins[0]);
                 builder.AppendLine("}");
                 builder.AppendLine("else");
             }
 
             if (node.CastFailedPin.OutgoingPin != null)
             {
-                WriteGotoOutputPin(node.CastFailedPin);
+                WriteGotoOutputPinIfNecessary(node.CastFailedPin, node.InputExecPins[0]);
             }
             else
             {
@@ -601,7 +662,7 @@ namespace NetPrints.Translator
             builder.AppendLine($"{GetOrCreatePinName(node.OutputDataPins[0])} = {valueName};");
 
             // Go to the next state
-            WriteGotoOutputPin(node.OutputExecPins[0]);
+            WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
         }
 
         public void TranslateReturnNode(ReturnNode node)
@@ -641,7 +702,7 @@ namespace NetPrints.Translator
 
             if (node.TruePin.OutgoingPin != null)
             {
-                WriteGotoOutputPin(node.TruePin);
+                WriteGotoOutputPinIfNecessary(node.TruePin, node.InputExecPins[0]);
             }
             else
             {
@@ -655,7 +716,7 @@ namespace NetPrints.Translator
 
             if (node.FalsePin.OutgoingPin != null)
             {
-                WriteGotoOutputPin(node.FalsePin);
+                WriteGotoOutputPinIfNecessary(node.FalsePin, node.InputExecPins[0]);
             }
             else
             {
@@ -675,7 +736,7 @@ namespace NetPrints.Translator
             builder.AppendLine($"if ({GetOrCreatePinName(node.IndexPin)} < {GetPinIncomingValue(node.MaxIndexPin)})");
             builder.AppendLine("{");
             WritePushJumpStack(node.ContinuePin);
-            WriteGotoOutputPin(node.LoopPin);
+            WriteGotoOutputPinIfNecessary(node.LoopPin, node.ExecutionPin);
             builder.AppendLine("}");
         }
 
@@ -689,10 +750,10 @@ namespace NetPrints.Translator
             builder.AppendLine($"if ({GetOrCreatePinName(node.IndexPin)} < {GetPinIncomingValue(node.MaxIndexPin)})");
             builder.AppendLine("{");
             WritePushJumpStack(node.ContinuePin);
-            WriteGotoOutputPin(node.LoopPin);
+            WriteGotoOutputPinIfNecessary(node.LoopPin, node.ContinuePin);
             builder.AppendLine("}");
 
-            WriteGotoOutputPin(node.CompletedPin);
+            WriteGotoOutputPinIfNecessary(node.CompletedPin, node.ContinuePin);
         }
 
         public void PureTranslateVariableGetterNode(VariableGetterNode node)
@@ -806,7 +867,7 @@ namespace NetPrints.Translator
             }
             else if (node.ExecRerouteCount == 1)
             {
-                WriteGotoOutputPin(node.OutputExecPins[0]);
+                WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
             }
         }
     }
