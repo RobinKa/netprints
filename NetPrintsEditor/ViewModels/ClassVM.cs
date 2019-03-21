@@ -72,7 +72,7 @@ namespace NetPrintsEditor.ViewModels
 
         public string FullName
         {
-            get => Type?.Name;
+            get => cls?.FullName;
         }
 
         public string Namespace
@@ -124,11 +124,17 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Path where the class is stored.
+        /// </summary>
         public string StoragePath
         {
             get => $"{Class.FullName}.netpc";
         }
 
+        /// <summary>
+        /// Generated code for the current class.
+        /// </summary>
         public string GeneratedCode
         {
             get
