@@ -48,7 +48,7 @@ namespace NetPrints.Graph
             foreach (NodeInputDataPin pin in InputDataPins)
             {
                 int i = InputDataPins.IndexOf(pin);
-                if (i < mainInputPins.Length && pin.PinType.Value == mainInputPins[i].PinType.Value && pin.IncomingPin != null)
+                if (i < mainInputPins.Length && pin.IncomingPin != null)
                 {
                     oldConnections.Add(i, pin.IncomingPin);
                 }
