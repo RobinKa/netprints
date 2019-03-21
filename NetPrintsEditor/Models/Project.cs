@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace NetPrintsEditor.Models
 {
@@ -44,6 +45,16 @@ namespace NetPrintsEditor.Models
         /// </summary>
         [DataMember]
         public string Name
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Version of the editor that the project was saved in.
+        /// </summary>
+        [DataMember]
+        public Version SaveVersion
         {
             get;
             set;
@@ -118,6 +129,8 @@ namespace NetPrintsEditor.Models
         /// </summary>
         public void Save()
         {
+            SaveVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
             using (FileStream fileStream = File.Open(Path, FileMode.Create))
             {
                 ProjectSerializer.WriteObject(fileStream, this);
