@@ -333,13 +333,23 @@ namespace NetPrintsEditor.ViewModels
                 {
                     // Translate the class to C#
                     ClassTranslator classTranslator = new ClassTranslator();
-                    string fullClassName = $"{cls.Namespace}.{cls.Name}";
+
                     string code = classTranslator.TranslateClass(cls.Class);
 
+                    string[] directories = cls.FullName.Split(".");
+                    directories = directories
+                        .Take(directories.Count() - 1)
+                        .Prepend(compiledDir)
+                        .ToArray();
+
                     // Write source to file
+                    string outputDirectory = System.IO.Path.Combine(directories);
+
+                    System.IO.Directory.CreateDirectory(outputDirectory);
+
                     if (CompilationOutput.HasFlag(ProjectCompilationOutput.SourceCode))
                     {
-                        File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{fullClassName}.cs"), code);
+                        File.WriteAllText(System.IO.Path.Combine(outputDirectory, $"{cls.Name}.cs"), code);
                     }
 
                     sources.Add(code);
