@@ -74,13 +74,15 @@ namespace NetPrints.Translator
                 genericArguments = "<" + string.Join(", ", c.DeclaredGenericArguments) + ">";
             }
 
-            return CLASS_TEMPLATE
+            string generatedCode = CLASS_TEMPLATE
                 .Replace("%Namespace%", c.Namespace)
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
                 .Replace("%GenericArguments%", genericArguments)
                 .Replace("%SuperType%", c.SuperType.FullCodeName)
                 .Replace("%Content%", content.ToString());
+
+            return TranslatorUtil.FormatCode(generatedCode);
         }
 
         /// <summary>

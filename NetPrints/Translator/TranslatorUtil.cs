@@ -1,4 +1,7 @@
-﻿using NetPrints.Core;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting;
+using NetPrints.Core;
 using NetPrints.Graph;
 using System;
 using System.Collections.Generic;
@@ -259,6 +262,13 @@ namespace NetPrints.Translator
             Debug.Assert(remainingNodes.Count == 0, "Impossible to evaluate all nodes (cyclic dependencies?)");
 
             return sortedNodes;
+        }
+
+        public static string FormatCode(string code)
+        {
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
+            SyntaxNode formatted = Formatter.Format(syntaxTree.GetCompilationUnitRoot(), new AdhocWorkspace());
+            return formatted.ToFullString();
         }
     }
 }
