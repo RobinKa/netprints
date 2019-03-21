@@ -126,7 +126,7 @@ namespace NetPrintsEditor.ViewModels
 
         public string StoragePath
         {
-            get => $"{Namespace}.{Name}.netpc";
+            get => $"{Class.FullName}.netpc";
         }
 
         public string GeneratedCode

@@ -58,6 +58,14 @@ namespace NetPrints.Core
         public string Name { get; set; }
 
         /// <summary>
+        /// Name of the class with namespace if any.
+        /// </summary>
+        public string FullName
+        {
+            get => string.IsNullOrWhiteSpace(Namespace) ? Name : $"{Namespace}.{Name}";
+        }
+
+        /// <summary>
         /// Modifiers this class has.
         /// </summary>
         [DataMember]
@@ -74,7 +82,7 @@ namespace NetPrints.Core
         /// </summary>
         public TypeSpecifier Type
         {
-            get => new TypeSpecifier($"{Namespace}.{Name}", SuperType.IsEnum, SuperType.IsInterface,
+            get => new TypeSpecifier(FullName, SuperType.IsEnum, SuperType.IsInterface,
                 DeclaredGenericArguments.Cast<BaseType>().ToList());
         }
 
