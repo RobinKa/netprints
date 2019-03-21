@@ -14,10 +14,14 @@
         <converters:ClassModifierConverter x:Key="classModifierConverter" />
     </UserControl.Resources>
     
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Label Content="{Binding ElementName=wnd, Path=Class.Name}" FontSize="24px" HorizontalContentAlignment="Center" />
 
-        <Grid>
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -63,5 +67,5 @@
 
             <TextBox Grid.Row="8" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
         </Grid>
-    </StackPanel>
+    </Grid>
 </UserControl>
