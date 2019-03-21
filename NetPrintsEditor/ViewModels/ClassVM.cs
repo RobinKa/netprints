@@ -133,39 +133,23 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                string copy;
-
-                lock (generatedCodeMutex)
-                {
-                    copy = generatedCode != null ? string.Copy(generatedCode) : "";
-                }
-
-                return copy;
+                return generatedCode;
             }
             set
             {
-                bool updated = false;
-
-                lock (generatedCodeMutex)
+                if (generatedCode != value)
                 {
-                    if (generatedCode != value)
-                    {
-                        updated = true;
-                        generatedCode = value;
-                    }
-                }
-
-                if (updated)
-                {
+                    generatedCode = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        private object generatedCodeMutex = new object();
         private string generatedCode;
 
         private Class cls;
+
+        private ClassTranslator classTranslator = new ClassTranslator();
 
         public ClassVM(Class cls)
         {
@@ -176,17 +160,20 @@ namespace NetPrintsEditor.ViewModels
             timer.Tick += (sender, eventArgs) =>
             {
                 timer.Stop();
-                var translator = new ClassTranslator();
+
                 string code;
+
                 try
                 {
-                    code = translator.TranslateClass(Class);
+                    code = classTranslator.TranslateClass(Class);
                 }
                 catch (Exception ex)
                 {
                     code = ex.ToString();
                 }
+
                 GeneratedCode = code;
+
                 timer.Start();
             };
         }
