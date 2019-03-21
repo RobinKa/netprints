@@ -1,7 +1,9 @@
 ﻿using NetPrints.Core;
+using NetPrints.Translator;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Threading;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -55,7 +57,7 @@ namespace NetPrintsEditor.ViewModels
 
         public TypeSpecifier SuperType
         {
-            get => cls.SuperType;
+            get => cls?.SuperType;
             set
             {
                 cls.SuperType = value;
@@ -65,12 +67,12 @@ namespace NetPrintsEditor.ViewModels
 
         public TypeSpecifier Type
         {
-            get => cls.Type;
+            get => cls?.Type;
         }
 
         public string FullName
         {
-            get => Type.Name;
+            get => Type?.Name;
         }
 
         public string Namespace
@@ -88,7 +90,7 @@ namespace NetPrintsEditor.ViewModels
 
         public string Name
         {
-            get => cls.Name;
+            get => cls?.Name;
             set
             {
                 cls.Name = value;
@@ -127,11 +129,66 @@ namespace NetPrintsEditor.ViewModels
             get => $"{Namespace}.{Name}.netpc";
         }
 
+        public string GeneratedCode
+        {
+            get
+            {
+                string copy;
+
+                lock (generatedCodeMutex)
+                {
+                    copy = generatedCode != null ? string.Copy(generatedCode) : "";
+                }
+
+                return copy;
+            }
+            set
+            {
+                bool updated = false;
+
+                lock (generatedCodeMutex)
+                {
+                    if (generatedCode != value)
+                    {
+                        updated = true;
+                        generatedCode = value;
+                    }
+                }
+
+                if (updated)
+                {
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private object generatedCodeMutex = new object();
+        private string generatedCode;
+
         private Class cls;
 
         public ClassVM(Class cls)
         {
             Class = cls;
+
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            timer.Start();
+            timer.Tick += (sender, eventArgs) =>
+            {
+                timer.Stop();
+                var translator = new ClassTranslator();
+                string code;
+                try
+                {
+                    code = translator.TranslateClass(Class);
+                }
+                catch (Exception ex)
+                {
+                    code = ex.ToString();
+                }
+                GeneratedCode = code;
+                timer.Start();
+            };
         }
 
 #region INotifyPropertyChanged

@@ -27,6 +27,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -59,6 +60,8 @@
                       Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 
                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
+
+            <TextBox Grid.Row="8" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
         </Grid>
     </StackPanel>
 </UserControl>
