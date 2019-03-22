@@ -1,8 +1,4 @@
-# NetPrints
-
-<p align="center">
-  <img width="128" height="128" src="https://raw.githubusercontent.com/RobinKa/RobinKa.github.io/master/NetPrintsLogo.png" />
-</p>
+![](https://raw.githubusercontent.com/RobinKa/RobinKa.github.io/master/NetPrintsBanner.png)
 
 ### Master [![Build Status](https://travis-ci.org/RobinKa/netprints.svg?branch=master)](https://travis-ci.org/RobinKa/netprints) Latest [![Build Status](https://travis-ci.org/RobinKa/netprints.svg)](https://travis-ci.org/RobinKa/netprints)
 
