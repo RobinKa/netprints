@@ -428,6 +428,8 @@ namespace NetPrintsEditor.Controls
                 drawCanvasScale = DrawCanvasMaxScale;
             }
 
+            Vector mousePos = (Vector)e.GetPosition(drawCanvas);
+
             drawCanvas.LayoutTransform = new ScaleTransform(drawCanvasScale, drawCanvasScale);
 
             // Translate if the scale did not stay the same
@@ -438,7 +440,8 @@ namespace NetPrintsEditor.Controls
                     new Vector(currentTransform.X, currentTransform.Y) :
                     new Vector(0, 0);
 
-                Vector targetOffset = 0.8 * currentOffset - Math.Sign(e.Delta) * 0.2 * (Vector)e.GetPosition(drawCanvas);
+                Vector targetOffset = currentOffset - Math.Sign(e.Delta) * (DrawCanvasScaleFactor - 1) * mousePos / 2;
+
                 drawCanvas.RenderTransform = new TranslateTransform(
                     Math.Round(targetOffset.X),
                     Math.Round(targetOffset.Y));
