@@ -360,9 +360,9 @@ namespace NetPrintsEditor
             undoRedoStack.DoCommand(NetPrintsCommands.AddAttribute, uniqueName);
         }
 
-        private void OverrideMethodButton_Click(object sender, RoutedEventArgs e)
+        private void OverrideMethodBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var methodSpecifier = (sender as FrameworkElement)?.Tag as MethodSpecifier;
+            var methodSpecifier = e.AddedItems[0] as MethodSpecifier;
             if (methodSpecifier != null)
             {
                 undoRedoStack.DoCommand(NetPrintsCommands.OverrideMethod, methodSpecifier);

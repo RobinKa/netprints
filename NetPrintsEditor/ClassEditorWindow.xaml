@@ -69,7 +69,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                         <RowDefinition Height="30"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
                     <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
@@ -91,20 +91,8 @@
 
                     <Button Grid.Row="2" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="3" x:Name="overrideMethodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="30" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding}" />
-                                    <Button BorderThickness="0" Grid.Column="1" Content="+" Tag="{Binding}" Click="OverrideMethodButton_Click" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
+                              SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 
                 <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
