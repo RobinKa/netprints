@@ -197,7 +197,7 @@ namespace NetPrintsEditor.Reflection
                 return type.GetMethods()
                     .Where(m =>
                         (m.IsVirtual || m.IsOverride || m.IsAbstract) &&
-                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
+                        m.MethodKind == MethodKind.Ordinary)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
                     .ThenBy(m => m.Name)
