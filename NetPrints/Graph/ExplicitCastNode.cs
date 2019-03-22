@@ -20,6 +20,9 @@ namespace NetPrints.Graph
             get { return InputDataPins[0]; }
         }
 
+        /// <summary>
+        /// Input type pin for the type to cast to.
+        /// </summary>
         public NodeInputTypePin CastTypePin
         {
             get { return InputTypePins[0]; }
@@ -54,7 +57,7 @@ namespace NetPrints.Graph
         /// </summary>
         public BaseType CastType
         {
-            get { return CastTypePin.InferredType?.Value ?? TypeSpecifier.FromType<object>(); }
+            get => CastTypePin.InferredType?.Value ?? TypeSpecifier.FromType<object>();
         }
 
         public ExplicitCastNode(Method method)
