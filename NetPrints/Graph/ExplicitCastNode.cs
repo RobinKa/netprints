@@ -11,23 +11,18 @@ namespace NetPrints.Graph
     /// </summary>
     [DataContract]
     public class ExplicitCastNode : Node
-    {
-        /// <summary>
-        /// Specifier for the type to cast to.
-        /// </summary>
-        [DataMember]
-        public TypeSpecifier CastType
-        {
-            get;
-            private set;
-        }
-        
+    {        
         /// <summary>
         /// Pin for the object to cast to another type.
         /// </summary>
         public NodeInputDataPin ObjectToCast
         {
             get { return InputDataPins[0]; }
+        }
+
+        public NodeInputTypePin CastTypePin
+        {
+            get { return InputTypePins[0]; }
         }
 
         /// <summary>
@@ -54,16 +49,30 @@ namespace NetPrints.Graph
             get { return OutputExecPins[1]; }
         }
 
-        public ExplicitCastNode(Method method, TypeSpecifier castType)
+        /// <summary>
+        /// Type to cast to. Inferred from input type pin.
+        /// </summary>
+        public BaseType CastType
+        {
+            get { return CastTypePin.InferredType?.Value ?? TypeSpecifier.FromType<object>(); }
+        }
+
+        public ExplicitCastNode(Method method)
             : base(method)
         {
-            CastType = castType;
-
+            AddInputTypePin("Type");
             AddInputDataPin("Object", TypeSpecifier.FromType<object>());
-            AddOutputDataPin("CastObject", castType);
+            AddOutputDataPin("CastObject", CastType);
             AddInputExecPin("Exec");
             AddOutputExecPin("Success");
             AddOutputExecPin("Failure");
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            CastPin.PinType.Value = CastType;
         }
 
         public override string ToString()
