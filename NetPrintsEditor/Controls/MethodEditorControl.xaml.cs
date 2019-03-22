@@ -172,8 +172,7 @@ namespace NetPrintsEditor.Controls
                         suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(pinTypeSpec));
 
                         // Add methods of the super type that can accept the pin type as argument
-                        // TODO: Get protected
-                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(
+                        suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetProtectedMethodsForType(
                             Method.Class.SuperType)
                             .Where(m => m.Arguments.Any(a =>
                             {
@@ -212,18 +211,16 @@ namespace NetPrintsEditor.Controls
                 {
                     pin.ConnectedPin = null;
 
-                    // TODO: Get protected from supertype
                     Suggestions = new ObservableRangeCollection<object>(builtInNodes
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetProtectedMethodsForType(Method.Class.SuperType))
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                         .Distinct());
                 }
                 else if (pin.Pin is NodeInputExecPin ixp)
                 {
-                    // TODO: Get protected from supertype
                     Suggestions = new ObservableRangeCollection<object>(builtInNodes
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicMethodsForType(Method.Class.SuperType))
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetProtectedMethodsForType(Method.Class.SuperType))
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetStaticFunctions())
                         .Concat(ProjectVM.Instance.ReflectionProvider.GetPublicStaticProperties())
                         .Distinct());

@@ -49,6 +49,11 @@ namespace NetPrintsEditor.Reflection
             return symbol.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
         }
 
+        public static bool IsProtected(this ISymbol symbol)
+        {
+            return symbol.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Protected;
+        }
+
         public static IEnumerable<IMethodSymbol> GetMethods(this ITypeSymbol symbol)
         {
             return symbol.GetAllMembers()
@@ -170,6 +175,30 @@ namespace NetPrintsEditor.Reflection
                 return type.GetMethods()
                     .Where(m => 
                         m.IsPublic() &&
+                        !m.IsStatic &&
+                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
+                    .OrderBy(m => m.ContainingNamespace?.Name)
+                    .ThenBy(m => m.ContainingType?.Name)
+                    .ThenBy(m => m.Name)
+                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
+            }
+            else
+            {
+                return new MethodSpecifier[] { };
+            }
+        }
+
+        public IEnumerable<MethodSpecifier> GetProtectedMethodsForType(TypeSpecifier typeSpecifier)
+        {
+            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
+
+            if (type != null)
+            {
+                // Get all public instance methods, ignore special ones (properties / events)
+
+                return type.GetMethods()
+                    .Where(m =>
+                        m.IsPublic() || m.IsProtected() &&
                         !m.IsStatic &&
                         m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
                     .OrderBy(m => m.ContainingNamespace?.Name)
