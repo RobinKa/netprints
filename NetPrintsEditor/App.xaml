@@ -9,7 +9,7 @@
             <Setter Property="Background" Value="#FF333333" />
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
@@ -54,7 +54,7 @@
             <Setter Property="Background" Value="#FF333333" />
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
@@ -63,7 +63,7 @@
             <Setter Property="Background" Value="#FF333333" />
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
@@ -71,7 +71,7 @@
             <Setter Property="Background" Value="#FF333333" />
             <Setter Property="Foreground" Value="#FFEEEEEE" />
             <Setter Property="BorderBrush" Value="#FF444444"/>
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
@@ -82,13 +82,13 @@
 
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#FFEEEEEE" />
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
 
