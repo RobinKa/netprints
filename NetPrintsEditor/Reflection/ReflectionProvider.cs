@@ -20,24 +20,24 @@ namespace NetPrintsEditor.Reflection
         /// </summary>
         public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol symbol)
         {
-            List<ISymbol> members = new List<ISymbol>();
-            HashSet<ISymbol> overridenSymbols = new HashSet<ISymbol>();
+            var members = new List<ISymbol>();
+            var overridenSymbols = new HashSet<string>();
 
             while (symbol != null)
             {
                 var symbolMembers = symbol.GetMembers();
 
                 // Add symbols which weren't overriden yet
-                List<ISymbol> newMembers = symbolMembers.Where(m => !overridenSymbols.Contains(m)).ToList();
+                List<ISymbol> newMembers = symbolMembers.Where(m => !overridenSymbols.Contains(m.MetadataName)).ToList();
 
                 members.AddRange(newMembers);
 
                 // Remember which symbols were overriden
                 foreach (ISymbol symbolMember in symbolMembers)
                 {
-                    if (!symbolMember.IsDefinition && symbolMember.OriginalDefinition != null)
+                    if (symbolMember.OriginalDefinition != null)
                     {
-                        overridenSymbols.Add(symbolMember.OriginalDefinition);
+                        overridenSymbols.Add(symbolMember.MetadataName);
                     }
                 }
 
