@@ -236,6 +236,8 @@ namespace NetPrintsEditor.Controls
                     // TODO: Show methods and types that have type-input
                     var suggestions = new List<object>();
 
+                    suggestions.Add(TypeSpecifier.FromType<TypeNode>());
+
                     if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
                     {
                         suggestions.AddRange(ProjectVM.Instance.ReflectionProvider.GetPublicStaticFunctionsForType(typeSpecifier));
