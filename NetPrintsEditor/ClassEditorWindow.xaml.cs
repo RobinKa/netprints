@@ -1,17 +1,11 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
-using NetPrints.Serialization;
-using NetPrints.Translator;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Controls;
 using NetPrintsEditor.ViewModels;
 using System;
-using System.CodeDom.Compiler;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

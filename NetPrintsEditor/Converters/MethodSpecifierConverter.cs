@@ -1,8 +1,6 @@
 ﻿using NetPrints.Core;
-using NetPrintsEditor.Reflection;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 

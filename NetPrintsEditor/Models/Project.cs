@@ -1,12 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using NetPrints.Core;
+﻿using NetPrints.Core;
 using NetPrintsEditor.Compilation;
-using System.Collections.Generic;
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace NetPrintsEditor.Models

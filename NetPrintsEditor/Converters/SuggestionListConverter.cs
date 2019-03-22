@@ -2,12 +2,10 @@
 using NetPrints.Graph;
 using NetPrintsEditor.Controls;
 using NetPrintsEditor.Dialogs;
-using NetPrintsEditor.Reflection;
 using System;
 using System.Globalization;
 using System.Reflection;
 using System.Windows.Data;
-using System.Windows.Media.Imaging;
 
 namespace NetPrintsEditor.Converters
 {

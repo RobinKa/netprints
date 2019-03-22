@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace NetPrintsEditor.Compilation
 {

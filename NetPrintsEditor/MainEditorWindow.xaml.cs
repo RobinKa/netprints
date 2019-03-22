@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using NetPrintsEditor.Models;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;

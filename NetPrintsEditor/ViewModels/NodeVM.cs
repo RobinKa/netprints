@@ -1,6 +1,5 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
