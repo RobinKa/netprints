@@ -370,12 +370,15 @@ namespace NetPrintsEditor.ViewModels
             // Connect pinVM newPinVM (or null if newPin is null)
 
             NodePinVM pinVM = FindPinVMFromPin(pin);
-            pinVM.ConnectedPin = newPin == null ? null : FindPinVMFromPin(newPin);
+            if (pinVM != null)
+            {
+                pinVM.ConnectedPin = newPin == null ? null : FindPinVMFromPin(newPin);
+            }
         }
 
         private NodePinVM FindPinVMFromPin(NodePin pin)
         {
-            return AllPins.Single(p => p.Pin == pin);
+            return AllPins.SingleOrDefault(p => p.Pin == pin);
         }
 
         public IEnumerable<NodePinVM> AllPins
