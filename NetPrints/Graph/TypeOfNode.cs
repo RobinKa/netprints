@@ -19,22 +19,23 @@ namespace NetPrints.Graph
         }
 
         /// <summary>
-        /// Specifier for the type of this typeof node.
+        /// Input type pin for the Type value.
         /// </summary>
-        [DataMember]
-        public TypeSpecifier Type { get; private set; }
+        public NodeInputTypePin InputTypePin
+        {
+            get { return InputTypePins[0]; }
+        }
 
-        public TypeOfNode(Method method, TypeSpecifier type)
+        public TypeOfNode(Method method)
             : base(method)
         {
-            Type = type;
-
+            AddInputTypePin("Type");
             AddOutputDataPin("Type", TypeSpecifier.FromType<Type>());
         }
 
         public override string ToString()
         {
-            return $"Type Of {Type.Name}";
+            return $"Type Of";
         }
     }
 }

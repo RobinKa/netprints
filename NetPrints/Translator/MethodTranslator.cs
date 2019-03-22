@@ -838,7 +838,7 @@ namespace NetPrints.Translator
 
         public void PureTranslateTypeOfNode(TypeOfNode node)
         {
-            builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.Type.FullCodeNameUnbound});");
+            builder.AppendLine($"{GetOrCreatePinName(node.TypePin)} = typeof({node.InputTypePin.InferredType?.Value?.FullCodeNameUnbound ?? "System.Object"});");
         }
 
         public void PureTranslateMakeArrayNode(MakeArrayNode node)
