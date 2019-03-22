@@ -16,29 +16,31 @@ namespace NetPrintsEditor.Reflection
     public static class ISymbolExtensions
     {
         /// <summary>
-        /// Gets all members of a symbol including inherited ones.
+        /// Gets all members of a symbol including inherited ones, but not overriden ones.
         /// </summary>
         public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol symbol)
         {
             var members = new List<ISymbol>();
-            var overridenSymbols = new HashSet<string>();
+            var overridenMethods = new List<IMethodSymbol>();
 
             while (symbol != null)
             {
                 var symbolMembers = symbol.GetMembers();
 
                 // Add symbols which weren't overriden yet
-                List<ISymbol> newMembers = symbolMembers.Where(m => !overridenSymbols.Contains(m.MetadataName)).ToList();
+                List<ISymbol> newMembers = symbolMembers.Where(m => m is IMethodSymbol methodSymbol && !overridenMethods.Contains(methodSymbol)).ToList();
 
                 members.AddRange(newMembers);
 
-                // Remember which symbols were overriden
-                foreach (ISymbol symbolMember in symbolMembers)
+                // Recursively add overriden methods
+                List<IMethodSymbol> newOverridenMethods = symbolMembers.OfType<IMethodSymbol>().ToList();
+                while (newOverridenMethods.Count > 0)
                 {
-                    if (symbolMember.OriginalDefinition != null)
-                    {
-                        overridenSymbols.Add(symbolMember.MetadataName);
-                    }
+                    overridenMethods.AddRange(newOverridenMethods);
+                    newOverridenMethods = newOverridenMethods
+                        .Where(m => m.OverriddenMethod != null)
+                        .Select(m => m.OverriddenMethod)
+                        .ToList();
                 }
 
                 symbol = symbol.BaseType;
