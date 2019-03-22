@@ -23,7 +23,7 @@ namespace NetPrintsEditor.Reflection
                 var symbolMembers = symbol.GetMembers();
 
                 // Add symbols which weren't overriden yet
-                List<ISymbol> newMembers = symbolMembers.Where(m => m is IMethodSymbol methodSymbol && !overridenMethods.Contains(methodSymbol)).ToList();
+                List<ISymbol> newMembers = symbolMembers.Where(m => !(m is IMethodSymbol methodSymbol) || !overridenMethods.Contains(methodSymbol)).ToList();
 
                 members.AddRange(newMembers);
 
