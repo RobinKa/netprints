@@ -288,6 +288,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ToolTip));
                     OnPropertyChanged(nameof(Overloads));
+                    OnPropertyChanged(nameof(ShowOverloads));
                     OnPropertyChanged(nameof(IsRerouteNode));
                     OnPropertyChanged(nameof(ShowLeftPinButtons));
                     OnPropertyChanged(nameof(Label));
@@ -315,9 +316,18 @@ namespace NetPrintsEditor.ViewModels
             {
                 overloads = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowOverloads));
             }
         }
         private ObservableRangeCollection<object> overloads = new ObservableRangeCollection<object>();
+
+        /// <summary>
+        /// Whether to show the overloads element.
+        /// </summary>
+        public bool ShowOverloads
+        {
+            get => Overloads.Count > 0;
+        }
         
         /// <summary>
         /// Currently overload or null if invalid for the node type.

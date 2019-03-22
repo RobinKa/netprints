@@ -19,7 +19,7 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class MethodEditorControl : UserControl
     {
-        public const double GridCellSize = 20;
+        public const double GridCellSize = 28;
 
         public MethodVM Method
         {

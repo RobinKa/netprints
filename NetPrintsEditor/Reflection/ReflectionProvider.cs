@@ -577,7 +577,8 @@ namespace NetPrintsEditor.Reflection
             ITypeSymbol fromSymbol = GetTypeFromSpecifier(fromType);
             ITypeSymbol toSymbol = GetTypeFromSpecifier(toType);
 
-            return compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
+            return fromSymbol != null && toSymbol != null &&
+                compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
         }
 
         #endregion

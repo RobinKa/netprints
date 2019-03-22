@@ -134,7 +134,8 @@ namespace NetPrintsEditor.ViewModels
                     }
 
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(Brush));
+                    OnPropertyChanged(nameof(FillBrush));
+                    OnPropertyChanged(nameof(BorderBrush));
                     OnPropertyChanged(nameof(ShowUnconnectedValue));
                     OnPropertyChanged(nameof(ShowEnumValue));
                     OnPropertyChanged(nameof(PossibleEnumNames));
@@ -284,9 +285,45 @@ namespace NetPrintsEditor.ViewModels
             [typeof(NodeTypePin)] = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xE0, 0xE0)),
         };
 
-        public Brush Brush
+        public Brush BorderBrush
         {
             get => typeBrushes.Single(x => Pin.GetType().IsSubclassOf(x.Key)).Value;
+        }
+
+        public Brush FillBrush
+        {
+            get
+            {
+                // Check if the pin is connected to anything
+                if ((pin is NodeInputDataPin idp && idp.IncomingPin != null) ||
+                    (pin is NodeOutputDataPin odp && odp.OutgoingPins.Count > 0) ||
+                    (pin is NodeInputExecPin iep && iep.IncomingPins.Count > 0) ||
+                    (pin is NodeOutputExecPin oep && oep.OutgoingPin != null) ||
+                    (pin is NodeInputTypePin itp && itp.IncomingPin != null) ||
+                    (pin is NodeOutputTypePin otp && otp.OutgoingPins.Count > 0))
+                {
+                    return BorderBrush;
+                }
+
+                var brush = (SolidColorBrush)BorderBrush;
+                var color = Color.FromArgb(brush.Color.A, (byte)(brush.Color.R * 0.6), (byte)(brush.Color.G * 0.6), (byte)(brush.Color.B * 0.6));
+                return new SolidColorBrush(color);
+            }
+        }
+
+        public bool ShowRectangle
+        {
+            get => pin is NodeExecPin;
+        }
+
+        public bool ShowCircle
+        {
+            get => pin is NodeDataPin;
+        }
+
+        public bool ShowTriangle
+        {
+            get => pin is NodeTypePin;
         }
 
         public Point AbsolutePosition
@@ -370,6 +407,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(ShowUnconnectedValue));
                     OnPropertyChanged(nameof(ShowEnumValue));
                     OnPropertyChanged(nameof(PossibleEnumNames));
+                    OnPropertyChanged(nameof(FillBrush));
                     OnConnectionPositionUpdate();
 
                     if (connectedPin != null)

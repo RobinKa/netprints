@@ -18,7 +18,8 @@
         <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
         <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
-        <converters:BoolToDoubleConverter x:Key="BoolToDouble" True="40" False="220" />
+        <converters:BoolToDoubleConverter x:Key="BoolToDouble" True="56" False="224" />
+        <converters:BoolToThicknessConverter x:Key="MarginConverter" True="0" False="10,10,10,12" />
     </UserControl.Resources>
 
     <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToDouble}}" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
@@ -34,36 +35,28 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
                
-            <!--
-            Padding for reroute nodes so the cables line up straight, should ideally just make
-            the pins line up with the grid.
-            -->
-            <Rectangle Height="6.5" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToVis}}"
+            <Rectangle Height="46" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
                        Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}" Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}"
                        StrokeThickness="2" />
 
-            <Rectangle Height="40" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
-                       Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}" Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}"
-                       StrokeThickness="2" />
-
-            <Grid Height="40" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
+            <Grid Height="46" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <ComboBox x:Name="nodeVariants" Margin="2" Width="16" Grid.Column="0" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.Overloads, Mode=OneWay}" 
-                    SelectionChanged="NodeVariants_SelectionChanged" />
+                    SelectionChanged="NodeVariants_SelectionChanged" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowOverloads, Converter={StaticResource ResourceKey=BoolToVis}}" />
                 
-                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Label}" Padding="10, 10" FontFamily="Lucida Sans Unicode"
-                       FontWeight="Bold" FontSize="14" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
+                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Label}" Padding="10, 10"
+                       FontWeight="SemiBold" FontSize="18" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                     <Label.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
                     </Label.Effect>
                 </Label>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="5">
+            <Grid Grid.Row="1" Margin="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=MarginConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -73,30 +66,30 @@
                     <ItemsControl x:Name="inputExecPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputExecPins}"  Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="inputDataPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputDataPins}" Margin="0,5,0,0" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                    <ItemsControl x:Name="inputDataPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputDataPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="inputTypePinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputTypePins}" Margin="0,5,0,0" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                    <ItemsControl x:Name="inputTypePinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputTypePins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <StackPanel Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Width="24" Height="24" Content="+" Click="OnLeftPinsPlusClicked" />
-                        <Button Width="24" Height="24" Content="-" Click="OnLeftPinsMinusClicked" />
+                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
+                        <Button Width="28" Height="28" Content="+" Click="OnLeftPinsPlusClicked" />
+                        <Button Width="28" Height="28" Content="-" Click="OnLeftPinsMinusClicked" />
                     </StackPanel>
                 </StackPanel>
 
@@ -104,30 +97,30 @@
                     <ItemsControl x:Name="outputExecPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputExecPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="outputDataPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputDataPins}" Margin="0,5,0,0" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
+                    <ItemsControl x:Name="outputDataPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputDataPins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="outputTypePinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputTypePins}" Margin="0,5,0,0" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
+                    <ItemsControl x:Name="outputTypePinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputTypePins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Width="24" Height="24" Content="+" Click="OnRightPinsPlusClicked" />
-                        <Button Width="24" Height="24" Content="-" Click="OnRightPinsMinusClicked" />
+                        <Button Width="28" Height="28" Content="+" Click="OnRightPinsPlusClicked" />
+                        <Button Width="28" Height="28" Content="-" Click="OnRightPinsMinusClicked" />
                     </StackPanel>
                 </StackPanel>
             </Grid>

@@ -20,8 +20,10 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Canvas x:Name="connector" Grid.Column="0" Width="14" Height="14">
-            <Rectangle x:Name="pinElement" ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
-                       Fill="{Binding ElementName=pinWindow, Path=Pin.Brush}"  MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
+            <Rectangle ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
+                       Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowRectangle, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding ElementName=pinWindow, Path=Pin.FillBrush}"
+                       MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
                        Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
                 <Rectangle.Style>
                     <Style TargetType="{x:Type Rectangle}">
@@ -33,10 +35,43 @@
                     </Style>
                 </Rectangle.Style>
             </Rectangle>
+
+            <Ellipse ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
+                       Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowCircle, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding ElementName=pinWindow, Path=Pin.FillBrush}"
+                       MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
+                       Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
+                <Ellipse.Style>
+                    <Style TargetType="{x:Type Ellipse}">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Stroke" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
+
+            <Polygon ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
+                     Points="0,0 13,7 0,14" 
+                       Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowTriangle, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding ElementName=pinWindow, Path=Pin.FillBrush}"
+                       MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
+                       Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="1">
+                <Polygon.Style>
+                    <Style TargetType="{x:Type Polygon}">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Stroke" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Polygon.Style>
+            </Polygon>
         </Canvas>
 
-        <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}" FontFamily="Lucida Sans Unicode"
-               FontSize="11" FontWeight="Bold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch"
+        <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}"
+               FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch"
                Visibility="{Binding ElementName=pinWindow, Path=Pin.IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}"/>
         
         <TextBox Grid.Column="2" 

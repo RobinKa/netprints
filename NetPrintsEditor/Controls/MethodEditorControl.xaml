@@ -25,16 +25,16 @@
         </Grid.ContextMenu>
 
         <Canvas x:Name="drawCanvas" MouseLeftButtonDown="OnDrawCanvasLeftMouseButtonDown" MouseRightButtonDown="OnDrawCanvasRightMouseButtonDown"
-                MouseRightButtonUp="OnDrawCanvasRightMouseUp" MouseMove="OnDrawCanvasMouseMove" MouseWheel="OnMouseWheelScroll" Width="5000" Height="5000">
+                MouseRightButtonUp="OnDrawCanvasRightMouseUp" MouseMove="OnDrawCanvasMouseMove" MouseWheel="OnMouseWheelScroll" Width="10000" Height="10000">
             <Canvas.Background>
-                <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
+                <DrawingBrush TileMode="Tile" Viewport="0,0,28,28" ViewportUnits="Absolute">
                     <DrawingBrush.Drawing>
                         <GeometryDrawing>
                             <GeometryDrawing.Geometry>
-                                <RectangleGeometry Rect="0,0,50,50"/>
+                                <RectangleGeometry Rect="0,0,28,28"/>
                             </GeometryDrawing.Geometry>
                             <GeometryDrawing.Pen>
-                                <Pen Brush="Gray" Thickness="1"/>
+                                <Pen Brush="Gray" Thickness="0.5"/>
                             </GeometryDrawing.Pen>
                         </GeometryDrawing>
                     </DrawingBrush.Drawing>
@@ -71,7 +71,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Path MouseDown="CablePath_MouseDown" MouseEnter="CablePath_MouseEnter" MouseLeave="CablePath_MouseLeave" x:Name="cablePath" Visibility="{Binding IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}"
-                              Stroke="{Binding Brush}" StrokeThickness="4" Opacity="0.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                              Stroke="{Binding BorderBrush}" StrokeThickness="4" Opacity="0.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                             <Path.Data>
                                 <PathGeometry>
                                     <PathGeometry.Figures>

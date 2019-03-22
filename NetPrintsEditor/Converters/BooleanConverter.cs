@@ -45,4 +45,12 @@ namespace NetPrintsEditor.Converters
         {
         }
     }
+
+    public sealed class BoolToThicknessConverter : BooleanConverter<Thickness>
+    {
+        public BoolToThicknessConverter() :
+            base(new Thickness(0), new Thickness(0))
+        {
+        }
+    }
 }

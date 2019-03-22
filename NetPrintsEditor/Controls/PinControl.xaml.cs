@@ -80,7 +80,7 @@ namespace NetPrintsEditor.Controls
 
         private void OnPinElementMouseMove(object sender, MouseEventArgs e)
         {
-            if(sender is Rectangle el && e.LeftButton == MouseButtonState.Pressed)
+            if(sender is Shape el && e.LeftButton == MouseButtonState.Pressed)
             {
                 Pin.IsBeingConnected = true;
                 DragDrop.DoDragDrop(el, Pin, DragDropEffects.Link);
