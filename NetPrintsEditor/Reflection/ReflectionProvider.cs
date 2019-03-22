@@ -21,7 +21,7 @@ namespace NetPrintsEditor.Reflection
         public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol symbol)
         {
             var members = new List<ISymbol>();
-            var overridenMethods = new List<IMethodSymbol>();
+            var overridenMethods = new HashSet<IMethodSymbol>();
 
             while (symbol != null)
             {
@@ -36,7 +36,7 @@ namespace NetPrintsEditor.Reflection
                 List<IMethodSymbol> newOverridenMethods = symbolMembers.OfType<IMethodSymbol>().ToList();
                 while (newOverridenMethods.Count > 0)
                 {
-                    overridenMethods.AddRange(newOverridenMethods);
+                    newOverridenMethods.ForEach(m => overridenMethods.Add(m));
                     newOverridenMethods = newOverridenMethods
                         .Where(m => m.OverriddenMethod != null)
                         .Select(m => m.OverriddenMethod)
