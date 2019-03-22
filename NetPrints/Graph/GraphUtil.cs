@@ -323,6 +323,8 @@ namespace NetPrints.Graph
         /// </summary>
         /// <param name="method">Method to add the type nodes to.</param>
         /// <param name="type">Specifier for the type the type node should output.</param>
+        /// <param name="x">X position of the created type node.</param>
+        /// <param name="y">Y position of the created type node.</param>
         /// <returns>Type node outputting the given type.</returns>
         public static TypeNode CreateNestedTypeNode(Method method, BaseType type, double x, double y)
         {
@@ -345,8 +347,6 @@ namespace NetPrints.Graph
                 {
                     GraphUtil.ConnectTypePins(genericArgNode.OutputTypePins[0], typeNode.InputTypePins[0]);
                 }
-
-                y -= 50;
             }
 
             return typeNode;
