@@ -1,7 +1,9 @@
 ﻿using NetPrints.Core;
 using NetPrints.Translator;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 
@@ -55,6 +57,14 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<MethodVM, Method> methods;
 
+        /// <summary>
+        /// Specifiers for methods that this class can override.
+        /// </summary>
+        public IEnumerable<MethodSpecifier> OverridableMethods
+        {
+            get => ProjectVM.Instance.ReflectionProvider.GetOverridableMethodsForType(SuperType);
+        }
+
         public TypeSpecifier SuperType
         {
             get => cls?.SuperType;
@@ -62,6 +72,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 cls.SuperType = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(OverridableMethods));
             }
         }
 
@@ -120,6 +131,13 @@ namespace NetPrintsEditor.ViewModels
                 {
                     cls = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(SuperType));
+                    OnPropertyChanged(nameof(OverridableMethods));
+                    OnPropertyChanged(nameof(Type));
+                    OnPropertyChanged(nameof(Modifiers));
+                    OnPropertyChanged(nameof(Name));
+                    OnPropertyChanged(nameof(StoragePath));
+                    OnPropertyChanged(nameof(FullName));
                 }
             }
         }

@@ -186,6 +186,29 @@ namespace NetPrintsEditor.Reflection
             }
         }
 
+        public IEnumerable<MethodSpecifier> GetOverridableMethodsForType(TypeSpecifier typeSpecifier)
+        {
+            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
+
+            if (type != null)
+            {
+                // Get all overridable methods, ignore special ones (properties / events)
+
+                return type.GetMethods()
+                    .Where(m =>
+                        (m.IsVirtual || m.IsOverride || m.IsAbstract) &&
+                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
+                    .OrderBy(m => m.ContainingNamespace?.Name)
+                    .ThenBy(m => m.ContainingType?.Name)
+                    .ThenBy(m => m.Name)
+                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
+            }
+            else
+            {
+                return new MethodSpecifier[] { };
+            }
+        }
+
         public IEnumerable<MethodSpecifier> GetPublicMethodOverloads(MethodSpecifier methodSpecifier)
         {
             ITypeSymbol type = GetTypeFromSpecifier(methodSpecifier.DeclaringType);

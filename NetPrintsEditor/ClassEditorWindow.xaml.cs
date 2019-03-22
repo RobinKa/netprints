@@ -107,10 +107,29 @@ namespace NetPrintsEditor
             newMethod.EntryNode.PositionY = 100;
             newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + 400;
             newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
-            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.ReturnNodes.First().ReturnPin);
+            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
 
             Class.Class.Methods.Add(newMethod);
             methodEditor.Method = Class.Methods.Single(m => m.Method == newMethod);
+        }
+
+        private void CommandOverrideMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Class != null && e.Parameter is MethodSpecifier methodSpecifier &&
+                !Class.Methods.Any(m => m.Name == methodSpecifier.Name) &&
+                (methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual) ||
+                 methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override) ||
+                 methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract));
+        }
+
+        private void CommandOverrideMethod_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Method method = GraphUtil.AddOverrideMethod(Class.Class, (MethodSpecifier)e.Parameter);
+
+            if (method != null)
+            {
+                methodEditor.Method = Class.Methods.Single(m => m.Method == method);
+            }
         }
 
         // Remove Method
@@ -339,6 +358,15 @@ namespace NetPrintsEditor
         {
             string uniqueName = NetPrintsUtil.GetUniqueName("Variable", Class.Attributes.Select(m => m.Name).ToList());
             undoRedoStack.DoCommand(NetPrintsCommands.AddAttribute, uniqueName);
+        }
+
+        private void OverrideMethodButton_Click(object sender, RoutedEventArgs e)
+        {
+            var methodSpecifier = (sender as FrameworkElement)?.Tag as MethodSpecifier;
+            if (methodSpecifier != null)
+            {
+                undoRedoStack.DoCommand(NetPrintsCommands.OverrideMethod, methodSpecifier);
+            }
         }
         #endregion
 

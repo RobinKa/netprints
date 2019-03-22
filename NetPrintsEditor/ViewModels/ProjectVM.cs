@@ -260,7 +260,7 @@ namespace NetPrintsEditor.ViewModels
 
         private Project project;
 
-        public ReflectionProvider ReflectionProvider { get; private set; }
+        public IReflectionProvider ReflectionProvider { get; private set; }
 
         public ObservableRangeCollection<TypeSpecifier> NonStaticTypes
         {

@@ -19,6 +19,11 @@ namespace NetPrintsEditor.Commands
         public static readonly RoutedUICommand AddMethod = new RoutedUICommand(nameof(AddMethod), nameof(AddMethod), typeof(NetPrintsCommands));
 
         /// <summary>
+        /// Command for adding an override method to a class.
+        /// </summary>
+        public static readonly RoutedUICommand OverrideMethod = new RoutedUICommand(nameof(OverrideMethod), nameof(OverrideMethod), typeof(NetPrintsCommands));
+
+        /// <summary>
         /// Command for removing a method from a class.
         /// </summary>
         public static readonly RoutedUICommand RemoveMethod = new RoutedUICommand(nameof(RemoveMethod), nameof(RemoveMethod), typeof(NetPrintsCommands));
@@ -132,6 +137,7 @@ namespace NetPrintsEditor.Commands
         public static Dictionary<ICommand, MakeUndoCommandDelegate> MakeUndoCommand = new Dictionary<ICommand, MakeUndoCommandDelegate>()
         {
             { AddMethod, (p) => new Tuple<ICommand, object>(RemoveMethod, p) },
+            { OverrideMethod, (p) => new Tuple<ICommand, object>(RemoveMethod, (p as MethodSpecifier)?.Name) },
             { RemoveMethod, (p) => new Tuple<ICommand, object>(AddMethod, p) },
             { AddAttribute, (p) => new Tuple<ICommand, object>(RemoveAttribute, p) },
             { RemoveAttribute, (p) => new Tuple<ICommand, object>(AddAttribute, p) },

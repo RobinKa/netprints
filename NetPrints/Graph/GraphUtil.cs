@@ -252,6 +252,7 @@ namespace NetPrints.Graph
             pin.IncomingPins.Clear();
         }
 
+
         /// <summary>
         /// Adds a data reroute node and does the necessary rewiring.
         /// </summary>
@@ -313,6 +314,116 @@ namespace NetPrints.Graph
             GraphUtil.ConnectTypePins(rerouteNode.OutputTypePins[0], pin);
 
             return rerouteNode;
+        }
+
+        /// <summary>
+        /// Creates a type node for the given type. Also recursively
+        /// creates any type nodes it takes as generic arguments and
+        /// connects them.
+        /// </summary>
+        /// <param name="method">Method to add the type nodes to.</param>
+        /// <param name="type">Specifier for the type the type node should output.</param>
+        /// <returns>Type node outputting the given type.</returns>
+        public static TypeNode CreateNestedTypeNode(Method method, BaseType type, double x, double y)
+        {
+            double offsetX = -300;
+            double offsetY = -100;
+
+            var typeNode = new TypeNode(method, type)
+            {
+                PositionX = x,
+                PositionY = y,
+            };
+
+            // Create nodes for the type's generic arguments and connect
+            // them to it.
+            if (type is TypeSpecifier typeSpecifier)
+            {
+                IEnumerable<TypeNode> genericArgNodes = typeSpecifier.GenericArguments.Select(arg => CreateNestedTypeNode(method, arg, x + offsetX, y + offsetY * (typeSpecifier.GenericArguments.IndexOf(arg) + 1)));
+
+                foreach (TypeNode genericArgNode in genericArgNodes)
+                {
+                    GraphUtil.ConnectTypePins(genericArgNode.OutputTypePins[0], typeNode.InputTypePins[0]);
+                }
+
+                y -= 50;
+            }
+
+            return typeNode;
+        }
+
+        /// <summary>
+        /// Adds an override method for the given method specifier to
+        /// the given class.
+        /// </summary>
+        /// <param name="cls">Class to add the method to.</param>
+        /// <param name="methodSpecifier">Method specifier for the method to override.</param>
+        /// <returns>Method in the class that represents the overriding method.</returns>
+        public static Method AddOverrideMethod(Class cls, MethodSpecifier methodSpecifier)
+        {
+            if (cls.Methods.Any(m => m.Name == methodSpecifier.Name) ||
+                !(methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual) ||
+                methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override) ||
+                methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract)))
+            {
+                return null;
+            }
+
+            // Remove virtual & abstract flag and add override flag
+            MethodModifiers modifiers = methodSpecifier.Modifiers;
+            modifiers &= ~(MethodModifiers.Virtual | MethodModifiers.Abstract);
+            modifiers |= MethodModifiers.Override;
+
+            // Create method
+            Method newMethod = new Method(methodSpecifier.Name)
+            {
+                Class = cls,
+                Modifiers = modifiers
+            };
+
+            // Set position of entry and return node
+            newMethod.EntryNode.PositionX = 500;
+            newMethod.EntryNode.PositionY = 500;
+            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + 1000;
+            newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
+
+            // Connect entry and return node execution pins
+            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
+
+            // Add generic arguments
+            for (var i = 0; i < methodSpecifier.GenericArguments.Count; i++)
+            {
+                newMethod.EntryNode.AddGenericArgument();
+            }
+
+            int offsetX = -300;
+            int offsetY = -100;
+
+            // Add argument pins, their type nodes and connect them
+            for (int i = 0; i < methodSpecifier.Arguments.Count; i++)
+            {
+                BaseType argType = methodSpecifier.Arguments[i].Value;
+                TypeNode argTypeNode = CreateNestedTypeNode(newMethod, argType, newMethod.EntryNode.PositionX + offsetX, newMethod.EntryNode.PositionY + offsetY * (i+1));
+
+                newMethod.EntryNode.AddArgument();
+
+                ConnectTypePins(argTypeNode.OutputTypePins[0], newMethod.EntryNode.InputTypePins[i]);
+            }
+
+            // Add return types, their type nodes and connect them
+            for (int i = 0; i < methodSpecifier.ReturnTypes.Count; i++)
+            {
+                BaseType returnType = methodSpecifier.ReturnTypes[i];
+                TypeNode returnTypeNode = CreateNestedTypeNode(newMethod, returnType, newMethod.MainReturnNode.PositionX + offsetX, newMethod.MainReturnNode.PositionY + offsetY * (i+1));
+
+                newMethod.MainReturnNode.AddReturnType();
+
+                ConnectTypePins(returnTypeNode.OutputTypePins[0], newMethod.MainReturnNode.InputTypePins[i]);
+            }
+
+            cls.Methods.Add(newMethod);
+
+            return newMethod;
         }
     }
 }

@@ -13,6 +13,7 @@
         x:Name="classWindow">
     <Window.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
+        <CommandBinding Command="cmds:NetPrintsCommands.OverrideMethod" CanExecute="CommandOverrideMethod_CanExecute" Executed="CommandOverrideMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddAttribute" CanExecute="CommandAddAttribute_CanExecute" Executed="CommandAddAttribute_Execute"/>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveAttribute" CanExecute="CommandRemoveAttribute_CanExecute" Executed="CommandRemoveAttribute_Execute" />
@@ -68,6 +69,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                         <RowDefinition Height="30"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
@@ -88,6 +90,21 @@
                     </ListView>
 
                     <Button Grid.Row="2" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
+
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="3" x:Name="overrideMethodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{Binding}" />
+                                    <Button BorderThickness="0" Grid.Column="1" Content="+" Tag="{Binding}" Click="OverrideMethodButton_Click" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </Grid>
 
                 <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
