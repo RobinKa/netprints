@@ -123,6 +123,11 @@ namespace NetPrintsEditor.Reflection
                 modifiers |= MethodModifiers.Static;
             }
 
+            if (method.IsOverride)
+            {
+                modifiers |= MethodModifiers.Override;
+            }
+
             // TODO: Protected / Internal
 
             BaseType[] returnTypes = method.ReturnsVoid ?
