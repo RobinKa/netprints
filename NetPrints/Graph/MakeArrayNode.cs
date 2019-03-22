@@ -14,11 +14,25 @@ namespace NetPrints.Graph
         /// <summary>
         /// Specifier for the type of the elements of the array.
         /// </summary>
-        [DataMember]
         public BaseType ElementType
         {
-            get;
-            private set;
+            get => ElementTypePin.InferredType?.Value ?? TypeSpecifier.FromType<object>();
+        }
+
+        /// <summary>
+        /// Input type pin for the element type of the array to create.
+        /// </summary>
+        public NodeInputTypePin ElementTypePin
+        {
+            get => InputTypePins[0];
+        }
+
+        /// <summary>
+        /// Output data pin for the created array.
+        /// </summary>
+        public NodeOutputDataPin ArrayPin
+        {
+            get => OutputDataPins[0];
         }
 
         /// <summary>
@@ -45,12 +59,18 @@ namespace NetPrints.Graph
         /// </summary>
         /// <param name="method">Method the node is part of.</param>
         /// <param name="elementType">Type specifier for the elements of the array.</param>
-        public MakeArrayNode(Method method, BaseType elementType)
+        public MakeArrayNode(Method method)
             : base(method)
         {
-            ElementType = elementType;
-            
-            AddOutputDataPin(elementType.ShortName, ArrayType);
+            AddInputTypePin("ElementType");
+            AddOutputDataPin("Array", ArrayType);
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            ArrayPin.PinType.Value = ArrayType;
         }
 
         /// <summary>

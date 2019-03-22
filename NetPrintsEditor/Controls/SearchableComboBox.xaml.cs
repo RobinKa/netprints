@@ -246,29 +246,15 @@ namespace NetPrintsEditor.Controls
                     }
                     else if (t == TypeSpecifier.FromType<MakeArrayNode>())
                     {
-                        SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
-                        if (selectTypeDialog.ShowDialog() == true)
-                        {
-                            TypeSpecifier selectedType = selectTypeDialog.SelectedType;
+                        // MakeArrayNode(Method method)
 
-                            if (selectedType.Equals(null))
-                            {
-                                throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
-                            }
-
-                            // MakeArrayNode(Method method, TypeSpecifier elementType)
-
-                            UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                            (
-                                typeof(MakeArrayNode),
-                                null,
-                                0,
-                                0,
-
-                                // Parameters
-                                selectedType
-                            ));
-                        }
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(MakeArrayNode),
+                            null,
+                            0,
+                            0
+                        ));
                     }
                     else if (t == TypeSpecifier.FromType<LiteralNode>())
                     {
