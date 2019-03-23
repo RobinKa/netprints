@@ -94,8 +94,8 @@ namespace NetPrintsEditor.Reflection
             memoizedTypeSpecifierIsSubclassOf = memoizedTypeSpecifierIsSubclassOf.Memoize();
         }
 
-        public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier) => 
-            memoizedGetConstructors(typeSpecifier);
+        public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
+            => memoizedGetConstructors(typeSpecifier);
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
             => memoizedGetEnumNames(typeSpecifier);
@@ -116,10 +116,10 @@ namespace NetPrintsEditor.Reflection
             => memoizedGetOverridableMethodsForType(typeSpecifier);
 
         public IEnumerable<MethodSpecifier> GetProtectedMethodsForType(TypeSpecifier typeSpecifier)
-             => memoizedGetProtectedMethodsForType(typeSpecifier);
+            => memoizedGetProtectedMethodsForType(typeSpecifier);
 
         public IEnumerable<MethodSpecifier> GetPublicMethodOverloads(MethodSpecifier methodSpecifier)
-             => memoizedGetPublicMethodOverloads(methodSpecifier);
+            => memoizedGetPublicMethodOverloads(methodSpecifier);
 
         public IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier)
             => memoizedGetPublicMethodsForType(typeSpecifier);
@@ -128,24 +128,24 @@ namespace NetPrintsEditor.Reflection
             => memoizedGetPublicPropertiesForType(typeSpecifier);
 
         public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
-             => memoizedGetPublicStaticFunctionsForType(typeSpecifier);
+            => memoizedGetPublicStaticFunctionsForType(typeSpecifier);
 
         public IEnumerable<PropertySpecifier> GetPublicStaticProperties()
-             => memoizedGetPublicStaticProperties();
+            => memoizedGetPublicStaticProperties();
 
         public IEnumerable<MethodSpecifier> GetStaticFunctions()
-             => memoizedGetStaticFunctions();
+            => memoizedGetStaticFunctions();
 
         public IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier)
-             => memoizedGetStaticFunctionsWithArgumentType(typeSpecifier);
+            => memoizedGetStaticFunctionsWithArgumentType(typeSpecifier);
 
         public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier)
-             => memoizedGetStaticFunctionsWithReturnType(returnTypeSpecifier);
+            => memoizedGetStaticFunctionsWithReturnType(returnTypeSpecifier);
 
         public bool HasImplicitCast(TypeSpecifier fromType, TypeSpecifier toType)
-             => memoizedHasImplicitCast(fromType, toType);
+            => memoizedHasImplicitCast(fromType, toType);
 
         public bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b)
-             => memoizedTypeSpecifierIsSubclassOf(a, b);
+            => memoizedTypeSpecifierIsSubclassOf(a, b);
     }
 }
