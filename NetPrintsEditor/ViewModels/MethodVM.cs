@@ -149,6 +149,7 @@ namespace NetPrintsEditor.ViewModels
             // (Un)assign (old)new pin connection changed events [3]
             node.InputDataPins.ToList().ForEach(p => SetupPinEvents(p, add));
             node.OutputExecPins.ToList().ForEach(p => SetupPinEvents(p, add));
+            node.InputTypePins.ToList().ForEach(p => SetupPinEvents(p, add));
         }
 
         private void SetupPinEvents(NodePinVM pin, bool add)
