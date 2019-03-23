@@ -82,14 +82,15 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="30" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag" MouseDoubleClick="OnMethodDoubleClick" />
+                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold" />
                                     <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveMethodClicked" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
 
-                    <Button Grid.Row="2" Content="Create Method" FontFamily="Lucida Sans Unicode" Click="AddMethodButton_Click" FontSize="16" />
+                    <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
 
                     <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
@@ -114,14 +115,15 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="30" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag" />
+                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag"
+                                            FontSize="14" FontWeight="SemiBold"/>
                                     <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveAttributeClicked" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
 
-                    <Button Grid.Row="2" Content="Create Attribute" FontFamily="Lucida Sans Unicode" Click="AddAttributeButton_Click" FontSize="16" />
+                    <Button Grid.Row="2" Content="Create Attribute" Click="AddAttributeButton_Click" FontSize="16" />
                 </Grid>
             </Grid>
 
