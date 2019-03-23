@@ -38,13 +38,13 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             
-            <Button Content="Create Project" Click="OnCreateProjectClicked" Padding="5" FontSize="14"/>
-            <Button Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="14"/>
-            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="14"/>
+            <Button Content="Create Project" Click="OnCreateProjectClicked" Padding="5" FontSize="20"/>
+            <Button Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="20"/>
+            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="20"/>
         </Grid>
         
         <Grid Grid.Row="1">
-            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" Padding="5" FontSize="14"/>
+            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" Padding="5" FontSize="16"/>
         </Grid>
 
         <Grid Grid.Row="2">
@@ -67,6 +67,7 @@
         </Grid>
 
         <ComboBox Grid.Row="4"
+            FontSize="16"
             IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
             ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
             SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
