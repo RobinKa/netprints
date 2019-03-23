@@ -10,13 +10,22 @@ namespace NetPrintsEditor.Reflection
 {
     public static class ISymbolExtensions
     {
+        private static Dictionary<ITypeSymbol, List<ISymbol>> allMembersCache = new Dictionary<ITypeSymbol, List<ISymbol>>();
+
         /// <summary>
         /// Gets all members of a symbol including inherited ones, but not overriden ones.
         /// </summary>
         public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol symbol)
         {
+            if (allMembersCache.TryGetValue(symbol, out var allMembers))
+            {
+                return allMembers;
+            }
+
             var members = new List<ISymbol>();
             var overridenMethods = new HashSet<IMethodSymbol>();
+
+            var startSymbol = symbol;
 
             while (symbol != null)
             {
@@ -40,6 +49,8 @@ namespace NetPrintsEditor.Reflection
 
                 symbol = symbol.BaseType;
             }
+
+            allMembersCache.Add(startSymbol, members.ToList());
 
             return members;
         }
@@ -326,7 +337,8 @@ namespace NetPrintsEditor.Reflection
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)
                         .ThenBy(m => m.Name)
-                        .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)));
+                        .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)))
+                        .ToList();
         }
 
         public IEnumerable<PropertySpecifier> GetPublicStaticProperties()

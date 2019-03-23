@@ -24,15 +24,15 @@ namespace NetPrintsEditor.Controls
         //public delegate void ItemSelectedHandler(object sender, object item);
         
         public static DependencyProperty ItemsProperty = DependencyProperty.Register(
-            nameof(Items), typeof(IEnumerable), typeof(SearchableComboBox));
+            nameof(Items), typeof(IEnumerable<object>), typeof(SearchableComboBox));
 
         private SuggestionListConverter suggestionConverter;
 
         //public event ItemSelectedHandler OnItemSelected;
 
-        public IEnumerable Items
+        public IEnumerable<object> Items
         {
-            get => GetValue(ItemsProperty) as IEnumerable;
+            get => GetValue(ItemsProperty) as IEnumerable<object>;
             set
             {
                 SetValue(ItemsProperty, value);

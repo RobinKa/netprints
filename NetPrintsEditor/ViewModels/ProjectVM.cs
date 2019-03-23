@@ -416,7 +416,7 @@ namespace NetPrintsEditor.ViewModels
                 assembliesToReflectOn.Add(LastCompiledAssemblyPath);
             }
 
-            ReflectionProvider = new ReflectionProvider(assembliesToReflectOn);
+            ReflectionProvider = new MemoizedReflectionProvider(new ReflectionProvider(assembliesToReflectOn));
 
             NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
         }
