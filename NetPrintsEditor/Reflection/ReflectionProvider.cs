@@ -239,6 +239,9 @@ namespace NetPrintsEditor.Reflection
         {
             ITypeSymbol type = GetTypeFromSpecifier(methodSpecifier.DeclaringType);
 
+            // TODO: Get a better way to determine is a method specifier is an operator.
+            bool isOperator = methodSpecifier.Name.StartsWith("op_");
+
             if (type != null)
             {
                 return type.GetMethods()
@@ -246,7 +249,9 @@ namespace NetPrintsEditor.Reflection
                             m.Name == methodSpecifier.Name &&
                             m.IsPublic() &&
                             m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static) &&
-                            m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
+                            (isOperator ? 
+                                (m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator) :
+                                m.MethodKind == MethodKind.Ordinary))
                         .OrderBy(m => m.ContainingNamespace?.Name)
                         .ThenBy(m => m.ContainingType?.Name)
                         .ThenBy(m => m.Name)
