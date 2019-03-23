@@ -539,6 +539,8 @@ namespace NetPrintsEditor.ViewModels
             {
                 Overloads.Clear();
             }
+
+            OnPropertyChanged(nameof(ShowOverloads));
         }
 
         #region INotifyPropertyChanged
@@ -546,7 +548,10 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            UpdateOverloads();
+            if (propertyName != nameof(ShowOverloads))
+            {
+                UpdateOverloads();
+            }
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
