@@ -450,7 +450,7 @@ namespace NetPrints.Translator
         public void TranslateCallMethodNode(CallMethodNode node)
         {
             // Wrap in try / catch
-            if (!node.IsPure)
+            if (node.HandlesExceptions)
             {
                 builder.AppendLine("try");
                 builder.AppendLine("{");
@@ -551,15 +551,21 @@ namespace NetPrints.Translator
                 }
             }
 
+            // Set the exception to null on success if catch pin is connected
+            if (node.HandlesExceptions)
+            {
+                builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = null;");
+            }
+
+            // Go to the next state
             if (!node.IsPure)
             {
-                // Set the exception to null on success
-                builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = null;");
-
-                // Go to the next state
                 WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
+            }
 
-                // Catch exceptions and execute catch pin
+            // Catch exceptions if catch pin is connected
+            if (node.HandlesExceptions)
+            {
                 string exceptionVarName = TranslatorUtil.GetTemporaryVariableName(random);
                 builder.AppendLine("}");
                 builder.AppendLine($"catch (System.Exception {exceptionVarName})");
@@ -573,13 +579,9 @@ namespace NetPrints.Translator
                     builder.AppendLine($"{returnName} = default({returnValuePin.PinType.Value.FullCodeName});");
                 }
 
-                if (node.CatchPin.OutgoingPin != null)
+                if (!node.IsPure)
                 {
                     WriteGotoOutputPinIfNecessary(node.CatchPin, node.InputExecPins[0]);
-                }
-                else
-                {
-                    WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
                 }
 
                 builder.AppendLine("}");

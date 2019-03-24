@@ -117,6 +117,14 @@ namespace NetPrints.Graph
         {
             get { return OutputExecPins.Single(p => p.Name == "Catch"); }
         }
+        
+        /// <summary>
+        /// Whether this node has exception handling (try/catch).
+        /// </summary>
+        public bool HandlesExceptions
+        {
+            get => !IsPure && OutputExecPins.Any(p => p.Name == "Catch") && CatchPin.OutgoingPin != null;
+        }
 
         /// <summary>
         /// List of node pins, one for each argument the method takes.
@@ -142,7 +150,7 @@ namespace NetPrints.Graph
         /// </summary>
         public IList<NodeOutputDataPin> ReturnValuePins
         {
-            get => (OutputExecPins.Any(p => p.Name == "Catch") ? OutputDataPins.Skip(1) : OutputDataPins).ToList();
+            get => (OutputDataPins.Where(p => p.Name != "Exception")).ToList();
         }
 
         public CallMethodNode(Method method, MethodSpecifier methodSpecifier, 
