@@ -476,7 +476,25 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query)
         {
-            IEnumerable<IPropertySymbol> propertySymbols;
+            // Note: Currently we handle fields and properties in this function
+            //       so there is some extra logic for handling the fields.
+            //       This should be unified or seperated later.
+
+            ITypeSymbol TypeSymbolFromFieldOrProperty(ISymbol symbol)
+            {
+                if (symbol is IFieldSymbol fieldSymbol)
+                {
+                    return fieldSymbol.Type;
+                }
+                else if (symbol is IPropertySymbol propertySymbol)
+                {
+                    return propertySymbol.Type;
+                }
+
+                throw new ArgumentException("symbol not a property nor field symbol.");
+            }
+
+            IEnumerable<ISymbol> propertySymbols;
 
             // Check if type is set (no type => get all methods)
             if (!(query.Type is null))
@@ -484,16 +502,14 @@ namespace NetPrintsEditor.Reflection
                 // Get all properties of the type
                 ITypeSymbol type = GetTypeFromSpecifier(query.Type);
                 propertySymbols = type.GetAllMembers()
-                    .Where(m => m.Kind == SymbolKind.Property)
-                    .Cast<IPropertySymbol>();
+                    .Where(m => m.Kind == SymbolKind.Property || m.Kind == SymbolKind.Field);
             }
             else
             {
                 // Get all properties of all public types
                 propertySymbols = GetValidTypes()
                     .SelectMany(t => t.GetAllMembers()
-                        .Where(m => m.Kind == SymbolKind.Property)
-                        .Cast<IPropertySymbol>());
+                        .Where(m => m.Kind == SymbolKind.Property || m.Kind == SymbolKind.Field));
             }
 
             // Check static
@@ -533,15 +549,15 @@ namespace NetPrintsEditor.Reflection
                 var searchType = GetTypeFromSpecifier(query.PropertyType);
 
                 propertySymbols = propertySymbols.Where(p => query.PropertyTypeDerivesFrom ?
-                    p.Type.IsSubclassOf(searchType) :
-                    searchType.IsSubclassOf(p.Type));
+                    TypeSymbolFromFieldOrProperty(p).IsSubclassOf(searchType) :
+                    searchType.IsSubclassOf(TypeSymbolFromFieldOrProperty(p)));
             }
 
             return propertySymbols
                 .OrderBy(p => p.ContainingNamespace?.Name)
                 .ThenBy(p => p.ContainingType?.Name)
                 .ThenBy(p => p.Name)
-                .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p));
+                .Select(p => p is IPropertySymbol propertySymbol ? ReflectionConverter.PropertySpecifierFromSymbol(propertySymbol) : ReflectionConverter.PropertySpecifierFromField((IFieldSymbol)p));
         }
 
         #endregion
