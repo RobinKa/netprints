@@ -24,7 +24,7 @@ Any contributions are welcome. If you notice bugs or have feature suggestions ju
 ### Unity
 ![](https://raw.githubusercontent.com/RobinKa/NetPrintsUnityTutorial/master/Screenshots/MethodFixedUpdate.png)
 ### CNTK
-![](https://i.imgur.com/J5Eeb5o.png)
+![](https://i.imgur.com/Gg4ZpXz.png)
 ### SFML
 ![](http://i.imgur.com/BXLHSE3.png)
 ### TensorFlowSharp
