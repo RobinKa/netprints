@@ -383,8 +383,16 @@ namespace NetPrintsEditor.ViewModels
                 // Remember old exec pins to reconnect them.
                 // Data pin's are trickier to reconnect (or impossible).
                 // They could be reconnected by heuristics (eg. name, type etc.).
-                NodeOutputExecPin[] oldIncomingPins = Node.InputExecPins[0].IncomingPins.ToArray();
-                NodeInputExecPin oldOutgoingPin = Node.OutputExecPins[0].OutgoingPin;
+
+                NodeOutputExecPin[] oldIncomingPins = null;
+                NodeInputExecPin oldOutgoingPin = null;
+
+                bool oldPurity = Node.IsPure;
+                if (!oldPurity)
+                {
+                    oldIncomingPins = Node.InputExecPins[0].IncomingPins.ToArray();
+                    oldOutgoingPin = Node.OutputExecPins[0].OutgoingPin;
+                }
 
                 // Disconnect the old node from other nodes and remove it
                 GraphUtil.DisconnectNodePins(Node);
@@ -395,14 +403,22 @@ namespace NetPrintsEditor.ViewModels
                 newNode.PositionY = Node.PositionY;
 
                 // Reconnect execution pins
-                if (oldOutgoingPin != null)
+                if (newNode.CanSetPure)
                 {
-                    GraphUtil.ConnectExecPins(newNode.OutputExecPins[0], oldOutgoingPin);
-                }
+                    newNode.IsPure = oldPurity;
 
-                foreach (NodeOutputExecPin oldIncomingPin in oldIncomingPins)
-                {
-                    GraphUtil.ConnectExecPins(oldIncomingPin, newNode.InputExecPins[0]);
+                    if (!newNode.IsPure)
+                    {
+                        if (oldOutgoingPin != null)
+                        {
+                            GraphUtil.ConnectExecPins(newNode.OutputExecPins[0], oldOutgoingPin);
+                        }
+
+                        foreach (NodeOutputExecPin oldIncomingPin in oldIncomingPins)
+                        {
+                            GraphUtil.ConnectExecPins(oldIncomingPin, newNode.InputExecPins[0]);
+                        }
+                    }
                 }
 
                 // Set the node of this view model which will trigger an update
