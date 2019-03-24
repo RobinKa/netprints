@@ -432,9 +432,9 @@ namespace NetPrints.Graph
             int offsetY = -112;
 
             // Add argument pins, their type nodes and connect them
-            for (int i = 0; i < methodSpecifier.Arguments.Count; i++)
+            for (int i = 0; i < methodSpecifier.Parameters.Count; i++)
             {
-                BaseType argType = methodSpecifier.Arguments[i].Value;
+                BaseType argType = methodSpecifier.Parameters[i].Value;
                 TypeNode argTypeNode = CreateNestedTypeNode(newMethod, argType, newMethod.EntryNode.PositionX + offsetX, newMethod.EntryNode.PositionY + offsetY * (i+1));
 
                 newMethod.EntryNode.AddArgument();

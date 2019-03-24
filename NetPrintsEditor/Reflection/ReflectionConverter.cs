@@ -100,6 +100,19 @@ namespace NetPrintsEditor.Reflection
             return new Named<BaseType>(paramSymbol.Name, BaseTypeSpecifierFromSymbol(paramSymbol.Type));
         }
 
+        private static readonly Dictionary<RefKind, MethodParameterPassType> refKindToPassType = new Dictionary<RefKind, MethodParameterPassType>()
+        {
+            [RefKind.None] = MethodParameterPassType.Default,
+            [RefKind.Ref] = MethodParameterPassType.Reference,
+            [RefKind.Out] = MethodParameterPassType.Out,
+            [RefKind.In] = MethodParameterPassType.In,
+        };
+
+        public static MethodParameter MethodParameterFromSymbol(in IParameterSymbol paramSymbol)
+        {
+            return new MethodParameter(paramSymbol.Name, BaseTypeSpecifierFromSymbol(paramSymbol.Type), refKindToPassType[paramSymbol.RefKind]);
+        }
+
         public static MethodSpecifier MethodSpecifierFromSymbol(IMethodSymbol method)
         {
             MemberVisibility visibility = roslynToNetprintsVisibility[method.DeclaredAccessibility];
@@ -137,15 +150,15 @@ namespace NetPrintsEditor.Reflection
                 new BaseType[] { } :
                 new BaseType[] { BaseTypeSpecifierFromSymbol(method.ReturnType) };
 
-            Named<BaseType>[] parameterTypes = method.Parameters.Select(
-                p => NamedBaseTypeSpecifierFromSymbol(p)).ToArray();
+            MethodParameter[] parameters = method.Parameters.Select(
+                p => MethodParameterFromSymbol(p)).ToArray();
 
             BaseType[] genericArgs = method.TypeParameters.Select(
                 p => BaseTypeSpecifierFromSymbol(p)).ToArray();
 
             return new MethodSpecifier(
                 method.Name,
-                parameterTypes,
+                parameters,
                 returnTypes,
                 modifiers,
                 visibility,

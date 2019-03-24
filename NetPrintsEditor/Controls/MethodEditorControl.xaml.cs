@@ -319,7 +319,7 @@ namespace NetPrintsEditor.Controls
                 // TODO: Get this from method directly somehow
                 // TODO: Get named type specifiers from method
                 MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name, 
-                    method.ArgumentTypes.Select(t => new Named<BaseType>("TODO", t)), 
+                    method.ArgumentTypes.Select(t => new MethodParameter("TODO", t, MethodParameterPassType.Default)), 
                     method.ReturnTypes.Cast<TypeSpecifier>(),
                     method.Modifiers, method.Visibility,
                     method.Class.Type, Array.Empty<BaseType>());

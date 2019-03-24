@@ -537,8 +537,31 @@ namespace NetPrints.Translator
                     }
                 }
 
+                // Prefix with "out" / "ref" / "in"
+                string[] argNameArray = argumentNames.ToArray();
+                Debug.Assert(argNameArray.Length == node.MethodSpecifier.Parameters.Count);
+
+                for (int i = 0; i < node.MethodSpecifier.Parameters.Count; i++)
+                {
+                    MethodParameterPassType passType = node.MethodSpecifier.Parameters[i].PassType;
+                    switch (passType)
+                    {
+                        case MethodParameterPassType.Out:
+                            argNameArray[i] = "out " + argNameArray[i];
+                            break;
+                        case MethodParameterPassType.Reference:
+                            argNameArray[i] = "ref " + argNameArray[i];
+                            break;
+                        case MethodParameterPassType.In:
+                            argNameArray[i] = "in " + argNameArray[i];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 // Write the method call
-                builder.AppendLine($"{node.BoundMethodName}({string.Join(", ", argumentNames)});");
+                builder.AppendLine($"{node.BoundMethodName}({string.Join(", ", argNameArray)});");
             }
 
             // Assign the real variables from the temporary tuple

@@ -40,7 +40,11 @@ namespace NetPrints.Tests
             }
 
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
-                new Named<BaseType>[] { new Named<BaseType>("arg1", TypeSpecifier.FromType<int>()), new Named<BaseType>("arg2", TypeSpecifier.FromType<string>()) },
+                new MethodParameter[]
+                {
+                    new MethodParameter("arg1", TypeSpecifier.FromType<int>(), MethodParameterPassType.Default),
+                    new MethodParameter("arg2", TypeSpecifier.FromType<string>(), MethodParameterPassType.Default)
+                },
                 new BaseType[] { TypeSpecifier.FromType<float>() },
                 MethodModifiers.Static, MemberVisibility.Public,
                 TypeSpecifier.FromType<double>(), Array.Empty<BaseType>());

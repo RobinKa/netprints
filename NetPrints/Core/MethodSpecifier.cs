@@ -9,6 +9,31 @@ using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
+    public enum MethodParameterPassType
+    {
+        Default,
+        Reference,
+        Out,
+        In
+    }
+
+    [DataContract]
+    public class MethodParameter : Named<BaseType>
+    {
+        [DataMember]
+        public MethodParameterPassType PassType
+        {
+            get;
+            private set;
+        }
+
+        public MethodParameter(string name, BaseType type, MethodParameterPassType passType)
+            : base(name, type)
+        {
+            PassType = passType;
+        }
+    }
+
     /// <summary>
     /// Specifier describing a method.
     /// </summary>
@@ -40,10 +65,21 @@ namespace NetPrints.Core
         /// Named specifiers for the types this method takes as arguments.
         /// </summary>
         [DataMember]
-        public IList<Named<BaseType>> Arguments
+        public IList<MethodParameter> Parameters
         {
             get;
             private set;
+        }
+
+        [DataMember]
+        [Obsolete("Use Parameters instead.")]
+        public IList<Named<BaseType>> Arguments
+        {
+            get => Parameters.Cast<Named<BaseType>>().ToList();
+            private set
+            {
+                Parameters = value.Select(arg => new MethodParameter(arg.Name, arg.Value, MethodParameterPassType.Default)).ToList();
+            }
         }
 
         /// <summary>
@@ -51,7 +87,7 @@ namespace NetPrints.Core
         /// </summary>
         public IReadOnlyList<BaseType> ArgumentTypes
         {
-            get => Arguments.Select(t => (BaseType)t).ToArray();
+            get => Parameters.Select(t => (BaseType)t).ToArray();
         }
 
         /// <summary>
@@ -103,13 +139,13 @@ namespace NetPrints.Core
         /// <param name="modifiers">Modifiers of the method.</param>
         /// <param name="declaringType">Specifier for the type this method is contained in.</param>
         /// <param name="genericArguments">Generic arguments this method takes.</param>
-        public MethodSpecifier(string name, IEnumerable<Named<BaseType>> arguments,
+        public MethodSpecifier(string name, IEnumerable<MethodParameter> arguments,
             IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, MemberVisibility visibility, TypeSpecifier declaringType,
             IList<BaseType> genericArguments)
         {
             Name = name;
             DeclaringType = declaringType;
-            Arguments = arguments.ToList();
+            Parameters = arguments.ToList();
             ReturnTypes = returnTypes.ToList();
             Modifiers = modifiers;
             Visibility = visibility;
@@ -127,7 +163,7 @@ namespace NetPrints.Core
 
             methodString += Name;
 
-            string argTypeString = string.Join(", ", Arguments.Select(a => a.Value.ShortName));
+            string argTypeString = string.Join(", ", Parameters.Select(a => a.Value.ShortName));
 
             methodString += $"({argTypeString})";
 

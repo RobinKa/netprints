@@ -172,7 +172,7 @@ namespace NetPrints.Graph
 
             AddExceptionPins();
 
-            foreach (Named<BaseType> argument in MethodSpecifier.Arguments)
+            foreach (Named<BaseType> argument in MethodSpecifier.Parameters)
             {
                 AddInputDataPin(argument.Name, argument.Value);
             }
@@ -219,9 +219,9 @@ namespace NetPrints.Graph
 
         private void UpdateTypes()
         {
-            for (int i = 0; i < MethodSpecifier.Arguments.Count; i++)
+            for (int i = 0; i < MethodSpecifier.Parameters.Count; i++)
             {
-                BaseType type = MethodSpecifier.Arguments[i];
+                BaseType type = MethodSpecifier.Parameters[i];
 
                 // Construct type with generic arguments replaced by our input type pins
                 BaseType constructedType = GenericsHelper.ConstructWithTypePins(type, InputTypePins);

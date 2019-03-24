@@ -37,7 +37,7 @@ namespace NetPrints.Graph
                 {
                     if (inputTypePin.InferredType?.Value is BaseType replacementType && !(replacementType is null))
                     {
-                        GenericType typeToReplace = (GenericType)typeSpecifier.GenericArguments.SingleOrDefault(arg => arg.Name == inputTypePin.Name);
+                        GenericType typeToReplace = typeSpecifier.GenericArguments.SingleOrDefault(arg => arg.Name == inputTypePin.Name) as GenericType;
 
                         // If we can not replace all 
                         if (!(typeToReplace is null))
@@ -59,7 +59,7 @@ namespace NetPrints.Graph
             }
             else if (type is GenericType genericType)
             {
-                BaseType replacementType = inputTypePins.SingleOrDefault(t => t.Name == type.Name).InferredType?.Value;
+                BaseType replacementType = inputTypePins.SingleOrDefault(t => t.Name == type.Name)?.InferredType?.Value;
                 if (replacementType != null)
                 {
                     return replacementType;

@@ -12,6 +12,7 @@ namespace NetPrints.Core
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>
     [DataContract]
+    [KnownType(typeof(MethodParameter))]
     public class Named<T>
     {
         [DataMember]
