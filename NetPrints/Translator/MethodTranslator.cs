@@ -553,7 +553,8 @@ namespace NetPrints.Translator
                             argNameArray[i] = "ref " + argNameArray[i];
                             break;
                         case MethodParameterPassType.In:
-                            argNameArray[i] = "in " + argNameArray[i];
+                            // Don't pass with in as it could break implicit casts.
+                            // argNameArray[i] = "in " + argNameArray[i];
                             break;
                         default:
                             break;
