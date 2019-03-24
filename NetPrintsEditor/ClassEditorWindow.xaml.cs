@@ -232,7 +232,7 @@ namespace NetPrintsEditor
             if (p.Method == null)
             {
                 p.Method = methodEditor.Method.Method;
-                Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow);
+                Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow.drawCanvas);
                 p.PositionX = mouseLoc.X - mouseLoc.X % MethodEditorControl.GridCellSize;
                 p.PositionY = mouseLoc.Y - mouseLoc.Y % MethodEditorControl.GridCellSize;
             }
