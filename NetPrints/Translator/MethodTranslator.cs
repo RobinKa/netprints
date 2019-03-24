@@ -711,7 +711,11 @@ namespace NetPrints.Translator
 
             if (node.InputDataPins.Count == 0)
             {
-                builder.AppendLine("return;");
+                // Only write return if the return node is not the last node
+                if (GetExecPinStateId(node.InputExecPins[0]) != nodeStateIds.Count - 1)
+                {
+                    builder.AppendLine("return;");
+                }
             }
             else if(node.InputDataPins.Count == 1)
             {
