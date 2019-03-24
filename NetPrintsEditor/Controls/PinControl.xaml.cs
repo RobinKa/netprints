@@ -140,5 +140,15 @@ namespace NetPrintsEditor.Controls
         {
             e.Handled = true;
         }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Disconnect the pin on middle click
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                Pin.DisconnectAll();
+                e.Handled = true;
+            }
+        }
     }
 }

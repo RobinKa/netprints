@@ -204,6 +204,38 @@ namespace NetPrints.Graph
             }
         }
 
+        public static void DisconnectPin(NodePin nodePin)
+        {
+            if (nodePin is NodeInputDataPin idp)
+            {
+                DisconnectInputDataPin(idp);
+            }
+            else if (nodePin is NodeOutputDataPin odp)
+            {
+                DisconnectOutputDataPin(odp);
+            }
+            else if (nodePin is NodeInputExecPin ixp)
+            {
+                DisconnectInputExecPin(ixp);
+            }
+            else if (nodePin is NodeOutputExecPin oxp)
+            {
+                DisconnectOutputExecPin(oxp);
+            }
+            else if (nodePin is NodeInputTypePin itp)
+            {
+                DisconnectInputTypePin(itp);
+            }
+            else if (nodePin is NodeOutputTypePin otp)
+            {
+                DisconnectOutputTypePin(otp);
+            }
+            else
+            {
+                throw new NotImplementedException("Unknown pin type to disconnect.");
+            }
+        }
+
         public static void DisconnectInputDataPin(NodeInputDataPin pin)
         {
             pin.IncomingPin?.OutgoingPins.Remove(pin);

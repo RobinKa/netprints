@@ -158,6 +158,14 @@ namespace NetPrintsEditor.ViewModels
             get => Node is RerouteNode;
         }
 
+        /// <summary>
+        /// Disconnects the pin from all of its connections.
+        /// </summary>
+        public void DisconnectAll()
+        {
+            GraphUtil.DisconnectPin(pin);
+        }
+
         public object UnconnectedValue
         {
             get

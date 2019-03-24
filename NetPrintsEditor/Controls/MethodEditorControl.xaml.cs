@@ -548,9 +548,13 @@ namespace NetPrintsEditor.Controls
                 throw new Exception("Could not find cable's pin.");
             }
 
-            if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed &&e.ClickCount == 2)
+            if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
                 pin.AddRerouteNode();
+            }
+            else if (e.ChangedButton == MouseButton.Middle)
+            {
+                pin.DisconnectAll();
             }
         }
     }
