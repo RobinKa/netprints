@@ -48,7 +48,7 @@ namespace NetPrints.Graph
                 }
                 else
                 {
-                    throw new NotImplementedException("Can only have arrays of TypeSpecifier ElementType.");
+                    return new TypeSpecifier($"{ElementType.Name}[]");
                 }
                 
             }
