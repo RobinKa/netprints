@@ -66,11 +66,15 @@ namespace NetPrints.Graph
             AddOutputDataPin("Array", ArrayType);
         }
 
+        private void UpdateOutputType()
+        {
+            ArrayPin.PinType.Value = ArrayType;
+        }
+
         protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
         {
             base.OnInputTypeChanged(sender, eventArgs);
-
-            ArrayPin.PinType.Value = ArrayType;
+            UpdateOutputType();
         }
 
         /// <summary>

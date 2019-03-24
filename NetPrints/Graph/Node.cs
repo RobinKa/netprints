@@ -273,5 +273,14 @@ namespace NetPrints.Graph
                 inputTypePin.IncomingPinChanged += OnIncomingTypePinChanged;
             }
         }
+
+        /// <summary>
+        /// Called when the containing method was deserialized.
+        /// </summary>
+        public virtual void OnMethodDeserialized()
+        {
+            // Call OnInputTypeChanged to update the types of all nodes correctly.
+            OnInputTypeChanged(this, null);
+        }
     }
 }

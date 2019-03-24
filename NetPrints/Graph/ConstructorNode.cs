@@ -76,7 +76,6 @@ namespace NetPrints.Graph
         protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
         {
             base.OnInputTypeChanged(sender, eventArgs);
-
             UpdateTypes();
         }
 

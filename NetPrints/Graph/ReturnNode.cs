@@ -142,11 +142,6 @@ namespace NetPrints.Graph
             }
         }
 
-        public void OnMethodDeserialized(StreamingContext context)
-        {
-            SetupSecondaryNodeEvents();
-        }
-
         public override string ToString()
         {
             return "Return";

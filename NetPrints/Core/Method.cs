@@ -147,9 +147,9 @@ namespace NetPrints.Core
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            foreach (ReturnNode returnNode in ReturnNodes)
+            foreach (var node in Nodes)
             {
-                returnNode.OnMethodDeserialized(context);
+                node.OnMethodDeserialized();
             }
         }
     }

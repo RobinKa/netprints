@@ -68,10 +68,18 @@ namespace NetPrints.Graph
             return node;
         }
 
+        private void UpdateOutputType()
+        {
+            if (OutputTypePins.Count > 0)
+            {
+                OutputTypePins[0].InferredType.Value = InputTypePins[0].InferredType?.Value;
+            }
+        }
+
         protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
         {
             base.OnInputTypeChanged(sender, eventArgs);
-            OutputTypePins[0].InferredType.Value = InputTypePins[0].InferredType?.Value;
+            UpdateOutputType();
         }
 
         public override string ToString()
