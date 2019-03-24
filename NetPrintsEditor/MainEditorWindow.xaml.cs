@@ -214,7 +214,7 @@ namespace NetPrintsEditor
                 Project = oldProject;
             }
 
-            if (Project != null)
+            if (Project != null && Project.Project != null)
             {
                 Project.Name = Path.GetFileNameWithoutExtension(Project.Path);
             }
