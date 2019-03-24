@@ -15,6 +15,7 @@ namespace NetPrintsEditor.Reflection
         public MemberVisibility? Visibility { get; set; }
         public TypeSpecifier ReturnType { get; set; }
         public TypeSpecifier ArgumentType { get; set; }
+        public bool? HasGenericArguments { get; set; }
 
         public ReflectionProviderMethodQuery WithType(TypeSpecifier type)
         {
@@ -43,6 +44,12 @@ namespace NetPrintsEditor.Reflection
         public ReflectionProviderMethodQuery WithArgumentType(TypeSpecifier argumentType)
         {
             ArgumentType = argumentType;
+            return this;
+        }
+
+        public ReflectionProviderMethodQuery WithHasGenericArguments(bool hasGenericArguments)
+        {
+            HasGenericArguments = hasGenericArguments;
             return this;
         }
     }

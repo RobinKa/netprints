@@ -260,20 +260,31 @@ namespace NetPrintsEditor.Controls
                 }
                 else if (pin.Pin is NodeOutputTypePin otp)
                 {
-                    // TODO: Show methods and types that have type-input
-                    IEnumerable<object> suggestions = new object[] { TypeSpecifier.FromType<TypeNode>() };
+                    IEnumerable<object> suggestions = new object[0];
 
                     if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
                     {
                         suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
                             .GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithType(typeSpecifier)
-                                .WithStatic(true)
-                                .WithVisibility(MemberVisibility.Public)));
+                                new ReflectionProviderMethodQuery()
+                                    .WithType(typeSpecifier)
+                                    .WithStatic(true)
+                                    .WithVisibility(MemberVisibility.Public)));
                     }
 
-                    Suggestions = suggestions;
+                    // Types with type parameters
+                    suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
+                        .Where(t => t.GenericArguments.Any()));
+
+                    // Public static methods that have type parameters
+                    suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
+                        .GetMethods(
+                            new ReflectionProviderMethodQuery()
+                                .WithStatic(true)
+                                .WithHasGenericArguments(true)
+                                .WithVisibility(MemberVisibility.Public)));
+
+                    Suggestions = suggestions.Distinct();
                 }
                 else
                 {

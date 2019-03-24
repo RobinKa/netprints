@@ -410,6 +410,14 @@ namespace NetPrintsEditor.Reflection
                 methodSymbols = methodSymbols.Where(m => m.IsStatic == query.Static.Value);
             }
 
+            // Check has generic arguments
+            if (query.HasGenericArguments.HasValue)
+            {
+                methodSymbols = methodSymbols.Where(m => query.HasGenericArguments.Value ?
+                    m.TypeParameters.Any() :
+                    !m.TypeParameters.Any());
+            }
+
             // Check visibility
             if (query.Visibility.HasValue)
             {
