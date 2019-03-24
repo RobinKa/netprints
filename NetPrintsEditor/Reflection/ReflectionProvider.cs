@@ -10,7 +10,7 @@ namespace NetPrintsEditor.Reflection
 {
     public static class ISymbolExtensions
     {
-        private static Dictionary<ITypeSymbol, List<ISymbol>> allMembersCache = new Dictionary<ITypeSymbol, List<ISymbol>>();
+        private static readonly Dictionary<ITypeSymbol, List<ISymbol>> allMembersCache = new Dictionary<ITypeSymbol, List<ISymbol>>();
 
         /// <summary>
         /// Gets all members of a symbol including inherited ones, but not overriden ones.
@@ -251,7 +251,7 @@ namespace NetPrintsEditor.Reflection
             return (T)GetTypeFromSpecifier(specifier);
         }
 
-        private Dictionary<TypeSpecifier, ITypeSymbol> cachedTypeSpecifierSymbols = new Dictionary<TypeSpecifier, ITypeSymbol>();
+        private readonly Dictionary<TypeSpecifier, ITypeSymbol> cachedTypeSpecifierSymbols = new Dictionary<TypeSpecifier, ITypeSymbol>();
 
         private ITypeSymbol GetTypeFromSpecifier(TypeSpecifier specifier)
         {

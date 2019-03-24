@@ -27,7 +27,7 @@ namespace NetPrints.Core
         /// <summary>
         /// Specifiers for the arguments this constructor takes.
         /// </summary>
-        public IList<TypeSpecifier> Arguments
+        public IList<Named<BaseType>> Arguments
         {
             get;
         }
@@ -37,7 +37,7 @@ namespace NetPrints.Core
         /// </summary>
         /// <param name="arguments">Specifiers for the arguments the constructor takes.</param>
         /// <param name="declaringType">Specifier for the type the constructor is for.</param>
-        public ConstructorSpecifier(IEnumerable<TypeSpecifier> arguments, TypeSpecifier declaringType)
+        public ConstructorSpecifier(IEnumerable<Named<BaseType>> arguments, TypeSpecifier declaringType)
         {
             DeclaringType = declaringType;
             Arguments = arguments.ToList();

@@ -11,7 +11,7 @@ namespace NetPrintsEditor.Reflection
     /// </summary>
     public static class ReflectionConverter
     {
-        private readonly static Dictionary<Microsoft.CodeAnalysis.Accessibility, MemberVisibility> roslynToNetprintsVisibility = new Dictionary<Microsoft.CodeAnalysis.Accessibility, MemberVisibility>()
+        private static readonly Dictionary<Microsoft.CodeAnalysis.Accessibility, MemberVisibility> roslynToNetprintsVisibility = new Dictionary<Microsoft.CodeAnalysis.Accessibility, MemberVisibility>()
         {
             [Microsoft.CodeAnalysis.Accessibility.Private] = MemberVisibility.Private,
             [Microsoft.CodeAnalysis.Accessibility.Protected] = MemberVisibility.Protected,
@@ -25,6 +25,7 @@ namespace NetPrintsEditor.Reflection
 
             if (type is IArrayTypeSymbol arrayType)
             {
+                // TODO: Get more interesting type?
                 typeName = typeof(Array).FullName;
             }
             else
@@ -71,8 +72,6 @@ namespace NetPrintsEditor.Reflection
                 }
             }
             
-            
-
             return typeSpecifier;
         }
 
@@ -185,7 +184,7 @@ namespace NetPrintsEditor.Reflection
         public static ConstructorSpecifier ConstructorSpecifierFromSymbol(IMethodSymbol constructorMethodSymbol)
         {
             return new ConstructorSpecifier(
-                constructorMethodSymbol.Parameters.Select(p => TypeSpecifierFromSymbol(p.Type)),
+                constructorMethodSymbol.Parameters.Select(p => NamedBaseTypeSpecifierFromSymbol(p)),
                 TypeSpecifierFromSymbol(constructorMethodSymbol.ContainingType));
         }
     }
