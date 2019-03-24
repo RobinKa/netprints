@@ -360,8 +360,8 @@ namespace NetPrints.Graph
         /// <returns>Type node outputting the given type.</returns>
         public static TypeNode CreateNestedTypeNode(Method method, BaseType type, double x, double y)
         {
-            double offsetX = -300;
-            double offsetY = -100;
+            double offsetX = -308;
+            double offsetY = -112;
 
             var typeNode = new TypeNode(method, type)
             {
@@ -414,9 +414,9 @@ namespace NetPrints.Graph
             };
 
             // Set position of entry and return node
-            newMethod.EntryNode.PositionX = 500;
-            newMethod.EntryNode.PositionY = 500;
-            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + 1000;
+            newMethod.EntryNode.PositionX = 560;
+            newMethod.EntryNode.PositionY = 504;
+            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + 672;
             newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
 
             // Connect entry and return node execution pins
@@ -428,8 +428,8 @@ namespace NetPrints.Graph
                 newMethod.EntryNode.AddGenericArgument();
             }
 
-            int offsetX = -300;
-            int offsetY = -100;
+            int offsetX = -308;
+            int offsetY = -112;
 
             // Add argument pins, their type nodes and connect them
             for (int i = 0; i < methodSpecifier.Arguments.Count; i++)

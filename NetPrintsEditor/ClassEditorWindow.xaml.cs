@@ -97,9 +97,9 @@ namespace NetPrintsEditor
                 Class = Class.Class,
             };
 
-            newMethod.EntryNode.PositionX = 100;
-            newMethod.EntryNode.PositionY = 100;
-            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + 400;
+            newMethod.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
+            newMethod.EntryNode.PositionY = MethodEditorControl.GridCellSize * 4;
+            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + MethodEditorControl.GridCellSize * 15;
             newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
             GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
 
@@ -233,8 +233,8 @@ namespace NetPrintsEditor
             {
                 p.Method = methodEditor.Method.Method;
                 Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow);
-                p.PositionX = mouseLoc.X;
-                p.PositionY = mouseLoc.Y;
+                p.PositionX = mouseLoc.X - mouseLoc.X % MethodEditorControl.GridCellSize;
+                p.PositionY = mouseLoc.Y - mouseLoc.Y % MethodEditorControl.GridCellSize;
             }
 
             // Make sure the node will on the canvas
