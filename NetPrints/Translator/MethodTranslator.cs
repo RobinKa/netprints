@@ -449,18 +449,18 @@ namespace NetPrints.Translator
         
         public void TranslateCallMethodNode(CallMethodNode node)
         {
-            // Wrap in try/catch if we have a catch handler
-            if (node.CatchPin.OutgoingPin != null)
-            {
-                builder.AppendLine("try");
-                builder.AppendLine("{");
-            }
+            // Wrap in try / catch
+            builder.AppendLine("try");
+            builder.AppendLine("{");
 
             string temporaryReturnName = null;
 
-            // Translate all the pure nodes this node depends on in
-            // the correct order
-            TranslateDependentPureNodes(node);
+            if (!node.IsPure)
+            {
+                // Translate all the pure nodes this node depends on in
+                // the correct order
+                TranslateDependentPureNodes(node);
+            }
 
             // Write assignment of return values
             if (node.ReturnValuePins.Count == 1)
@@ -548,27 +548,52 @@ namespace NetPrints.Translator
                 }
             }
 
-            // Go to the next state
-            WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
+            // Set the exception to null on success
+            builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = null;");
 
-            // Catch exceptions and execute catch pin
-            if (node.CatchPin.OutgoingPin != null)
+            // Go to the next state
+            if (!node.IsPure)
             {
-                string exceptionVarName = TranslatorUtil.GetTemporaryVariableName(random);
-                builder.AppendLine("}");
-                builder.AppendLine($"catch (System.Exception {exceptionVarName})");
-                builder.AppendLine("{");
-                builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = {exceptionVarName};");
-                WriteGotoOutputPinIfNecessary(node.CatchPin, node.InputExecPins[0]);
-                builder.AppendLine("}");
+                WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
             }
+
+            // Catch exceptions and execute catch pin (or exec pin if it is not set)
+            string exceptionVarName = TranslatorUtil.GetTemporaryVariableName(random);
+            builder.AppendLine("}");
+            builder.AppendLine($"catch (System.Exception {exceptionVarName})");
+            builder.AppendLine("{");
+            builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = {exceptionVarName};");
+
+            // Set all return values to default on exception
+            foreach (var returnValuePin in node.ReturnValuePins)
+            {
+                string returnName = GetOrCreatePinName(returnValuePin);
+                builder.AppendLine($"{returnName} = default({returnValuePin.PinType.Value.FullCodeName});");
+            }
+
+            if (!node.IsPure)
+            {
+                if (node.CatchPin.OutgoingPin != null)
+                {
+                    WriteGotoOutputPinIfNecessary(node.CatchPin, node.InputExecPins[0]);
+                }
+                else
+                {
+                    WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
+                }
+            }
+
+            builder.AppendLine("}");
         }
 
         public void TranslateConstructorNode(ConstructorNode node)
         {
-            // Translate all the pure nodes this node depends on in
-            // the correct order
-            TranslateDependentPureNodes(node);
+            if (!node.IsPure)
+            {
+                // Translate all the pure nodes this node depends on in
+                // the correct order
+                TranslateDependentPureNodes(node);
+            }
 
             // Write assignment and constructor
             string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
@@ -578,36 +603,51 @@ namespace NetPrints.Translator
             var argumentNames = GetPinIncomingValues(node.ArgumentPins);
             builder.AppendLine($"({string.Join(", ", argumentNames)});");
 
-            // Go to the next state
-            WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
+            if (!node.IsPure)
+            {
+                // Go to the next state
+                WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
+            }
         }
 
         public void TranslateExplicitCastNode(ExplicitCastNode node)
         {
-            // Translate all the pure nodes this node depends on in
-            // the correct order
-            TranslateDependentPureNodes(node);
+            if (!node.IsPure)
+            {
+                // Translate all the pure nodes this node depends on in
+                // the correct order
+                TranslateDependentPureNodes(node);
+            }
 
             // Try to cast the incoming object and go to next states.
             // If no pin is connected fail by default.
             if (node.ObjectToCast.IncomingPin != null)
             {
                 string pinToCastName = GetPinIncomingValue(node.ObjectToCast);
-                builder.AppendLine($"if ({pinToCastName} is {node.CastType.FullCodeNameUnbound})");
-                builder.AppendLine("{");
-                builder.AppendLine($"{GetOrCreatePinName(node.CastPin)} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
-                WriteGotoOutputPinIfNecessary(node.CastSuccessPin, node.InputExecPins[0]);
-                builder.AppendLine("}");
-                builder.AppendLine("else");
+                string outputName = GetOrCreatePinName(node.CastPin);
+
+                builder.AppendLine($"{outputName} = {pinToCastName} as {node.CastType.FullCodeNameUnbound};");
+
+                if (!node.IsPure)
+                {
+                    builder.AppendLine($"if (!({outputName} is null))");
+                    builder.AppendLine("{");
+                    WriteGotoOutputPinIfNecessary(node.CastSuccessPin, node.InputExecPins[0]);
+                    builder.AppendLine("}");
+                    builder.AppendLine("else");
+                }
             }
 
-            if (node.CastFailedPin.OutgoingPin != null)
+            if (!node.IsPure)
             {
-                WriteGotoOutputPinIfNecessary(node.CastFailedPin, node.InputExecPins[0]);
-            }
-            else
-            {
-                builder.AppendLine("return;");
+                if (node.CastFailedPin.OutgoingPin != null)
+                {
+                    WriteGotoOutputPinIfNecessary(node.CastFailedPin, node.InputExecPins[0]);
+                }
+                else
+                {
+                    builder.AppendLine("return;");
+                }
             }
         }
 

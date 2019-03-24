@@ -59,7 +59,7 @@ namespace NetPrintsEditor.ViewModels
                     // TODO: Don't hardcode this / let execution pins have proper tooltips
                     if (Pin.Name == "Catch")
                     {
-                        toolTip += Environment.NewLine + Environment.NewLine + "Executed when an exception is thrown on this node. The Exception output data pin will be set to the caught exception. If unconnected the exception will get thrown.";
+                        toolTip += Environment.NewLine + Environment.NewLine + "Executed when an exception is thrown on this node. The Exception output data pin will be set to the caught exception.";
                     }
                 }
                 else

@@ -12,6 +12,11 @@ namespace NetPrints.Graph
     [DataContract]
     public class CallMethodNode : ExecNode
     {
+        public override bool CanSetPure
+        {
+            get => true;
+        }
+
         /// <summary>
         /// Specifier for the method to call.
         /// </summary>
@@ -158,7 +163,7 @@ namespace NetPrints.Graph
             }
 
             AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
-            AddOutputExecPin("Catch");
+            AddExecPins();
 
             foreach (Named<BaseType> argument in MethodSpecifier.Arguments)
             {
@@ -172,6 +177,28 @@ namespace NetPrints.Graph
 
             // TODO: Set the correct types to begin with.
             UpdateTypes();
+        }
+
+        private void AddExecPins()
+        {
+            AddOutputExecPin("Catch");
+        }
+
+        protected override void SetPurity(bool pure)
+        {
+            base.SetPurity(pure);
+
+            if (pure)
+            {
+                var catchPin = OutputExecPins.Single(p => p.Name == "Catch");
+
+                GraphUtil.DisconnectOutputExecPin(catchPin);
+                OutputExecPins.Remove(catchPin);
+            }
+            else
+            {
+                AddExecPins();
+            }
         }
 
         protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)

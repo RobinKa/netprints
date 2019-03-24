@@ -1,5 +1,6 @@
 ﻿using NetPrints.Core;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -125,6 +126,30 @@ namespace NetPrints.Graph
             {
                 return InputExecPins.Count == 0 && OutputExecPins.Count == 0;
             }
+            set
+            {
+                if (!CanSetPure)
+                {
+                    throw new InvalidOperationException("Can't set purity of this node.");
+                }
+
+                if (IsPure != value)
+                {
+                    SetPurity(value);
+                }
+
+                Debug.Assert(value == IsPure, "Purity could not be set correctly.");
+            }
+        }
+
+        public virtual bool CanSetPure
+        {
+            get => false;
+        }
+
+        protected virtual void SetPurity(bool pure)
+        {
+
         }
 
         /// <summary>

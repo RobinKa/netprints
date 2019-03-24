@@ -11,7 +11,12 @@ namespace NetPrints.Graph
     /// </summary>
     [DataContract]
     public class ExplicitCastNode : Node
-    {        
+    {
+        public override bool CanSetPure
+        {
+            get => true;
+        }
+
         /// <summary>
         /// Pin for the object to cast to another type.
         /// </summary>
@@ -66,9 +71,41 @@ namespace NetPrints.Graph
             AddInputTypePin("Type");
             AddInputDataPin("Object", TypeSpecifier.FromType<object>());
             AddOutputDataPin("CastObject", CastType);
+            AddExecPins();
+        }
+
+        private void AddExecPins()
+        {
             AddInputExecPin("Exec");
             AddOutputExecPin("Success");
             AddOutputExecPin("Failure");
+        }
+
+        protected override void SetPurity(bool pure)
+        {
+            base.SetPurity(pure);
+
+            if (pure)
+            {
+                var outExecPins = new NodeOutputExecPin[] {
+                    OutputExecPins.Single(p => p.Name == "Success"),
+                    OutputExecPins.Single(p => p.Name == "Failure"),
+                };
+
+                foreach (var execPin in outExecPins)
+                {
+                    GraphUtil.DisconnectOutputExecPin(execPin);
+                    OutputExecPins.Remove(execPin);
+                }
+
+                var inExecPin = InputExecPins.Single(p => p.Name == "Exec");
+                GraphUtil.DisconnectInputExecPin(inExecPin);
+                InputExecPins.Remove(inExecPin);
+            }
+            else
+            {
+                AddExecPins();
+            }
         }
 
         protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)

@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -14,8 +15,31 @@ namespace NetPrints.Graph
         public ExecNode(Method method)
             : base(method)
         {
+            AddExecPins();
+        }
+
+        private void AddExecPins()
+        {
             AddInputExecPin("Exec");
             AddOutputExecPin("Exec");
+        }
+
+        protected override void SetPurity(bool pure)
+        {
+            base.SetPurity(pure);
+
+            if (pure)
+            {
+                GraphUtil.DisconnectInputExecPin(InputExecPins[0]);
+                InputExecPins.RemoveAt(0);
+
+                GraphUtil.DisconnectOutputExecPin(OutputExecPins[0]);
+                OutputExecPins.RemoveAt(0);
+            }
+            else if (!pure)
+            {
+                AddExecPins();
+            }
         }
     }
 }

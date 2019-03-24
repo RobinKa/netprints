@@ -12,6 +12,11 @@ namespace NetPrints.Graph
     [DataContract]
     public class ConstructorNode : ExecNode
     {
+        public override bool CanSetPure
+        {
+            get => true;
+        }
+
         /// <summary>
         /// Specifier for the constructor.
         /// </summary>

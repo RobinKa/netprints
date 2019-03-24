@@ -244,7 +244,16 @@ namespace NetPrintsEditor.ViewModels
         private ObservableViewModelCollection<NodePinVM, NodeInputTypePin> inputTypePins;
         private ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> outputTypePins;
 
-        public bool IsPure { get => node.IsPure; }
+        public bool IsPure
+        {
+            get => node.IsPure;
+            set => node.IsPure = value;
+        }
+
+        public bool CanSetPure
+        {
+            get => node.CanSetPure;
+        }
 
         // Wrapped Node
         public Node Node
@@ -292,6 +301,8 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(IsRerouteNode));
                     OnPropertyChanged(nameof(ShowLeftPinButtons));
                     OnPropertyChanged(nameof(Label));
+                    OnPropertyChanged(nameof(IsPure));
+                    OnPropertyChanged(nameof(CanSetPure));
                 }
             }
         }
