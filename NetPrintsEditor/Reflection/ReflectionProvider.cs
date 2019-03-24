@@ -455,7 +455,7 @@ namespace NetPrintsEditor.Reflection
 
                 methodSymbols = methodSymbols
                     .Where(m => m.ReturnType == searchType ||
-                                searchType.IsSubclassOf(m.ReturnType) ||
+                                m.ReturnType.IsSubclassOf(searchType) ||
                                 m.ReturnType.TypeKind == TypeKind.TypeParameter);
             }
 
