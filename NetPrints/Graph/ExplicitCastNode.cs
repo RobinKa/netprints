@@ -87,7 +87,8 @@ namespace NetPrints.Graph
 
             if (pure)
             {
-                var outExecPins = new NodeOutputExecPin[] {
+                var outExecPins = new NodeOutputExecPin[]
+                {
                     OutputExecPins.Single(p => p.Name == "Success"),
                     OutputExecPins.Single(p => p.Name == "Failure"),
                 };

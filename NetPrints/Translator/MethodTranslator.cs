@@ -450,8 +450,11 @@ namespace NetPrints.Translator
         public void TranslateCallMethodNode(CallMethodNode node)
         {
             // Wrap in try / catch
-            builder.AppendLine("try");
-            builder.AppendLine("{");
+            if (!node.IsPure)
+            {
+                builder.AppendLine("try");
+                builder.AppendLine("{");
+            }
 
             string temporaryReturnName = null;
 
@@ -548,31 +551,28 @@ namespace NetPrints.Translator
                 }
             }
 
-            // Set the exception to null on success
-            builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = null;");
-
-            // Go to the next state
             if (!node.IsPure)
             {
+                // Set the exception to null on success
+                builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = null;");
+
+                // Go to the next state
                 WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
-            }
 
-            // Catch exceptions and execute catch pin (or exec pin if it is not set)
-            string exceptionVarName = TranslatorUtil.GetTemporaryVariableName(random);
-            builder.AppendLine("}");
-            builder.AppendLine($"catch (System.Exception {exceptionVarName})");
-            builder.AppendLine("{");
-            builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = {exceptionVarName};");
+                // Catch exceptions and execute catch pin
+                string exceptionVarName = TranslatorUtil.GetTemporaryVariableName(random);
+                builder.AppendLine("}");
+                builder.AppendLine($"catch (System.Exception {exceptionVarName})");
+                builder.AppendLine("{");
+                builder.AppendLine($"{GetOrCreatePinName(node.ExceptionPin)} = {exceptionVarName};");
 
-            // Set all return values to default on exception
-            foreach (var returnValuePin in node.ReturnValuePins)
-            {
-                string returnName = GetOrCreatePinName(returnValuePin);
-                builder.AppendLine($"{returnName} = default({returnValuePin.PinType.Value.FullCodeName});");
-            }
+                // Set all return values to default on exception
+                foreach (var returnValuePin in node.ReturnValuePins)
+                {
+                    string returnName = GetOrCreatePinName(returnValuePin);
+                    builder.AppendLine($"{returnName} = default({returnValuePin.PinType.Value.FullCodeName});");
+                }
 
-            if (!node.IsPure)
-            {
                 if (node.CatchPin.OutgoingPin != null)
                 {
                     WriteGotoOutputPinIfNecessary(node.CatchPin, node.InputExecPins[0]);
@@ -581,9 +581,9 @@ namespace NetPrints.Translator
                 {
                     WriteGotoOutputPinIfNecessary(node.OutputExecPins[0], node.InputExecPins[0]);
                 }
-            }
 
-            builder.AppendLine("}");
+                builder.AppendLine("}");
+            }
         }
 
         public void TranslateConstructorNode(ConstructorNode node)

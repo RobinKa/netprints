@@ -107,7 +107,7 @@ namespace NetPrints.Graph
         /// </summary>
         public NodeOutputDataPin ExceptionPin
         {
-            get { return OutputDataPins[0]; }
+            get { return OutputDataPins.Single(p => p.Name == "Exception"); }
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace NetPrints.Graph
         /// </summary>
         public NodeOutputExecPin CatchPin
         {
-            get { return OutputExecPins[1]; }
+            get { return OutputExecPins.Single(p => p.Name == "Catch"); }
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace NetPrints.Graph
         /// </summary>
         public IList<NodeOutputDataPin> ReturnValuePins
         {
-            get =>  OutputDataPins.Skip(1).ToList();
+            get => (OutputExecPins.Any(p => p.Name == "Catch") ? OutputDataPins.Skip(1) : OutputDataPins).ToList();
         }
 
         public CallMethodNode(Method method, MethodSpecifier methodSpecifier, 
@@ -162,8 +162,7 @@ namespace NetPrints.Graph
                 AddInputDataPin("Target", DeclaringType);
             }
 
-            AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
-            AddExecPins();
+            AddExceptionPins();
 
             foreach (Named<BaseType> argument in MethodSpecifier.Arguments)
             {
@@ -179,8 +178,9 @@ namespace NetPrints.Graph
             UpdateTypes();
         }
 
-        private void AddExecPins()
+        private void AddExceptionPins()
         {
+            AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
             AddOutputExecPin("Catch");
         }
 
@@ -190,14 +190,15 @@ namespace NetPrints.Graph
 
             if (pure)
             {
-                var catchPin = OutputExecPins.Single(p => p.Name == "Catch");
+                GraphUtil.DisconnectOutputExecPin(CatchPin);
+                OutputExecPins.Remove(CatchPin);
 
-                GraphUtil.DisconnectOutputExecPin(catchPin);
-                OutputExecPins.Remove(catchPin);
+                GraphUtil.DisconnectOutputDataPin(ExceptionPin);
+                OutputDataPins.Remove(ExceptionPin);
             }
             else
             {
-                AddExecPins();
+                AddExceptionPins();
             }
         }
 
