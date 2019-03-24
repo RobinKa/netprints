@@ -40,6 +40,16 @@ namespace NetPrintsEditor.Controls
             set => SetValue(SuggestionsProperty, value.ToList());
         }
 
+        /// <summary>
+        /// Pin that was dragged to generate suggestions.
+        /// Null if that suggestions were not created for a pin.
+        /// </summary>
+        public NodePinVM SuggestionPin
+        {
+            get;
+            set;
+        }
+
         private List<object> builtInNodes = new List<object>() {
             TypeSpecifier.FromType<ForLoopNode>(),
             TypeSpecifier.FromType<IfElseNode>(),
@@ -156,7 +166,8 @@ namespace NetPrintsEditor.Controls
                 // Show all relevant methods for the type of the pin if its a data pin
 
                 NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-                
+                SuggestionPin = pin;
+
                 if (pin.Pin is NodeOutputDataPin odp)
                 {
                     if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
@@ -383,6 +394,8 @@ namespace NetPrintsEditor.Controls
             {
                 Suggestions = new object[0];
             }
+
+            SuggestionPin = null;
         }
 
         #region DrawCanvas dragging and scaling

@@ -249,6 +249,15 @@ namespace NetPrintsEditor
             node.PositionX = p.PositionX;
             node.PositionY = p.PositionY;
 
+            // If the node was created as part of a suggestion, connect it
+            // to the relevant node pin.
+            if (methodEditor?.SuggestionPin != null)
+            {
+                methodEditor.SuggestionPin.ConnectRelevant(node);
+                methodEditor.SuggestionPin = null;
+            }
+            
+
             methodEditor.grid.ContextMenu.IsOpen = false;
         }
 

@@ -166,6 +166,62 @@ namespace NetPrintsEditor.ViewModels
             GraphUtil.DisconnectPin(pin);
         }
 
+        /// <summary>
+        /// Connects this pin to the first possible pin of the passed node.
+        /// </summary>
+        /// <param name="node">Node to connect this pin to.</param>
+        public void ConnectRelevant(Node node)
+        {
+            if (pin is NodeInputExecPin ixp)
+            {
+                GraphUtil.ConnectExecPins(node.OutputExecPins[0], ixp);
+            }
+            else if (pin is NodeOutputExecPin oxp)
+            {
+                GraphUtil.ConnectExecPins(oxp, node.InputExecPins[0]);
+            }
+            else if (pin is NodeInputDataPin idp)
+            {
+                foreach (var otherIdp in node.InputDataPins)
+                {
+                    if (GraphUtil.CanConnectNodePins(node.OutputDataPins[0], idp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
+                    {
+                        GraphUtil.ConnectDataPins(node.OutputDataPins[0], idp);
+                        break;
+                    }
+                }
+            }
+            else if (pin is NodeOutputDataPin odp)
+            {
+                foreach (var otherIdp in node.InputDataPins)
+                {
+                    if (GraphUtil.CanConnectNodePins(odp, otherIdp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
+                    {
+                        GraphUtil.ConnectDataPins(odp, node.InputDataPins[0]);
+                        break;
+                    }
+                }
+            }
+            else if (pin is NodeInputTypePin itp)
+            {
+                if (node.OutputTypePins.Count > 0)
+                {
+                    GraphUtil.ConnectTypePins(node.OutputTypePins[0], itp);
+                }
+            }
+            else if (pin is NodeOutputTypePin otp)
+            {
+                if (node.InputTypePins.Count > 0)
+                {
+                    GraphUtil.ConnectTypePins(otp, node.InputTypePins[0]);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Unknown pin type");
+            }
+        }
+
         public object UnconnectedValue
         {
             get
