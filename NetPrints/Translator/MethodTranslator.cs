@@ -622,33 +622,33 @@ namespace NetPrints.Translator
             }
 
             // Try to cast the incoming object and go to next states.
-            // If no pin is connected fail by default.
             if (node.ObjectToCast.IncomingPin != null)
             {
                 string pinToCastName = GetPinIncomingValue(node.ObjectToCast);
                 string outputName = GetOrCreatePinName(node.CastPin);
 
-                builder.AppendLine($"{outputName} = {pinToCastName} as {node.CastType.FullCodeNameUnbound};");
-
-                if (!node.IsPure)
+                // If failure pin is not connected write explicit cast that throws.
+                // Otherwise check if cast object is null and execute failure
+                // path if it is.
+                if (node.CastFailedPin.OutgoingPin == null)
                 {
-                    builder.AppendLine($"if (!({outputName} is null))");
-                    builder.AppendLine("{");
-                    WriteGotoOutputPinIfNecessary(node.CastSuccessPin, node.InputExecPins[0]);
-                    builder.AppendLine("}");
-                    builder.AppendLine("else");
-                }
-            }
-
-            if (!node.IsPure)
-            {
-                if (node.CastFailedPin.OutgoingPin != null)
-                {
-                    WriteGotoOutputPinIfNecessary(node.CastFailedPin, node.InputExecPins[0]);
+                    builder.AppendLine($"{outputName} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
                 }
                 else
                 {
-                    builder.AppendLine("return;");
+                    builder.AppendLine($"{outputName} = {pinToCastName} as {node.CastType.FullCodeNameUnbound};");
+
+                    if (!node.IsPure)
+                    {
+                        builder.AppendLine($"if ({outputName} is null)");
+                        builder.AppendLine("{");
+                        WriteGotoOutputPinIfNecessary(node.CastFailedPin, node.InputExecPins[0]);
+                        builder.AppendLine("}");
+                        builder.AppendLine("else");
+                        builder.AppendLine("{");
+                        WriteGotoOutputPinIfNecessary(node.CastSuccessPin, node.InputExecPins[0]);
+                        builder.AppendLine("}");
+                    }
                 }
             }
         }
