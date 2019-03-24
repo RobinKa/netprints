@@ -146,5 +146,10 @@ namespace NetPrints.Graph
         {
             SetupSecondaryNodeEvents();
         }
+
+        public override string ToString()
+        {
+            return "Return";
+        }
     }
 }

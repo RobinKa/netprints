@@ -82,5 +82,10 @@ namespace NetPrints.Graph
 
             AddOutputDataPin("Index", TypeSpecifier.FromType<int>());
         }
+
+        public override string ToString()
+        {
+            return "For Loop";
+        }
     }
 }

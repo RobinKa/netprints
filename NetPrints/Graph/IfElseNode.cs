@@ -52,5 +52,10 @@ namespace NetPrints.Graph
             AddOutputExecPin("True");
             AddOutputExecPin("False");
         }
+
+        public override string ToString()
+        {
+            return "If Else";
+        }
     }
 }
