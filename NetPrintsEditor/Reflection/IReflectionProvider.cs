@@ -10,7 +10,7 @@ namespace NetPrintsEditor.Reflection
 
     public class ReflectionProviderMethodQuery : IReflectionProviderQuery
     {
-        public TypeSpecifier? Type { get; set; }
+        public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
         public MemberVisibility? Visibility { get; set; }
         public TypeSpecifier ReturnType { get; set; }
@@ -49,10 +49,10 @@ namespace NetPrintsEditor.Reflection
 
     public class ReflectionProviderPropertyQuery : IReflectionProviderQuery
     {
-        public TypeSpecifier? Type { get; set; }
+        public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
         public MemberVisibility? Visibility { get; set; }
-        public TypeSpecifier? PropertyType { get; set; }
+        public TypeSpecifier PropertyType { get; set; }
 
         public ReflectionProviderPropertyQuery WithType(TypeSpecifier type)
         {
