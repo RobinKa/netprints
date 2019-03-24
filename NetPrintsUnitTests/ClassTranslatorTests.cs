@@ -23,7 +23,7 @@ namespace NetPrints.Tests
             stringLengthMethod = new Method("StringLength")
             {
                 Class = cls,
-                Modifiers = MethodModifiers.Public
+                Modifiers = MethodModifiers.None
             };
 
             List<TypeNode> returnTypeNodes = new List<TypeNode>()
@@ -57,10 +57,12 @@ namespace NetPrints.Tests
                 Modifiers = MethodModifiers.Static
             };
 
-            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new Named<BaseType>[0], new List<TypeSpecifier>() { TypeSpecifier.FromType<int>() }, MethodModifiers.Public, TypeSpecifier.FromType<string>(), Array.Empty<BaseType>());
+            MethodSpecifier stringLengthSpecifier = new MethodSpecifier("StringLength", new Named<BaseType>[0], new List<TypeSpecifier>() { TypeSpecifier.FromType<int>() },
+                MethodModifiers.None, MemberVisibility.Public, TypeSpecifier.FromType<string>(), Array.Empty<BaseType>());
             //MethodSpecifier writeConsoleSpecifier = typeof(Console).GetMethods().Single(m => m.Name == "WriteLine" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
             TypeSpecifier stringType = TypeSpecifier.FromType<string>();
-            MethodSpecifier writeConsoleSpecifier = new MethodSpecifier("WriteLine", new Named<BaseType>[] { new Named<BaseType>("argName", stringType) }, new BaseType[0], MethodModifiers.Public, TypeSpecifier.FromType(typeof(Console)), new BaseType[0]);
+            MethodSpecifier writeConsoleSpecifier = new MethodSpecifier("WriteLine", new Named<BaseType>[] { new Named<BaseType>("argName", stringType) }, new BaseType[0],
+                MethodModifiers.None, MemberVisibility.Public, TypeSpecifier.FromType(typeof(Console)), new BaseType[0]);
 
             // Create nodes
             LiteralNode stringLiteralNode = LiteralNode.WithValue(mainMethod, "Hello World");

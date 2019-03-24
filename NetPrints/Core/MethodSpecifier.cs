@@ -75,6 +75,16 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Visibility of this method.
+        /// </summary>
+        [DataMember]
+        public MemberVisibility Visibility
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Generic arguments this method takes.
         /// </summary>
         [DataMember]
@@ -94,7 +104,7 @@ namespace NetPrints.Core
         /// <param name="declaringType">Specifier for the type this method is contained in.</param>
         /// <param name="genericArguments">Generic arguments this method takes.</param>
         public MethodSpecifier(string name, IEnumerable<Named<BaseType>> arguments,
-            IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, TypeSpecifier declaringType,
+            IEnumerable<BaseType> returnTypes, MethodModifiers modifiers, MemberVisibility visibility, TypeSpecifier declaringType,
             IList<BaseType> genericArguments)
         {
             Name = name;
@@ -102,6 +112,7 @@ namespace NetPrints.Core
             Arguments = arguments.ToList();
             ReturnTypes = returnTypes.ToList();
             Modifiers = modifiers;
+            Visibility = visibility;
             GenericArguments = genericArguments.ToList();
         }
 

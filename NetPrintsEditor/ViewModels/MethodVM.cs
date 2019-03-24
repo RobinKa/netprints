@@ -1,5 +1,6 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -100,6 +101,36 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public MemberVisibility Visibility
+        {
+            get => method.Visibility;
+            set
+            {
+                if (method.Visibility != value)
+                {
+                    method.Visibility = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string VisibilityName
+        {
+            get => Enum.GetName(typeof(MemberVisibility), Visibility);
+            set => Visibility = Enum.Parse<MemberVisibility>(value);
+        }
+
+        public IEnumerable<string> PossibleVisibilities
+        {
+            get => new string[]
+                {
+                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Internal),
+                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Private),
+                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Protected),
+                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Public),
+                };
         }
 
         /*
@@ -286,6 +317,8 @@ namespace NetPrintsEditor.ViewModels
                     method = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(AllPins));
+                    OnPropertyChanged(nameof(Visibility));
+                    OnPropertyChanged(nameof(VisibilityName));
 
                     Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
                     

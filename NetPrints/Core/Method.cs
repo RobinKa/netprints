@@ -12,15 +12,19 @@ namespace NetPrints.Core
     [Flags]
     public enum MethodModifiers
     {
-        Private = 0,
-        Public = 1,
-        Protected = 2,
-        Internal = 4,
+        None = 0,
         Sealed = 8,
         Abstract = 16,
         Static = 32,
         Virtual = 64,
         Override = 128,
+
+        // DEPRECATED
+        // Moved to MethodVisibility
+        Private = 0,
+        Public = 1,
+        Protected = 2,
+        Internal = 4,
     }
 
     /// <summary>
@@ -107,7 +111,17 @@ namespace NetPrints.Core
         {
             get;
             set;
-        } = MethodModifiers.Private;
+        } = MethodModifiers.None;
+
+        /// <summary>
+        /// Visibility of this method.
+        /// </summary>
+        [DataMember]
+        public MemberVisibility Visibility
+        {
+            get;
+            set;
+        } = MemberVisibility.Private;
 
         /// <summary>
         /// Class this method is contained in.

@@ -16,6 +16,14 @@ namespace NetPrints.Translator
         private const string JumpStackVarName = "jumpStack";
         private const string JumpStackType = "System.Collections.Generic.Stack<int>";
 
+        private readonly static Dictionary<MemberVisibility, string> visibilityTokens = new Dictionary<MemberVisibility, string>()
+        {
+            [MemberVisibility.Private] = "private",
+            [MemberVisibility.Protected] = "protected",
+            [MemberVisibility.Public] = "public",
+            [MemberVisibility.Internal] = "internal",
+        };
+
         private Dictionary<NodeOutputDataPin, string> variableNames = new Dictionary<NodeOutputDataPin, string>();
         private Dictionary<Node, List<int>> nodeStateIds = new Dictionary<Node, List<int>>();
         private int nextStateId = 0;
@@ -168,21 +176,11 @@ namespace NetPrints.Translator
         {
             builder.AppendLine($"// Method {method.Name}");
 
-            // Write modifiers
-            if (method.Modifiers.HasFlag(MethodModifiers.Protected))
-            {
-                builder.Append("protected ");
-            }
-            else if (method.Modifiers.HasFlag(MethodModifiers.Public))
-            {
-                builder.Append("public ");
-            }
-            else if(method.Modifiers.HasFlag(MethodModifiers.Internal))
-            {
-                builder.Append("internal ");
-            }
+            // Write visibility
+            builder.Append($"{visibilityTokens[method.Visibility]} ");
 
-            if(method.Modifiers.HasFlag(MethodModifiers.Static))
+            // Write modifiers
+            if (method.Modifiers.HasFlag(MethodModifiers.Static))
             {
                 builder.Append("static ");
             }

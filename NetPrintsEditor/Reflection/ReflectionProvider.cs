@@ -175,54 +175,6 @@ namespace NetPrintsEditor.Reflection
                 .Select(t => ReflectionConverter.TypeSpecifierFromSymbol(t));
         }
 
-        public IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier)
-        {
-            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
-
-            if (type != null)
-            {
-                // Get all public instance methods, ignore special ones (properties / events)
-
-                return type.GetMethods()
-                    .Where(m => 
-                        m.IsPublic() &&
-                        !m.IsStatic &&
-                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
-                    .OrderBy(m => m.ContainingNamespace?.Name)
-                    .ThenBy(m => m.ContainingType?.Name)
-                    .ThenBy(m => m.Name)
-                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
-            }
-            else
-            {
-                return new MethodSpecifier[] { };
-            }
-        }
-
-        public IEnumerable<MethodSpecifier> GetProtectedMethodsForType(TypeSpecifier typeSpecifier)
-        {
-            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
-
-            if (type != null)
-            {
-                // Get all public instance methods, ignore special ones (properties / events)
-
-                return type.GetMethods()
-                    .Where(m =>
-                        m.IsPublic() || m.IsProtected() &&
-                        !m.IsStatic &&
-                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
-                    .OrderBy(m => m.ContainingNamespace?.Name)
-                    .ThenBy(m => m.ContainingType?.Name)
-                    .ThenBy(m => m.Name)
-                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
-            }
-            else
-            {
-                return new MethodSpecifier[] { };
-            }
-        }
-
         public IEnumerable<MethodSpecifier> GetOverridableMethodsForType(TypeSpecifier typeSpecifier)
         {
             ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
@@ -273,90 +225,6 @@ namespace NetPrintsEditor.Reflection
                 return new MethodSpecifier[0];
             }
         }
-
-        public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
-        {
-            ITypeSymbol type = GetTypeFromSpecifier(typeSpecifier);
-
-            if (type != null)
-            {
-                // Get all public static methods, ignore special ones (properties / events),
-                // ignore those with generic parameters since we cant set those yet
-
-                return type.GetMethods()
-                    .Where(m => 
-                        m.IsPublic() &&
-                        m.IsStatic &&
-                        m.MethodKind == MethodKind.Ordinary || m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator)
-                    .OrderBy(m => m.ContainingNamespace?.Name)
-                    .ThenBy(m => m.ContainingType?.Name)
-                    .ThenBy(m => m.Name)
-                    .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
-            }
-            else
-            {
-                return new MethodSpecifier[] { };
-            }
-        }
-
-        public IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier)
-        {
-            var members = GetTypeFromSpecifier(typeSpecifier)
-                .GetAllMembers();
-
-            var properties = members
-                .Where(m => m.Kind == SymbolKind.Property)
-                .Cast<IPropertySymbol>()
-                .OrderBy(p => p.ContainingNamespace?.Name)
-                .ThenBy(p => p.ContainingType?.Name)
-                .ThenBy(p => p.Name)
-                .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p));
-
-            // TODO: Move variables to seperate function / unify properties and variables in a better way.
-            return properties.Concat(members
-                .Where(m => m.Kind == SymbolKind.Field)
-                .Cast<IFieldSymbol>()
-                .OrderBy(f => f.ContainingNamespace?.Name)
-                .ThenBy(f => f.ContainingType?.Name)
-                .ThenBy(f => f.Name)
-                .Select(f => ReflectionConverter.PropertySpecifierFromField(f))
-            );
-        }
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctions()
-        {
-            return GetValidTypes()
-                    .Where(t => 
-                        t.IsPublic() &&
-                        !t.IsGenericType)
-                    .SelectMany(t =>
-                        t.GetMethods()
-                        .Where(m => 
-                            m.IsStatic && m.IsPublic() &&
-                            !m.ContainingType.IsUnboundGenericType)
-                        .OrderBy(m => m.ContainingNamespace?.Name)
-                        .ThenBy(m => m.ContainingType?.Name)
-                        .ThenBy(m => m.Name)
-                        .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m)))
-                        .ToList();
-        }
-
-        public IEnumerable<PropertySpecifier> GetPublicStaticProperties()
-        {
-            return GetValidTypes()
-                    .Where(t =>
-                        t.IsPublic() &&
-                        !t.IsGenericType)
-                    .SelectMany(t =>
-                        t.GetMembers()
-                            .Where(m => m.Kind == SymbolKind.Property)
-                            .Cast<IPropertySymbol>()
-                            .Where(p => p.IsStatic && p.IsPublic() && !p.IsAbstract)
-                            .OrderBy(p => p.ContainingNamespace?.Name)
-                            .ThenBy(p => p.ContainingType?.Name)
-                            .ThenBy(p => p.Name)
-                            .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p)));
-        }
         
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {
@@ -383,8 +251,15 @@ namespace NetPrintsEditor.Reflection
             return (T)GetTypeFromSpecifier(specifier);
         }
 
+        private Dictionary<TypeSpecifier, ITypeSymbol> cachedTypeSpecifierSymbols = new Dictionary<TypeSpecifier, ITypeSymbol>();
+
         private ITypeSymbol GetTypeFromSpecifier(TypeSpecifier specifier)
         {
+            if (cachedTypeSpecifierSymbols.TryGetValue(specifier, out var symbol))
+            {
+                return symbol;
+            }
+
             string lookupName = specifier.Name;
 
             // Find array ranks and remove them from the lookup name.
@@ -447,6 +322,8 @@ namespace NetPrintsEditor.Reflection
                 }
             }
 
+            cachedTypeSpecifierSymbols.Add(specifier, foundType);
+
             return foundType;
         }
 
@@ -457,96 +334,6 @@ namespace NetPrintsEditor.Reflection
                     m => m.Name == specifier.Name && 
                     m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.ArgumentTypes))
                 .FirstOrDefault();
-        }
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier searchTypeSpec)
-        {
-            // Find all public static methods
-
-            IEnumerable<IMethodSymbol> availableMethods = GetValidTypes()
-                        .Where(t => t.IsPublic())
-                        .SelectMany(t =>
-                            t.GetMethods()
-                            .Where(m => m.IsPublic() && m.IsStatic)
-                            .Where(m => !m.ContainingType.IsUnboundGenericType))
-                        .OrderBy(m => m.ContainingNamespace?.Name)
-                        .ThenBy(m => m.ContainingType?.Name)
-                        .ThenBy(m => m.Name);
-
-            ITypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
-
-            List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
-
-            // Find compatible methods
-
-            foreach (IMethodSymbol availableMethod in availableMethods)
-            {
-                // Check the return type whether it can be replaced by the wanted type
-                // or if the return type is one of the type parameters.
-
-                ITypeSymbol retType = availableMethod.ReturnType;
-                BaseType ret = ReflectionConverter.BaseTypeSpecifierFromSymbol(retType);
-
-                if (ret == searchTypeSpec || retType.IsSubclassOf(searchType) || retType.TypeKind == TypeKind.TypeParameter)
-                {
-                    // Find method and add it
-                    MethodSpecifier foundMethod = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
-
-                    if (foundMethod != null)
-                    {
-                        foundMethods.Add(foundMethod);
-                    }
-                }
-            }
-
-            return foundMethods;
-        }
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier searchTypeSpec)
-        {
-            // Find all public static methods
-
-            IEnumerable<IMethodSymbol> availableMethods = GetValidTypes()
-                        .Where(t => t.IsPublic())
-                        .SelectMany(t =>
-                            t.GetMethods()
-                            .Where(m => m.IsPublic() && m.IsStatic && !m.ContainingType.IsUnboundGenericType))
-                        .OrderBy(m => m?.ContainingNamespace.Name)
-                        .ThenBy(m => m?.ContainingType.Name)
-                        .ThenBy(m => m.Name);
-
-            ITypeSymbol searchType = GetTypeFromSpecifier(searchTypeSpec);
-
-            List<MethodSpecifier> foundMethods = new List<MethodSpecifier>();
-
-            // Find compatible methods
-
-            foreach (IMethodSymbol availableMethod in availableMethods)
-            {
-                MethodSpecifier availableMethodSpec = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
-
-                // Check each argument whether it can be replaced by the wanted type
-                // or if the argument type is one of the type parameters.
-
-                for (int i = 0; i < availableMethodSpec.Arguments.Count; i++) 
-                {
-                    ITypeSymbol argType = availableMethod.Parameters[i].Type;
-                    BaseType arg = ReflectionConverter.BaseTypeSpecifierFromSymbol(argType);
-
-                    if (arg == searchTypeSpec || searchType.IsSubclassOf(argType) || argType.TypeKind == TypeKind.TypeParameter)
-                    {
-                        // Find method and add it
-                        MethodSpecifier foundMethod = ReflectionConverter.MethodSpecifierFromSymbol(availableMethod);
-
-                        if (foundMethod != null && !foundMethods.Contains(foundMethod))
-                        {
-                            foundMethods.Add(foundMethod);
-                        }
-                    }
-                }
-            }
-
-            return foundMethods;
         }
 
         // Documentation
@@ -596,6 +383,155 @@ namespace NetPrintsEditor.Reflection
 
             return fromSymbol != null && toSymbol != null &&
                 compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
+        }
+
+        public IEnumerable<MethodSpecifier> GetMethods(ReflectionProviderMethodQuery query)
+        {
+            IEnumerable<IMethodSymbol> methodSymbols;
+            
+            // Check if type is set (no type => get all methods)
+            if (!(query.Type is null))
+            {
+                // Get all methods of the type
+                ITypeSymbol type = GetTypeFromSpecifier(query.Type);
+                methodSymbols = type.GetMethods();
+            }
+            else
+            {
+                // Get all methods of all public types
+                methodSymbols = GetValidTypes()
+                                .Where(t => t.IsPublic())
+                                .SelectMany(t => t.GetMethods());
+            }
+
+            // Check static
+            if (query.Static.HasValue)
+            {
+                methodSymbols = methodSymbols.Where(m => m.IsStatic == query.Static.Value);
+            }
+
+            // Check visibility
+            if (query.Visibility.HasValue)
+            {
+                bool wantFriend = false; // TODO: Figure out if we want this or not
+                bool wantInternal = query.Visibility.Value.HasFlag(MemberVisibility.Internal);
+                bool wantPublic = query.Visibility.Value.HasFlag(MemberVisibility.Public);
+                bool wantProtected = query.Visibility.Value.HasFlag(MemberVisibility.Protected) && !wantInternal;
+                bool wantPrivate = query.Visibility.Value.HasFlag(MemberVisibility.Private);
+                bool wantProtectedAndFriend = wantProtected && wantFriend;
+                bool wantProtectedAndInternal = wantProtected && wantInternal;
+                bool wantProtectedOrFriend = wantProtected || wantFriend;
+                bool wantProtectedOrInternal = wantProtected || wantInternal;
+
+                methodSymbols = methodSymbols.Where(m =>
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public) ? wantPublic :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Protected) ? wantProtected :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Private) ? wantPrivate :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Internal) ? wantInternal :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal) ? wantProtectedAndInternal :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndInternal :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrFriend) ? wantProtectedOrFriend :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal) ? wantProtectedOrInternal :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Friend) ? wantFriend : false);
+            }
+
+            // Check argument type
+            if (!(query.ArgumentType is null))
+            {
+                var searchType = GetTypeFromSpecifier(query.ArgumentType);
+
+                methodSymbols = methodSymbols
+                    .Where(m => m.Parameters
+                        .Select(p => p.Type)
+                        .Any(t => t == searchType ||
+                                    searchType.IsSubclassOf(t) ||
+                                    t.TypeKind == TypeKind.TypeParameter));
+            }
+
+            // Check return type
+            if (!(query.ReturnType is null))
+            {
+                var searchType = GetTypeFromSpecifier(query.ReturnType);
+
+                methodSymbols = methodSymbols
+                    .Where(m => m.ReturnType == searchType ||
+                                searchType.IsSubclassOf(m.ReturnType) ||
+                                m.ReturnType.TypeKind == TypeKind.TypeParameter);
+            }
+
+            return methodSymbols
+                .OrderBy(m => m.ContainingNamespace?.Name)
+                .ThenBy(m => m.ContainingType?.Name)
+                .ThenBy(m => m.Name)
+                .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
+        }
+
+        public IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query)
+        {
+            IEnumerable<IPropertySymbol> propertySymbols;
+
+            // Check if type is set (no type => get all methods)
+            if (!(query.Type is null))
+            {
+                // Get all properties of the type
+                ITypeSymbol type = GetTypeFromSpecifier(query.Type);
+                propertySymbols = type.GetAllMembers()
+                    .Where(m => m.Kind == SymbolKind.Property)
+                    .Cast<IPropertySymbol>();
+            }
+            else
+            {
+                // Get all properties of all public types
+                propertySymbols = GetValidTypes()
+                    .SelectMany(t => t.GetAllMembers()
+                        .Where(m => m.Kind == SymbolKind.Property)
+                        .Cast<IPropertySymbol>());
+            }
+
+            // Check static
+            if (query.Static.HasValue)
+            {
+                propertySymbols = propertySymbols.Where(m => m.IsStatic == query.Static.Value);
+            }
+
+            // Check visibility
+            if (query.Visibility.HasValue)
+            {
+                bool wantFriend = true; // TODO: Figure out if we want this or not
+                bool wantInternal = query.Visibility.Value.HasFlag(MemberVisibility.Internal);
+                bool wantPublic = query.Visibility.Value.HasFlag(MemberVisibility.Public);
+                bool wantProtected = query.Visibility.Value.HasFlag(MemberVisibility.Protected) && !wantInternal;
+                bool wantPrivate = query.Visibility.Value.HasFlag(MemberVisibility.Private);
+                bool wantProtectedAndFriend = wantProtected && wantFriend;
+                bool wantProtectedAndInternal = wantProtected && wantInternal;
+                bool wantProtectedOrFriend = wantProtected || wantFriend;
+                bool wantProtectedOrInternal = wantProtected || wantInternal;
+
+                propertySymbols = propertySymbols.Where(p =>
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public) ? wantPublic :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Protected) ? wantProtected :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Private) ? wantPrivate :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Internal) ? wantInternal :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal) ? wantProtectedAndInternal :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndInternal :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrFriend) ? wantProtectedOrFriend :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal) ? wantProtectedOrInternal :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Friend) ? wantFriend : false);
+            }
+
+            // Check property type
+            if (!(query.PropertyType is null))
+            {
+                var searchType = GetTypeFromSpecifier(query.PropertyType);
+
+                propertySymbols = propertySymbols.Where(p => p.Type == searchType || searchType.IsSubclassOf(p.Type));
+            }
+
+            return propertySymbols
+                .OrderBy(p => p.ContainingNamespace?.Name)
+                .ThenBy(p => p.ContainingType?.Name)
+                .ThenBy(p => p.Name)
+                .Select(p => ReflectionConverter.PropertySpecifierFromSymbol(p));
         }
 
         #endregion

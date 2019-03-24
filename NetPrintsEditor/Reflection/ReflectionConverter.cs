@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using NetPrints.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NetPrintsEditor.Reflection
@@ -10,6 +11,14 @@ namespace NetPrintsEditor.Reflection
     /// </summary>
     public static class ReflectionConverter
     {
+        private readonly static Dictionary<Microsoft.CodeAnalysis.Accessibility, MemberVisibility> roslynToNetprintsVisibility = new Dictionary<Microsoft.CodeAnalysis.Accessibility, MemberVisibility>()
+        {
+            [Microsoft.CodeAnalysis.Accessibility.Private] = MemberVisibility.Private,
+            [Microsoft.CodeAnalysis.Accessibility.Protected] = MemberVisibility.Protected,
+            [Microsoft.CodeAnalysis.Accessibility.Public] = MemberVisibility.Public,
+            [Microsoft.CodeAnalysis.Accessibility.Internal] = MemberVisibility.Internal,
+        };
+
         public static TypeSpecifier TypeSpecifierFromSymbol(ITypeSymbol type)
         {
             string typeName;
@@ -94,12 +103,9 @@ namespace NetPrintsEditor.Reflection
 
         public static MethodSpecifier MethodSpecifierFromSymbol(IMethodSymbol method)
         {
-            MethodModifiers modifiers = MethodModifiers.Private;
+            MemberVisibility visibility = roslynToNetprintsVisibility[method.DeclaredAccessibility];
 
-            if (method.IsPublic())
-            {
-                modifiers |= MethodModifiers.Public;
-            }
+            var modifiers = MethodModifiers.None;
 
             if (method.IsVirtual)
             {
@@ -143,6 +149,7 @@ namespace NetPrintsEditor.Reflection
                 parameterTypes,
                 returnTypes,
                 modifiers,
+                visibility,
                 TypeSpecifierFromSymbol(method.ContainingType),
                 genericArgs);
         }

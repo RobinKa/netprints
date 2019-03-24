@@ -21,6 +21,21 @@ namespace NetPrints.Core
     }
 
     /// <summary>
+    /// Visibility for methods, properties and other members.
+    /// </summary>
+    [Flags]
+    public enum MemberVisibility
+    {
+        Private = 1,
+        Public = 2,
+        Protected = 4,
+        Internal = 8,
+
+        Any = Private | Public | Protected | Internal,
+        ProtectedOrPublic = Protected | Public,
+    }
+
+    /// <summary>
     /// Class type. Contains methods, attributes and other common things usually associated
     /// with classes.
     /// </summary>

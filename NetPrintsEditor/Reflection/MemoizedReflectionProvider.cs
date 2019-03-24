@@ -15,17 +15,11 @@ namespace NetPrintsEditor.Reflection
         private Func<MethodSpecifier, int, string> memoizedGetMethodReturnDocumentation;
         private Func<IEnumerable<TypeSpecifier>> memoizedGetNonStaticTypes;
         private Func<TypeSpecifier, IEnumerable<MethodSpecifier>> memoizedGetOverridableMethodsForType;
-        private Func<TypeSpecifier, IEnumerable<MethodSpecifier>> memoizedGetProtectedMethodsForType;
         private Func<MethodSpecifier, IEnumerable<MethodSpecifier>> memoizedGetPublicMethodOverloads;
-        private Func<TypeSpecifier, IEnumerable<MethodSpecifier>> memoizedGetPublicMethodsForType;
-        private Func<TypeSpecifier, IEnumerable<PropertySpecifier>> memoizedGetPublicPropertiesForType;
-        private Func<TypeSpecifier, IEnumerable<MethodSpecifier>> memoizedGetPublicStaticFunctionsForType;
-        private Func<IEnumerable<PropertySpecifier>> memoizedGetPublicStaticProperties;
-        private Func<IEnumerable<MethodSpecifier>> memoizedGetStaticFunctions;
-        private Func<TypeSpecifier, IEnumerable<MethodSpecifier>> memoizedGetStaticFunctionsWithArgumentType;
-        private Func<TypeSpecifier, IEnumerable<MethodSpecifier>> memoizedGetStaticFunctionsWithReturnType;
         private Func<TypeSpecifier, TypeSpecifier, bool> memoizedHasImplicitCast;
         private Func<TypeSpecifier, TypeSpecifier, bool> memoizedTypeSpecifierIsSubclassOf;
+        private Func<ReflectionProviderMethodQuery, IEnumerable<MethodSpecifier>> memoizedGetMethods;
+        private Func<ReflectionProviderPropertyQuery, IEnumerable<PropertySpecifier>> memoizedGetProperties;
 
         public MemoizedReflectionProvider(IReflectionProvider reflectionProvider)
         {
@@ -60,32 +54,17 @@ namespace NetPrintsEditor.Reflection
             memoizedGetOverridableMethodsForType = provider.GetOverridableMethodsForType;
             memoizedGetOverridableMethodsForType = memoizedGetOverridableMethodsForType.Memoize();
 
-            memoizedGetProtectedMethodsForType = provider.GetProtectedMethodsForType;
-            memoizedGetProtectedMethodsForType = memoizedGetProtectedMethodsForType.Memoize();
+            memoizedGetMethods = provider.GetMethods;
+            memoizedGetMethods = memoizedGetMethods.Memoize();
+
+            memoizedGetProperties= provider.GetProperties;
+            memoizedGetProperties = memoizedGetProperties.Memoize();
 
             memoizedGetPublicMethodOverloads = provider.GetPublicMethodOverloads;
             memoizedGetPublicMethodOverloads = memoizedGetPublicMethodOverloads.Memoize();
 
-            memoizedGetPublicMethodsForType = provider.GetPublicMethodsForType;
-            memoizedGetPublicMethodsForType = memoizedGetPublicMethodsForType.Memoize();
-
-            memoizedGetPublicPropertiesForType = provider.GetPublicPropertiesForType;
-            memoizedGetPublicPropertiesForType = memoizedGetPublicPropertiesForType.Memoize();
-
-            memoizedGetPublicStaticFunctionsForType = provider.GetPublicStaticFunctionsForType;
-            memoizedGetPublicStaticFunctionsForType = memoizedGetPublicStaticFunctionsForType.Memoize();
-
-            memoizedGetPublicStaticProperties = provider.GetPublicStaticProperties;
-            memoizedGetPublicStaticProperties = memoizedGetPublicStaticProperties.Memoize();
-
-            memoizedGetStaticFunctions = provider.GetStaticFunctions;
-            memoizedGetStaticFunctions = memoizedGetStaticFunctions.Memoize();
-
-            memoizedGetStaticFunctionsWithArgumentType = provider.GetStaticFunctionsWithArgumentType;
-            memoizedGetStaticFunctionsWithArgumentType = memoizedGetStaticFunctionsWithArgumentType.Memoize();
-
-            memoizedGetStaticFunctionsWithReturnType = provider.GetStaticFunctionsWithReturnType;
-            memoizedGetStaticFunctionsWithReturnType = memoizedGetStaticFunctionsWithReturnType.Memoize();
+            memoizedGetProperties = provider.GetProperties;
+            memoizedGetProperties = memoizedGetProperties.Memoize();
 
             memoizedHasImplicitCast = provider.HasImplicitCast;
             memoizedHasImplicitCast = memoizedHasImplicitCast.Memoize();
@@ -115,32 +94,14 @@ namespace NetPrintsEditor.Reflection
         public IEnumerable<MethodSpecifier> GetOverridableMethodsForType(TypeSpecifier typeSpecifier)
             => memoizedGetOverridableMethodsForType(typeSpecifier);
 
-        public IEnumerable<MethodSpecifier> GetProtectedMethodsForType(TypeSpecifier typeSpecifier)
-            => memoizedGetProtectedMethodsForType(typeSpecifier);
-
         public IEnumerable<MethodSpecifier> GetPublicMethodOverloads(MethodSpecifier methodSpecifier)
             => memoizedGetPublicMethodOverloads(methodSpecifier);
 
-        public IEnumerable<MethodSpecifier> GetPublicMethodsForType(TypeSpecifier typeSpecifier)
-            => memoizedGetPublicMethodsForType(typeSpecifier);
+        public IEnumerable<MethodSpecifier> GetMethods(ReflectionProviderMethodQuery query)
+            => memoizedGetMethods(query);
 
-        public IEnumerable<PropertySpecifier> GetPublicPropertiesForType(TypeSpecifier typeSpecifier)
-            => memoizedGetPublicPropertiesForType(typeSpecifier);
-
-        public IEnumerable<MethodSpecifier> GetPublicStaticFunctionsForType(TypeSpecifier typeSpecifier)
-            => memoizedGetPublicStaticFunctionsForType(typeSpecifier);
-
-        public IEnumerable<PropertySpecifier> GetPublicStaticProperties()
-            => memoizedGetPublicStaticProperties();
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctions()
-            => memoizedGetStaticFunctions();
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithArgumentType(TypeSpecifier typeSpecifier)
-            => memoizedGetStaticFunctionsWithArgumentType(typeSpecifier);
-
-        public IEnumerable<MethodSpecifier> GetStaticFunctionsWithReturnType(TypeSpecifier returnTypeSpecifier)
-            => memoizedGetStaticFunctionsWithReturnType(returnTypeSpecifier);
+        public IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query)
+            => memoizedGetProperties(query);
 
         public bool HasImplicitCast(TypeSpecifier fromType, TypeSpecifier toType)
             => memoizedHasImplicitCast(fromType, toType);

@@ -25,7 +25,7 @@ namespace NetPrints.Tests
             // Create method
             Method delegateMethod = new Method("DelegateMethod")
             {
-                Modifiers = MethodModifiers.Public
+                Visibility = MemberVisibility.Public
             };
 
             List<TypeNode> returnTypeNodes = new List<TypeNode>()
@@ -42,9 +42,8 @@ namespace NetPrints.Tests
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
                 new Named<BaseType>[] { new Named<BaseType>("arg1", TypeSpecifier.FromType<int>()), new Named<BaseType>("arg2", TypeSpecifier.FromType<string>()) },
                 new BaseType[] { TypeSpecifier.FromType<float>() },
-                MethodModifiers.Static,
-                TypeSpecifier.FromType<double>(),
-                Array.Empty<BaseType>());
+                MethodModifiers.Static, MemberVisibility.Public,
+                TypeSpecifier.FromType<double>(), Array.Empty<BaseType>());
 
             // Create nodes
             MakeDelegateNode makeDelegateNode = new MakeDelegateNode(delegateMethod, delegateMethodSpecifier);

@@ -126,15 +126,14 @@ namespace NetPrintsEditor.Controls
                 }
                 else if (item.DataContext is MakeDelegateTypeInfo makeDelegateTypeInfo)
                 {
-                    var instanceMethods = ProjectVM.Instance.ReflectionProvider.
-                            GetPublicMethodsForType(makeDelegateTypeInfo.Type);
-
-                    var staticMethods = ProjectVM.Instance.ReflectionProvider.
-                            GetPublicStaticFunctionsForType(makeDelegateTypeInfo.Type);
+                    var methods = ProjectVM.Instance.ReflectionProvider.GetMethods(
+                        new Reflection.ReflectionProviderMethodQuery()
+                        .WithType(makeDelegateTypeInfo.Type)
+                        .WithVisibility(MemberVisibility.Public));
 
                     SelectMethodDialog selectMethodDialog = new SelectMethodDialog()
                     {
-                        Methods = instanceMethods.Concat(staticMethods),
+                        Methods = methods,
                     };
 
                     if (selectMethodDialog.ShowDialog() == true)

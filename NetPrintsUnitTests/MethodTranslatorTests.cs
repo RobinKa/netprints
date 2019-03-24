@@ -36,7 +36,7 @@ namespace NetPrints.Tests
             // Create method
             stringLengthMethod = new Method("StringLength")
             {
-                Modifiers = MethodModifiers.Public
+                Visibility = MemberVisibility.Public
             };
 
             // Add arguments
@@ -79,7 +79,7 @@ namespace NetPrints.Tests
             // Create method
             ifElseMethod = new Method("IfElse")
             {
-                Modifiers = MethodModifiers.Public
+                Visibility = MemberVisibility.Public
             };
 
             // Add arguments
@@ -127,7 +127,7 @@ namespace NetPrints.Tests
             // Create method
             forLoopMethod = new Method("ForLoop")
             {
-                Modifiers = MethodModifiers.Public
+                Visibility = MemberVisibility.Public
             };
 
             // Create nodes
