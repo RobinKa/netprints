@@ -53,6 +53,7 @@ namespace NetPrintsEditor.Reflection
         public bool? Static { get; set; }
         public MemberVisibility? Visibility { get; set; }
         public TypeSpecifier PropertyType { get; set; }
+        public bool PropertyTypeDerivesFrom { get; set; } = false;
 
         public ReflectionProviderPropertyQuery WithType(TypeSpecifier type)
         {
@@ -72,9 +73,10 @@ namespace NetPrintsEditor.Reflection
             return this;
         }
 
-        public ReflectionProviderPropertyQuery WithPropertyType(TypeSpecifier type)
+        public ReflectionProviderPropertyQuery WithPropertyType(TypeSpecifier type, bool derivesFrom = false)
         {
             PropertyType = type;
+            PropertyTypeDerivesFrom = derivesFrom;
             return this;
         }
     }

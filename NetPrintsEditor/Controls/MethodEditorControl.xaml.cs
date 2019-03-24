@@ -205,7 +205,7 @@ namespace NetPrintsEditor.Controls
                             new ReflectionProviderPropertyQuery()
                                 .WithType(Method.Class.SuperType)
                                 .WithVisibility(MemberVisibility.Public)
-                                .WithPropertyType(pinTypeSpec));
+                                .WithPropertyType(pinTypeSpec, true));
 
                         Suggestions = baseProperties
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(

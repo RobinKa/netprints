@@ -524,7 +524,9 @@ namespace NetPrintsEditor.Reflection
             {
                 var searchType = GetTypeFromSpecifier(query.PropertyType);
 
-                propertySymbols = propertySymbols.Where(p => p.Type == searchType || searchType.IsSubclassOf(p.Type));
+                propertySymbols = propertySymbols.Where(p => query.PropertyTypeDerivesFrom ?
+                    p.Type.IsSubclassOf(searchType) :
+                    searchType.IsSubclassOf(p.Type));
             }
 
             return propertySymbols
