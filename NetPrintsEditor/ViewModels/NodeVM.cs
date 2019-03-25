@@ -34,6 +34,15 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush TypeNodeBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x7A, 0x30, 0x20));
 
+        private static readonly SolidColorBrush VariableGetterBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x30, 0x5A, 0x5A));
+
+        private static readonly SolidColorBrush VariableSetterBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x5A, 0x5A, 0x7A));
+
+        private static readonly SolidColorBrush MakeArrayBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x1A, 0x5A, 0x30));
+
         /// <summary>
         /// Brush for the header of the node.
         /// </summary>
@@ -71,6 +80,18 @@ namespace NetPrintsEditor.ViewModels
                 else if (Node is TypeNode)
                 {
                     return TypeNodeBrush;
+                }
+                else if (Node is VariableGetterNode)
+                {
+                    return VariableGetterBrush;
+                }
+                else if (Node is VariableSetterNode)
+                {
+                    return VariableSetterBrush;
+                }
+                else if (Node is MakeArrayNode)
+                {
+                    return MakeArrayBrush;
                 }
 
                 return DefaultNodeBrush;
