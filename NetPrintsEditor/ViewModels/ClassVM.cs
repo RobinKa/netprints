@@ -69,9 +69,12 @@ namespace NetPrintsEditor.ViewModels
             get => cls?.SuperType;
             set
             {
-                cls.SuperType = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(OverridableMethods));
+                if (!(value is null))
+                {
+                    cls.SuperType = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(OverridableMethods));
+                }
             }
         }
 

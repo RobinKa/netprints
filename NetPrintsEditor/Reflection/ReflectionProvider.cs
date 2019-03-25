@@ -194,7 +194,7 @@ namespace NetPrintsEditor.Reflection
             }
             else
             {
-                return new MethodSpecifier[] { };
+                return new MethodSpecifier[0];
             }
         }
 
@@ -233,9 +233,16 @@ namespace NetPrintsEditor.Reflection
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier(typeSpecifier).GetAllMembers()
-                .Where(member => member.Kind == SymbolKind.Field)
-                .Select(member => member.Name);
+            var symbol = GetTypeFromSpecifier(typeSpecifier);
+
+            if (symbol != null)
+            {
+                return symbol.GetAllMembers()
+                    .Where(member => member.Kind == SymbolKind.Field)
+                    .Select(member => member.Name);
+            }
+
+            return new string[0];
         }
         
         public bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b)
@@ -394,6 +401,12 @@ namespace NetPrintsEditor.Reflection
             {
                 // Get all methods of the type
                 ITypeSymbol type = GetTypeFromSpecifier(query.Type);
+
+                if (type == null)
+                {
+                    return new MethodSpecifier[0];
+                }
+
                 methodSymbols = type.GetMethods();
             }
             else
@@ -501,6 +514,12 @@ namespace NetPrintsEditor.Reflection
             {
                 // Get all properties of the type
                 ITypeSymbol type = GetTypeFromSpecifier(query.Type);
+
+                if (type == null)
+                {
+                    return new PropertySpecifier[0];
+                }
+
                 propertySymbols = type.GetAllMembers()
                     .Where(m => m.Kind == SymbolKind.Property || m.Kind == SymbolKind.Field);
             }
