@@ -654,7 +654,7 @@ namespace NetPrints.Translator
                 // If failure pin is not connected write explicit cast that throws.
                 // Otherwise check if cast object is null and execute failure
                 // path if it is.
-                if (node.CastFailedPin?.OutgoingPin == null)
+                if (node.IsPure || node.CastFailedPin.OutgoingPin == null)
                 {
                     builder.AppendLine($"{outputName} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
 
