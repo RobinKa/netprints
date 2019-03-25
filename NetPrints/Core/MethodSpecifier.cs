@@ -71,6 +71,17 @@ namespace NetPrints.Core
             private set;
         }
 
+        [DataMember]
+        [Obsolete("Use Parameters instead.")]
+        public IList<Named<BaseType>> Arguments
+        {
+            get => Parameters.Cast<Named<BaseType>>().ToList();
+            private set
+            {
+                Parameters = value.Select(arg => new MethodParameter(arg.Name, arg.Value, MethodParameterPassType.Default)).ToList();
+            }
+        }
+
         /// <summary>
         /// Specifiers for the types this method takes as arguments.
         /// </summary>

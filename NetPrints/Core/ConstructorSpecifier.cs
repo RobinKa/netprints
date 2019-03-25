@@ -14,22 +14,27 @@ namespace NetPrints.Core
     /// Specifier describing a constructor.
     /// </summary>
     [Serializable]
+    [DataContract]
     public class ConstructorSpecifier
     {
         /// <summary>
         /// Specifier for the type this constructor is for.
         /// </summary>
+        [DataMember]
         public TypeSpecifier DeclaringType
         {
             get;
+            private set;
         }
         
         /// <summary>
         /// Specifiers for the arguments this constructor takes.
         /// </summary>
+        [DataMember]
         public IList<Named<BaseType>> Arguments
         {
             get;
+            private set;
         }
 
         /// <summary>
