@@ -414,27 +414,30 @@ namespace NetPrintsEditor.Controls
 
         private void SelectWithinRectangle(Rect rectangle)
         {
-            var selectedNodes = new List<NodeVM>();
-
-            for (int i = 0; i < nodeList.Items.Count; i++)
+            if (Method != null)
             {
-                // Check if the control intersects with the rectangle
+                var selectedNodes = new List<NodeVM>();
 
-                var nodeControl = (ContentPresenter)nodeList.ItemContainerGenerator.ContainerFromIndex(i);
-                NodeVM node = (NodeVM)nodeControl.Content;
-
-                double nodeX = node.PositionX;
-                double nodeY = node.PositionY;
-                double nodeWidth = nodeControl.ActualWidth;
-                double nodeHeight = nodeControl.ActualHeight;
-
-                if (rectangle.IntersectsWith(new Rect(nodeX, nodeY, nodeWidth, nodeHeight)))
+                for (int i = 0; i < nodeList.Items.Count; i++)
                 {
-                    selectedNodes.Add(node);
-                }
-            }
+                    // Check if the control intersects with the rectangle
 
-            Method.SelectedNodes = selectedNodes;
+                    var nodeControl = (ContentPresenter)nodeList.ItemContainerGenerator.ContainerFromIndex(i);
+                    NodeVM node = (NodeVM)nodeControl.Content;
+
+                    double nodeX = node.PositionX;
+                    double nodeY = node.PositionY;
+                    double nodeWidth = nodeControl.ActualWidth;
+                    double nodeHeight = nodeControl.ActualHeight;
+
+                    if (rectangle.IntersectsWith(new Rect(nodeX, nodeY, nodeWidth, nodeHeight)))
+                    {
+                        selectedNodes.Add(node);
+                    }
+                }
+
+                Method.SelectedNodes = selectedNodes;
+            }
         }
 
         private void OnDrawCanvasLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
