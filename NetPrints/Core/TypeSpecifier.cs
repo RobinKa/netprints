@@ -206,7 +206,7 @@ namespace NetPrints.Core
                     return true;
                 }
             }
-            else if(obj is GenericType genType)
+            else if (obj is GenericType genType)
             {
                 // TODO: Check constraints
                 return true;
@@ -227,7 +227,7 @@ namespace NetPrints.Core
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return HashCode.Combine(Name, string.Join(",", GenericArguments));
         }
 
         public override string ToString()
