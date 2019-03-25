@@ -29,7 +29,6 @@ namespace NetPrintsEditor.Controls
         private bool dragging = false;
         private bool dragged = false;
         private Point dragMousePos;
-        private Point dragStartElementPosition;
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
@@ -45,7 +44,6 @@ namespace NetPrintsEditor.Controls
 
             Node.DragStart();
 
-            dragStartElementPosition = new Point(Node.PositionX, Node.PositionY);
             dragMousePos = PointToScreen(e.GetPosition(this));
 
             CaptureMouse();
