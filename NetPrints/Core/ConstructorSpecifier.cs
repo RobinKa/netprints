@@ -15,7 +15,7 @@ namespace NetPrints.Core
     /// </summary>
     [Serializable]
     [DataContract]
-    public class ConstructorSpecifier
+    public partial class ConstructorSpecifier
     {
         /// <summary>
         /// Specifier for the type this constructor is for.

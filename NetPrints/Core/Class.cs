@@ -26,6 +26,7 @@ namespace NetPrints.Core
     [Flags]
     public enum MemberVisibility
     {
+        Invalid = 0,
         Private = 1,
         Public = 2,
         Protected = 4,

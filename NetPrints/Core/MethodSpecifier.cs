@@ -39,7 +39,7 @@ namespace NetPrints.Core
     /// </summary>
     [Serializable]
     [DataContract]
-    public class MethodSpecifier
+    public partial class MethodSpecifier
     {
         /// <summary>
         /// Name of the method without any prefixes.
@@ -69,17 +69,6 @@ namespace NetPrints.Core
         {
             get;
             private set;
-        }
-
-        [DataMember]
-        [Obsolete("Use Parameters instead.")]
-        public IList<Named<BaseType>> Arguments
-        {
-            get => Parameters.Cast<Named<BaseType>>().ToList();
-            private set
-            {
-                Parameters = value.Select(arg => new MethodParameter(arg.Name, arg.Value, MethodParameterPassType.Default)).ToList();
-            }
         }
 
         /// <summary>

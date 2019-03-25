@@ -31,7 +31,7 @@ namespace NetPrints.Core
     /// Method type. Contains common things usually associated with methods such as its arguments and its name.
     /// </summary>
     [DataContract]
-    public class Method
+    public partial class Method
     {
         /// <summary>
         /// Entry node of this method where execution starts.
