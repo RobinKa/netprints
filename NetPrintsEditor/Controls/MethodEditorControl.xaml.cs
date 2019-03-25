@@ -404,18 +404,69 @@ namespace NetPrintsEditor.Controls
         private Vector dragCanvasStartOffset;
         private bool movedDuringDrag = false;
 
+        private bool boxSelect = false;
+        private Point boxSelectStartPoint;
+
         private double drawCanvasScale = 1;
         private const double DrawCanvasMinScale = 0.3;
         private const double DrawCanvasMaxScale = 1.0;
         private const double DrawCanvasScaleFactor = 1.3;
 
+        private void SelectWithinRectangle(Rect rectangle)
+        {
+            var selectedNodes = new List<NodeVM>();
+
+            for (int i = 0; i < nodeList.Items.Count; i++)
+            {
+                // Check if the control intersects with the rectangle
+
+                var nodeControl = (ContentPresenter)nodeList.ItemContainerGenerator.ContainerFromIndex(i);
+                NodeVM node = (NodeVM)nodeControl.Content;
+
+                double nodeX = node.PositionX;
+                double nodeY = node.PositionY;
+                double nodeWidth = nodeControl.ActualWidth;
+                double nodeHeight = nodeControl.ActualHeight;
+
+                if (rectangle.IntersectsWith(new Rect(nodeX, nodeY, nodeWidth, nodeHeight)))
+                {
+                    selectedNodes.Add(node);
+                }
+            }
+
+            Method.SelectedNodes = selectedNodes;
+        }
+
         private void OnDrawCanvasLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
             // Deselect node
-            if (Method?.SelectedNode != null)
+            if (Method?.SelectedNodes != null)
             {
-                Method.SelectedNode = null;
-                e.Handled = true;
+                Method.SelectedNodes = null;
+            }
+
+            boxSelect = true;
+            boxSelectStartPoint = e.GetPosition(drawCanvas);
+            Canvas.SetLeft(boxSelectionBorder, boxSelectStartPoint.X);
+            Canvas.SetTop(boxSelectionBorder, boxSelectStartPoint.Y);
+            boxSelectionBorder.Width = 0;
+            boxSelectionBorder.Height = 0;
+            boxSelectionBorder.Visibility = Visibility.Visible;
+            drawCanvas.CaptureMouse();
+
+            e.Handled = true;
+        }
+
+        private void OnDrawCanvasLeftMouseButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (boxSelect)
+            {
+                boxSelect = false;
+                drawCanvas.ReleaseMouseCapture();
+                Mouse.OverrideCursor = null;
+                boxSelectionBorder.Visibility = Visibility.Hidden;
+                SelectWithinRectangle(new Rect(Canvas.GetLeft(boxSelectionBorder), Canvas.GetTop(boxSelectionBorder), boxSelectionBorder.Width, boxSelectionBorder.Height));
+                e.Handled = movedDuringDrag;
             }
         }
 
@@ -453,6 +504,33 @@ namespace NetPrintsEditor.Controls
                 else
                 {
                     dragCanvas = false;
+                }
+
+                e.Handled = true;
+            }
+
+            if (boxSelect)
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    double x = boxSelectStartPoint.X;
+                    double y = boxSelectStartPoint.Y;
+                    double mx = e.GetPosition(drawCanvas).X;
+                    double my = e.GetPosition(drawCanvas).Y;
+
+                    double rectX = mx > x ? x : mx;
+                    double rectY = my > y ? y : my;
+                    double rectWidth = Math.Abs(x - mx);
+                    double rectHeight = Math.Abs(y - my);
+
+                    Canvas.SetLeft(boxSelectionBorder, rectX);
+                    Canvas.SetTop(boxSelectionBorder, rectY);
+                    boxSelectionBorder.Width = rectWidth;
+                    boxSelectionBorder.Height = rectHeight;
+                }
+                else
+                {
+                    boxSelect = false;
                 }
 
                 e.Handled = true;

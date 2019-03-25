@@ -277,7 +277,7 @@ namespace NetPrintsEditor
             MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node));
             if(method != null)
             {
-                method.SelectedNode = node;
+                method.SelectedNodes = new[] { node };
             }
         }
 
@@ -322,18 +322,23 @@ namespace NetPrintsEditor
 
             // Delete the currently selected node in the currently open method.
             // Only delete the node if it is not an entry or the main return node.
-            if(methodEditor?.Method?.SelectedNode != null &&
-                !(methodEditor.Method.SelectedNode.Node is EntryNode) &&
-                methodEditor.Method.SelectedNode.Node != methodEditor.Method.Method.MainReturnNode)
-            {
-                NodeVM deletedNode = methodEditor.Method.SelectedNode;
-                methodEditor.Method.SelectedNode = null;
-                
-                // Remove the node from its method
-                // This will trigger the correct events in MethodVM
-                // so everything gets disconnected properly
 
-                deletedNode.Method.Nodes.Remove(deletedNode.Node);
+            if (methodEditor?.Method?.SelectedNodes != null)
+            {
+                foreach (var selectedNode in methodEditor.Method.SelectedNodes)
+                {
+                    if (!(selectedNode.Node is EntryNode) &&
+                        selectedNode.Node != methodEditor.Method.Method.MainReturnNode)
+                    {
+                        // Remove the node from its method
+                        // This will trigger the correct events in MethodVM
+                        // so everything gets disconnected properly
+
+                        selectedNode.Method.Nodes.Remove(selectedNode.Node);
+                    }
+                }
+
+                methodEditor.Method.SelectedNodes = null;
             }
         }
 

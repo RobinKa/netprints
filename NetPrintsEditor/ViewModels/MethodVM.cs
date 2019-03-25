@@ -1,5 +1,6 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrintsEditor.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -11,23 +12,31 @@ namespace NetPrintsEditor.ViewModels
 {
     public class MethodVM : INotifyPropertyChanged
     {
-        public NodeVM SelectedNode
+        public IEnumerable<NodeVM> SelectedNodes
         {
-            get => selectedNode;
+            get => selectedNodes;
             set
             {
-                if (selectedNode != value)
+                if (selectedNodes != value)
                 {
-                    if (selectedNode != null)
+                    // Deselect old nodes
+                    if (selectedNodes != null)
                     {
-                        selectedNode.IsSelected = false;
+                        foreach (var node in selectedNodes)
+                        {
+                            node.IsSelected = false;
+                        }
                     }
 
-                    selectedNode = value;
+                    selectedNodes = value;
 
-                    if (selectedNode != null)
+                    // Select new nodes
+                    if (selectedNodes != null)
                     {
-                        selectedNode.IsSelected = true;
+                        foreach (var node in selectedNodes)
+                        {
+                            node.IsSelected = true;
+                        }
                     }
 
                     OnPropertyChanged();
@@ -35,7 +44,7 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private NodeVM selectedNode;
+        private IEnumerable<NodeVM> selectedNodes = null;
 
         public string Name
         {
@@ -166,6 +175,10 @@ namespace NetPrintsEditor.ViewModels
                 node.OutputExecPins.CollectionChanged += OnPinCollectionChanged;
                 node.InputTypePins.CollectionChanged += OnPinCollectionChanged;
                 node.OutputTypePins.CollectionChanged += OnPinCollectionChanged;
+
+                node.OnDragStart += OnNodeDragStart;
+                node.OnDragEnd += OnNodeDragEnd;
+                node.OnDragMove += OnNodeDragMove;
             }
             else
             {
@@ -175,6 +188,10 @@ namespace NetPrintsEditor.ViewModels
                 node.OutputExecPins.CollectionChanged -= OnPinCollectionChanged;
                 node.InputTypePins.CollectionChanged -= OnPinCollectionChanged;
                 node.OutputTypePins.CollectionChanged -= OnPinCollectionChanged;
+
+                node.OnDragStart -= OnNodeDragStart;
+                node.OnDragEnd -= OnNodeDragEnd;
+                node.OnDragMove -= OnNodeDragMove;
             }
 
             // (Un)assign (old)new pin connection changed events [3]
@@ -182,6 +199,68 @@ namespace NetPrintsEditor.ViewModels
             node.OutputExecPins.ToList().ForEach(p => SetupPinEvents(p, add));
             node.InputTypePins.ToList().ForEach(p => SetupPinEvents(p, add));
         }
+
+        #region Node dragging
+        double nodeDragAccumX;
+        double nodeDragAccumY;
+
+        private Dictionary<NodeVM, (double X, double Y)> nodeStartPositions = new Dictionary<NodeVM, (double, double)>();
+
+        /// <summary>
+        /// Called when a node starts dragging.
+        /// </summary>
+        private void OnNodeDragStart(NodeVM node)
+        {
+            nodeDragAccumX = 0;
+            nodeDragAccumY = 0;
+            nodeStartPositions.Clear();
+
+            // Remember the initial positions of the selected nodes
+            if (SelectedNodes != null)
+            {
+                foreach (var selectedNode in SelectedNodes)
+                {
+                    nodeStartPositions.Add(selectedNode, (selectedNode.PositionX, selectedNode.PositionY));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when a node ends dragging.
+        /// </summary>
+        private void OnNodeDragEnd(NodeVM node)
+        {
+            // Snap final position to grid
+            if (SelectedNodes != null)
+            {
+                foreach (var selectedNode in SelectedNodes)
+                {
+                    selectedNode.PositionX = selectedNode.PositionX - selectedNode.PositionX % MethodEditorControl.GridCellSize;
+                    selectedNode.PositionY = selectedNode.PositionY - selectedNode.PositionY % MethodEditorControl.GridCellSize;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when a node is dragging.
+        /// </summary>
+        private void OnNodeDragMove(NodeVM node, double dx, double dy)
+        {
+            nodeDragAccumX += dx;
+            nodeDragAccumY += dy;
+
+            // Move all selected nodes
+            if (SelectedNodes != null)
+            {
+                foreach (var selectedNode in SelectedNodes)
+                {
+                    // Set position by taking total delta and adding it to the initial position
+                    selectedNode.PositionX = nodeStartPositions[selectedNode].X + nodeDragAccumX - nodeDragAccumX % MethodEditorControl.GridCellSize;
+                    selectedNode.PositionY = nodeStartPositions[selectedNode].Y + nodeDragAccumY - nodeDragAccumY % MethodEditorControl.GridCellSize;
+                }
+            }
+        }
+        #endregion
 
         private void SetupPinEvents(NodePinVM pin, bool add)
         {

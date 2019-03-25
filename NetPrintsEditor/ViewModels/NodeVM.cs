@@ -570,6 +570,19 @@ namespace NetPrintsEditor.ViewModels
             OnPropertyChanged(nameof(ShowOverloads));
         }
 
+        #region Dragging
+        public delegate void NodeDragStartEventHandler(NodeVM node);
+        public delegate void NodeDragEndEventHandler(NodeVM node);
+        public delegate void NodeDragMoveEventHandler(NodeVM node, double dx, double dy);
+        public event NodeDragStartEventHandler OnDragStart;
+        public event NodeDragEndEventHandler OnDragEnd;
+        public event NodeDragMoveEventHandler OnDragMove;
+
+        public void DragStart() => OnDragStart?.Invoke(this);
+        public void DragEnd() => OnDragEnd?.Invoke(this);
+        public void DragMove(double dx, double dy) => OnDragMove?.Invoke(this, dx, dy);
+        #endregion
+
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 

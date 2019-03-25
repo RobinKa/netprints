@@ -27,22 +27,29 @@ namespace NetPrintsEditor.Controls
 
         #region Dragging
         private bool dragging = false;
-        private Point dragStartMousePosition;
+        private bool dragged = false;
+        private Point dragMousePos;
         private Point dragStartElementPosition;
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
 
+            dragged = false;
             dragging = true;
 
+            if (!Node.IsSelected)
+            {
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
+            }
+
+            Node.DragStart();
+
             dragStartElementPosition = new Point(Node.PositionX, Node.PositionY);
-            dragStartMousePosition = PointToScreen(e.GetPosition(this));
+            dragMousePos = PointToScreen(e.GetPosition(this));
 
             CaptureMouse();
             e.Handled = true;
-
-            UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
@@ -52,10 +59,17 @@ namespace NetPrintsEditor.Controls
             if (dragging)
             {
                 dragging = false;
+                Node.DragEnd();
 
                 ReleaseMouseCapture();
-                e.Handled = true;
             }
+
+            if (!dragged)
+            {
+                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
+            }
+
+            e.Handled = true;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -64,21 +78,24 @@ namespace NetPrintsEditor.Controls
 
             if (dragging)
             {
+                Point mousePosition = PointToScreen(e.GetPosition(this));
+                Vector offset = mousePosition - dragMousePos;
+
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    Point mousePosition = PointToScreen(e.GetPosition(this));
+                    if (offset.X != 0 && offset.Y != 0)
+                    {
+                        dragMousePos = mousePosition;
 
-                    Vector offset = mousePosition - dragStartMousePosition;
-
-                    Node.PositionX = dragStartElementPosition.X + offset.X;
-                    Node.PositionY = dragStartElementPosition.Y + offset.Y;
-
-                    Node.PositionX -= Node.PositionX % MethodEditorControl.GridCellSize;
-                    Node.PositionY -= Node.PositionY % MethodEditorControl.GridCellSize;
+                        dragged = true;
+                        Node.DragMove(offset.X, offset.Y);
+                    }
                 }
                 else
                 {
                     dragging = false;
+                    Node.DragEnd();
+                    ReleaseMouseCapture();
                 }
 
                 e.Handled = true;
