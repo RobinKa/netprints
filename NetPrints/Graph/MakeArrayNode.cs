@@ -12,6 +12,35 @@ namespace NetPrints.Graph
     public class MakeArrayNode : Node
     {
         /// <summary>
+        /// Whether this node is in predefined-size
+        /// or in initializer mode.
+        /// </summary>
+        public bool UsePredefinedSize
+        {
+            get => usePredefinedSize;
+            set
+            {
+                if (usePredefinedSize != value)
+                {
+                    usePredefinedSize = value;
+                    UpdateInputDataPins();
+                }
+            }
+        }
+
+        [DataMember]
+        private bool usePredefinedSize = false;
+
+        /// <summary>
+        /// Pin that specifies the size of the array.
+        /// Only used when UsePredefinedSize is true.
+        /// </summary>
+        public NodeInputDataPin SizePin
+        {
+            get => InputDataPins[0];
+        }
+
+        /// <summary>
         /// Specifier for the type of the elements of the array.
         /// </summary>
         public BaseType ElementType
@@ -64,6 +93,26 @@ namespace NetPrints.Graph
         {
             AddInputTypePin("ElementType");
             AddOutputDataPin("Array", ArrayType);
+        }
+
+        private void UpdateInputDataPins()
+        {
+            if (UsePredefinedSize)
+            {
+                // Remove element pins
+                while (InputDataPins.Count > 0)
+                {
+                    RemoveElementPin();
+                }
+
+                AddInputDataPin("Size", TypeSpecifier.FromType<int>());
+            }
+            else
+            {
+                // Remove size pin
+                GraphUtil.DisconnectInputDataPin(InputDataPins[0]);
+                InputDataPins.RemoveAt(0);
+            }
         }
 
         private void UpdateOutputType()

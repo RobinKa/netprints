@@ -376,6 +376,10 @@ namespace NetPrintsEditor.ViewModels
                 {
                     return constructorNode.ConstructorSpecifier;
                 }
+                else if (Node is MakeArrayNode makeArrayNode)
+                {
+                    return makeArrayNode.UsePredefinedSize ? "Use initializer list" : "Use predefined size";
+                }
 
                 return null;
             }
@@ -397,6 +401,14 @@ namespace NetPrintsEditor.ViewModels
             else if (overload is ConstructorSpecifier constructorSpecifier && Node is ConstructorNode constructorNode)
             {
                 newNode = new ConstructorNode(Node.Method, constructorSpecifier);
+            }
+            else if (overload is string overloadString && Node is MakeArrayNode makeArrayNode)
+            {
+                makeArrayNode.UsePredefinedSize = string.Equals(overloadString, "Use predefined size", StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                throw new Exception("Tried to change overload for underlying node even though it does not support overloads.");
             }
 
             if (newNode != null)
@@ -444,10 +456,6 @@ namespace NetPrintsEditor.ViewModels
 
                 // Set the node of this view model which will trigger an update
                 Node = newNode;
-            }
-            else
-            {
-                throw new Exception("Tried to change overload for underlying node even though it does not support overloads.");
             }
         }
 
@@ -582,6 +590,17 @@ namespace NetPrintsEditor.ViewModels
                 Overloads.ReplaceRange(ProjectVM.Instance.ReflectionProvider
                     .GetConstructors(constructorNode.ConstructorSpecifier.DeclaringType)
                     .Except(new ConstructorSpecifier[] { constructorNode.ConstructorSpecifier }));
+            }
+            else if (node is MakeArrayNode makeArrayNode)
+            {
+                if (makeArrayNode.UsePredefinedSize)
+                {
+                    Overloads.Replace("Use initializer list");
+                }
+                else
+                {
+                    Overloads.Replace("Use predefined size");
+                }
             }
             else
             {
