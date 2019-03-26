@@ -11,7 +11,7 @@ namespace NetPrintsEditor.Reflection
     public static class ISymbolExtensions
     {
         private static readonly Dictionary<ITypeSymbol, List<ISymbol>> allMembersCache = new Dictionary<ITypeSymbol, List<ISymbol>>();
-
+        
         /// <summary>
         /// Gets all members of a symbol including inherited ones, but not overriden ones.
         /// </summary>
@@ -144,9 +144,16 @@ namespace NetPrintsEditor.Reflection
             documentationUtil = new DocumentationUtil(compilation);
         }
 
+        private IEnumerable<INamedTypeSymbol> GetTypeNestedTypes(INamedTypeSymbol typeSymbol)
+        {
+            var typeMembers = typeSymbol.GetTypeMembers();
+            return typeMembers.Concat(typeMembers.SelectMany(t => GetTypeNestedTypes(t)));
+        }
+
         private IEnumerable<INamedTypeSymbol> GetNamespaceTypes(INamespaceSymbol namespaceSymbol)
         {
             IEnumerable<INamedTypeSymbol> types = namespaceSymbol.GetTypeMembers();
+            types = types.Concat(types.SelectMany(t => GetTypeNestedTypes(t)));
             return types.Concat(namespaceSymbol.GetNamespaceMembers().SelectMany(ns => GetNamespaceTypes(ns)));
         }
 
