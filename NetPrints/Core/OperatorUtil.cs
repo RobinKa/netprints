@@ -55,7 +55,7 @@ namespace NetPrints.Core
             ["op_RightShift"] = new OperatorInfo("Shift Right", ">>", false),
 
             // Custom (not part of .NET symbols)
-            ["op_BitwiseNot"] = new OperatorInfo("Not", "~", true),
+            ["op_BitwiseNot"] = new OperatorInfo("Bitwise NOT", "~", true),
             ["op_LogicalAnd"] = new OperatorInfo("And", "&&", false),
             ["op_LogicalOr"] = new OperatorInfo("Or", "||", false),
         };
