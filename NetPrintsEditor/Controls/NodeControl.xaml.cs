@@ -81,12 +81,12 @@ namespace NetPrintsEditor.Controls
 
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
+                    dragMousePos = mousePosition;
+                    Node.DragMove(offset.X, offset.Y);
+
                     if (offset.X != 0 && offset.Y != 0)
                     {
-                        dragMousePos = mousePosition;
-
                         dragged = true;
-                        Node.DragMove(offset.X, offset.Y);
                     }
                 }
                 else
