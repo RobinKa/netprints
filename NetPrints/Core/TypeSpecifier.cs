@@ -130,7 +130,7 @@ namespace NetPrints.Core
             : base(typeName)
         {
             IsEnum = isEnum;
-            IsInterface = IsInterface;
+            IsInterface = isInterface;
 
             if(genericArguments == null)
             {
