@@ -167,7 +167,7 @@ namespace NetPrints.Translator
 
                 if (!(pin.Node is EntryNode))
                 {
-                    builder.AppendLine($"{pin.PinType.Value.FullCodeName} {variableName};");
+                    builder.AppendLine($"{pin.PinType.Value.FullCodeName} {variableName} = default({pin.PinType.Value.FullCodeName});");
                 }
             }
         }
