@@ -487,11 +487,37 @@ namespace NetPrintsEditor.Reflection
                                 m.ReturnType.TypeKind == TypeKind.TypeParameter);
             }
 
-            return methodSymbols
+            var methodSpecifiers = methodSymbols
                 .OrderBy(m => m.ContainingNamespace?.Name)
                 .ThenBy(m => m.ContainingType?.Name)
                 .ThenBy(m => m.Name)
                 .Select(m => ReflectionConverter.MethodSpecifierFromSymbol(m));
+
+            // HACK: Add default operators which we can not find by
+            //       reflection at this time.
+            if (query.HasGenericArguments != true && query.Static != false)
+            {
+                var defaultOperatorSpecifiers = DefaultOperatorSpecifiers.All;
+
+                if (!(query.Type is null))
+                {
+                    defaultOperatorSpecifiers = defaultOperatorSpecifiers.Where(t => t.DeclaringType == query.Type);
+                }
+
+                if (!(query.ReturnType is null))
+                {
+                    defaultOperatorSpecifiers = defaultOperatorSpecifiers.Where(t => t.ReturnTypes.Any(rt => rt == query.ReturnType));
+                }
+
+                if (!(query.ArgumentType is null))
+                {
+                    defaultOperatorSpecifiers = defaultOperatorSpecifiers.Where(t => t.ArgumentTypes.Any(at => at == query.ArgumentType));
+                }
+
+                methodSpecifiers = defaultOperatorSpecifiers.Concat(methodSpecifiers);
+            }
+
+            return methodSpecifiers;
         }
 
         public IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query)

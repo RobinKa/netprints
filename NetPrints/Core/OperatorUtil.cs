@@ -34,8 +34,8 @@ namespace NetPrints.Core
             ["op_Decrement"] = new OperatorInfo("Decrement", "--", true, true),
             ["op_UnaryPlus"] = new OperatorInfo("Unary Plus", "+", true),
             ["op_UnaryNegation"] = new OperatorInfo("Unary Negation", "-", true),
-            ["op_LogicalNot"] = new OperatorInfo("Logical Not", "!", true),
-
+            ["op_LogicalNot"] = new OperatorInfo("Not", "!", true),
+            
             // Binary
             ["op_Addition"] = new OperatorInfo("Add", "+", false),
             ["op_Subtraction"] = new OperatorInfo("Subtract", "-", false),
@@ -53,6 +53,11 @@ namespace NetPrints.Core
             ["op_ExclusiveOr"] = new OperatorInfo("Bitwise XOR", "^", false),
             ["op_LeftShift"] = new OperatorInfo("Shift Left", "<<", false),
             ["op_RightShift"] = new OperatorInfo("Shift Right", ">>", false),
+
+            // Custom (not part of .NET symbols)
+            ["op_BitwiseNot"] = new OperatorInfo("Not", "~", true),
+            ["op_LogicalAnd"] = new OperatorInfo("And", "&&", false),
+            ["op_LogicalOr"] = new OperatorInfo("Or", "||", false),
         };
 
         /// <summary>
