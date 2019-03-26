@@ -201,8 +201,14 @@ namespace NetPrintsEditor.ViewModels
         }
 
         #region Node dragging
-        double nodeDragAccumX;
-        double nodeDragAccumY;
+        public double NodeDragScale
+        {
+            get;
+            set;
+        } = 1;
+
+        private double nodeDragAccumX;
+        private double nodeDragAccumY;
 
         private Dictionary<NodeVM, (double X, double Y)> nodeStartPositions = new Dictionary<NodeVM, (double, double)>();
 
@@ -246,8 +252,8 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         private void OnNodeDragMove(NodeVM node, double dx, double dy)
         {
-            nodeDragAccumX += dx;
-            nodeDragAccumY += dy;
+            nodeDragAccumX += dx * NodeDragScale;
+            nodeDragAccumY += dy * NodeDragScale;
 
             // Move all selected nodes
             if (SelectedNodes != null)

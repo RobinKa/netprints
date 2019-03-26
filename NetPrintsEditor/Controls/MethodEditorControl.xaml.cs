@@ -184,22 +184,21 @@ namespace NetPrintsEditor.Controls
 
                         suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                            .WithVisibility(MemberVisibility.Public)
-                            .WithStatic(false)
-                            .WithType(pinTypeSpec)));
+                                .WithVisibility(MemberVisibility.Public)
+                                .WithStatic(false)
+                                .WithType(pinTypeSpec)));
 
                         // Add methods of the super type that can accept the pin type as argument
-                        suggestions = suggestions
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
+                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            new ReflectionProviderMethodQuery()
                                 .WithVisibility(MemberVisibility.ProtectedOrPublic)
                                 .WithStatic(false)
                                 .WithArgumentType(pinTypeSpec)
                                 .WithType(Method.Class.SuperType)));
 
-                            // Add static functions taking the type of the pin
-                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
+                        // Add static functions taking the type of the pin
+                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            new ReflectionProviderMethodQuery()
                                 .WithArgumentType(pinTypeSpec)
                                 .WithVisibility(MemberVisibility.Public)
                                 .WithStatic(true)));
@@ -407,6 +406,19 @@ namespace NetPrintsEditor.Controls
         private bool boxSelect = false;
         private Point boxSelectStartPoint;
 
+        /// <summary>
+        /// Transform scale of the canvas.
+        /// </summary>
+        public double DrawCanvasScale
+        {
+            get => drawCanvasScale;
+            set
+            {
+                drawCanvasScale = value;
+                Method.NodeDragScale = 1 / drawCanvasScale;
+            }
+        }
+
         private double drawCanvasScale = 1;
         private const double DrawCanvasMinScale = 0.3;
         private const double DrawCanvasMaxScale = 1.0;
@@ -553,33 +565,33 @@ namespace NetPrintsEditor.Controls
 
         private void OnMouseWheelScroll(object sender, MouseWheelEventArgs e)
         {
-            double oldScale = drawCanvasScale;
+            double oldScale = DrawCanvasScale;
 
             if (e.Delta < 0)
             {
-                drawCanvasScale /= DrawCanvasScaleFactor;
+                DrawCanvasScale /= DrawCanvasScaleFactor;
             }
             else
             {
-                drawCanvasScale *= DrawCanvasScaleFactor;
+                DrawCanvasScale *= DrawCanvasScaleFactor;
             }
 
             // Clamp scale between min and max
-            if (drawCanvasScale < DrawCanvasMinScale)
+            if (DrawCanvasScale < DrawCanvasMinScale)
             {
-                drawCanvasScale = DrawCanvasMinScale;
+                DrawCanvasScale = DrawCanvasMinScale;
             }
-            else if (drawCanvasScale > DrawCanvasMaxScale)
+            else if (DrawCanvasScale > DrawCanvasMaxScale)
             {
-                drawCanvasScale = DrawCanvasMaxScale;
+                DrawCanvasScale = DrawCanvasMaxScale;
             }
 
             Vector mousePos = (Vector)e.GetPosition(drawCanvas);
 
-            drawCanvas.LayoutTransform = new ScaleTransform(drawCanvasScale, drawCanvasScale);
+            drawCanvas.LayoutTransform = new ScaleTransform(DrawCanvasScale, DrawCanvasScale);
 
             // Translate if the scale did not stay the same
-            if (oldScale != drawCanvasScale)
+            if (oldScale != DrawCanvasScale)
             {
                 TranslateTransform currentTransform = drawCanvas.RenderTransform as TranslateTransform;
                 Vector currentOffset = currentTransform != null ?
@@ -598,7 +610,7 @@ namespace NetPrintsEditor.Controls
 
         private void ResetDrawCanvasTransform()
         {
-            drawCanvasScale = 1;
+            DrawCanvasScale = 1;
             dragCanvas = false;
 
             drawCanvas.RenderTransform = new TranslateTransform(0, 0);
