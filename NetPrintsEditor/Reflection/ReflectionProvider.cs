@@ -450,7 +450,7 @@ namespace NetPrintsEditor.Reflection
                     (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Private) ? wantPrivate :
                     (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Internal) ? wantInternal :
                     (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal) ? wantProtectedAndInternal :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndInternal :
+                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndFriend :
                     (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrFriend) ? wantProtectedOrFriend :
                     (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal) ? wantProtectedOrInternal :
                     (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Friend) ? wantFriend : false);
@@ -556,7 +556,7 @@ namespace NetPrintsEditor.Reflection
                     (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Private) ? wantPrivate :
                     (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Internal) ? wantInternal :
                     (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal) ? wantProtectedAndInternal :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndInternal :
+                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndFriend :
                     (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrFriend) ? wantProtectedOrFriend :
                     (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal) ? wantProtectedOrInternal :
                     (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Friend) ? wantFriend : false);
