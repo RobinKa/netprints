@@ -153,6 +153,18 @@ namespace NetPrintsEditor
             }
         }
 
+        private void OnProjectButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SettingsFlyout.IsOpen = false;
+            ProjectFlyout.IsOpen = !ProjectFlyout.IsOpen;
+        }
+
+        private void OnSettingsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ProjectFlyout.IsOpen = false;
+            SettingsFlyout.IsOpen = !SettingsFlyout.IsOpen;
+        }
+
         private void OnOpenProjectClicked(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -162,12 +174,14 @@ namespace NetPrintsEditor
 
             if (openFileDialog.ShowDialog() == true)
             {
+                ProjectFlyout.IsOpen = false;
                 LoadProject(openFileDialog.FileName);
             }
         }
 
         private void OnSaveProjectClicked(object sender, RoutedEventArgs e)
         {
+            ProjectFlyout.IsOpen = false;
             PromptProjectSave();
         }
 
@@ -210,7 +224,11 @@ namespace NetPrintsEditor
             ProjectVM oldProject = Project;
             Project = ProjectVM.CreateNew("MyProject", "MyNamespace");
 
-            if (!PromptProjectSave())
+            if (PromptProjectSave())
+            {
+                ProjectFlyout.IsOpen = false;
+            }
+            else
             {
                 // Restore old project if we didn't create a new one.
                 Project = oldProject;

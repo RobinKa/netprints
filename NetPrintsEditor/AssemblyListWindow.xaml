@@ -27,9 +27,9 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
-            <Button Grid.Column="0" Margin="0,0,2,0" Content="Assembly" Click="OnAddAssemblyReferenceClicked" FontSize="12"/>
-            <Button Grid.Column="1" Margin="2,0,0,0" Content="Source code" Click="OnAddSourceDirectoryReferenceClicked" FontSize="12"/>
+
+            <Button Grid.Column="0" Style="{StaticResource MetroFlatButton}" Margin="0,0,2,0" Content="Assembly" Click="OnAddAssemblyReferenceClicked" FontSize="12"/>
+            <Button Grid.Column="1" Style="{StaticResource MetroFlatButton}" Margin="2,0,0,0" Content="Source code" Click="OnAddSourceDirectoryReferenceClicked" FontSize="12"/>
         </Grid>
             
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
