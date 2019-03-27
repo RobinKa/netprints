@@ -52,7 +52,7 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition/>
                 <ColumnDefinition Width="5" />
@@ -82,11 +82,13 @@
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Column="0" Content="-" Click="OnRemoveMethodClicked" />
-                                    <Label Grid.Column="1" Content="{Binding Name}" PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
-                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold" />
+                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </Label>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

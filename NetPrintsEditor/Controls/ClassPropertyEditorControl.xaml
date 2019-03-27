@@ -32,7 +32,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label Content="{Binding ElementName=wnd, Path=Class.Name}" FontSize="24px" HorizontalContentAlignment="Center" />
+        <Label FontSize="24px" HorizontalContentAlignment="Center">
+            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding ElementName=wnd, Path=Class.Name}" />
+        </Label>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

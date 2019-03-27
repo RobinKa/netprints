@@ -14,8 +14,10 @@
     </UserControl.Resources>
 
     <StackPanel>
-        <Label Content="{Binding ElementName=wnd, Path=Method.Name}" FontSize="24px" HorizontalContentAlignment="Center" />
-
+        <Label FontSize="24px" HorizontalContentAlignment="Center">
+            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding ElementName=wnd, Path=Method.Name}" />
+        </Label>
+        
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

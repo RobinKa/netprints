@@ -33,7 +33,7 @@
 
             <TextBox Background="Transparent" x:Name="searchText" TextChanged="OnSearchTextChanged" />
 
-            <ListView Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding ElementName=ctrl, Path=Items}" FontFamily="Segoe UI" Foreground="#FFC9C9C9">
+            <ListView Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding ElementName=ctrl, Path=Items}" Foreground="#FFC9C9C9">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />

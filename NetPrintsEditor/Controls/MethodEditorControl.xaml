@@ -104,7 +104,7 @@
                                              MouseLeave="OnVariableGetSetMouseLeave" OnVariableGetSet="OnVariableSetClicked" />
         </Canvas>
 
-        <Label Content="{Binding ElementName=methodEditorWindow, Path=Method.Name}" FontFamily="Segoe UI" FontWeight="Bold"
+        <Label Content="{Binding ElementName=methodEditorWindow, Path=Method.Name}" FontWeight="Bold"
                FontSize="32" VerticalContentAlignment="Bottom" IsHitTestVisible="False" Background="Transparent" Foreground="#CCEEEEEE" />
     </Grid>
 </UserControl>
