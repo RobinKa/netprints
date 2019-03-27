@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using MahApps.Metro.Controls;
+using Microsoft.Win32;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace NetPrintsEditor
     /// <summary>
     /// Interaction logic for MainEditorWindow.xaml
     /// </summary>
-    public partial class MainEditorWindow : Window
+    public partial class MainEditorWindow : MetroWindow
     {
         public static DependencyProperty ProjectProperty = DependencyProperty.Register(
             nameof(Project), typeof(ProjectVM), typeof(MainEditorWindow));

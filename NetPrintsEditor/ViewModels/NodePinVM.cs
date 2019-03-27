@@ -245,7 +245,13 @@ namespace NetPrintsEditor.ViewModels
                     
                     if (t != null && !typeSpecifier.IsEnum)
                     {
-                        p.UnconnectedValue = Convert.ChangeType(value, t);
+                        try
+                        {
+                            p.UnconnectedValue = Convert.ChangeType(value, t);
+                        }
+                        catch (InvalidCastException ex)
+                        {
+                        }
                     }
                     else
                     {

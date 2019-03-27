@@ -1,4 +1,5 @@
-﻿<Window
+﻿<mah:MetroWindow
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"        
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,7 +10,6 @@
         mc:Ignorable="d"
         Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
         Height="720" Width="1280"
-        Background="#FF404040"
         x:Name="classWindow">
     <Window.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
@@ -42,10 +42,10 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="compileButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClicked"/>
-            <Button Grid.Column="1" x:Name="runButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Run" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnRunButtonClicked" />
-            <Button Grid.Column="2" x:Name="classPropertiesButton" Margin="5" Content="Class" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnClassPropertiesClicked" />
-            <Button Grid.Column="3" x:Name="saveButton" Margin="5" Content="Save" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnSaveButtonClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnCompileButtonClicked"/>
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Run" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnRunButtonClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton" Margin="5" Content="Class" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnClassPropertiesClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="3" x:Name="saveButton" Margin="5" Content="Save" FontWeight="Bold" FontFamily="Verdana" FontSize="16" Click="OnSaveButtonClicked" />
         </Grid>
 
         <Grid Grid.Row="1">
@@ -67,9 +67,9 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
@@ -79,12 +79,12 @@
                             <DataTemplate>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
                                         <ColumnDefinition Width="30" />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                    <Button Grid.Column="0" Content="-" Click="OnRemoveMethodClicked" />
+                                    <Label Grid.Column="1" Content="{Binding Name}" PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
                                            MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold" />
-                                    <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveMethodClicked" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -92,17 +92,17 @@
 
                     <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
 
-                    <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
+                    <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 
-                <GridSplitter Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <GridSplitter Background="DarkGreen" Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
@@ -127,7 +127,7 @@
                 </Grid>
             </Grid>
 
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <GridSplitter Background="DarkGreen" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
@@ -139,15 +139,15 @@
                 
                 <Controls:MethodEditorControl x:Name="methodEditor" />
 
-                <GridSplitter Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <GridSplitter Background="DarkGreen" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
                 <ListView Grid.Row="2" ItemsSource="{Binding ElementName=classWindow, Path=Class.Project.LastCompileErrors}" />
 
                 <Label Grid.Row="3" Content="{Binding ElementName=classWindow, Path=Class.Project.CompilationMessage}" />
             </Grid>
-            
 
-            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+
+            <GridSplitter Background="DarkGreen" Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
 
             <TabControl x:Name="viewerTabControl" Grid.Column="5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <TabControl.ItemContainerStyle>
@@ -170,4 +170,4 @@
             </TabControl>
         </Grid>
     </Grid>
-</Window>
+</mah:MetroWindow>

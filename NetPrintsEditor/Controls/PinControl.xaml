@@ -76,10 +76,10 @@
         
         <TextBox Grid.Column="2" 
                     Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
-                    Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3" />
+                    Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
 
         <ComboBox Grid.Column="2"
-                  Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" Margin="3" 
+                  Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" 
                   SelectedItem="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
                   ItemsSource="{Binding ElementName=pinWindow, Path=Pin.PossibleEnumNames}"
                   />

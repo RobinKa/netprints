@@ -1,4 +1,6 @@
-﻿<Window x:Class="NetPrintsEditor.MainEditorWindow"
+﻿<mah:MetroWindow
+        x:Class="NetPrintsEditor.MainEditorWindow"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,7 +9,6 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:ModelsAlias="clr-namespace:NetPrintsEditor.Models"
         mc:Ignorable="d"
-        Background="#FF404040"
         Height="400" Width="600"
         Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
         x:Name="mainEditorWindow">
@@ -21,13 +22,13 @@
         </ObjectDataProvider>
     </Window.Resources>
     
-    <Grid>
+    <Grid Margin="5">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -37,14 +38,14 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            
-            <Button Content="Create Project" Click="OnCreateProjectClicked" Padding="5" FontSize="20"/>
-            <Button Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" Padding="5" FontSize="20"/>
-            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" Padding="5" FontSize="20"/>
+
+            <Button Margin="4" Content="Create Project" Click="OnCreateProjectClicked" FontSize="20"/>
+            <Button Margin="4" Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" FontSize="20"/>
+            <Button Margin="4" Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" FontSize="20"/>
         </Grid>
         
         <Grid Grid.Row="1">
-            <Button Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" Padding="5" FontSize="16"/>
+            <Button Margin="4" Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" FontSize="16"/>
         </Grid>
 
         <Grid Grid.Row="2">
@@ -53,8 +54,8 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontSize="20" />
-            <Button Grid.Column="1" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontSize="20" />
+            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontSize="20" />
+            <Button Margin="4" Grid.Column="1" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontSize="20" />
         </Grid>
 
         <Grid Grid.Row="3">
@@ -62,17 +63,17 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="20" />
-            <Button IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
+            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="20" />
+            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
         </Grid>
 
         <ComboBox Grid.Row="4"
-            FontSize="16"
+            FontSize="16" Margin="4" 
             IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
             ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
             SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
 
-        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Margin="5" Grid.Row="5" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -81,12 +82,12 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
-                            <Button Content="{Binding FullName}" Click="OnClassButtonClicked" />
-                            <Button Grid.Column="1" Content="-" Click="OnRemoveClassButtonClicked" />
+                            <Button Margin="4" Content="{Binding FullName}" Click="OnClassButtonClicked" />
+                            <Button Margin="4" Grid.Column="1" Content="-" Click="OnRemoveClassButtonClicked" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
     </Grid>
-</Window>
+</mah:MetroWindow>

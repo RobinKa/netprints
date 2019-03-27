@@ -102,7 +102,7 @@ namespace NetPrintsEditor.ViewModels
             new SolidColorBrush(Color.FromArgb(0xCC, 0x30, 0x30, 0x30));
 
         private static readonly SolidColorBrush SelectedBorderBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xEE, 0x50));
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x00, 0x99, 0x00));
 
         /// <summary>
         /// Brush for the border of the node.

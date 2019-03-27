@@ -317,9 +317,9 @@ namespace NetPrintsEditor.ViewModels
                     {
                         NodeOutputDataPin connPin = idp.IncomingPin as NodeOutputDataPin;
                         pin.ConnectedPin = Nodes
-                            .Single(n => n.Node == connPin.Node)
-                            .OutputDataPins
-                            .Single(x => x.Pin == connPin);
+                            .SingleOrDefault(n => n.Node == connPin.Node)
+                            ?.OutputDataPins
+                            ?.Single(x => x.Pin == connPin);
                     }
                     else
                     {

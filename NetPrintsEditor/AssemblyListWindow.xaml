@@ -1,11 +1,12 @@
-﻿<Window x:Class="NetPrintsEditor.AssemblyListWindow"
+﻿<mah:MetroWindow
+        x:Class="NetPrintsEditor.AssemblyListWindow"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
         mc:Ignorable="d"
-        Background="#FF404040"
         Height="400" Width="600"
         Title="Assemblies"
         x:Name="assemblyListWindow" WindowStyle="ToolWindow">
@@ -37,7 +38,7 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="200" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
                             <Label Content="{Binding Reference}" Background="#FF333333" BorderBrush="#FF444444" />
@@ -51,4 +52,4 @@
             </ItemsControl>
         </ScrollViewer>
     </Grid>
-</Window>
+</mah:MetroWindow>

@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using MahApps.Metro.Controls;
+using Microsoft.Win32;
 using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
@@ -12,7 +13,7 @@ namespace NetPrintsEditor
     /// <summary>
     /// Interaction logic for AssemblyListWindow.xaml
     /// </summary>
-    public partial class AssemblyListWindow : Window
+    public partial class AssemblyListWindow : MetroWindow
     {
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(
             nameof(Project), typeof(ProjectVM), typeof(AssemblyListWindow));

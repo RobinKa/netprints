@@ -25,7 +25,9 @@
     <None Remove="Resources\Type_16x.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0262" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
+    <PackageReference Include="System.Management" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetPrints\NetPrints.csproj" />

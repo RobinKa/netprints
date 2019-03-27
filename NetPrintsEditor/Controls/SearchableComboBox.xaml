@@ -9,12 +9,25 @@
              d:DesignHeight="300" d:DesignWidth="300" x:Name="ctrl" Loaded="OnLoaded">
     <UserControl.Resources>
         <converters:SuggestionListConverter x:Key="converter" />
+
+        <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource MetroListView}">
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel IsItemsHost="True"
+                                KeyboardNavigation.DirectionalNavigation="Contained"
+                                VirtualizationMode="Recycling" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     
     <Border BorderBrush="#FF222222" Background="#DD333333" BorderThickness="2" CornerRadius="4">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 

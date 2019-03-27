@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using MahApps.Metro.Controls;
+using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Controls;
@@ -16,7 +17,7 @@ namespace NetPrintsEditor
     /// <summary>
     /// Interaction logic for ClassEditorWindow.xaml
     /// </summary>
-    public partial class ClassEditorWindow : Window
+    public partial class ClassEditorWindow : MetroWindow
     {
         public ClassVM Class
         {

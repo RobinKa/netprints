@@ -43,7 +43,7 @@
                 </DrawingBrush>
             </Canvas.Background>
 
-            <Border x:Name="boxSelectionBorder" Background="LightBlue" Opacity="0.5" BorderThickness="1" BorderBrush="Blue" CornerRadius="1" />
+            <Border x:Name="boxSelectionBorder" Background="#3300FF00" BorderThickness="1" BorderBrush="#FF00CC00" CornerRadius="1" />
 
             <ItemsControl Panel.ZIndex="0" x:Name="nodeList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.Nodes}">
                 <ItemsControl.ItemsPanel>

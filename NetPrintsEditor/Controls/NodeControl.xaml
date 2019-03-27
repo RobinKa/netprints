@@ -94,9 +94,9 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <StackPanel Margin="4" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Width="20" Height="20" Content="+" Click="OnLeftPinsPlusClicked" />
-                        <Button Width="20" Height="20" Content="-" Click="OnLeftPinsMinusClicked" />
+                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
+                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="+" Click="OnLeftPinsPlusClicked" />
+                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="-" Click="OnLeftPinsMinusClicked" />
                     </StackPanel>
                 </StackPanel>
 
@@ -125,9 +125,9 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Width="20" Height="20" Content="+" Click="OnRightPinsPlusClicked" />
-                        <Button Width="20" Height="20" Content="-" Click="OnRightPinsMinusClicked" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
+                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="+" Click="OnRightPinsPlusClicked" />
+                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="-" Click="OnRightPinsMinusClicked" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
