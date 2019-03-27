@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace NetPrintsEditor.Compilation
 {
@@ -7,6 +8,7 @@ namespace NetPrintsEditor.Compilation
     /// </summary>
     [DataContract]
     [KnownType(typeof(LocalFrameworkAssemblyName))]
+    [Obsolete]
     public class LocalAssemblyName
     {
         /// <summary>

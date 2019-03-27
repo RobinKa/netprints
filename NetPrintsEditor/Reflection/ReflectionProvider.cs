@@ -5,6 +5,8 @@ using NetPrints.Core;
 using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace NetPrintsEditor.Reflection
 {
@@ -116,31 +118,62 @@ namespace NetPrintsEditor.Reflection
         private readonly CSharpCompilation compilation;
         private readonly DocumentationUtil documentationUtil;
 
-        public ReflectionProvider(IEnumerable<string> assemblyPaths)
+        private static (EmitResult, Stream) CompileInMemory(CSharpCompilation compilation)
         {
-            compilation = CSharpCompilation.Create("C")
-                .AddReferences(assemblyPaths.Select(path =>
+            Stream stream = new MemoryStream();
+            var compilationResults = compilation.Emit(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            return (compilationResults, stream);
+        }
+
+        /// <summary>
+        /// Creates a ReflectionProvider given paths to assemblies and source files.
+        /// </summary>
+        /// <param name="assemblyPaths">Paths to assemblies.</param>
+        /// <param name="sourcePaths">Paths to source files.</param>
+        public ReflectionProvider(IEnumerable<string> assemblyPaths, IEnumerable<string> sourcePaths, IEnumerable<string> sources)
+        {
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+
+            // Create assembly metadata references
+            var assemblyReferences = assemblyPaths.Select(path =>
+            {
+                DocumentationProvider documentationProvider = DocumentationProvider.Default;
+
+                // Try to find the documentation in the framework doc path
+                string docPath = Path.ChangeExtension(path, ".xml");
+                if (!File.Exists(docPath))
                 {
-                    DocumentationProvider documentationProvider = DocumentationProvider.Default;
+                    docPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                        "Reference Assemblies/Microsoft/Framework/.NETFramework/v4.X",
+                        $"{Path.GetFileNameWithoutExtension(path)}.xml");
+                }
 
-                    // Try to find the documentation in the framework doc path
-                    string docPath = Path.ChangeExtension(path, ".xml");
-                    if (!File.Exists(docPath))
-                    {
-                        docPath = Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                            "Reference Assemblies/Microsoft/Framework/.NETFramework/v4.X",
-                            $"{Path.GetFileNameWithoutExtension(path)}.xml");
-                    }
+                if (File.Exists(docPath))
+                {
+                    documentationProvider = XmlDocumentationProvider.CreateFromFile(docPath);
+                }
 
-                    if (File.Exists(docPath))
-                    {
-                        documentationProvider = XmlDocumentationProvider.CreateFromFile(docPath);
-                    }
-                   
-                    return MetadataReference.CreateFromFile(path, documentation: documentationProvider);
-                }));
+                return MetadataReference.CreateFromFile(path, documentation: documentationProvider);
+            });
 
+            // Create syntax trees from sources
+            sources = sources.Concat(sourcePaths.Select(path => File.ReadAllText(path))).Distinct();
+            var syntaxTrees = sources.Select(source => SyntaxFactory.ParseSyntaxTree(source));
+
+            compilation = CSharpCompilation.Create("C", syntaxTrees, assemblyReferences, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+            // Try to compile, on success create a new compilation that references the created assembly instead of the sources.
+            // The compilation will fail eg. if the sources have references to the not-yet-compiled assembly.
+            (EmitResult compilationResults, Stream stream) = CompileInMemory(compilation);
+            
+            if (compilationResults.Success)
+            {
+                assemblyReferences = assemblyReferences.Concat(new[] { MetadataReference.CreateFromStream(stream) });
+                compilation = CSharpCompilation.Create("C", references: assemblyReferences);
+            }
+            
             documentationUtil = new DocumentationUtil(compilation);
         }
 
@@ -235,7 +268,14 @@ namespace NetPrintsEditor.Reflection
         
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {
-            return GetTypeFromSpecifier<INamedTypeSymbol>(typeSpecifier)?.Constructors.Select(c => ReflectionConverter.ConstructorSpecifierFromSymbol(c));
+            var symbol = GetTypeFromSpecifier<INamedTypeSymbol>(typeSpecifier);
+
+            if (symbol != null)
+            {
+                return symbol.Constructors.Select(c => ReflectionConverter.ConstructorSpecifierFromSymbol(c));
+            }
+
+            return new ConstructorSpecifier[0];
         }
 
         public IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier)

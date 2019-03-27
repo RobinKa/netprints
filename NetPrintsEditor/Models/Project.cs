@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NetPrintsEditor.Models
 {
@@ -23,15 +25,11 @@ namespace NetPrintsEditor.Models
     [DataContract]
     public class Project
     {
-        private static readonly LocalAssemblyName[] DefaultAssemblies = new LocalAssemblyName[]
+        private static readonly IEnumerable<FrameworkAssemblyReference> DefaultReferences = new FrameworkAssemblyReference[]
         {
-            new LocalFrameworkAssemblyName("System", ".NETFramework/v4.5"),
-            new LocalFrameworkAssemblyName("System.Core", ".NETFramework/v4.5"),
-            new LocalFrameworkAssemblyName("System.Collections", ".NETFramework/v4.5/Facades"),
-            new LocalFrameworkAssemblyName("System.IO", ".NETFramework/v4.5/Facades"),
-            new LocalFrameworkAssemblyName("System.Linq", ".NETFramework/v4.5/Facades"),
-            new LocalFrameworkAssemblyName("System.Threading", ".NETFramework/v4.5/Facades"),
-            new LocalFrameworkAssemblyName("mscorlib", ".NETFramework/v4.5"),
+            new FrameworkAssemblyReference(".NETFramework/v4.5/System.dll"),
+            new FrameworkAssemblyReference(".NETFramework/v4.5/System.Core.dll"),
+            new FrameworkAssemblyReference(".NETFramework/v4.5/mscorlib.dll"),
         };
 
         private static readonly DataContractSerializer ProjectSerializer = new DataContractSerializer(typeof(Project));
@@ -98,12 +96,34 @@ namespace NetPrintsEditor.Models
         /// <summary>
         /// Assemblies referenced by this project.
         /// </summary>
-        [DataMember]
+        [DataMember(IsRequired = false, EmitDefaultValue = false)]
+        [Obsolete("Use References instead.")]
         public ObservableRangeCollection<LocalAssemblyName> Assemblies
+        {
+            get => null;
+            set
+            {
+                if (value != null)
+                {
+                    References = new ObservableRangeCollection<CompilationReference>();
+
+                    var frameworkAssemblyNames = value.OfType<LocalFrameworkAssemblyName>().ToList();
+
+                    frameworkAssemblyNames.ForEach(a => References.Add(new FrameworkAssemblyReference($"{a.FrameworkVersion}/{a.FrameworkAssemblyName}.dll")));
+                    value.Except(frameworkAssemblyNames).ToList().ForEach(a => References.Add(new AssemblyReference(a.Path)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// References of this project.
+        /// </summary>
+        [DataMember]
+        public ObservableRangeCollection<CompilationReference> References
         {
             get;
             set;
-        } = new ObservableRangeCollection<LocalAssemblyName>();
+        } = new ObservableRangeCollection<CompilationReference>();
 
         /// <summary>
         /// Determines what gets output during compilation.
@@ -138,9 +158,9 @@ namespace NetPrintsEditor.Models
         /// </summary>
         /// <param name="name">Name of the project.</param>
         /// <param name="defaultNamespace">Default namespace of the project.</param>
-        /// <param name="addDefaultAssemblies">Whether to add default assemblies to the project.</param>
+        /// <param name="addDefaultReferences">Whether to add default references to the project.</param>
         /// <returns>The created project.</returns>
-        public static Project CreateNew(string name, string defaultNamespace, bool addDefaultAssemblies=true,
+        public static Project CreateNew(string name, string defaultNamespace, bool addDefaultReferences=true,
             ProjectCompilationOutput compilationOutput=ProjectCompilationOutput.All)
         {
             Project project = new Project()
@@ -150,9 +170,9 @@ namespace NetPrintsEditor.Models
                 CompilationOutput = compilationOutput
             };
 
-            if (addDefaultAssemblies)
+            if (addDefaultReferences)
             {
-                project.Assemblies.AddRange(DefaultAssemblies);
+                project.References.AddRange(DefaultReferences);
             }
 
             return project;

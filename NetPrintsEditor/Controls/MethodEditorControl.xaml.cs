@@ -415,7 +415,10 @@ namespace NetPrintsEditor.Controls
             set
             {
                 drawCanvasScale = value;
-                Method.NodeDragScale = 1 / drawCanvasScale;
+                if (Method != null)
+                {
+                    Method.NodeDragScale = 1 / drawCanvasScale;
+                }
             }
         }
 

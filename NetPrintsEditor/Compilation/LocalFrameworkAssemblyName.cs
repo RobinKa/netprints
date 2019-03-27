@@ -7,6 +7,7 @@ namespace NetPrintsEditor.Compilation
     /// Metadata for framework assemblies.
     /// </summary>
     [DataContract]
+    [Obsolete]
     public class LocalFrameworkAssemblyName : LocalAssemblyName
     {
         /// <summary>

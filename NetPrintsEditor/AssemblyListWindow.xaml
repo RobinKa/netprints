@@ -3,30 +3,48 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
         mc:Ignorable="d"
         Background="#FF404040"
         Height="400" Width="600"
         Title="Assemblies"
         x:Name="assemblyListWindow" WindowStyle="ToolWindow">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Content="Add" Click="OnAddAssemblyFromPathButtonClicked" Padding="5" FontSize="14"/>
-        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="0" Content="Add assembly" Click="OnAddAssemblyReferenceClicked" Padding="5" FontSize="14"/>
+            <Button Grid.Column="1" Content="Add source code directory" Click="OnAddSourceDirectoryReferenceClicked" Padding="5" FontSize="14"/>
+        </Grid>
+            
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="assemblyList" ItemsSource="{Binding ElementName=assemblyListWindow, Path=Project.Assemblies}">
+            <ItemsControl x:Name="assemblyList" ItemsSource="{Binding ElementName=assemblyListWindow, Path=Project.References}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
+                                <ColumnDefinition Width="140" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="{Binding}" Background="#FF333333" BorderBrush="#FF444444" />
-                            <Button Grid.Column="1" Content="-" Click="OnRemoveAssemblyButtonClicked" />
+                            <Label Content="{Binding Reference}" Background="#FF333333" BorderBrush="#FF444444" />
+                            <CheckBox Grid.Column="1" Content="Include in compilation" IsChecked="{Binding IncludeInCompilation}"
+                                      VerticalAlignment="Center"
+                                      Visibility="{Binding ShowIncludeInCompilationCheckBox, Converter={StaticResource ResourceKey=BoolToVis}}" />
+                            <Button Grid.Column="2" Content="-" Click="OnRemoveReferenceClicked" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

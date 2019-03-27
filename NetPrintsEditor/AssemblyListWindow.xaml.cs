@@ -2,6 +2,7 @@
 using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,12 +30,7 @@ namespace NetPrintsEditor
             Project = project;
         }
 
-        private void OnAddAssemblyButtonClicked(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void OnAddAssemblyFromPathButtonClicked(object sender, RoutedEventArgs e)
+        private void OnAddAssemblyReferenceClicked(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -42,11 +38,12 @@ namespace NetPrintsEditor
             {
                 try
                 {
-                    LocalAssemblyName localAssemblyName = LocalAssemblyName.FromPath(openFileDialog.FileName);
+                    var assemblyReference = new AssemblyReference(openFileDialog.FileName);
                     
-                    if (!Project.Assemblies.Any(n => n.Name == localAssemblyName.Name || n.Path == localAssemblyName.Path))
+                    if (!Project.References.OfType<AssemblyReference>().Any(r =>
+                        string.Equals(Path.GetFullPath(assemblyReference.AssemblyPath), Path.GetFullPath(assemblyReference.AssemblyPath), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Project.Assemblies.Add(localAssemblyName);
+                        Project.References.Add(new CompilationReferenceVM(assemblyReference));
                     }
                 }
                 catch (Exception ex)
@@ -56,11 +53,33 @@ namespace NetPrintsEditor
             }
         }
 
-        private void OnRemoveAssemblyButtonClicked(object sender, RoutedEventArgs e)
+        private void OnAddSourceDirectoryReferenceClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is LocalAssemblyName assemblyName)
+            var openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Project.Assemblies.Remove(assemblyName);
+                try
+                {
+                    var sourceDirectoryReference = new SourceDirectoryReference(openFolderDialog.SelectedPath);
+
+                    if (!Project.References.OfType<SourceDirectoryReference>().Any(r =>
+                        string.Equals(Path.GetFullPath(r.SourceDirectory), Path.GetFullPath(sourceDirectoryReference.SourceDirectory), StringComparison.OrdinalIgnoreCase)))
+                    {
+                        Project.References.Add(new CompilationReferenceVM(sourceDirectoryReference));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to add sources at {openFolderDialog.SelectedPath}:\n\n{ex}");
+                }
+            }
+        }
+
+        private void OnRemoveReferenceClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is CompilationReferenceVM reference)
+            {
+                Project.References.Remove(reference);
             }
         }
     }

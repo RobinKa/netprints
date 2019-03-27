@@ -93,24 +93,24 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableRangeCollection<string> lastCompileErrors;
 
-        public ObservableRangeCollection<LocalAssemblyName> Assemblies
+        public ObservableViewModelCollection<CompilationReferenceVM, CompilationReference> References
         {
-            get => project.Assemblies;
+            get => references;
             set
             {
-                if(project.Assemblies != value)
+                if (references != value)
                 {
-                    if(project.Assemblies != null)
+                    if (references != null)
                     {
-                        project.Assemblies.CollectionChanged -= OnAssembliesChanged;
+                        project.References.CollectionChanged -= OnReferencesChanged;
                     }
 
-                    project.Assemblies = value;
+                    references = value;
 
-                    if (project.Assemblies != null)
+                    if (references != null)
                     {
-                        value.CollectionChanged += OnAssembliesChanged;
-                        FixAssemblyPaths();
+                        value.CollectionChanged += OnReferencesChanged;
+                        FixReferencePaths();
                     }
 
                     ReloadReflectionProvider();
@@ -119,9 +119,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private void OnAssembliesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private ObservableViewModelCollection<CompilationReferenceVM, CompilationReference> references;
+
+        private void OnReferencesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            FixAssemblyPaths();
+            FixReferencePaths();
             ReloadReflectionProvider();
         }
 
@@ -184,23 +186,12 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (project != value)
                 {
-                    if(project != null)
-                    {
-                        Assemblies.CollectionChanged -= OnAssembliesChanged;
-                    }
-
                     project = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsProjectOpen));
                     OnPropertyChanged(nameof(CanCompile));
-                    
-                    if (project != null)
-                    {
-                        Assemblies.CollectionChanged += OnAssembliesChanged;
-                        FixAssemblyPaths();
-                    }
 
-                    ReloadReflectionProvider();
+                    References = new ObservableViewModelCollection<CompilationReferenceVM, CompilationReference>(project.References, reference => new CompilationReferenceVM(reference));
                 }
             }
         }
@@ -275,6 +266,29 @@ namespace NetPrintsEditor.ViewModels
             instance = this;
         }
 
+        private IEnumerable<string> GenerateClassSources()
+        {
+            if (Classes is null)
+            {
+                return new string[0];
+            }
+
+            ConcurrentBag<string> classSources = new ConcurrentBag<string>();
+
+            // Translate classes in parallel
+            Parallel.ForEach(Classes, cls =>
+            {
+                // Translate the class to C#
+                ClassTranslator classTranslator = new ClassTranslator();
+
+                string code = classTranslator.TranslateClass(cls.Class);
+
+                classSources.Add(code);
+            });
+
+            return classSources;
+        }
+
         public void CompileProject(bool generateExecutable)
         {
             // Check if we are already compiling
@@ -298,13 +312,14 @@ namespace NetPrintsEditor.ViewModels
             // Save original thread dispatcher
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
+            var references = References.Select(reference => reference.Reference).ToArray();
+
             // Compile in another thread
             new Thread(() =>
             {
                 string projectDir = System.IO.Path.GetDirectoryName(Path);
                 string compiledDir = System.IO.Path.Combine(projectDir, $"Compiled_{Name}");
 
-                
                 DirectoryInfo compiledDirInfo = new DirectoryInfo(compiledDir);
                 if (compiledDirInfo.Exists)
                 {
@@ -324,7 +339,7 @@ namespace NetPrintsEditor.ViewModels
                     Directory.CreateDirectory(compiledDir);
                 }
 
-                ConcurrentBag<string> sources = new ConcurrentBag<string>();
+                ConcurrentBag<string> classSources = new ConcurrentBag<string>();
 
                 // Translate classes in parallel
                 Parallel.ForEach(Classes, cls =>
@@ -350,7 +365,7 @@ namespace NetPrintsEditor.ViewModels
                         File.WriteAllText(System.IO.Path.Combine(outputDirectory, $"{cls.Name}.cs"), code);
                     }
 
-                    sources.Add(code);
+                    classSources.Add(code);
                 });
 
                 string ext = generateExecutable ? "exe" : "dll";
@@ -363,8 +378,19 @@ namespace NetPrintsEditor.ViewModels
 
                 bool deleteBinaries = !CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries) && !File.Exists(outputPath);
 
+                var assemblyPaths = references.OfType<AssemblyReference>().Select(a => a.AssemblyPath);
+
+                var sources = classSources
+                    .Concat(references
+                        .OfType<SourceDirectoryReference>()
+                        .Where(sourceRef => sourceRef.IncludeInCompilation)
+                        .SelectMany(sourceRef => sourceRef.SourceFilePaths)
+                        .Select(sourcePath => File.ReadAllText(sourcePath)))
+                    .Distinct()
+                    .ToArray();
+                    
                 CodeCompileResults results = codeCompiler.CompileSources(
-                    outputPath, Assemblies.Select(a => a.Path).ToArray(), sources, generateExecutable);
+                    outputPath, assemblyPaths, sources, generateExecutable);
 
                 // Delete the output binary if we don't want it.
                 // TODO: Don't generate it in the first place.
@@ -409,15 +435,20 @@ namespace NetPrintsEditor.ViewModels
 
         private void ReloadReflectionProvider()
         {
-            // Load newly compiled assembly and referenced assemblies
-            List<string> assembliesToReflectOn = Assemblies.Select(a => a.Path).ToList();
-            if(!string.IsNullOrEmpty(LastCompiledAssemblyPath) && File.Exists(LastCompiledAssemblyPath))
-            {
-                assembliesToReflectOn.Add(LastCompiledAssemblyPath);
-            }
+            var references = References.Select(reference => reference.Reference).ToArray();
 
-            ReflectionProvider = new MemoizedReflectionProvider(new ReflectionProvider(assembliesToReflectOn));
+            // Add referenced assemblies
+            var assemblyPaths = references.OfType<AssemblyReference>().Select(assemblyRef => assemblyRef.AssemblyPath);
 
+            // Add source files
+            var sourcePaths = references.OfType<SourceDirectoryReference>().SelectMany(directoryRef => directoryRef.SourceFilePaths);
+
+            // Add our own sources
+            var sources = GenerateClassSources();
+
+            ReflectionProvider = new MemoizedReflectionProvider(new ReflectionProvider(assemblyPaths, sourcePaths, sources));
+
+            // Cache static types
             NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
         }
 
@@ -434,42 +465,44 @@ namespace NetPrintsEditor.ViewModels
             Process.Start(exePath);
         }
 
-        private void FixAssemblyPaths()
+        private void FixReferencePaths()
         {
-            List<LocalAssemblyName> assembliesToRemove = new List<LocalAssemblyName>();
+            var referencesToRemove = new List<CompilationReferenceVM>();
 
-            // Fix assembly references
-            foreach (LocalAssemblyName localAssemblyName in Assemblies)
+            // Fix references
+            foreach (var reference in References)
             {
-                if (!localAssemblyName.FixPath())
+                if (reference.Reference is AssemblyReference assemblyReference)
                 {
-                    OpenFileDialog openFileDialog = new OpenFileDialog()
+                    // Check if the assembly exists at the path and
+                    // give the user a chance to select another one.
+                    if (!File.Exists(assemblyReference.AssemblyPath))
                     {
-                        Title = $"Open {localAssemblyName.Name}"
-                    };
-
-                    if (openFileDialog.ShowDialog() == true)
-                    {
-                        localAssemblyName.Path = openFileDialog.FileName;
-                        if (!localAssemblyName.FixPath())
+                        var openFileDialog = new OpenFileDialog()
                         {
-                            assembliesToRemove.Add(localAssemblyName);
+                            Title = $"Open replacement for {assemblyReference}",
+                            CheckFileExists = true,
+                        };
+
+                        if (openFileDialog.ShowDialog() == true)
+                        {
+                            assemblyReference.AssemblyPath = openFileDialog.FileName;
                         }
-                    }
-                    else
-                    {
-                        assembliesToRemove.Add(localAssemblyName);
+                        else
+                        {
+                            referencesToRemove.Add(reference);
+                        }
                     }
                 }
             }
 
-            // Remove assemblies references which couldnt be fixed
-            if (assembliesToRemove.Count > 0)
+            // Remove references which couldn't be fixed
+            if (referencesToRemove.Count > 0)
             {
-                Assemblies.RemoveRange(assembliesToRemove);
+                References.RemoveRange(referencesToRemove);
 
                 MessageBox.Show("The following assemblies could not be found and have been removed from the project:\n\n" +
-                    string.Join(Environment.NewLine, assembliesToRemove.Select(n => n.Name)),
+                    string.Join(Environment.NewLine, referencesToRemove.Select(n => n.ToString())),
                     "Could not load some assemblies", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
