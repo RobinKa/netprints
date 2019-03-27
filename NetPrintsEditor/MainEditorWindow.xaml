@@ -10,6 +10,7 @@
         xmlns:ModelsAlias="clr-namespace:NetPrintsEditor.Models"
         mc:Ignorable="d"
         Height="400" Width="600"
+        Icon="NetPrintsLogo.ico"
         Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
         x:Name="mainEditorWindow">
 

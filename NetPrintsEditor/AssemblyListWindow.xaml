@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Height="400" Width="600"
         Title="Assemblies"
+        Icon="NetPrintsLogo.ico"
         x:Name="assemblyListWindow" WindowStyle="ToolWindow">
 
     <Window.Resources>

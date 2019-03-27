@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using MahApps.Metro.Controls;
+using NetPrints.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -8,7 +9,7 @@ namespace NetPrintsEditor.Dialogs
     /// <summary>
     /// Interaction logic for SelectMethodDialog.xaml
     /// </summary>
-    public partial class SelectMethodDialog : Window
+    public partial class SelectMethodDialog : MetroWindow
     {
         public static readonly DependencyProperty SelectedMethodProperty = DependencyProperty.Register(
             nameof(SelectedMethod), typeof(MethodSpecifier), typeof(SelectMethodDialog));

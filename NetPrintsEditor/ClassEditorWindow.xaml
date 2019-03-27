@@ -9,8 +9,10 @@
         x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
         Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
+        Icon="NetPrintsLogo.ico"
         Height="720" Width="1280"
         x:Name="classWindow">
+    
     <Window.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.OverrideMethod" CanExecute="CommandOverrideMethod_CanExecute" Executed="CommandOverrideMethod_Executed" />
