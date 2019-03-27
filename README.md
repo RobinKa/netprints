@@ -9,41 +9,15 @@ NetPrints is a visual programming language inspired by Unreal Engine 4's Bluepri
 # Download
 Version 0.0.5 of the editor binaries can be found [here](https://github.com/RobinKa/netprints/releases/tag/0.0.5). You can also download the source code and compile the binaries (requires Visual Studio 2019 and .NET Core 3).
 
-# Requirements
-The editor itself requires .NET Core 3 (since this is the first version to support WPF), although we provide self-contained binaries for Windows x86. Binaries compiled by the editor require any dependencies you added as references.
-
 # Guide
-Any .NET binaries can be used with this editor. The recommended way to add new assembly references is installing them with NuGet (eg. from within Visual Studio or the command line) and referencing their .NET Standard reference libraries at `%UserProfile%/.nuget`. The hints for the included references should then appear within the editor.
+Any .NET binaries can be used with this editor. The recommended way to add new assembly references is installing them with NuGet (eg. from within Visual Studio or the command line) and referencing their .NET Standard reference libraries at `%UserProfile%/.nuget`. The hints for the included references should then appear within the editor. You can also add C# source directories which can either be used for reflection only (useful when you want to use NetPrints within Unity to access your existing scripts) or compiled into the output.
 
 # Contributions
-Any contributions are welcome. If you notice bugs or have feature suggestions just create an issue for it.
+Any contributions are welcome. If you notice bugs or have feature suggestions just create an issue for it. You can also contact me by email at `tora@warlock.ai`.
 
 # Screenshots
-
-## Using External Libraries
-### Unity
-![](https://raw.githubusercontent.com/RobinKa/NetPrintsUnityTutorial/master/Screenshots/MethodFixedUpdate.png)
-### CNTK
-![](https://i.imgur.com/Gg4ZpXz.png)
-### SFML
-![](http://i.imgur.com/BXLHSE3.png)
-### TensorFlowSharp
-![](https://i.imgur.com/DjRuPeR.png)
-
-## Generics
-![](https://i.imgur.com/DuqhDuR.png)
-
-## Suggestions
-![](https://i.imgur.com/ZuStkEJ.png)
-
-## Overloads & Control Flow
-![](https://i.imgur.com/ZADmF3t.png)
-
-## Exception Handling
-![](https://i.imgur.com/vk4PHSr.png)
-
-## Delegates
-![](http://i.imgur.com/9GjrV49.png)
-
-## Project Menu
-![](http://i.imgur.com/umAjDX5.png)
+| | |
+|:-------------------------:|:-------------------------:|
+|<img src="https://i.imgur.com/ld32kuo.png" />|<img src="https://i.imgur.com/qHF1cmq.png" />|
+|<img src="https://i.imgur.com/NahX6AM.png" />|<img src="https://i.imgur.com/wekGSFs.png" />|
+|<img src="https://i.imgur.com/qdYBLni.png" />|<img src="https://i.imgur.com/bq0vECa.png" />|
