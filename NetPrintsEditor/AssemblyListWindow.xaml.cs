@@ -7,13 +7,14 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace NetPrintsEditor
 {
     /// <summary>
     /// Interaction logic for AssemblyListWindow.xaml
     /// </summary>
-    public partial class AssemblyListWindow : MetroWindow
+    public partial class AssemblyListWindow : CustomDialog
     {
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(
             nameof(Project), typeof(ProjectVM), typeof(AssemblyListWindow));

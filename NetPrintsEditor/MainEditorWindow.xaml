@@ -8,8 +8,8 @@
         xmlns:local="clr-namespace:NetPrintsEditor"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:ModelsAlias="clr-namespace:NetPrintsEditor.Models"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Height="400" Width="600"
         Icon="NetPrintsLogo.ico"
         Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
         x:Name="mainEditorWindow">
@@ -30,6 +30,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -40,13 +41,13 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Button Margin="4" Content="Create Project" Click="OnCreateProjectClicked" FontSize="20"/>
-            <Button Margin="4" Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" FontSize="20"/>
-            <Button Margin="4" Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" FontSize="20"/>
+            <Button Margin="4" Content="Create Project" Click="OnCreateProjectClicked" FontSize="12"/>
+            <Button Margin="4" Grid.Column="1" Content="Open Project" Click="OnOpenProjectClicked" FontSize="12"/>
+            <Button Margin="4" Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" FontSize="12"/>
         </Grid>
         
         <Grid Grid.Row="1">
-            <Button Margin="4" Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" FontSize="16"/>
+            <Button Margin="4" Grid.Column="2" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" FontSize="12"/>
         </Grid>
 
         <Grid Grid.Row="2">
@@ -55,36 +56,40 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontSize="20" />
-            <Button Margin="4" Grid.Column="1" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontSize="20" />
+            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontSize="12" />
+            <Button Margin="4" Grid.Column="1" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontSize="12" />
         </Grid>
 
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="20" />
-            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="20" />
-        </Grid>
-
-        <ComboBox Grid.Row="4"
-            FontSize="16" Margin="4" 
+        <ComboBox Grid.Row="3"
+            FontSize="12" Margin="4" 
             IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
             ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
             SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
 
-        <ScrollViewer Margin="5" Grid.Row="5" VerticalScrollBarVisibility="Auto">
+        <Label Grid.Row="4" Content="Classes" Margin="5,10,5,0" FontSize="24" HorizontalAlignment="Center" />
+
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="12" />
+            <Button Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Grid.Column="2" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="12" />
+        </Grid>
+
+        <ScrollViewer Margin="5,0,5,5" Grid.Row="6" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Button Margin="4" Content="{Binding FullName}" Click="OnClassButtonClicked" />
-                            <Button Margin="4" Grid.Column="1" Content="-" Click="OnRemoveClassButtonClicked" />
+                            <Button Margin="4" FontSize="12" Content="{Binding FullName}" Click="OnClassButtonClicked" />
+                            <Button Margin="4" Grid.Column="1" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="30" Height="30"  Click="OnRemoveClassButtonClicked">
+                                <iconPacks:PackIconMaterial Kind="Minus" />
+                            </Button>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

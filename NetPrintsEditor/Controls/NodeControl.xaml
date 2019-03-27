@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="120" d:DesignWidth="220" x:Name="nodeWindow">
 
@@ -19,7 +20,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
         <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
         <converters:BoolToDoubleConverter x:Key="BoolToDouble" True="56" False="224" />
-        <converters:BoolToThicknessConverter x:Key="MarginConverter" True="0" False="10,10,10,12" />
+        <converters:BoolToThicknessConverter x:Key="MarginConverter" True="0" False="10,10,10,5" />
     </UserControl.Resources>
 
     <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToDouble}}" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
@@ -95,8 +96,12 @@
                     </ItemsControl>
 
                     <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="+" Click="OnLeftPinsPlusClicked" />
-                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="-" Click="OnLeftPinsMinusClicked" />
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsPlusClicked">
+                            <iconPacks:PackIconMaterial Kind="Plus" />
+                        </Button>
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsMinusClicked">
+                            <iconPacks:PackIconMaterial Kind="Minus" />
+                        </Button>
                     </StackPanel>
                 </StackPanel>
 
@@ -126,8 +131,12 @@
                     </ItemsControl>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="+" Click="OnRightPinsPlusClicked" />
-                        <Button Style="{StaticResource MetroFlatButton}" VerticalContentAlignment="Center" Width="28" Height="28" FontSize="14" FontWeight="SemiBold" Content="-" Click="OnRightPinsMinusClicked" />
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsPlusClicked">
+                            <iconPacks:PackIconMaterial Kind="Plus" />
+                        </Button>
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsMinusClicked">
+                            <iconPacks:PackIconMaterial Kind="Minus" />
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>

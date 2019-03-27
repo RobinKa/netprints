@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace NetPrintsEditor
 {
@@ -245,10 +246,12 @@ namespace NetPrintsEditor
             }
         }
 
-        private void OnAssembliesButtonClicked(object sender, RoutedEventArgs e)
+        private async void OnAssembliesButtonClicked(object sender, RoutedEventArgs e)
         {
             AssemblyListWindow assemblyListWindow = new AssemblyListWindow(Project);
-            assemblyListWindow.ShowDialog();
+            assemblyListWindow.CloseButton.Click += async (sender, e) => await this.HideMetroDialogAsync(assemblyListWindow);
+
+            await this.ShowMetroDialogAsync(assemblyListWindow);
         }
     }
 }

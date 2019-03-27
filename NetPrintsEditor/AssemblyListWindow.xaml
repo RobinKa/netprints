@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow
+﻿<mah:CustomDialog
         x:Class="NetPrintsEditor.AssemblyListWindow"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,20 +6,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Height="400" Width="600"
         Title="Assemblies"
-        Icon="NetPrintsLogo.ico"
-        x:Name="assemblyListWindow" WindowStyle="ToolWindow">
+        x:Name="assemblyListWindow">
 
-    <Window.Resources>
+    <mah:CustomDialog.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
-    </Window.Resources>
+    </mah:CustomDialog.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid>
@@ -28,8 +28,8 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
-            <Button Grid.Column="0" Content="Add assembly" Click="OnAddAssemblyReferenceClicked" Padding="5" FontSize="14"/>
-            <Button Grid.Column="1" Content="Add source code directory" Click="OnAddSourceDirectoryReferenceClicked" Padding="5" FontSize="14"/>
+            <Button Grid.Column="0" Margin="0,0,2,0" Content="Assembly" Click="OnAddAssemblyReferenceClicked" FontSize="12"/>
+            <Button Grid.Column="1" Margin="2,0,0,0" Content="Source code" Click="OnAddSourceDirectoryReferenceClicked" FontSize="12"/>
         </Grid>
             
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -38,19 +38,25 @@
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="200" />
-                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="{Binding Reference}" Background="#FF333333" BorderBrush="#FF444444" />
-                            <CheckBox Grid.Column="1" Content="Include in compilation" IsChecked="{Binding IncludeInCompilation}"
-                                      VerticalAlignment="Center"
-                                      Visibility="{Binding ShowIncludeInCompilationCheckBox, Converter={StaticResource ResourceKey=BoolToVis}}" />
-                            <Button Grid.Column="2" Content="-" Click="OnRemoveReferenceClicked" />
+                            <TextBlock Text="{Binding Reference}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontSize="14" />
+                            
+                            <mah:ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeInCompilation}"
+                                VerticalAlignment="Center" IsEnabled="{Binding ShowIncludeInCompilationCheckBox}"
+                                OnLabel="Include" OffLabel="Exclude" />
+                            
+                            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="32" Height="32" Grid.Column="2" Click="OnRemoveReferenceClicked">
+                                <iconPacks:PackIconMaterial Kind="Minus" />
+                            </Button>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <Button x:Name="CloseButton" Grid.Row="2" Margin="5,5,5,10" Content="Close" />
     </Grid>
-</mah:MetroWindow>
+</mah:CustomDialog>

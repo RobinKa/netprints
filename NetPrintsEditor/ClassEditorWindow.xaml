@@ -6,7 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
         xmlns:Controls="clr-namespace:NetPrintsEditor.Controls"
-        x:Class="NetPrintsEditor.ClassEditorWindow"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
         Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
         Icon="NetPrintsLogo.ico"
@@ -81,10 +82,12 @@
                             <DataTemplate>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Content="-" Click="OnRemoveMethodClicked" />
+                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked">
+                                        <iconPacks:PackIconMaterial Kind="Minus" />
+                                    </Button>
                                     <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
                                            MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
                                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
