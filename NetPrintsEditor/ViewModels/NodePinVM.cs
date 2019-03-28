@@ -149,7 +149,7 @@ namespace NetPrintsEditor.ViewModels
         {
             OnPropertyChanged(nameof(PossibleEnumNames));
             OnPropertyChanged(nameof(ShowUnconnectedValue));
-            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(DisplayName));
             OnPropertyChanged(nameof(ToolTip));
         }
 
@@ -328,17 +328,32 @@ namespace NetPrintsEditor.ViewModels
             get => pin.Node;
         }
 
-        public string Name
+        public string DisplayName
         {
             get => pin.ToString();
-            /*set
+        }
+
+        /// <summary>
+        /// Whether the name of this pin is editable.
+        /// </summary>
+        public bool IsNameEditable
+        {
+            get => (pin.Node is EntryNode && pin.Node.OutputDataPins.Contains(pin)) ||
+                (pin.Node is ReturnNode && pin.Node.InputDataPins.Contains(pin));
+        }
+
+        public string Name
+        {
+            get => pin.Name;
+            set
             {
-                if(pin.Name != value)
+                if (pin.Name != value)
                 {
                     pin.Name = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(DisplayName));
                 }
-            }*/
+            }
         }
 
         private void OnNodePositionChanged(Node node, double positionX, double positionY)

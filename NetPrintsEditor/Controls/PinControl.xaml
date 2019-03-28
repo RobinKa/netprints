@@ -70,10 +70,16 @@
             </Polygon>
         </Canvas>
 
-        <Label Grid.Column="1" x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.Name}"
-               FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch"
-               Visibility="{Binding ElementName=pinWindow, Path=Pin.IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}"/>
-        
+        <Grid x:Name="labelContainer" Grid.Column="1" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
+            <Label x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.DisplayName}"
+                   Visibility="{Binding ElementName=pinWindow, Path=Pin.IsNameEditable, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
+                   FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
+            
+            <TextBox x:Name="editableLabel" Text="{Binding ElementName=pinWindow, Path=Pin.Name, Mode=TwoWay}"
+                        Visibility="{Binding ElementName=pinWindow, Path=Pin.IsNameEditable, Converter={StaticResource ResourceKey=BoolToVis}}"
+                        FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
+        </Grid>
+
         <TextBox Grid.Column="2" 
                     Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
                     Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />

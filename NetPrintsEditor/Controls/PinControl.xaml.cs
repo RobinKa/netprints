@@ -64,16 +64,20 @@ namespace NetPrintsEditor.Controls
                     grid.ColumnDefinitions[0].Width = new GridLength(20, GridUnitType.Pixel);
                     grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);
                     connector.SetValue(Grid.ColumnProperty, 0);
-                    label.SetValue(Grid.ColumnProperty, 2);
+
+                    labelContainer.SetValue(Grid.ColumnProperty, 2);
                     label.HorizontalContentAlignment = HorizontalAlignment.Left;
+                    editableLabel.HorizontalContentAlignment = HorizontalAlignment.Left;
                 }
                 else
                 {
                     grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
                     grid.ColumnDefinitions[2].Width = new GridLength(20, GridUnitType.Pixel);
                     connector.SetValue(Grid.ColumnProperty, 2);
-                    label.SetValue(Grid.ColumnProperty, 0);
+
+                    labelContainer.SetValue(Grid.ColumnProperty, 0);
                     label.HorizontalContentAlignment = HorizontalAlignment.Right;
+                    editableLabel.HorizontalAlignment = HorizontalAlignment.Right;
                 }
             }
         }
