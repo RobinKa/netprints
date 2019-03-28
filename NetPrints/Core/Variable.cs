@@ -9,21 +9,27 @@ namespace NetPrints.Core
     [Flags]
     public enum VariableModifiers
     {
-        Private = 0,
-        Public = 1,
-        Protected = 2,
-        Internal = 4,
+        None = 0,
         ReadOnly = 8,
         Const = 16,
         Static = 32,
         New = 64,
+
+        [Obsolete]
+        Private = 0,
+        [Obsolete]
+        Public = 1,
+        [Obsolete]
+        Protected = 2,
+        [Obsolete]
+        Internal = 4,
     }
 
     /// <summary>
     /// Variable specifier type. Contains common things for variables such as their type and their name.
     /// </summary>
     [DataContract]
-    public class Variable
+    public partial class Variable
     {
         /// <summary>
         /// Specifier for the type of this variable.
@@ -53,7 +59,13 @@ namespace NetPrints.Core
         {
             get;
             set;
-        } = VariableModifiers.Private;
+        }
+
+        /// <summary>
+        /// Visibility of this variable.
+        /// </summary>
+        [DataMember]
+        public MemberVisibility Visibility { get; set; } = MemberVisibility.Private;
 
         /// <summary>
         /// Creates a variable.

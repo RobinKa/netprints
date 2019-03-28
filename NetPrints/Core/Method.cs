@@ -151,9 +151,36 @@ namespace NetPrints.Core
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            foreach (var node in Nodes)
+            // Compatibility
+            FixVisibility(context);
+
+            // Call Node.OnMethodDeserialized until the types don't change anymore
+            // or a max iteration was reached.
+            // TODO: Sort nodes by depth and propagate in order instead of
+            //       doing this inefficient relaxation process.
+
+            int iterations = 0;
+            bool anyTypeChanged = true;
+            Dictionary<NodeTypePin, BaseType> pinTypes = new Dictionary<NodeTypePin, BaseType>();
+
+            while (anyTypeChanged && iterations < 20)
             {
-                node.OnMethodDeserialized();
+                anyTypeChanged = false;
+                pinTypes.Clear();
+
+                foreach (var node in Nodes)
+                {
+                    node.InputTypePins.ToList().ForEach(p => pinTypes.Add(p, p.InferredType?.Value));
+
+                    node.OnMethodDeserialized();
+
+                    if (node.InputTypePins.Any(p => pinTypes[p] != p.InferredType?.Value))
+                    {
+                        anyTypeChanged = true;
+                    }
+                }
+
+                iterations++;
             }
         }
     }

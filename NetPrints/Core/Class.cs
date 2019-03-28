@@ -11,6 +11,7 @@ namespace NetPrints.Core
     [Flags]
     public enum ClassModifiers
     {
+        None = 0,
         Sealed = 8,
         Abstract = 16,
         Static = 32,

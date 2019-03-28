@@ -12,6 +12,19 @@
             d:DesignHeight="300" d:DesignWidth="300" x:Name="wnd">
     <UserControl.Resources>
         <converters:VariableModifierConverter x:Key="variableModifierConverter" />
+
+        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MetroComboBox}">
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel IsItemsHost="True"
+                                KeyboardNavigation.DirectionalNavigation="Contained"
+                                VirtualizationMode="Recycling" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     
     <StackPanel>
@@ -19,7 +32,6 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -37,29 +49,26 @@
             <Label Content="Name" />
             <TextBox Grid.Column="1" x:Name="variableName" Text="{Binding Variable.Name, ElementName=wnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="1" Content="Public" />
-            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Public}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="1" Content="Visibility" />
+            <ComboBox Grid.Row="1" Grid.Column="1"
+                      Text="{Binding Path=Variable.Visibility, ElementName=wnd, Mode=OneWay}" 
+                      SelectedItem="{Binding Path=Variable.Visibility, ElementName=wnd, Mode=TwoWay}" 
+                      ItemsSource="{Binding Path=Variable.PossibleVisibilities, ElementName=wnd}"/>
+            
+            <Label Grid.Row="2" Content="Read-only" />
+            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.ReadOnly}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="2" Content="Protected" />
-            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Protected}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="3" Content="Const" />
+            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Const}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="3" Content="Internal" />
-            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Internal}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="4" Content="Static" />
+            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Static}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="4" Content="ReadOnly" />
-            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.ReadOnly}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="5" Content="New" />
+            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.New}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="5" Content="Const" />
-            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Const}}" VerticalContentAlignment="Center" />
-
-            <Label Grid.Row="6" Content="Static" />
-            <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.Static}}" VerticalContentAlignment="Center" />
-
-            <Label Grid.Row="7" Content="New" />
-            <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.New}}" VerticalContentAlignment="Center" />
-
-            <Label Grid.Row="8" Content="Type" />
-            <ComboBox Grid.Row="8" Grid.Column="1" x:Name="variableType" 
+            <Label Grid.Row="6" Content="Type" />
+            <ComboBox Grid.Row="6" Grid.Column="1" x:Name="variableType" 
                       Text="{Binding Variable.VariableType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Variable.VariableType, ElementName=wnd, Mode=TwoWay}" 
                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>

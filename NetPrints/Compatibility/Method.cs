@@ -6,7 +6,6 @@ namespace NetPrints.Core
     public partial class Method
     {
         [Obsolete]
-        [OnDeserializing]
         private void FixVisibility(StreamingContext context)
         {
             // Set new visibility from old modifiers
@@ -20,15 +19,14 @@ namespace NetPrints.Core
                 Modifiers &= ~(MethodModifiers.Protected);
                 Visibility = MemberVisibility.Protected;
             }
-            else if (Modifiers.HasFlag(MethodModifiers.Private))
-            {
-                Modifiers &= ~(MethodModifiers.Private);
-                Visibility = MemberVisibility.Private;
-            }
             else if (Modifiers.HasFlag(MethodModifiers.Internal))
             {
                 Modifiers &= ~(MethodModifiers.Internal);
                 Visibility = MemberVisibility.Internal;
+            }
+            else if (Visibility == MemberVisibility.Invalid)
+            {
+                Visibility = MemberVisibility.Private;
             }
         }
     }

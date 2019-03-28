@@ -96,19 +96,8 @@ namespace NetPrints.Translator
         public string TranslateVariable(Variable variable)
         {
             StringBuilder modifiers = new StringBuilder();
-            
-            if (variable.Modifiers.HasFlag(VariableModifiers.Protected))
-            {
-                modifiers.Append("protected ");
-            }
-            else if (variable.Modifiers.HasFlag(VariableModifiers.Public))
-            {
-                modifiers.Append("public ");
-            }
-            else if (variable.Modifiers.HasFlag(VariableModifiers.Internal))
-            {
-                modifiers.Append("internal ");
-            }
+
+            modifiers.Append($"{TranslatorUtil.VisibilityTokens[variable.Visibility]} ");
 
             if (variable.Modifiers.HasFlag(VariableModifiers.Static))
             {
