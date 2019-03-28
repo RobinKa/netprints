@@ -85,7 +85,8 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked">
+                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
+                                            ToolTip="Remove method">
                                         <iconPacks:PackIconMaterial Kind="Minus" />
                                     </Button>
                                     <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
@@ -119,12 +120,17 @@
                             <DataTemplate>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag"
-                                            FontSize="14" FontWeight="SemiBold"/>
-                                    <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveAttributeClicked" />
+                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveAttributeClicked"
+                                            ToolTip="Remove attribute">
+                                        <iconPacks:PackIconMaterial Kind="Minus" />
+                                    </Button>
+                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag"
+                                           FontSize="14" FontWeight="SemiBold">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </Label>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
