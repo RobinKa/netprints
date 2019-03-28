@@ -13,6 +13,7 @@
                 <!-- Accent and AppTheme setting -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Emerald.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Dragablz;component/themes/mahapps.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 

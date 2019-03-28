@@ -1,4 +1,6 @@
-﻿using MahApps.Metro.Controls;
+﻿using Dragablz;
+using Dragablz.Dockablz;
+using MahApps.Metro.Controls;
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
@@ -19,6 +21,8 @@ namespace NetPrintsEditor
     /// </summary>
     public partial class ClassEditorWindow : MetroWindow
     {
+        public IInterTabClient InterTabClient => TabContainerInterTabClient.Instance;
+
         public ClassVM Class
         {
             get { return GetValue(ClassProperty) as ClassVM; }
@@ -28,6 +32,8 @@ namespace NetPrintsEditor
         public static DependencyProperty ClassProperty = DependencyProperty.Register("Class", typeof(ClassVM), typeof(ClassEditorWindow));
 
         private UndoRedoStack undoRedoStack = UndoRedoStack.Instance;
+
+        public ClassEditorWindow() { InitializeComponent(); }
 
         public ClassEditorWindow(ClassVM cls)
         {

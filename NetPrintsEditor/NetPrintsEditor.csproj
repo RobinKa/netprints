@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ClassEditorWindow.xaml" />
+    <None Remove="Controls\TabContainerWindow.xaml" />
     <None Remove="NetPrintsLogo.ico" />
     <None Remove="Resources\Convert_16x.png" />
     <None Remove="Resources\Create_16x.png" />
@@ -26,6 +27,7 @@
     <None Remove="Resources\Type_16x.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dragablz" Version="0.0.3.203" />
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0262" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="3.0.0-alpha0137" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
@@ -55,6 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ClassEditorWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\TabContainerWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

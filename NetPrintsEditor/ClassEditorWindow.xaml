@@ -6,8 +6,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
         xmlns:Controls="clr-namespace:NetPrintsEditor.Controls"
-    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    x:Class="NetPrintsEditor.ClassEditorWindow"
+        xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
+        xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:System="clr-namespace:System;assembly=System.Runtime"
+        x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
         Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
         Icon="NetPrintsLogo.ico"
@@ -30,6 +33,10 @@
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
         <CommandBinding Command="ApplicationCommands.Delete" Executed="CommandDelete_Executed" />
     </Window.CommandBindings>
+
+    <Window.Resources>
+        <System:String x:Key="Partition">QuickStart</System:String>
+    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -67,71 +74,93 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <dockablz:Layout x:Name="dockableLayout" Partition="{StaticResource Partition}">
+                    <dragablz:TabablzControl Margin="8" ShowDefaultAddButton="True">
+                        <dragablz:TabablzControl.InterTabController>
+                            <dragablz:InterTabController Partition="{StaticResource Partition}" InterTabClient="{Binding Source={x:Static Controls:TabContainerInterTabClient.Instance}}" />
+                        </dragablz:TabablzControl.InterTabController>
 
-                    <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
+                        <TabItem Header="Methods" IsSelected="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked">
-                                        <iconPacks:PackIconMaterial Kind="Minus" />
-                                    </Button>
-                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
-                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
-                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                    </Label>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    
+                                <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
+                                <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked">
+                                                    <iconPacks:PackIconMaterial Kind="Minus" />
+                                                </Button>
+                                                <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                                MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
+                                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                </Label>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
 
-                    <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
-                              SelectionChanged="OverrideMethodBox_SelectionChanged" />
-                </Grid>
+                                <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
+
+                                <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
+                                    SelectionChanged="OverrideMethodBox_SelectionChanged" />
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="234"></TabItem>
+                        <TabItem Header="234"></TabItem>
+                        <TabItem Header="234"></TabItem>
+                        <TabItem Header="234"></TabItem>
+                    </dragablz:TabablzControl>
+                </dockablz:Layout>
 
                 <GridSplitter Background="DarkGreen" Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                <dragablz:TabablzControl Grid.Row="2" Margin="8" ShowDefaultAddButton="True">
+                    <dragablz:TabablzControl.InterTabController>
+                        <dragablz:InterTabController Partition="{StaticResource Partition}" InterTabClient="{Binding ElementName=classWindow, Path=InterTabClient}" />
+                    </dragablz:TabablzControl.InterTabController>
+                    <TabItem Header="Attributes" IsSelected="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
+                            <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="30" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag"
-                                            FontSize="14" FontWeight="SemiBold"/>
-                                    <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveAttributeClicked" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                            <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="30" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Content="{Binding Name}" PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag"
+                                        FontSize="14" FontWeight="SemiBold"/>
+                                            <Button BorderThickness="0" Grid.Column="1" Content="-" Click="OnRemoveAttributeClicked" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
 
-                    <Button Grid.Row="2" Content="Create Attribute" Click="AddAttributeButton_Click" FontSize="16" />
-                </Grid>
+                            <Button Grid.Row="2" Content="Create Attribute" Click="AddAttributeButton_Click" FontSize="16" />
+                        </Grid>
+                    </TabItem>
+                </dragablz:TabablzControl>
             </Grid>
 
             <GridSplitter Background="DarkGreen" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
