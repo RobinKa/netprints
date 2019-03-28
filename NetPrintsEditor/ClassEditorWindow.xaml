@@ -104,7 +104,7 @@
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 
-                <GridSplitter Background="DarkGreen" Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
@@ -140,7 +140,7 @@
                 </Grid>
             </Grid>
 
-            <GridSplitter Background="DarkGreen" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
@@ -152,7 +152,7 @@
                 
                 <Controls:MethodEditorControl x:Name="methodEditor" />
 
-                <GridSplitter Background="DarkGreen" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
                 <ListView Grid.Row="2" ItemsSource="{Binding ElementName=classWindow, Path=Class.Project.LastCompileErrors}" />
 
@@ -160,7 +160,7 @@
             </Grid>
 
 
-            <GridSplitter Background="DarkGreen" Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
 
             <TabControl x:Name="viewerTabControl" Grid.Column="5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <TabControl.ItemContainerStyle>
