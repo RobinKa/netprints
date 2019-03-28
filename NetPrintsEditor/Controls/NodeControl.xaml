@@ -96,10 +96,12 @@
                     </ItemsControl>
 
                     <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsPlusClicked">
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsPlusClicked"
+                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.LeftPlusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Plus" />
                         </Button>
-                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsMinusClicked">
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsMinusClicked"
+                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.LeftMinusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Minus" />
                         </Button>
                     </StackPanel>
@@ -131,10 +133,12 @@
                     </ItemsControl>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
-                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsPlusClicked">
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsPlusClicked"
+                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.RightPlusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Plus" />
                         </Button>
-                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsMinusClicked">
+                        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsMinusClicked"
+                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.RightMinusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Minus" />
                         </Button>
                     </StackPanel>

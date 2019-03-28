@@ -117,6 +117,74 @@ namespace NetPrintsEditor.ViewModels
             get => IsSelected ? 1 : 0;
         }
 
+        public string LeftPlusToolTip
+        {
+            get
+            {
+                if (node is MakeArrayNode)
+                {
+                    return "Add array element";
+                }
+                else if (node is EntryNode)
+                {
+                    return "Add method parameter";
+                }
+                else if (node is ReturnNode)
+                {
+                    return "Add method return value";
+                }
+
+                return "";
+            }
+        }
+
+        public string LeftMinusToolTip
+        {
+            get
+            {
+                if (node is MakeArrayNode)
+                {
+                    return "Remove array element";
+                }
+                else if (node is EntryNode)
+                {
+                    return "Remove method parameter";
+                }
+                else if (node is ReturnNode)
+                {
+                    return "Add method return value";
+                }
+
+                return "";
+            }
+        }
+
+        public string RightPlusToolTip
+        {
+            get
+            {
+                if (node is EntryNode)
+                {
+                    return "Add method generic type parameter";
+                }
+
+                return "";
+            }
+        }
+
+        public string RightMinusToolTip
+        {
+            get
+            {
+                if (node is EntryNode)
+                {
+                    return "Remove method generic type parameter";
+                }
+
+                return "";
+            }
+        }
+
         /// <summary>
         /// Whether the node is currently selected.
         /// </summary>
@@ -321,6 +389,11 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(ShowOverloads));
                     OnPropertyChanged(nameof(IsRerouteNode));
                     OnPropertyChanged(nameof(ShowLeftPinButtons));
+                    OnPropertyChanged(nameof(ShowRightPinButtons));
+                    OnPropertyChanged(nameof(LeftPlusToolTip));
+                    OnPropertyChanged(nameof(LeftMinusToolTip));
+                    OnPropertyChanged(nameof(RightPlusToolTip));
+                    OnPropertyChanged(nameof(RightMinusToolTip));
                     OnPropertyChanged(nameof(Label));
                     OnPropertyChanged(nameof(IsPure));
                     OnPropertyChanged(nameof(CanSetPure));
