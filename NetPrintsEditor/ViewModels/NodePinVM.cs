@@ -138,6 +138,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(BorderBrush));
                     OnPropertyChanged(nameof(ShowUnconnectedValue));
                     OnPropertyChanged(nameof(ShowEnumValue));
+                    OnPropertyChanged(nameof(ShowBooleanValue));
                     OnPropertyChanged(nameof(PossibleEnumNames));
                     OnPropertyChanged(nameof(ToolTip));
                     OnPropertyChanged(nameof(IsRerouteNodePin));
@@ -149,6 +150,8 @@ namespace NetPrintsEditor.ViewModels
         {
             OnPropertyChanged(nameof(PossibleEnumNames));
             OnPropertyChanged(nameof(ShowUnconnectedValue));
+            OnPropertyChanged(nameof(ShowBooleanValue));
+            OnPropertyChanged(nameof(ShowEnumValue));
             OnPropertyChanged(nameof(DisplayName));
             OnPropertyChanged(nameof(ToolTip));
         }
@@ -301,13 +304,20 @@ namespace NetPrintsEditor.ViewModels
         public bool ShowUnconnectedValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
-                !(p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum);
+                !(p.PinType.Value is TypeSpecifier typeSpec && (typeSpec.IsEnum || typeSpec == TypeSpecifier.FromType<bool>()));
         }
 
         public bool ShowEnumValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected && 
                 (p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum);
+        }
+
+        public bool ShowBooleanValue
+        {
+            get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected &&
+                p.PinType.Value is TypeSpecifier typeSpec &&
+                typeSpec == TypeSpecifier.FromType<bool>();
         }
 
         public IEnumerable<string> PossibleEnumNames

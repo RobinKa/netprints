@@ -17,7 +17,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Canvas x:Name="connector" Grid.Column="0" Width="14" Height="14">
             <Rectangle ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
@@ -70,7 +70,19 @@
             </Polygon>
         </Canvas>
 
-        <Grid x:Name="labelContainer" Grid.Column="1" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
+        <Grid x:Name="unconnectedContainer" Grid.Column="1">
+            <TextBox Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue, Mode=TwoWay}"
+                        Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
+
+            <ComboBox Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" 
+                        SelectedItem="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
+                        ItemsSource="{Binding ElementName=pinWindow, Path=Pin.PossibleEnumNames}" />
+
+            <CheckBox IsChecked="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue, Mode=TwoWay}"
+                        Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowBooleanValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
+        </Grid>
+        
+        <Grid x:Name="labelContainer" Grid.Column="2" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
             <Label x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.DisplayName}"
                    Visibility="{Binding ElementName=pinWindow, Path=Pin.IsNameEditable, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
                    FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
@@ -79,17 +91,6 @@
                         Visibility="{Binding ElementName=pinWindow, Path=Pin.IsNameEditable, Converter={StaticResource ResourceKey=BoolToVis}}"
                         FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         </Grid>
-
-        <TextBox Grid.Column="2" 
-                    Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
-                    Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
-
-        <ComboBox Grid.Column="2"
-                  Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" 
-                  SelectedItem="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
-                  ItemsSource="{Binding ElementName=pinWindow, Path=Pin.PossibleEnumNames}"
-                  />
-
     </Grid>
 
         
