@@ -46,7 +46,7 @@
                             
                             <mah:ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeInCompilation}"
                                 VerticalAlignment="Center" IsEnabled="{Binding ShowIncludeInCompilationCheckBox}"
-                                OnLabel="Include" OffLabel="Exclude" />
+                                OnLabel="Include" OffLabel="Exclude" ToolTip="Whether to include the reference as a source in the compilation process." />
                             
                             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="32" Height="32" Grid.Column="2" Click="OnRemoveReferenceClicked">
                                 <iconPacks:PackIconMaterial Kind="Minus" />
