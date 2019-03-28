@@ -478,6 +478,7 @@ namespace NetPrintsEditor.ViewModels
             else if (overload is string overloadString && Node is MakeArrayNode makeArrayNode)
             {
                 makeArrayNode.UsePredefinedSize = string.Equals(overloadString, "Use predefined size", StringComparison.OrdinalIgnoreCase);
+                UpdateOverloads();
             }
             else
             {
@@ -508,18 +509,22 @@ namespace NetPrintsEditor.ViewModels
                 newNode.PositionX = Node.PositionX;
                 newNode.PositionY = Node.PositionY;
 
-                // Reconnect execution pins
+                // Restore old purity
                 if (newNode.CanSetPure)
                 {
                     newNode.IsPure = oldPurity;
+                }
 
-                    if (!newNode.IsPure)
+                // Reconnect execution pins
+                if (!newNode.IsPure)
+                {
+                    if (oldOutgoingPin != null)
                     {
-                        if (oldOutgoingPin != null)
-                        {
-                            GraphUtil.ConnectExecPins(newNode.OutputExecPins[0], oldOutgoingPin);
-                        }
+                        GraphUtil.ConnectExecPins(newNode.OutputExecPins[0], oldOutgoingPin);
+                    }
 
+                    if (oldIncomingPins != null)
+                    {
                         foreach (NodeOutputExecPin oldIncomingPin in oldIncomingPins)
                         {
                             GraphUtil.ConnectExecPins(oldIncomingPin, newNode.InputExecPins[0]);
@@ -680,6 +685,7 @@ namespace NetPrintsEditor.ViewModels
             }
 
             OnPropertyChanged(nameof(ShowOverloads));
+            OnPropertyChanged(nameof(Overloads));
         }
 
         #region Dragging
@@ -700,6 +706,13 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            // HACK: call UpdateOverloads() here because for some reason it is not
+            //       updated correctly.
+            if (!propertyName.Contains("overload", StringComparison.OrdinalIgnoreCase))
+            {
+                UpdateOverloads();
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
