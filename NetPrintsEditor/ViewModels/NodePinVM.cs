@@ -182,11 +182,31 @@ namespace NetPrintsEditor.ViewModels
             }
             else if (pin is NodeInputDataPin idp)
             {
-                foreach (var otherIdp in node.InputDataPins)
+                foreach (var otherOtp in node.OutputDataPins)
                 {
-                    if (GraphUtil.CanConnectNodePins(node.OutputDataPins[0], idp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
+                    if (GraphUtil.CanConnectNodePins(otherOtp, idp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
                     {
-                        GraphUtil.ConnectDataPins(node.OutputDataPins[0], idp);
+                        GraphUtil.ConnectDataPins(otherOtp, idp);
+
+                        // Connect exec pins if possible.
+                        // Also forward the previous connection through the new node.
+                        if (pin.Node.InputExecPins.Count > 0 && node.OutputExecPins.Count > 0)
+                        {
+                            var oldConnected = pin.Node.InputExecPins[0].IncomingPins.FirstOrDefault();
+
+                            if (oldConnected != null)
+                            {
+                                GraphUtil.DisconnectOutputExecPin(oldConnected);
+                            }
+
+                            GraphUtil.ConnectExecPins(node.OutputExecPins[0], pin.Node.InputExecPins[0]);
+
+                            if (oldConnected != null && node.InputExecPins.Count > 0)
+                            {
+                                GraphUtil.ConnectExecPins(oldConnected, node.InputExecPins[0]);
+                            }
+                        }
+
                         break;
                     }
                 }
@@ -197,7 +217,22 @@ namespace NetPrintsEditor.ViewModels
                 {
                     if (GraphUtil.CanConnectNodePins(odp, otherIdp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
                     {
-                        GraphUtil.ConnectDataPins(odp, node.InputDataPins[0]);
+                        GraphUtil.ConnectDataPins(odp, otherIdp);
+
+                        // Connect exec pins if possible.
+                        // Also forward the previous connection through the new node.
+                        if (node.InputExecPins.Count > 0 && pin.Node.OutputExecPins.Count > 0)
+                        {
+                            var oldConnected = pin.Node.OutputExecPins[0].OutgoingPin;
+
+                            GraphUtil.ConnectExecPins(pin.Node.OutputExecPins[0], node.InputExecPins[0]);
+
+                            if (oldConnected != null && node.OutputExecPins.Count > 0)
+                            {
+                                GraphUtil.ConnectExecPins(node.OutputExecPins[0], oldConnected);
+                            }
+                        }
+
                         break;
                     }
                 }
