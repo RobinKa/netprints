@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Timers;
 using System.Windows.Threading;
 
 namespace NetPrintsEditor.ViewModels
@@ -207,15 +208,16 @@ namespace NetPrintsEditor.ViewModels
 
         private ClassTranslator classTranslator = new ClassTranslator();
 
+        private Timer codeTimer;
+
         public ClassVM(Class cls)
         {
             Class = cls;
 
-            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            timer.Start();
-            timer.Tick += (sender, eventArgs) =>
+            codeTimer = new Timer(1000);
+            codeTimer.Elapsed += (sender, eventArgs) =>
             {
-                timer.Stop();
+                codeTimer.Stop();
 
                 string code;
 
@@ -228,10 +230,16 @@ namespace NetPrintsEditor.ViewModels
                     code = ex.ToString();
                 }
 
-                GeneratedCode = code;
+                Dispatcher.CurrentDispatcher.Invoke(() => GeneratedCode = code);
 
-                timer.Start();
+                codeTimer.Start();
             };
+            codeTimer.Start();
+        }
+
+        ~ClassVM()
+        {
+            codeTimer.Stop();
         }
 
 #region INotifyPropertyChanged

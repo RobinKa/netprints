@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using System.Threading.Tasks;
 
 namespace NetPrintsEditor
 {
@@ -35,7 +36,7 @@ namespace NetPrintsEditor
 
             if (App.StartupArguments != null && App.StartupArguments.Length == 1 && App.StartupArguments[0] != null)
             {
-                LoadProject(App.StartupArguments[0]);
+                _ = LoadProject(App.StartupArguments[0]);
             }
         }
         
@@ -140,16 +141,22 @@ namespace NetPrintsEditor
         }
         #endregion
 
-        private void LoadProject(string path)
+        private async Task LoadProject(string path)
         {
+            var overlay = await this.ShowProgressAsync("Loading project", path);
+            overlay.SetIndeterminate();
+
             try
             {
-                Project = ProjectVM.LoadFromPath(path);
+                Project = await Task.Run(() => ProjectVM.LoadFromPath(path));
+                await overlay.CloseAsync();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load project at path {path}:\n\n{ex}",
-                    "Failed to load project", MessageBoxButton.OK, MessageBoxImage.Error);
+                await overlay.CloseAsync();
+                var result = await this.ShowMessageAsync("Failed to load project", $"Failed to load project at path {path}. The exception has been copied to your clipboard.\n\n{ex}",
+                    MessageDialogStyle.Affirmative, new MetroDialogSettings());
+                Clipboard.SetText(ex.ToString());
             }
         }
 
@@ -175,7 +182,7 @@ namespace NetPrintsEditor
             if (openFileDialog.ShowDialog() == true)
             {
                 ProjectFlyout.IsOpen = false;
-                LoadProject(openFileDialog.FileName);
+                _ = LoadProject(openFileDialog.FileName);
             }
         }
 
