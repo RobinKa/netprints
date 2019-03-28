@@ -45,18 +45,20 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Output" VerticalAlignment="Center" />
+                    <Grid ToolTip="Output type when compiled or run">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Output" VerticalAlignment="Center" />
 
-                    <ComboBox Grid.Row="0" Grid.Column="1"
-                        FontSize="12" Margin="4" 
-                        IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
-                        ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
-                        SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1"
+                            FontSize="12" Margin="4" 
+                            IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
+                            ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                            SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
+                    </Grid>
                 </Grid>
             </mah:Flyout>
         </mah:FlyoutsControl>

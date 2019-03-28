@@ -28,8 +28,10 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Style="{StaticResource MetroFlatButton}" Margin="0,0,2,0" Content="Assembly" Click="OnAddAssemblyReferenceClicked" FontSize="12"/>
-            <Button Grid.Column="1" Style="{StaticResource MetroFlatButton}" Margin="2,0,0,0" Content="Source code" Click="OnAddSourceDirectoryReferenceClicked" FontSize="12"/>
+            <Button Grid.Column="0" Style="{StaticResource MetroFlatButton}" Margin="0,0,2,0" Content="Assembly" Click="OnAddAssemblyReferenceClicked" FontSize="12"
+                    ToolTip="Add an assembly reference"/>
+            <Button Grid.Column="1" Style="{StaticResource MetroFlatButton}" Margin="2,0,0,0" Content="Source code" Click="OnAddSourceDirectoryReferenceClicked" FontSize="12"
+                    ToolTip="Add a source code directory reference which searches for .cs files" />
         </Grid>
             
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -42,13 +44,15 @@
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Reference}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontSize="14" />
+                            <TextBlock Text="{Binding Reference}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontSize="14"
+                                       ToolTip="{Binding Reference}"/>
                             
                             <mah:ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeInCompilation}"
                                 VerticalAlignment="Center" IsEnabled="{Binding ShowIncludeInCompilationCheckBox}"
                                 OnLabel="Include" OffLabel="Exclude" ToolTip="Whether to include the reference as a source in the compilation process." />
                             
-                            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="32" Height="32" Grid.Column="2" Click="OnRemoveReferenceClicked">
+                            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="32" Height="32" Grid.Column="2"
+                                    Click="OnRemoveReferenceClicked" ToolTip="Remove this reference">
                                 <iconPacks:PackIconMaterial Kind="Minus" />
                             </Button>
                         </Grid>
