@@ -21,9 +21,13 @@ namespace NetPrints.Core
 
         // DEPRECATED
         // Moved to MethodVisibility
+        [Obsolete]
         Private = 0,
+        [Obsolete]
         Public = 1,
+        [Obsolete]
         Protected = 2,
+        [Obsolete]
         Internal = 4,
     }
 

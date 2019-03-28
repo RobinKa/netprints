@@ -11,13 +11,19 @@ namespace NetPrints.Core
     [Flags]
     public enum ClassModifiers
     {
-        Private = 0,
-        Public = 1,
-        Protected = 2,
-        Internal = 4,
         Sealed = 8,
         Abstract = 16,
         Static = 32,
+
+        // Deprecated
+        [Obsolete]
+        Private = 0,
+        [Obsolete]
+        Public = 1,
+        [Obsolete]
+        Protected = 2,
+        [Obsolete]
+        Internal = 4,
     }
 
     /// <summary>
@@ -41,7 +47,7 @@ namespace NetPrints.Core
     /// with classes.
     /// </summary>
     [DataContract]
-    public class Class
+    public partial class Class
     {
         /// <summary>
         /// Attributes this class has.
@@ -85,7 +91,13 @@ namespace NetPrints.Core
         /// Modifiers this class has.
         /// </summary>
         [DataMember]
-        public ClassModifiers Modifiers { get; set; } = ClassModifiers.Internal;
+        public ClassModifiers Modifiers { get; set; }
+
+        /// <summary>
+        /// Visibility of this class.
+        /// </summary>
+        [DataMember]
+        public MemberVisibility Visibility { get; set; } = MemberVisibility.Internal;
 
         /// <summary>
         /// Generic arguments this class takes.

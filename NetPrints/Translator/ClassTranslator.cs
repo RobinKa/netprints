@@ -54,10 +54,7 @@ namespace NetPrints.Translator
 
             StringBuilder modifiers = new StringBuilder();
 
-            if (c.Modifiers.HasFlag(ClassModifiers.Public))
-            {
-                modifiers.Append("public ");
-            }
+            modifiers.Append($"{TranslatorUtil.VisibilityTokens[c.Visibility]} ");
 
             if (c.Modifiers.HasFlag(ClassModifiers.Static))
             {

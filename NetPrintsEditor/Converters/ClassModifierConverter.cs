@@ -18,7 +18,7 @@ namespace NetPrintsEditor.Converters
                 return (mask & m) != 0;
             }
 
-            return ClassModifiers.Internal;
+            throw new NotImplementedException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -29,7 +29,7 @@ namespace NetPrintsEditor.Converters
                 return modifiers;
             }
 
-            return ClassModifiers.Internal;
+            throw new NotImplementedException();
         }
     }
 }

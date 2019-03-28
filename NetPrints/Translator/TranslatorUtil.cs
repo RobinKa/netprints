@@ -15,6 +15,14 @@ namespace NetPrints.Translator
         public const string VariablePrefix = "var";
         public const string TemporaryVariablePrefix = "temp";
 
+        public readonly static Dictionary<MemberVisibility, string> VisibilityTokens = new Dictionary<MemberVisibility, string>()
+        {
+            [MemberVisibility.Private] = "private",
+            [MemberVisibility.Protected] = "protected",
+            [MemberVisibility.Public] = "public",
+            [MemberVisibility.Internal] = "internal",
+        };
+
         private const int TemporaryVariableNameLength = 16;
 
         /// <summary>

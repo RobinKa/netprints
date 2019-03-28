@@ -45,7 +45,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -59,28 +58,28 @@
             <Label Grid.Row="1" Content="Namespace" />
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Class.Namespace, ElementName=wnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="2" Content="Public" />
-            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Public}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="2" Content="Visibility" />
+            <ComboBox Grid.Row="2" Grid.Column="1"
+                      Text="{Binding Path=Class.Visibility, ElementName=wnd, Mode=OneWay}" 
+                      SelectedItem="{Binding Path=Class.Visibility, ElementName=wnd, Mode=TwoWay}" 
+                      ItemsSource="{Binding Path=Class.PossibleVisibilities, ElementName=wnd}"/>
 
-            <Label Grid.Row="3" Content="Internal" />
-            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Internal}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="3" Content="Sealed" />
+            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Sealed}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="4" Content="Sealed" />
-            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Sealed}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="4" Content="Abstract" />
+            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Abstract}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="5" Content="Abstract" />
-            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Abstract}}" VerticalContentAlignment="Center" />
+            <Label Grid.Row="5" Content="Static" />
+            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Static}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="6" Content="Static" />
-            <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Static}}" VerticalContentAlignment="Center" />
-
-            <Label Grid.Row="7" Content="Base Type" />
-            <ComboBox Grid.Row="7" Grid.Column="1"
+            <Label Grid.Row="6" Content="Base Type" />
+            <ComboBox Grid.Row="6" Grid.Column="1"
                       Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 
                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
 
-            <TextBox Margin="4" Grid.Row="8" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
+            <TextBox Margin="4" Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
         </Grid>
     </Grid>
 </UserControl>
