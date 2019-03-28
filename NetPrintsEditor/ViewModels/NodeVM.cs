@@ -382,11 +382,11 @@ namespace NetPrintsEditor.ViewModels
                             Node.OutputTypePins, p => new NodePinVM(p));
                     }
 
+                    UpdateOverloads();
+
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Brush));
                     OnPropertyChanged(nameof(ToolTip));
-                    OnPropertyChanged(nameof(Overloads));
-                    OnPropertyChanged(nameof(ShowOverloads));
                     OnPropertyChanged(nameof(IsRerouteNode));
                     OnPropertyChanged(nameof(ShowLeftPinButtons));
                     OnPropertyChanged(nameof(ShowRightPinButtons));
@@ -646,7 +646,6 @@ namespace NetPrintsEditor.ViewModels
         public NodeVM(Node node)
         {
             Node = node;
-            UpdateOverloads();
         }
 
         private void UpdateOverloads()
@@ -701,11 +700,6 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (propertyName != nameof(ShowOverloads))
-            {
-                UpdateOverloads();
-            }
-
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
