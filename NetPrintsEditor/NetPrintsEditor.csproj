@@ -5,7 +5,7 @@
     <AssemblyName>NetPrintsEditor</AssemblyName>
     <UseWPF>True</UseWPF>
     <StartupObject>NetPrintsEditor.App</StartupObject>
-    <Version>0.0.5</Version>
+    <Version>0.0.6</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Robin Kahlow 2018</Copyright>
     <ApplicationIcon>NetPrintsLogo.ico</ApplicationIcon>
