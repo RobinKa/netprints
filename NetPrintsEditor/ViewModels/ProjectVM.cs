@@ -479,7 +479,7 @@ namespace NetPrintsEditor.ViewModels
 
         public void RunProject()
         {
-            if (OutputBinaryType != BinaryType.Executable || CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries))
+            if (OutputBinaryType != BinaryType.Executable || !CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries))
             {
                 throw new InvalidOperationException("Can only run executable projects which output their binaries.");
             }
