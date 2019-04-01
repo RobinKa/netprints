@@ -45,10 +45,22 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile" FontWeight="Bold" FontSize="16" Click="OnCompileButtonClicked"/>
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton" IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Run" FontWeight="Bold" FontSize="16" Click="OnRunButtonClicked" />
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton" Margin="5" Content="Class" FontWeight="Bold" FontSize="16" Click="OnClassPropertiesClicked" />
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="3" x:Name="saveButton" Margin="5" Content="Save" FontWeight="Bold" FontSize="16" Click="OnSaveButtonClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton"
+                    ToolTipService.ShowOnDisabled="True"
+                    ToolTip="Compiles the project and outputs the source code if chosen."
+                    IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile"
+                    FontWeight="Bold" FontSize="16" Click="OnCompileButtonClicked"/>
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton"
+                    ToolTipService.ShowOnDisabled="True"
+                    ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
+                    IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompileAndRun}"
+                    Margin="5" Content="Run" FontWeight="Bold" FontSize="16" Click="OnRunButtonClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton"
+                    ToolTip="Edit the properties of this class."
+                    Margin="5" Content="Class" FontWeight="Bold" FontSize="16" Click="OnClassPropertiesClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="3" x:Name="saveButton" Margin="5"
+                    ToolTip="Saves the project and all its classes."
+                    Content="Save" FontWeight="Bold" FontSize="16" Click="OnSaveButtonClicked" />
         </Grid>
 
         <Grid Grid.Row="1">

@@ -17,9 +17,14 @@
 
     <!-- https://stackoverflow.com/a/6145957/4332314 -->
     <Window.Resources>
-        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+        <ObjectDataProvider x:Key="ProjectCompilationOutputItems" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="ModelsAlias:ProjectCompilationOutput"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="BinaryTypeItems" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ModelsAlias:BinaryType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
@@ -44,9 +49,10 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Grid ToolTip="Output type when compiled or run">
+                    <Grid Grid.Row="0" ToolTip="What to output when on compilation.">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -56,8 +62,22 @@
                         <ComboBox Grid.Row="0" Grid.Column="1"
                             FontSize="12" Margin="4" 
                             IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
-                            ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                            ItemsSource="{Binding Source={StaticResource ProjectCompilationOutputItems}}"
                             SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
+                    </Grid>
+                    
+                    <Grid Grid.Row="1" ToolTip="Type of binary to output.">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Binary type" VerticalAlignment="Center" />
+
+                        <ComboBox Grid.Row="0" Grid.Column="1"
+                            FontSize="12" Margin="4" 
+                            IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
+                            ItemsSource="{Binding Source={StaticResource BinaryTypeItems}}"
+                            SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.OutputBinaryType}"/>
                     </Grid>
                 </Grid>
             </mah:Flyout>

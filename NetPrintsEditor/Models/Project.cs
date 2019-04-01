@@ -19,6 +19,12 @@ namespace NetPrintsEditor.Models
         All = SourceCode | Binaries | Errors,
     }
 
+    public enum BinaryType
+    {
+        SharedLibrary,
+        Executable,
+    }
+
     /// <summary>
     /// Project model.
     /// </summary>
@@ -130,6 +136,16 @@ namespace NetPrintsEditor.Models
         /// </summary>
         [DataMember]
         public ProjectCompilationOutput CompilationOutput
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Type of the binary that we want to output.
+        /// </summary>
+        [DataMember]
+        public BinaryType OutputBinaryType
         {
             get;
             set;

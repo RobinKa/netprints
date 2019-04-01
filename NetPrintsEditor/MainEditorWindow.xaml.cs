@@ -249,13 +249,13 @@ namespace NetPrintsEditor
 
         private void OnCompileButtonClicked(object sender, RoutedEventArgs e)
         {
-            Project.CompileProject(false);
+            Project.CompileProject();
         }
 
         private void OnRunButtonClicked(object sender, RoutedEventArgs e)
         {
             Project.PropertyChanged += OnProjectPropertyChangedWhileCompiling;
-            Project.CompileProject(true);
+            Project.CompileProject();
         }
 
         private void OnProjectPropertyChangedWhileCompiling(object sender, PropertyChangedEventArgs e)

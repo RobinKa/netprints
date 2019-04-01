@@ -57,7 +57,7 @@ namespace NetPrintsEditor
 
         private void OnCompileButtonClicked(object sender, RoutedEventArgs e)
         {
-            Class.Project.CompileProject(false);
+            Class.Project.CompileProject();
         }
 
         private void OnRunButtonClicked(object sender, RoutedEventArgs e)
@@ -65,7 +65,7 @@ namespace NetPrintsEditor
             ProjectVM project = Class.Project;
 
             project.PropertyChanged += OnProjectPropertyChangedWhileCompiling;
-            project.CompileProject(true);
+            project.CompileProject();
         }
 
         private void OnProjectPropertyChangedWhileCompiling(object sender, PropertyChangedEventArgs e)

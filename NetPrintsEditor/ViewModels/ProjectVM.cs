@@ -37,6 +37,12 @@ namespace NetPrintsEditor.ViewModels
             get => project != null;
         }
 
+        public bool CanCompileAndRun
+        {
+            get => CanCompile && project.OutputBinaryType == BinaryType.Executable &&
+                project.CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries);
+        }
+
         public ObservableRangeCollection<ClassVM> Classes
         {
             get => classes;
@@ -175,6 +181,21 @@ namespace NetPrintsEditor.ViewModels
                 {
                     project.CompilationOutput = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanCompileAndRun));
+                }
+            }
+        }
+
+        public BinaryType OutputBinaryType
+        {
+            get => project?.OutputBinaryType ?? BinaryType.SharedLibrary;
+            set
+            {
+                if (project.OutputBinaryType != value)
+                {
+                    project.OutputBinaryType = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanCompileAndRun));
                 }
             }
         }
@@ -190,6 +211,9 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsProjectOpen));
                     OnPropertyChanged(nameof(CanCompile));
+                    OnPropertyChanged(nameof(CompilationOutput));
+                    OnPropertyChanged(nameof(OutputBinaryType));
+                    OnPropertyChanged(nameof(CanCompileAndRun));
 
                     References = new ObservableViewModelCollection<CompilationReferenceVM, CompilationReference>(project.References, reference => new CompilationReferenceVM(reference));
                 }
@@ -289,7 +313,7 @@ namespace NetPrintsEditor.ViewModels
             return classSources;
         }
 
-        public void CompileProject(bool generateExecutable)
+        public void CompileProject()
         {
             // Check if we are already compiling
             if(!CanCompile || project.CompilationOutput == ProjectCompilationOutput.Nothing)
@@ -368,6 +392,7 @@ namespace NetPrintsEditor.ViewModels
                     classSources.Add(code);
                 });
 
+                bool generateExecutable = OutputBinaryType == BinaryType.Executable;
                 string ext = generateExecutable ? "exe" : "dll";
 
                 string outputPath = System.IO.Path.Combine(compiledDir, $"{Project.Name}.{ext}");
@@ -454,6 +479,11 @@ namespace NetPrintsEditor.ViewModels
 
         public void RunProject()
         {
+            if (OutputBinaryType != BinaryType.Executable || CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries))
+            {
+                throw new InvalidOperationException("Can only run executable projects which output their binaries.");
+            }
+
             string projectDir = System.IO.Path.GetDirectoryName(Path);
             string exePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(projectDir, $"Compiled_{Name}", $"{Project.Name}.exe"));
 
