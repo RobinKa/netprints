@@ -75,6 +75,7 @@
 
             <Label Grid.Row="6" Content="Base Type" />
             <ComboBox Grid.Row="6" Grid.Column="1"
+                      IsEditable="True"
                       Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 
                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>

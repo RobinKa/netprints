@@ -9,7 +9,7 @@
         xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
         mc:Ignorable="d"
         x:Name="wnd"
-        Title="Select Type" Height="100" Width="250" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Select Type" Height="100" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
 
     <Window.Resources>
         <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MetroComboBox}">
@@ -31,7 +31,7 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <ComboBox
+        <ComboBox IsEditable="True"
             Text="{Binding SelectedType, ElementName=wnd, Mode=OneWay}" 
             SelectedItem="{Binding SelectedType, ElementName=wnd, Mode=TwoWay}" 
             ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
