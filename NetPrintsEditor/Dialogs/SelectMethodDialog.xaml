@@ -32,7 +32,6 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <ComboBox
-            Text="{Binding SelectedMethod, ElementName=wnd, Mode=OneWay}" 
             SelectedItem="{Binding SelectedMethod, ElementName=wnd, Mode=TwoWay}" 
             ItemsSource="{Binding Methods, ElementName=wnd}"/>
 

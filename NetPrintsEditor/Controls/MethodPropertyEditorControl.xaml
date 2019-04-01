@@ -38,8 +38,7 @@
 
             <Label Grid.Row="1" Content="Visibility" />
             <ComboBox Grid.Row="1" Grid.Column="1"
-                      Text="{Binding Path=Method.Visibility, ElementName=wnd, Mode=OneWay}" 
-                      SelectedItem="{Binding Path=Method.Visibility, ElementName=wnd, Mode=TwoWay}" 
+                      SelectedItem="{Binding Path=Method.Visibility, ElementName=wnd}" 
                       ItemsSource="{Binding Path=Method.PossibleVisibilities, ElementName=wnd}"/>
 
             <Label Grid.Row="2" Content="Sealed" />

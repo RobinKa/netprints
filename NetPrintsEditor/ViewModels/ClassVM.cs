@@ -138,20 +138,14 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public string VisibilityName
+        public IEnumerable<MemberVisibility> PossibleVisibilities
         {
-            get => Enum.GetName(typeof(MemberVisibility), Visibility);
-            set => Visibility = Enum.Parse<MemberVisibility>(value);
-        }
-
-        public IEnumerable<string> PossibleVisibilities
-        {
-            get => new string[]
+            get => new[]
                 {
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Internal),
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Private),
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Protected),
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Public),
+                    MemberVisibility.Internal,
+                    MemberVisibility.Private,
+                    MemberVisibility.Protected,
+                    MemberVisibility.Public,
                 };
         }
 
@@ -171,6 +165,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(Name));
                     OnPropertyChanged(nameof(StoragePath));
                     OnPropertyChanged(nameof(FullName));
+                    OnPropertyChanged(nameof(Visibility));
                 }
             }
         }

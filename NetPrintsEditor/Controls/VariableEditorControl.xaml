@@ -52,7 +52,7 @@
             <Label Grid.Row="1" Content="Visibility" />
             <ComboBox Grid.Row="1" Grid.Column="1"
                       Text="{Binding Path=Variable.Visibility, ElementName=wnd, Mode=OneWay}" 
-                      SelectedItem="{Binding Path=Variable.Visibility, ElementName=wnd, Mode=TwoWay}" 
+                      SelectedItem="{Binding Path=Variable.Visibility, ElementName=wnd}" 
                       ItemsSource="{Binding Path=Variable.PossibleVisibilities, ElementName=wnd}"/>
             
             <Label Grid.Row="2" Content="Read-only" />
@@ -69,8 +69,7 @@
 
             <Label Grid.Row="6" Content="Type" />
             <ComboBox Grid.Row="6" Grid.Column="1" x:Name="variableType" 
-                      Text="{Binding Variable.VariableType, ElementName=wnd, Mode=OneWay}" 
-                      SelectedItem="{Binding Variable.VariableType, ElementName=wnd, Mode=TwoWay}" 
+                      SelectedItem="{Binding Variable.VariableType, ElementName=wnd}" 
                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
         </Grid>
     </StackPanel>

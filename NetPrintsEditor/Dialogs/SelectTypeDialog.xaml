@@ -32,8 +32,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <ComboBox IsEditable="True"
-            Text="{Binding SelectedType, ElementName=wnd, Mode=OneWay}" 
-            SelectedItem="{Binding SelectedType, ElementName=wnd, Mode=TwoWay}" 
+            SelectedItem="{Binding SelectedType, ElementName=wnd}" 
             ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
 
         <Button Content="Select" Grid.Row="2" Click="OnSelectButtonClicked" />

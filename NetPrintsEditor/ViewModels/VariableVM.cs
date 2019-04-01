@@ -66,14 +66,14 @@ namespace NetPrintsEditor.ViewModels
             set => Visibility = Enum.Parse<MemberVisibility>(value);
         }
 
-        public IEnumerable<string> PossibleVisibilities
+        public IEnumerable<MemberVisibility> PossibleVisibilities
         {
-            get => new string[]
+            get => new[]
                 {
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Internal),
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Private),
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Protected),
-                    Enum.GetName(typeof(MemberVisibility), MemberVisibility.Public),
+                    MemberVisibility.Internal,
+                    MemberVisibility.Private,
+                    MemberVisibility.Protected,
+                    MemberVisibility.Public,
                 };
         }
 
