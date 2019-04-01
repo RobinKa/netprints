@@ -100,7 +100,10 @@
 
                     <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
 
-                    <ComboBox HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16" ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
+                    <ComboBox x:Name="overrideMethodBox" HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16"
+                              Text="Override a method"
+                              IsReadOnly="True" IsEditable="True"
+                              ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 

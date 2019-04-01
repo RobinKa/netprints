@@ -371,11 +371,17 @@ namespace NetPrintsEditor
 
         private void OverrideMethodBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var methodSpecifier = e.AddedItems[0] as MethodSpecifier;
-            if (methodSpecifier != null)
+            if (e.AddedItems.Count > 0)
             {
-                undoRedoStack.DoCommand(NetPrintsCommands.OverrideMethod, methodSpecifier);
+                var methodSpecifier = e.AddedItems[0] as MethodSpecifier;
+                if (methodSpecifier != null)
+                {
+                    undoRedoStack.DoCommand(NetPrintsCommands.OverrideMethod, methodSpecifier);
+                }
             }
+
+            overrideMethodBox.SelectedItem = null;
+            overrideMethodBox.Text = "Override a method";
         }
         #endregion
 
