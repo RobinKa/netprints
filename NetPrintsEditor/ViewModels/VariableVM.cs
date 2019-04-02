@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using NetPrints.Graph;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -75,14 +76,16 @@ namespace NetPrintsEditor.ViewModels
             get => variable.SetterMethod != null;
         }
 
-        public Method GetterMethod
+        public MethodVM GetterMethod
         {
-            get => variable.GetterMethod;
+            get;
+            private set;
         }
 
-        public Method SetterMethod
+        public MethodVM SetterMethod
         {
-            get => variable.SetterMethod;
+            get;
+            private set;
         }
 
         public string VisibilityName
@@ -120,6 +123,8 @@ namespace NetPrintsEditor.ViewModels
         public VariableVM(Variable variable)
         {
             Variable = variable;
+            GetterMethod = variable.GetterMethod != null ? new MethodVM(variable.GetterMethod) : null;
+            SetterMethod = variable.SetterMethod != null ? new MethodVM(variable.SetterMethod) : null;
         }
 
         public void AddGetter()
@@ -129,8 +134,13 @@ namespace NetPrintsEditor.ViewModels
                 Class = variable.Class,
             };
 
-            // TODO
+            // Create return input pin with correct type
+            // TODO: Make sure we can't delete type pins.
+            TypeNode returnTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.MainReturnNode.PositionX, method.MainReturnNode.PositionY);
+            method.MainReturnNode.AddReturnType();
+            GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
 
+            GetterMethod = new MethodVM(method);
             variable.GetterMethod = method;
             OnPropertyChanged(nameof(HasGetter));
             OnPropertyChanged(nameof(GetterMethod));
@@ -138,6 +148,7 @@ namespace NetPrintsEditor.ViewModels
 
         public void RemoveGetter()
         {
+            GetterMethod = null;
             variable.GetterMethod = null;
             OnPropertyChanged(nameof(HasGetter));
             OnPropertyChanged(nameof(GetterMethod));
@@ -147,11 +158,16 @@ namespace NetPrintsEditor.ViewModels
         {
             var method = new Method($"set_{Name}")
             {
-                Class = variable.Class,
+                Class = variable.Class
             };
 
-            // TODO
+            // Create argument output pin with correct type
+            // TODO: Make sure we can't delete type pins.
+            TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX, method.EntryNode.PositionY);
+            method.EntryNode.AddArgument();
+            GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
 
+            SetterMethod = new MethodVM(method);
             variable.SetterMethod = method;
             OnPropertyChanged(nameof(HasSetter));
             OnPropertyChanged(nameof(SetterMethod));
@@ -159,6 +175,7 @@ namespace NetPrintsEditor.ViewModels
 
         public void RemoveSetter()
         {
+            SetterMethod = null;
             variable.SetterMethod = null;
             OnPropertyChanged(nameof(HasSetter));
             OnPropertyChanged(nameof(SetterMethod));

@@ -40,9 +40,10 @@ namespace NetPrintsEditor
 
         private void OnMethodDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
+            if (sender is FrameworkElement element && element.DataContext is MethodVM method &&
+                EditorCommands.OpenMethod.CanExecute(method))
             {
-                methodEditor.Method = m;
+                EditorCommands.OpenMethod.Execute(method);
             }
         }
 
@@ -84,6 +85,18 @@ namespace NetPrintsEditor
         }
 
         #region Commands
+        // Open method
+
+        private void CommandOpenMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Class != null && e.Parameter is MethodVM;
+        }
+
+        private void CommandOpenMethod_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            methodEditor.Method = (MethodVM)e.Parameter;
+        }
+
         // Add Method
 
         private void CommandAddMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -274,9 +287,15 @@ namespace NetPrintsEditor
             // Try to find the MethodVM corresponding to the passed NodeVM
             // and set its selected node
 
+            // TODO: Make selection nicer. Finding the corresponding method view model seems wrong since
+            //       we have to search in all possible places that have methods.
+
             NodeVM node = e.Parameter as NodeVM;
-            MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node));
-            if(method != null)
+            MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node)) ??
+                Class?.Variables?.FirstOrDefault(v => v.HasGetter && v.GetterMethod.Nodes.Contains(node))?.GetterMethod ??
+                Class?.Variables?.FirstOrDefault(v => v.HasSetter && v.SetterMethod.Nodes.Contains(node))?.SetterMethod;
+
+            if (method != null)
             {
                 method.SelectedNodes = new[] { node };
             }

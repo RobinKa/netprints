@@ -29,6 +29,7 @@
         <CommandBinding Command="cmds:NetPrintsCommands.AddSetter" CanExecute="CommandAddSetter_CanExecute" Executed="CommandAddSetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveGetter" CanExecute="CommandRemoveGetter_CanExecute" Executed="CommandRemoveGetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveSetter" CanExecute="CommandRemoveSetter_CanExecute" Executed="CommandRemoveSetter_Execute" />
+        <CommandBinding Command="cmds:EditorCommands.OpenMethod" CanExecute="CommandOpenMethod_CanExecute" Executed="CommandOpenMethod_Execute" />
         <CommandBinding Command="cmds:EditorCommands.OpenVariableGetSet" CanExecute="CommandOpenVariableGetSet_CanExecute" Executed="CommandOpenVariableGetSet_Execute" />
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />

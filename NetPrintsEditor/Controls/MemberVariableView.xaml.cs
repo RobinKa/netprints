@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using NetPrintsEditor.Commands;
+using NetPrintsEditor.ViewModels;
 
 namespace NetPrintsEditor.Controls
 {
@@ -13,6 +15,11 @@ namespace NetPrintsEditor.Controls
         public MemberVariableView()
         {
             InitializeComponent();
+        }
+
+        public VariableVM Variable
+        {
+            get => DataContext as VariableVM;
         }
 
         private void OnRemoveVariableClicked(object sender, RoutedEventArgs e)
@@ -47,12 +54,22 @@ namespace NetPrintsEditor.Controls
 
         private void OnGetterClicked(object sender, MouseButtonEventArgs e)
         {
-            // TODO: Open getter method
+            Variable.GetterMethod.Class = ProjectVM.Instance.Classes.Single(cls => cls.Class == Variable.Variable.Class);
+
+            if (EditorCommands.OpenMethod.CanExecute(Variable.GetterMethod))
+            {
+                EditorCommands.OpenMethod.Execute(Variable.GetterMethod);
+            }
         }
 
         private void OnSetterClicked(object sender, MouseButtonEventArgs e)
         {
-            // TODO: Open setter method
+            Variable.GetterMethod.Class = ProjectVM.Instance.Classes.Single(cls => cls.Class == Variable.Variable.Class);
+
+            if (EditorCommands.OpenMethod.CanExecute(Variable.SetterMethod))
+            {
+                EditorCommands.OpenMethod.Execute(Variable.SetterMethod);
+            }
         }
 
         private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)
