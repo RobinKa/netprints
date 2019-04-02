@@ -29,7 +29,10 @@ namespace NetPrintsEditor.Controls
 
         private void OnVariableClicked(object sender, MouseButtonEventArgs e)
         {
-            // TODO: Select variable
+            if (EditorCommands.SelectVariable.CanExecute(Variable))
+            {
+                EditorCommands.SelectVariable.Execute(Variable);
+            }
         }
 
         private void OnAddGetterClicked(object sender, RoutedEventArgs e)

@@ -129,10 +129,10 @@ namespace NetPrints.Translator
                 modifiers.Append("const ");
             }
 
-            // TODO: Translate get / set methods
-
             if (variable.HasAccessors)
             {
+                // Translate get / set methods
+
                 string output = PROPERTY_TEMPLATE
                     .Replace("%VariableModifiers%", modifiers.ToString())
                     .Replace("%VariableType%", variable.Type.FullCodeName)

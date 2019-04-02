@@ -55,7 +55,23 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (variable.Visibility != value)
                 {
+                    // Change visibility of accessors if it was the same as the visibility
+                    // of the property itself.
+                    // Ideally we would have a way to check if the visibility is user-set,
+                    // for example by making the getter / setter visibility nullable.
+
+                    if (variable.GetterMethod != null && variable.GetterMethod.Visibility == variable.Visibility)
+                    {
+                        variable.GetterMethod.Visibility = value;
+                    }
+
+                    if (variable.SetterMethod != null && variable.SetterMethod.Visibility == variable.Visibility)
+                    {
+                        variable.SetterMethod.Visibility = value;
+                    }
+
                     variable.Visibility = value;
+                    
                     OnPropertyChanged();
                 }
             }
@@ -132,6 +148,7 @@ namespace NetPrintsEditor.ViewModels
             var method = new Method($"get_{Name}")
             {
                 Class = variable.Class,
+                Visibility = Visibility
             };
 
             // Create return input pin with correct type
@@ -158,7 +175,8 @@ namespace NetPrintsEditor.ViewModels
         {
             var method = new Method($"set_{Name}")
             {
-                Class = variable.Class
+                Class = variable.Class,
+                Visibility = Visibility
             };
 
             // Create argument output pin with correct type

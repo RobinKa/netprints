@@ -13,5 +13,10 @@ namespace NetPrintsEditor.Commands
         /// Command for opening a method graph.
         /// </summary>
         public static readonly ICommand OpenMethod = new RoutedUICommand(nameof(OpenMethod), nameof(OpenMethod), typeof(EditorCommands));
+
+        /// <summary>
+        /// Command for selecting a variable of a method.
+        /// </summary>
+        public static readonly ICommand SelectVariable = new RoutedUICommand(nameof(SelectVariable), nameof(SelectVariable), typeof(EditorCommands));
     }
 }

@@ -97,6 +97,22 @@ namespace NetPrintsEditor
             methodEditor.Method = (MethodVM)e.Parameter;
         }
 
+        // Select variable
+
+        private void CommandSelectVariable_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Class != null && e.Parameter is VariableVM;
+        }
+
+        private void CommandSelectVariable_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is VariableVM v)
+            {
+                viewerTabControl.SelectedIndex = 1;
+                variableViewer.Variable = v;
+            }
+        }
+
         // Add Method
 
         private void CommandAddMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -173,7 +189,20 @@ namespace NetPrintsEditor
 
         private void CommandRemoveVariable_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.Variables.Remove(Class.Variables.First(m => m.Name == e.Parameter as string));
+            VariableVM variable = Class.Variables.Single(m => m.Name == e.Parameter as string);
+
+            if (viewerTabControl.SelectedIndex == 1 && variableViewer.Variable == variable)
+            {
+                variableViewer.Variable = null;
+                viewerTabControl.SelectedIndex = 0;
+            }
+
+            if (methodEditor.Method == variable.GetterMethod || methodEditor.Method == variable.SetterMethod)
+            {
+                methodEditor.Method = null;
+            }
+
+            Class.Variables.Remove(variable);
         }
 
         // Move node

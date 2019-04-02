@@ -265,6 +265,7 @@ namespace NetPrints.Translator
         /// Translates a method to C#.
         /// </summary>
         /// <param name="method">Method to translate.</param>
+        /// <param name="withSignature">Whether to translate the signature.</param>
         /// <returns>C# code for the method.</returns>
         public string Translate(Method method, bool withSignature)
         {
