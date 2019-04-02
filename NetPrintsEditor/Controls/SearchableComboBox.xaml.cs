@@ -300,6 +300,16 @@ namespace NetPrintsEditor.Controls
                             ));
                         }
                     }
+                    else if (t == TypeSpecifier.FromType<MakeArrayTypeNode>())
+                    {
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(MakeArrayTypeNode),
+                            null,
+                            0,
+                            0
+                        ));
+                    }
                     else
                     {
                         // Build a type node

@@ -60,6 +60,7 @@ namespace NetPrintsEditor.Controls
             TypeSpecifier.FromType<MakeArrayNode>(),
             TypeSpecifier.FromType<LiteralNode>(),
             TypeSpecifier.FromType<TypeNode>(),
+            TypeSpecifier.FromType<MakeArrayTypeNode>(),
         };
 
         public MethodEditorControl()

@@ -1,0 +1,47 @@
+﻿using NetPrints.Core;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+
+namespace NetPrints.Graph
+{
+    [DataContract]
+    public class MakeArrayTypeNode : Node
+    {
+        [DataMember]
+        private ObservableValue<BaseType> arrayType;
+
+        public MakeArrayTypeNode(Method method)
+            : base(method)
+        {
+            AddInputTypePin("ElementType");
+
+            arrayType = new ObservableValue<BaseType>(GetArrayType());
+
+            AddOutputTypePin("ArrayType", arrayType);
+        }
+
+        protected override void OnInputTypeChanged(object sender, EventArgs eventArgs)
+        {
+            base.OnInputTypeChanged(sender, eventArgs);
+
+            // Set the type of the output type pin by constructing
+            // the type of this node with the input type pins.
+            arrayType.Value = GetArrayType();
+        }
+
+        private BaseType GetArrayType()
+        {
+            var elementType = InputTypePins[0].InferredType?.Value ?? TypeSpecifier.FromType<object>();
+            return new TypeSpecifier(elementType.Name + "[]", false, false, null);
+        }
+
+        public override string ToString()
+        {
+            return arrayType.Value.ShortName;
+        }
+    }
+}

@@ -81,6 +81,11 @@ namespace NetPrintsEditor.Converters
                     text = "NetPrints - Type";
                     iconPath = "Type_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<MakeArrayTypeNode>())
+                {
+                    text = "NetPrints - Make Array Type";
+                    iconPath = "Type_16x.png";
+                }
                 else
                 {
                     text = t.FullCodeName;
