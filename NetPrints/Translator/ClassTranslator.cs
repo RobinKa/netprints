@@ -27,7 +27,8 @@ namespace NetPrints.Translator
         private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName%;";
         private const string PROPERTY_TEMPLATE = @"%VariableModifiers%%VariableType% %VariableName%
             {
-                %Get%%Set%
+                %Get%
+                %Set%
             }";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
@@ -140,7 +141,9 @@ namespace NetPrints.Translator
                 if (variable.GetterMethod != null)
                 {
                     string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false);
-                    output = output.Replace("%Get%", "get\n" + getterMethodCode);
+                    string visibilityPrefix = variable.GetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.GetterMethod.Visibility]} " : "";
+
+                    output = output.Replace("%Get%", $"{visibilityPrefix}get\n{getterMethodCode}");
                 }
                 else
                 {
@@ -150,7 +153,9 @@ namespace NetPrints.Translator
                 if (variable.SetterMethod != null)
                 {
                     string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false);
-                    output = output.Replace("%Set%", "set\n" + setterMethodCode);
+                    string visibilityPrefix = variable.SetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.SetterMethod.Visibility]} " : "";
+
+                    output = output.Replace("%Set%", $"{visibilityPrefix}set\n{setterMethodCode}");
                 }
                 else
                 {
