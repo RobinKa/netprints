@@ -146,19 +146,19 @@ namespace NetPrints.Tests
         [TestMethod]
         public void TestStringLengthTranslation()
         {
-            string translated = methodTranslator.Translate(stringLengthMethod);
+            string translated = methodTranslator.Translate(stringLengthMethod, true);
         }
 
         [TestMethod]
         public void TestIfElseTranslation()
         {
-            string translated = methodTranslator.Translate(ifElseMethod);
+            string translated = methodTranslator.Translate(ifElseMethod, true);
         }
 
         [TestMethod]
         public void TestForLoopTranslation()
         {
-            string translated = methodTranslator.Translate(forLoopMethod);
+            string translated = methodTranslator.Translate(forLoopMethod, true);
         }
     }
 }
