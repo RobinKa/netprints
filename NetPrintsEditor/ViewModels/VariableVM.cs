@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using NetPrints.Graph;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,14 +9,14 @@ namespace NetPrintsEditor.ViewModels
 {
     public class VariableVM : INotifyPropertyChanged
     {
-        public TypeSpecifier VariableType
+        public TypeSpecifier Type
         {
-            get => variable.VariableType;
+            get => variable.Type;
             set
             {
-                if (variable.VariableType != value)
+                if (variable.Type != value)
                 {
-                    variable.VariableType = value;
+                    variable.Type = value;
                     OnPropertyChanged();
                 }
             }
@@ -54,10 +55,53 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (variable.Visibility != value)
                 {
+                    // Change visibility of accessors if it was the same as the visibility
+                    // of the property itself.
+                    // Ideally we would have a way to check if the visibility is user-set,
+                    // for example by making the getter / setter visibility nullable.
+
+                    if (variable.GetterMethod != null && variable.GetterMethod.Visibility == variable.Visibility)
+                    {
+                        variable.GetterMethod.Visibility = value;
+                    }
+
+                    if (variable.SetterMethod != null && variable.SetterMethod.Visibility == variable.Visibility)
+                    {
+                        variable.SetterMethod.Visibility = value;
+                    }
+
                     variable.Visibility = value;
+                    
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public VariableSpecifier Specifier
+        {
+            get => variable.Specifier;
+        }
+
+        public bool HasGetter
+        {
+            get => variable.GetterMethod != null;
+        }
+
+        public bool HasSetter
+        {
+            get => variable.SetterMethod != null;
+        }
+
+        public MethodVM GetterMethod
+        {
+            get;
+            private set;
+        }
+
+        public MethodVM SetterMethod
+        {
+            get;
+            private set;
         }
 
         public string VisibilityName
@@ -95,6 +139,64 @@ namespace NetPrintsEditor.ViewModels
         public VariableVM(Variable variable)
         {
             Variable = variable;
+            GetterMethod = variable.GetterMethod != null ? new MethodVM(variable.GetterMethod) : null;
+            SetterMethod = variable.SetterMethod != null ? new MethodVM(variable.SetterMethod) : null;
+        }
+
+        public void AddGetter()
+        {
+            var method = new Method($"get_{Name}")
+            {
+                Class = variable.Class,
+                Visibility = Visibility
+            };
+
+            // Create return input pin with correct type
+            // TODO: Make sure we can't delete type pins.
+            TypeNode returnTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.MainReturnNode.PositionX, method.MainReturnNode.PositionY);
+            method.MainReturnNode.AddReturnType();
+            GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
+
+            GetterMethod = new MethodVM(method);
+            variable.GetterMethod = method;
+            OnPropertyChanged(nameof(HasGetter));
+            OnPropertyChanged(nameof(GetterMethod));
+        }
+
+        public void RemoveGetter()
+        {
+            GetterMethod = null;
+            variable.GetterMethod = null;
+            OnPropertyChanged(nameof(HasGetter));
+            OnPropertyChanged(nameof(GetterMethod));
+        }
+
+        public void AddSetter()
+        {
+            var method = new Method($"set_{Name}")
+            {
+                Class = variable.Class,
+                Visibility = Visibility
+            };
+
+            // Create argument output pin with correct type
+            // TODO: Make sure we can't delete type pins.
+            TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX, method.EntryNode.PositionY);
+            method.EntryNode.AddArgument();
+            GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
+
+            SetterMethod = new MethodVM(method);
+            variable.SetterMethod = method;
+            OnPropertyChanged(nameof(HasSetter));
+            OnPropertyChanged(nameof(SetterMethod));
+        }
+
+        public void RemoveSetter()
+        {
+            SetterMethod = null;
+            variable.SetterMethod = null;
+            OnPropertyChanged(nameof(HasSetter));
+            OnPropertyChanged(nameof(SetterMethod));
         }
 
         #region INotifyPropertyChanged

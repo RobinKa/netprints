@@ -19,7 +19,7 @@ namespace NetPrintsEditor.Reflection
         private Func<TypeSpecifier, TypeSpecifier, bool> memoizedHasImplicitCast;
         private Func<TypeSpecifier, TypeSpecifier, bool> memoizedTypeSpecifierIsSubclassOf;
         private Func<ReflectionProviderMethodQuery, IEnumerable<MethodSpecifier>> memoizedGetMethods;
-        private Func<ReflectionProviderPropertyQuery, IEnumerable<PropertySpecifier>> memoizedGetProperties;
+        private Func<ReflectionProviderVariableQuery, IEnumerable<VariableSpecifier>> memoizedGetVariables;
 
         public MemoizedReflectionProvider(IReflectionProvider reflectionProvider)
         {
@@ -57,14 +57,11 @@ namespace NetPrintsEditor.Reflection
             memoizedGetMethods = provider.GetMethods;
             memoizedGetMethods = memoizedGetMethods.Memoize();
 
-            memoizedGetProperties= provider.GetProperties;
-            memoizedGetProperties = memoizedGetProperties.Memoize();
-
             memoizedGetPublicMethodOverloads = provider.GetPublicMethodOverloads;
             memoizedGetPublicMethodOverloads = memoizedGetPublicMethodOverloads.Memoize();
 
-            memoizedGetProperties = provider.GetProperties;
-            memoizedGetProperties = memoizedGetProperties.Memoize();
+            memoizedGetVariables = provider.GetVariables;
+            memoizedGetVariables = memoizedGetVariables.Memoize();
 
             memoizedHasImplicitCast = provider.HasImplicitCast;
             memoizedHasImplicitCast = memoizedHasImplicitCast.Memoize();
@@ -100,8 +97,8 @@ namespace NetPrintsEditor.Reflection
         public IEnumerable<MethodSpecifier> GetMethods(ReflectionProviderMethodQuery query)
             => memoizedGetMethods(query);
 
-        public IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query)
-            => memoizedGetProperties(query);
+        public IEnumerable<VariableSpecifier> GetVariables(ReflectionProviderVariableQuery query)
+            => memoizedGetVariables(query);
 
         public bool HasImplicitCast(TypeSpecifier fromType, TypeSpecifier toType)
             => memoizedHasImplicitCast(fromType, toType);

@@ -144,8 +144,6 @@ namespace NetPrintsEditor.Reflection
                 modifiers |= MethodModifiers.Override;
             }
 
-            // TODO: Protected / Internal
-
             BaseType[] returnTypes = method.ReturnsVoid ?
                 new BaseType[] { } :
                 new BaseType[] { BaseTypeSpecifierFromSymbol(method.ReturnType) };
@@ -166,32 +164,64 @@ namespace NetPrintsEditor.Reflection
                 genericArgs);
         }
 
-        public static PropertySpecifier PropertySpecifierFromSymbol(IPropertySymbol property)
+        public static VariableSpecifier VariableSpecifierFromSymbol(IPropertySymbol property)
         {
-            bool hasPublicGetter = property.GetMethod != null ? property.GetMethod.IsPublic() : false;
-            bool hasPublicSetter = property.SetMethod != null ? property.SetMethod.IsPublic() : false;
+            var getterAccessibility = property.GetMethod?.DeclaredAccessibility;
+            var setterAccessibility = property.SetMethod?.DeclaredAccessibility;
 
-            return new PropertySpecifier(
+            var modifiers = new VariableModifiers();
+
+            if (property.IsStatic)
+            {
+                modifiers |= VariableModifiers.Static;
+            }
+
+            if (property.IsReadOnly)
+            {
+                modifiers |= VariableModifiers.ReadOnly;
+            }
+
+            // TODO: More modifiers
+
+            return new VariableSpecifier(
                 property.Name,
                 TypeSpecifierFromSymbol(property.Type),
-                hasPublicGetter,
-                hasPublicSetter,
+                getterAccessibility.HasValue ? roslynToNetprintsVisibility[getterAccessibility.Value] : MemberVisibility.Private,
+                setterAccessibility.HasValue ? roslynToNetprintsVisibility[setterAccessibility.Value] : MemberVisibility.Private,
                 TypeSpecifierFromSymbol(property.ContainingType),
-                property.IsStatic);
+                modifiers);
         }
 
-        public static PropertySpecifier PropertySpecifierFromField(IFieldSymbol field)
+        public static VariableSpecifier VariableSpecifierFromField(IFieldSymbol field)
         {
-            // TODO: Create own specifier for fields / unify with properties
+            var visibility = roslynToNetprintsVisibility[field.DeclaredAccessibility];
 
-            return new PropertySpecifier(
+            var modifiers = new VariableModifiers();
+
+            if (field.IsStatic)
+            {
+                modifiers |= VariableModifiers.Static;
+            }
+
+            if (field.IsConst)
+            {
+                modifiers |= VariableModifiers.Const;
+            }
+
+            if (field.IsReadOnly)
+            {
+                modifiers |= VariableModifiers.ReadOnly;
+            }
+
+            // TODO: More modifiers
+
+            return new VariableSpecifier(
                 field.Name,
                 TypeSpecifierFromSymbol(field.Type),
-                field.IsPublic(),
-                field.IsPublic() ? !field.IsReadOnly : false,
+                visibility,
+                visibility,
                 TypeSpecifierFromSymbol(field.ContainingType),
-                field.IsStatic
-            );
+                modifiers);
         }
 
         public static ConstructorSpecifier ConstructorSpecifierFromSymbol(IMethodSymbol constructorMethodSymbol)

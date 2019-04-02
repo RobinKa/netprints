@@ -54,36 +54,36 @@ namespace NetPrintsEditor.Reflection
         }
     }
 
-    public class ReflectionProviderPropertyQuery : IReflectionProviderQuery
+    public class ReflectionProviderVariableQuery : IReflectionProviderQuery
     {
         public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
         public MemberVisibility? Visibility { get; set; }
-        public TypeSpecifier PropertyType { get; set; }
-        public bool PropertyTypeDerivesFrom { get; set; } = false;
+        public TypeSpecifier VariableType { get; set; }
+        public bool VariableTypeDerivesFrom { get; set; } = false;
 
-        public ReflectionProviderPropertyQuery WithType(TypeSpecifier type)
+        public ReflectionProviderVariableQuery WithType(TypeSpecifier type)
         {
             Type = type;
             return this;
         }
 
-        public ReflectionProviderPropertyQuery WithStatic(bool isStatic)
+        public ReflectionProviderVariableQuery WithStatic(bool isStatic)
         {
             Static = isStatic;
             return this;
         }
 
-        public ReflectionProviderPropertyQuery WithVisibility(MemberVisibility visibility)
+        public ReflectionProviderVariableQuery WithVisibility(MemberVisibility visibility)
         {
             Visibility = visibility;
             return this;
         }
 
-        public ReflectionProviderPropertyQuery WithPropertyType(TypeSpecifier type, bool derivesFrom = false)
+        public ReflectionProviderVariableQuery WithVariableType(TypeSpecifier type, bool derivesFrom = false)
         {
-            PropertyType = type;
-            PropertyTypeDerivesFrom = derivesFrom;
+            VariableType = type;
+            VariableTypeDerivesFrom = derivesFrom;
             return this;
         }
     }
@@ -102,7 +102,7 @@ namespace NetPrintsEditor.Reflection
         IEnumerable<string> GetEnumNames(TypeSpecifier typeSpecifier);
 
         IEnumerable<MethodSpecifier> GetMethods(ReflectionProviderMethodQuery query);
-        IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query);
+        IEnumerable<VariableSpecifier> GetVariables(ReflectionProviderVariableQuery query);
 
         // Documentation
         string GetMethodDocumentation(MethodSpecifier methodSpecifier);

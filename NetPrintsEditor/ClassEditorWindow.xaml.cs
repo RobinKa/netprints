@@ -40,9 +40,10 @@ namespace NetPrintsEditor
 
         private void OnMethodDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
+            if (sender is FrameworkElement element && element.DataContext is MethodVM method &&
+                EditorCommands.OpenMethod.CanExecute(method))
             {
-                methodEditor.Method = m;
+                EditorCommands.OpenMethod.Execute(method);
             }
         }
 
@@ -84,6 +85,34 @@ namespace NetPrintsEditor
         }
 
         #region Commands
+        // Open method
+
+        private void CommandOpenMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Class != null && e.Parameter is MethodVM;
+        }
+
+        private void CommandOpenMethod_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            methodEditor.Method = (MethodVM)e.Parameter;
+        }
+
+        // Select variable
+
+        private void CommandSelectVariable_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Class != null && e.Parameter is VariableVM;
+        }
+
+        private void CommandSelectVariable_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is VariableVM v)
+            {
+                viewerTabControl.SelectedIndex = 1;
+                variableViewer.Variable = v;
+            }
+        }
+
         // Add Method
 
         private void CommandAddMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -139,28 +168,41 @@ namespace NetPrintsEditor
             Class.Methods.Remove(Class.Methods.First(m => m.Name == e.Parameter as string));
         }
 
-        // Add Attribute
+        // Add Variable
 
-        private void CommandAddAttribute_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void CommandAddVariable_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is string && !Class.Attributes.Any(m => m.Name == e.Parameter as string);
+            e.CanExecute = Class != null && e.Parameter is string && !Class.Variables.Any(m => m.Name == e.Parameter as string);
         }
 
-        private void CommandAddAttribute_Execute(object sender, ExecutedRoutedEventArgs e)
+        private void CommandAddVariable_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.Class.Attributes.Add(new Variable(e.Parameter as string, TypeSpecifier.FromType<object>()));
+            Class.Class.Variables.Add(new Variable(Class.Class, e.Parameter as string, TypeSpecifier.FromType<object>(), null, null, VariableModifiers.None));
         }
 
-        // Remove Attribute
+        // Remove Variable
 
-        private void CommandRemoveAttribute_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void CommandRemoveVariable_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is string && Class.Attributes.Any(m => m.Name == e.Parameter as string);
+            e.CanExecute = Class != null && e.Parameter is string && Class.Variables.Any(m => m.Name == e.Parameter as string);
         }
 
-        private void CommandRemoveAttribute_Execute(object sender, ExecutedRoutedEventArgs e)
+        private void CommandRemoveVariable_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Class.Attributes.Remove(Class.Attributes.First(m => m.Name == e.Parameter as string));
+            VariableVM variable = Class.Variables.Single(m => m.Name == e.Parameter as string);
+
+            if (viewerTabControl.SelectedIndex == 1 && variableViewer.Variable == variable)
+            {
+                variableViewer.Variable = null;
+                viewerTabControl.SelectedIndex = 0;
+            }
+
+            if (methodEditor.Method == variable.GetterMethod || methodEditor.Method == variable.SetterMethod)
+            {
+                methodEditor.Method = null;
+            }
+
+            Class.Variables.Remove(variable);
         }
 
         // Move node
@@ -274,9 +316,15 @@ namespace NetPrintsEditor
             // Try to find the MethodVM corresponding to the passed NodeVM
             // and set its selected node
 
+            // TODO: Make selection nicer. Finding the corresponding method view model seems wrong since
+            //       we have to search in all possible places that have methods.
+
             NodeVM node = e.Parameter as NodeVM;
-            MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node));
-            if(method != null)
+            MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node)) ??
+                Class?.Variables?.FirstOrDefault(v => v.HasGetter && v.GetterMethod.Nodes.Contains(node))?.GetterMethod ??
+                Class?.Variables?.FirstOrDefault(v => v.HasSetter && v.SetterMethod.Nodes.Contains(node))?.SetterMethod;
+
+            if (method != null)
             {
                 method.SelectedNodes = new[] { node };
             }
@@ -286,12 +334,12 @@ namespace NetPrintsEditor
 
         private void CommandOpenVariableGetSet_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is VariableGetSetInfo;
+            e.CanExecute = e.Parameter is VariableSpecifier;
         }
 
         private void CommandOpenVariableGetSet_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            methodEditor.ShowVariableGetSet((VariableGetSetInfo)e.Parameter);
+            methodEditor.ShowVariableGetSet((VariableSpecifier)e.Parameter);
         }
 
         // Change node overload
@@ -312,6 +360,47 @@ namespace NetPrintsEditor
             {
                 throw new ArgumentException("Expected type ChangeNodeOverloadParameters for e.Parameter.");
             }
+        }
+
+        // Add/Remove Getter/Setter
+        private void CommandAddGetter_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableVM;
+        }
+
+        private void CommandAddGetter_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            ((VariableVM)e.Parameter).AddGetter();
+        }
+
+        private void CommandRemoveGetter_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableVM;
+        }
+
+        private void CommandRemoveGetter_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            ((VariableVM)e.Parameter).RemoveGetter();
+        }
+
+        private void CommandAddSetter_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableVM;
+        }
+
+        private void CommandAddSetter_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            ((VariableVM)e.Parameter).AddSetter();
+        }
+
+        private void CommandRemoveSetter_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is VariableVM;
+        }
+
+        private void CommandRemoveSetter_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            ((VariableVM)e.Parameter).RemoveSetter();
         }
 
         #endregion
@@ -362,11 +451,11 @@ namespace NetPrintsEditor
             undoRedoStack.DoCommand(NetPrintsCommands.AddMethod, uniqueName);
         }
 
-        // Add Attribute Button
-        private void AddAttributeButton_Click(object sender, RoutedEventArgs e)
+        // Add Variable Button
+        private void AddVariableButton_Click(object sender, RoutedEventArgs e)
         {
-            string uniqueName = NetPrintsUtil.GetUniqueName("Variable", Class.Attributes.Select(m => m.Name).ToList());
-            undoRedoStack.DoCommand(NetPrintsCommands.AddAttribute, uniqueName);
+            string uniqueName = NetPrintsUtil.GetUniqueName("Variable", Class.Variables.Select(m => m.Name).ToList());
+            undoRedoStack.DoCommand(NetPrintsCommands.AddVariable, uniqueName);
         }
 
         private void OverrideMethodBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -384,29 +473,6 @@ namespace NetPrintsEditor
             overrideMethodBox.Text = "Override a method";
         }
         #endregion
-
-        private void OnAttributeClicked(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is FrameworkElement element && element.DataContext is VariableVM v)
-            {
-                viewerTabControl.SelectedIndex = 1;
-                variableViewer.Variable = v;
-            }
-        }
-
-        private void OnRemoveAttributeClicked(object sender, RoutedEventArgs e)
-        {
-            if (sender is FrameworkElement element && element.DataContext is VariableVM v)
-            {
-                if(viewerTabControl.SelectedIndex == 1 && variableViewer.Variable == v)
-                {
-                    variableViewer.Variable = null;
-                    viewerTabControl.SelectedIndex = 0;
-                }
-
-                Class.Class.Attributes.Remove(v.Variable);
-            }
-        }
 
         private void OnMethodClicked(object sender, MouseButtonEventArgs e)
         {

@@ -64,7 +64,8 @@ namespace NetPrints.Tests
             }
 
             // Create nodes
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, TypeSpecifier.FromType<string>(), new Variable("Length", TypeSpecifier.FromType<int>()));
+            var getLengthNode = new VariableGetterNode(stringLengthMethod, new VariableSpecifier("Length", TypeSpecifier.FromType<int>(),
+                MemberVisibility.Public,MemberVisibility.Public, TypeSpecifier.FromType<string>(), VariableModifiers.None));
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNodes.First().ReturnPin);
@@ -145,19 +146,19 @@ namespace NetPrints.Tests
         [TestMethod]
         public void TestStringLengthTranslation()
         {
-            string translated = methodTranslator.Translate(stringLengthMethod);
+            string translated = methodTranslator.Translate(stringLengthMethod, true);
         }
 
         [TestMethod]
         public void TestIfElseTranslation()
         {
-            string translated = methodTranslator.Translate(ifElseMethod);
+            string translated = methodTranslator.Translate(ifElseMethod, true);
         }
 
         [TestMethod]
         public void TestForLoopTranslation()
         {
-            string translated = methodTranslator.Translate(forLoopMethod);
+            string translated = methodTranslator.Translate(forLoopMethod, true);
         }
     }
 }

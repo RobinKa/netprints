@@ -37,9 +37,12 @@ namespace NetPrints.Tests
                 GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], stringLengthMethod.MainReturnNode.InputTypePins[i]);
             }
 
+            TypeSpecifier stringType = TypeSpecifier.FromType<string>();
+            TypeSpecifier intType = TypeSpecifier.FromType<int>();
+
             // Create nodes
-            VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, cls.Type, new Variable("testVariable", TypeSpecifier.FromType<string>()));
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, cls.Type, new Variable("Length", TypeSpecifier.FromType<int>()));
+            VariableGetterNode getStringNode = new VariableGetterNode(stringLengthMethod, new VariableSpecifier("testVariable", stringType, MemberVisibility.Public, MemberVisibility.Public, stringType, VariableModifiers.None));
+            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, new VariableSpecifier("Length", intType, MemberVisibility.Public, MemberVisibility.Public, stringType, VariableModifiers.None));
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNodes.First().ReturnPin);
@@ -66,7 +69,7 @@ namespace NetPrints.Tests
 
             // Create nodes
             LiteralNode stringLiteralNode = LiteralNode.WithValue(mainMethod, "Hello World");
-            VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, cls.Type, new Variable("testVariable", TypeSpecifier.FromType<string>()));
+            VariableSetterNode setStringNode = new VariableSetterNode(mainMethod, new VariableSpecifier("testVariable", TypeSpecifier.FromType<string>(), MemberVisibility.Public, MemberVisibility.Public, cls.Type, VariableModifiers.None));
             CallMethodNode getStringLengthNode = new CallMethodNode(mainMethod, stringLengthSpecifier);
             CallMethodNode writeConsoleNode = new CallMethodNode(mainMethod, writeConsoleSpecifier);
 
@@ -96,7 +99,7 @@ namespace NetPrints.Tests
             CreateStringLengthMethod();
             CreateMainMethod();
 
-            cls.Attributes.Add(new Variable("testVariable", TypeSpecifier.FromType<string>()));
+            cls.Variables.Add(new Variable(cls, "testVariable", TypeSpecifier.FromType<string>(), null, null, VariableModifiers.None));
             cls.Methods.Add(stringLengthMethod);
             cls.Methods.Add(mainMethod);
         }

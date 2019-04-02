@@ -560,7 +560,7 @@ namespace NetPrintsEditor.Reflection
             return methodSpecifiers;
         }
 
-        public IEnumerable<PropertySpecifier> GetProperties(ReflectionProviderPropertyQuery query)
+        public IEnumerable<VariableSpecifier> GetVariables(ReflectionProviderVariableQuery query)
         {
             // Note: Currently we handle fields and properties in this function
             //       so there is some extra logic for handling the fields.
@@ -590,7 +590,7 @@ namespace NetPrintsEditor.Reflection
 
                 if (type == null)
                 {
-                    return new PropertySpecifier[0];
+                    return new VariableSpecifier[0];
                 }
 
                 propertySymbols = type.GetAllMembers()
@@ -636,11 +636,11 @@ namespace NetPrintsEditor.Reflection
             }
 
             // Check property type
-            if (!(query.PropertyType is null))
+            if (!(query.VariableType is null))
             {
-                var searchType = GetTypeFromSpecifier(query.PropertyType);
+                var searchType = GetTypeFromSpecifier(query.VariableType);
 
-                propertySymbols = propertySymbols.Where(p => query.PropertyTypeDerivesFrom ?
+                propertySymbols = propertySymbols.Where(p => query.VariableTypeDerivesFrom ?
                     TypeSymbolFromFieldOrProperty(p).IsSubclassOf(searchType) :
                     searchType.IsSubclassOf(TypeSymbolFromFieldOrProperty(p)));
             }
@@ -649,7 +649,7 @@ namespace NetPrintsEditor.Reflection
                 .OrderBy(p => p.ContainingNamespace?.Name)
                 .ThenBy(p => p.ContainingType?.Name)
                 .ThenBy(p => p.Name)
-                .Select(p => p is IPropertySymbol propertySymbol ? ReflectionConverter.PropertySpecifierFromSymbol(propertySymbol) : ReflectionConverter.PropertySpecifierFromField((IFieldSymbol)p));
+                .Select(p => p is IPropertySymbol propertySymbol ? ReflectionConverter.VariableSpecifierFromSymbol(propertySymbol) : ReflectionConverter.VariableSpecifierFromField((IFieldSymbol)p));
         }
 
         #endregion

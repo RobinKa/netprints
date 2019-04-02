@@ -27,20 +27,20 @@ namespace NetPrintsEditor.ViewModels
         private ProjectVM project;
 
         // Wrapped attributes of Class
-        public ObservableViewModelCollection<VariableVM, Variable> Attributes
+        public ObservableViewModelCollection<VariableVM, Variable> Variables
         {
-            get => attributes;
+            get => variables;
             set
             {
-                if(attributes != value)
+                if(variables != value)
                 {
-                    attributes = value;
+                    variables = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        private ObservableViewModelCollection<VariableVM, Variable> attributes;
+        private ObservableViewModelCollection<VariableVM, Variable> variables;
 
         public ObservableViewModelCollection<MethodVM, Method> Methods
         {
@@ -250,8 +250,8 @@ namespace NetPrintsEditor.ViewModels
                 Methods = new ObservableViewModelCollection<MethodVM, Method>(
                     cls.Methods, m => new MethodVM(m) { Class = this } );
 
-                Attributes = new ObservableViewModelCollection<VariableVM, Variable>(
-                    cls.Attributes, a => new VariableVM(a));
+                Variables = new ObservableViewModelCollection<VariableVM, Variable>(
+                    cls.Variables, v => new VariableVM(v));
             }
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

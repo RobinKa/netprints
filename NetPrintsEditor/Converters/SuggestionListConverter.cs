@@ -24,9 +24,9 @@ namespace NetPrintsEditor.Converters
 
                 iconPath = OperatorUtil.IsOperator(methodSpecifier) ? "Operator_16x.png" : "Method_16x.png";
             }
-            else if (value is PropertySpecifier propertySpecifier)
+            else if (value is VariableSpecifier variableSpecifier)
             {
-                text = $"{propertySpecifier.DeclaringType} {propertySpecifier.Name} : {propertySpecifier.Type}";
+                text = $"{variableSpecifier.Type} {variableSpecifier.Name} : {variableSpecifier.Type}";
                 iconPath = "Property_16x.png";
             }
             else if (value is MakeDelegateTypeInfo makeDelegateTypeInfo)

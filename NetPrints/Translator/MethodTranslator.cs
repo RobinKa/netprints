@@ -79,7 +79,20 @@ namespace NetPrints.Translator
                 return variableNames[pin];
             }
 
-            string pinName = TranslatorUtil.GetUniqueVariableName(pin.Name.Replace("<", "_").Replace(">", "_"), variableNames.Values.ToList());
+
+            string pinName;
+
+            // Special case for property setters, input name "value".
+            // TODO: Don't rely on set_ prefix
+            if (pin.Node is EntryNode && method.Name.StartsWith("set_"))
+            {
+                pinName = "value";
+            }
+            else
+            {
+                pinName = TranslatorUtil.GetUniqueVariableName(pin.Name.Replace("<", "_").Replace(">", "_"), variableNames.Values.ToList());
+            }
+
             variableNames.Add(pin, pinName);
             return pinName;
         }
@@ -252,8 +265,9 @@ namespace NetPrints.Translator
         /// Translates a method to C#.
         /// </summary>
         /// <param name="method">Method to translate.</param>
+        /// <param name="withSignature">Whether to translate the signature.</param>
         /// <returns>C# code for the method.</returns>
-        public string Translate(Method method)
+        public string Translate(Method method, bool withSignature)
         {
             this.method = method;
 
@@ -279,7 +293,11 @@ namespace NetPrints.Translator
             CreateVariables();
 
             // Write the signatures
-            TranslateSignature();
+            if (withSignature)
+            {
+                TranslateSignature();
+            }
+
             builder.AppendLine("{"); // Method start
 
             // Write a placeholder for the jump stack declaration

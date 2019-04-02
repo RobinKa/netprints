@@ -25,6 +25,11 @@ namespace NetPrints.Translator
             }";
 
         private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName%;";
+        private const string PROPERTY_TEMPLATE = @"%VariableModifiers%%VariableType% %VariableName%
+            {
+                %Get%
+                %Set%
+            }";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
         
@@ -42,7 +47,7 @@ namespace NetPrints.Translator
         {
             StringBuilder content = new StringBuilder();
 
-            foreach (Variable v in c.Attributes)
+            foreach (Variable v in c.Variables)
             {
                 content.AppendLine(TranslateVariable(v));
             }
@@ -124,10 +129,48 @@ namespace NetPrints.Translator
                 modifiers.Append("const ");
             }
 
-            return VARIABLE_TEMPLATE
-                .Replace("%VariableModifiers%", modifiers.ToString())
-                .Replace("%VariableType%", variable.VariableType.FullCodeName)
-                .Replace("%VariableName%", variable.Name);
+            if (variable.HasAccessors)
+            {
+                // Translate get / set methods
+
+                string output = PROPERTY_TEMPLATE
+                    .Replace("%VariableModifiers%", modifiers.ToString())
+                    .Replace("%VariableType%", variable.Type.FullCodeName)
+                    .Replace("%VariableName%", variable.Name);
+
+                if (variable.GetterMethod != null)
+                {
+                    string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false);
+                    string visibilityPrefix = variable.GetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.GetterMethod.Visibility]} " : "";
+
+                    output = output.Replace("%Get%", $"{visibilityPrefix}get\n{getterMethodCode}");
+                }
+                else
+                {
+                    output = output.Replace("%Get%", "");
+                }
+
+                if (variable.SetterMethod != null)
+                {
+                    string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false);
+                    string visibilityPrefix = variable.SetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.SetterMethod.Visibility]} " : "";
+
+                    output = output.Replace("%Set%", $"{visibilityPrefix}set\n{setterMethodCode}");
+                }
+                else
+                {
+                    output = output.Replace("%Set%", "");
+                }
+
+                return output;
+            }
+            else
+            {
+                return VARIABLE_TEMPLATE
+                    .Replace("%VariableModifiers%", modifiers.ToString())
+                    .Replace("%VariableType%", variable.Type.FullCodeName)
+                    .Replace("%VariableName%", variable.Name);
+            }
         }
 
         /// <summary>
@@ -137,7 +180,7 @@ namespace NetPrints.Translator
         /// <returns>C# code for the method.</returns>
         public string TranslateMethod(Method m)
         {
-            return methodTranslator.Translate(m);
+            return methodTranslator.Translate(m, true);
         }
     }
 }

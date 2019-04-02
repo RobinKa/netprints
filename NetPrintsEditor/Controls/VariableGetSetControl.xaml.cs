@@ -4,72 +4,41 @@ using System.Windows.Controls;
 
 namespace NetPrintsEditor.Controls
 {
-    public class VariableGetSetInfo
-    {
-        public TypeSpecifier TargetType
-        {
-            get;
-        }
-
-        public string Name
-        {
-            get;
-        }
-
-        public TypeSpecifier Type
-        {
-            get;
-        }
-
-        public object Tag
-        {
-            get;
-            set;
-        }
-
-        public bool CanGet
-        {
-            get;
-        }
-
-        public bool CanSet
-        {
-            get;
-        }
-
-        public VariableModifiers Modifiers
-        {
-            get;
-        }
-
-        public VariableGetSetInfo(string name, TypeSpecifier type, bool canGet, bool canSet, VariableModifiers modifiers, TypeSpecifier targetType = null)
-        {
-            TargetType = targetType;
-            Name = name;
-            CanGet = canGet;
-            CanSet = canSet;
-            Type = type;
-            Modifiers = modifiers;
-        }
-    }
-
     public delegate void VariableGetSetDelegate(VariableGetSetControl sender, 
-        VariableGetSetInfo variableInfo, bool wasSet);
+        VariableSpecifier variableInfo, bool wasSet);
 
     /// <summary>
     /// Interaction logic for VariableGetSetControl.xaml
     /// </summary>
     public partial class VariableGetSetControl : UserControl
     {
-        public static DependencyProperty VariableInfoProperty = DependencyProperty.Register(
-            nameof(VariableInfo), typeof(VariableGetSetInfo), typeof(VariableGetSetControl));
+        public static DependencyProperty VariableSpecifierProperty = DependencyProperty.Register(
+            nameof(VariableSpecifier), typeof(VariableSpecifier), typeof(VariableGetSetControl));
+
+        public static DependencyProperty CanGetProperty = DependencyProperty.Register(
+            nameof(CanGet), typeof(bool), typeof(VariableGetSetControl));
+
+        public static DependencyProperty CanSetProperty = DependencyProperty.Register(
+            nameof(CanSet), typeof(bool), typeof(VariableGetSetControl));
 
         public event VariableGetSetDelegate OnVariableGetSet;
 
-        public VariableGetSetInfo VariableInfo
+        public VariableSpecifier VariableSpecifier
         {
-            get => (VariableGetSetInfo)GetValue(VariableInfoProperty);
-            set => SetValue(VariableInfoProperty, value);
+            get => (VariableSpecifier)GetValue(VariableSpecifierProperty);
+            set => SetValue(VariableSpecifierProperty, value);
+        }
+
+        public bool CanGet
+        {
+            get => (bool)GetValue(CanGetProperty);
+            set => SetValue(CanGetProperty, value);
+        }
+
+        public bool CanSet
+        {
+            get => (bool)GetValue(CanSetProperty);
+            set => SetValue(CanSetProperty, value);
         }
 
         public VariableGetSetControl()
@@ -79,12 +48,12 @@ namespace NetPrintsEditor.Controls
 
         private void OnVariableSetClicked(object sender, RoutedEventArgs e)
         {
-            OnVariableGetSet?.Invoke(this, VariableInfo, true);
+            OnVariableGetSet?.Invoke(this, VariableSpecifier, true);
         }
 
         private void OnVariableGetClicked(object sender, RoutedEventArgs e)
         {
-            OnVariableGetSet?.Invoke(this, VariableInfo, false);
+            OnVariableGetSet?.Invoke(this, VariableSpecifier, false);
         }
     }
 }

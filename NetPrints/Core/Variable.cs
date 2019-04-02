@@ -1,5 +1,11 @@
-﻿using System;
+﻿using NetPrints.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NetPrints.Core
 {
@@ -26,23 +32,14 @@ namespace NetPrints.Core
     }
 
     /// <summary>
-    /// Variable specifier type. Contains common things for variables such as their type and their name.
+    /// Specifier describing a property of a class.
     /// </summary>
-    [DataContract]
-    public partial class Variable
+    [Serializable]
+    [DataContract(Name = "PropertySpecifier")]
+    public class Variable
     {
         /// <summary>
-        /// Specifier for the type of this variable.
-        /// </summary>
-        [DataMember]
-        public TypeSpecifier VariableType
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Name of this variable without any prefixes.
+        /// Name of the variable without any prefixes.
         /// </summary>
         [DataMember]
         public string Name
@@ -52,7 +49,96 @@ namespace NetPrints.Core
         }
 
         /// <summary>
-        /// Modifiers for this variable.
+        /// Class this variable is contained in.
+        /// </summary>
+        [DataMember]
+        public Class Class
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Specifier for the type of the variable.
+        /// </summary>
+        [DataMember]
+        public TypeSpecifier Type
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Get method for this variable. Can be null.
+        /// </summary>
+        [DataMember]
+        public Method GetterMethod
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Set method for this variable. Can be null.
+        /// </summary>
+        [DataMember]
+        public Method SetterMethod
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Whether this variable has a public getter.
+        /// </summary>
+        public bool HasPublicGetter
+        {
+            get => HasAccessors ?
+                (GetterMethod != null ? GetterMethod.Visibility == MemberVisibility.Public : false) :
+                Visibility == MemberVisibility.Public;
+        }
+
+        /// <summary>
+        /// Whether this variable has a public setter.
+        /// </summary>
+        public bool HasPublicSetter
+        {
+            get => HasAccessors ?
+                (SetterMethod != null ? SetterMethod.Visibility == MemberVisibility.Public : false) :
+                Visibility == MemberVisibility.Public;
+        }
+
+        /// <summary>
+        /// Whether this variable declares a get or set method.
+        /// </summary>
+        public bool HasAccessors
+        {
+            get => GetterMethod != null || SetterMethod != null;
+        }
+
+        /// <summary>
+        /// Whether this property is static.
+        /// </summary>
+        [DataMember]
+        [Obsolete]
+        public bool IsStatic
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Visibility of this property.
+        /// </summary>
+        [DataMember]
+        public MemberVisibility Visibility
+        {
+            get;
+            set;
+        } = MemberVisibility.Private;
+
+        /// <summary>
+        /// Modifiers of this variable.
         /// </summary>
         [DataMember]
         public VariableModifiers Modifiers
@@ -61,21 +147,28 @@ namespace NetPrints.Core
             set;
         }
 
-        /// <summary>
-        /// Visibility of this variable.
-        /// </summary>
-        [DataMember]
-        public MemberVisibility Visibility { get; set; } = MemberVisibility.Private;
+        public VariableSpecifier Specifier
+        {
+            get => new VariableSpecifier(Name, Type, GetterMethod?.Visibility ?? Visibility, SetterMethod?.Visibility ?? Visibility, Class.Type, Modifiers);
+        }
 
         /// <summary>
-        /// Creates a variable.
+        /// Creates a PropertySpecifier.
         /// </summary>
-        /// <param name="name">Name of the variable.</param>
-        /// <param name="variableType">Specifier for the type of the variable.</param>
-        public Variable(string name, TypeSpecifier variableType)
+        /// <param name="name">Name of the property.</param>
+        /// <param name="type">Specifier for the type of this property.</param>
+        /// <param name="getter">Get method for the property. Can be null if there is none.</param>
+        /// <param name="setter">Set method for the property. Can be null if there is none.</param>
+        /// <param name="declaringType">Specifier for the type the property is contained in.</param>
+        public Variable(Class cls, string name, TypeSpecifier type, Method getter, 
+            Method setter, VariableModifiers modifiers)
         {
+            Class = cls;
             Name = name;
-            VariableType = variableType;
+            Type = type;
+            GetterMethod = getter;
+            SetterMethod = setter;
+            Modifiers = modifiers;
         }
     }
 }
