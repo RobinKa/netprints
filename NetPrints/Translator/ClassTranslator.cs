@@ -42,7 +42,7 @@ namespace NetPrints.Translator
         {
             StringBuilder content = new StringBuilder();
 
-            foreach (Variable v in c.Attributes)
+            foreach (Variable v in c.Variables)
             {
                 content.AppendLine(TranslateVariable(v));
             }
@@ -124,9 +124,11 @@ namespace NetPrints.Translator
                 modifiers.Append("const ");
             }
 
+            // TODO: Translate get / set methods
+
             return VARIABLE_TEMPLATE
                 .Replace("%VariableModifiers%", modifiers.ToString())
-                .Replace("%VariableType%", variable.VariableType.FullCodeName)
+                .Replace("%VariableType%", variable.Type.FullCodeName)
                 .Replace("%VariableName%", variable.Name);
         }
 

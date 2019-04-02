@@ -8,14 +8,14 @@ namespace NetPrintsEditor.ViewModels
 {
     public class VariableVM : INotifyPropertyChanged
     {
-        public TypeSpecifier VariableType
+        public TypeSpecifier Type
         {
-            get => variable.VariableType;
+            get => variable.Type;
             set
             {
-                if (variable.VariableType != value)
+                if (variable.Type != value)
                 {
-                    variable.VariableType = value;
+                    variable.Type = value;
                     OnPropertyChanged();
                 }
             }
@@ -60,6 +60,31 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public VariableSpecifier Specifier
+        {
+            get => variable.Specifier;
+        }
+
+        public bool HasGetter
+        {
+            get => variable.GetterMethod != null;
+        }
+
+        public bool HasSetter
+        {
+            get => variable.SetterMethod != null;
+        }
+
+        public Method GetterMethod
+        {
+            get => variable.GetterMethod;
+        }
+
+        public Method SetterMethod
+        {
+            get => variable.SetterMethod;
+        }
+
         public string VisibilityName
         {
             get => Enum.GetName(typeof(MemberVisibility), Visibility);
@@ -95,6 +120,48 @@ namespace NetPrintsEditor.ViewModels
         public VariableVM(Variable variable)
         {
             Variable = variable;
+        }
+
+        public void AddGetter()
+        {
+            var method = new Method($"get_{Name}")
+            {
+                Class = variable.Class,
+            };
+
+            // TODO
+
+            variable.GetterMethod = method;
+            OnPropertyChanged(nameof(HasGetter));
+            OnPropertyChanged(nameof(GetterMethod));
+        }
+
+        public void RemoveGetter()
+        {
+            variable.GetterMethod = null;
+            OnPropertyChanged(nameof(HasGetter));
+            OnPropertyChanged(nameof(GetterMethod));
+        }
+
+        public void AddSetter()
+        {
+            var method = new Method($"set_{Name}")
+            {
+                Class = variable.Class,
+            };
+
+            // TODO
+
+            variable.SetterMethod = method;
+            OnPropertyChanged(nameof(HasSetter));
+            OnPropertyChanged(nameof(SetterMethod));
+        }
+
+        public void RemoveSetter()
+        {
+            variable.SetterMethod = null;
+            OnPropertyChanged(nameof(HasSetter));
+            OnPropertyChanged(nameof(SetterMethod));
         }
 
         #region INotifyPropertyChanged

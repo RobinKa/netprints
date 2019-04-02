@@ -10,7 +10,7 @@ namespace NetPrints.Graph
     [DataContract]
     [KnownType(typeof(VariableGetterNode))]
     [KnownType(typeof(VariableSetterNode))]
-    public abstract class VariableNode : Node
+    public abstract partial class VariableNode : Node
     {
         /// <summary>
         /// Target object of this variable node.
@@ -42,8 +42,7 @@ namespace NetPrints.Graph
         /// <summary>
         /// Specifier for the type of the target object.
         /// </summary>
-        [DataMember]
-        public TypeSpecifier TargetType { get; private set; }
+        public TypeSpecifier TargetType { get => Variable.DeclaringType; }
 
         /// <summary>
         /// Whether the variable is static.
@@ -81,19 +80,18 @@ namespace NetPrints.Graph
         /// <summary>
         /// Specifier for the underlying variable.
         /// </summary>
-        [DataMember]
-        public Variable Variable { get; private set; }
+        [DataMember(Name = "FieldOrProperty")]
+        public VariableSpecifier Variable { get; private set; }
 
-        public VariableNode(Method method, TypeSpecifier targetType, Variable variable)
+        public VariableNode(Method method, VariableSpecifier variable)
             : base(method)
         {
             Variable = variable;
-            TargetType = targetType;
             
             // Add target input pin if not local or static
             if (!IsLocalVariable && !Variable.Modifiers.HasFlag(VariableModifiers.Static))
             {
-                AddInputDataPin("Target", targetType);
+                AddInputDataPin("Target", TargetType);
             }
 
             if (IsIndexer)
@@ -101,7 +99,7 @@ namespace NetPrints.Graph
                 AddInputDataPin("Index", IndexType);
             }
 
-            AddOutputDataPin(Variable.VariableType.ShortName, Variable.VariableType);
+            AddOutputDataPin(Variable.Type.ShortName, Variable.Type);
         }
     }
 }

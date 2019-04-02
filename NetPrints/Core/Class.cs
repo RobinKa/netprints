@@ -52,10 +52,10 @@ namespace NetPrints.Core
     public partial class Class
     {
         /// <summary>
-        /// Attributes this class has.
+        /// Properties of this class.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<Variable> Attributes { get; set; } = new ObservableRangeCollection<Variable>();
+        public ObservableRangeCollection<Variable> Variables { get; set; } = new ObservableRangeCollection<Variable>();
 
         /// <summary>
         /// Methods this class has.

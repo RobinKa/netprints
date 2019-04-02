@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="NetPrintsEditor.Controls.MemberVariableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NetPrintsEditor.Controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveVariableClicked"
+                                                ToolTip="Remove variable">
+                <iconPacks:PackIconMaterial Kind="Minus" />
+            </Button>
+            <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnVariableClicked" MouseMove="OnMouseMoveTryDrag"
+                                               FontSize="14" FontWeight="SemiBold">
+                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+            </Label>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="20,0,0,0">
+            <Button Click="OnAddGetterClicked" Visibility="{Binding HasGetter, Converter={StaticResource InverseBoolToVis}}" Content="Add getter" />
+
+            <Grid Visibility="{Binding HasGetter, Converter={StaticResource BoolToVis}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveGetterClicked"
+                                                ToolTip="Remove getter">
+                    <iconPacks:PackIconMaterial Kind="Minus" />
+                </Button>
+                <Label Grid.Column="1" PreviewMouseLeftButtonDown="OnGetterClicked" MouseMove="OnMouseMoveTryDrag"
+                        FontSize="14" FontWeight="SemiBold">
+                    <TextBlock Text="Get" TextTrimming="CharacterEllipsis" />
+                </Label>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="20,0,0,0">
+            <Button Click="OnAddSetterClicked" Visibility="{Binding HasSetter, Converter={StaticResource InverseBoolToVis}}" Content="Add setter" />
+
+            <Grid Visibility="{Binding HasSetter, Converter={StaticResource BoolToVis}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveSetterClicked"
+                                                ToolTip="Remove setter">
+                    <iconPacks:PackIconMaterial Kind="Minus" />
+                </Button>
+                <Label Grid.Column="1" PreviewMouseLeftButtonDown="OnSetterClicked" MouseMove="OnMouseMoveTryDrag"
+                        FontSize="14" FontWeight="SemiBold">
+                    <TextBlock Text="Set" TextTrimming="CharacterEllipsis" />
+                </Label>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

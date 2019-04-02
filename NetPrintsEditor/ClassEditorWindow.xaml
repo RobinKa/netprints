@@ -18,13 +18,17 @@
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.OverrideMethod" CanExecute="CommandOverrideMethod_CanExecute" Executed="CommandOverrideMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
-        <CommandBinding Command="cmds:NetPrintsCommands.AddAttribute" CanExecute="CommandAddAttribute_CanExecute" Executed="CommandAddAttribute_Execute"/>
-        <CommandBinding Command="cmds:NetPrintsCommands.RemoveAttribute" CanExecute="CommandRemoveAttribute_CanExecute" Executed="CommandRemoveAttribute_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveVariable" CanExecute="CommandRemoveVariable_CanExecute" Executed="CommandRemoveVariable_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.ConnectPins" CanExecute="CommandConnectPins_CanExecute" Executed="CommandConnectPins_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddNode" CanExecute="CommandAddNode_CanExecute" Executed="CommandAddNode_Executed"/>
         <CommandBinding Command="cmds:NetPrintsCommands.SelectNode" CanExecute="CommandSelectNode_CanExecute" Executed="CommandSelectNode_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.ChangeNodeOverload" CanExecute="CommandChangeNodeOverload_CanExecute" Executed="CommandChangeNodeOverload_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddGetter" CanExecute="CommandAddGetter_CanExecute" Executed="CommandAddGetter_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddSetter" CanExecute="CommandAddSetter_CanExecute" Executed="CommandAddSetter_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveGetter" CanExecute="CommandRemoveGetter_CanExecute" Executed="CommandRemoveGetter_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveSetter" CanExecute="CommandRemoveSetter_CanExecute" Executed="CommandRemoveSetter_Execute" />
         <CommandBinding Command="cmds:EditorCommands.OpenVariableGetSet" CanExecute="CommandOpenVariableGetSet_CanExecute" Executed="CommandOpenVariableGetSet_Execute" />
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
@@ -130,28 +134,15 @@
 
                     <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="attributeList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Attributes}">
+                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Variables}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveAttributeClicked"
-                                            ToolTip="Remove attribute">
-                                        <iconPacks:PackIconMaterial Kind="Minus" />
-                                    </Button>
-                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnAttributeClicked" MouseMove="OnMouseMoveTryDrag"
-                                           FontSize="14" FontWeight="SemiBold">
-                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                    </Label>
-                                </Grid>
+                                <Controls:MemberVariableView DataContext="{Binding}" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
 
-                    <Button Grid.Row="2" Content="Create Attribute" Click="AddAttributeButton_Click" FontSize="16" />
+                    <Button Grid.Row="2" Content="Create Variable" Click="AddVariableButton_Click" FontSize="16" />
                 </Grid>
             </Grid>
 

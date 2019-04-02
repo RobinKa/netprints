@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ClassEditorWindow.xaml" />
+    <None Remove="Controls\MemberVariableView.xaml" />
     <None Remove="NetPrintsLogo.ico" />
     <None Remove="Resources\Convert_16x.png" />
     <None Remove="Resources\Create_16x.png" />
@@ -55,6 +56,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ClassEditorWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\MemberVariableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

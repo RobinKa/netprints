@@ -47,7 +47,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Content="Name" />
-            <TextBox Grid.Column="1" x:Name="variableName" Text="{Binding Variable.Name, ElementName=wnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Column="1" Text="{Binding Variable.Name, ElementName=wnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="1" Content="Visibility" />
             <ComboBox Grid.Row="1" Grid.Column="1"
@@ -67,9 +67,9 @@
             <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Variable.Modifiers, Converter={StaticResource variableModifierConverter}, ConverterParameter={x:Static npc:VariableModifiers.New}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="6" Content="Type" />
-            <ComboBox Grid.Row="6" Grid.Column="1" x:Name="variableType" 
+            <ComboBox Grid.Row="6" Grid.Column="1"
                       IsEditable="True"
-                      SelectedItem="{Binding Variable.VariableType, ElementName=wnd}" 
+                      SelectedItem="{Binding Variable.Type, ElementName=wnd}" 
                       ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
         </Grid>
     </StackPanel>

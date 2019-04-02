@@ -30,5 +30,12 @@ namespace NetPrints.Core
                 Visibility = MemberVisibility.Private;
             }
         }
+
+        /// <summary>
+        /// Attributes this class has.
+        /// </summary>
+        [DataMember]
+        [Obsolete]
+        public ObservableRangeCollection<OldVariable> Attributes { get; set; } = new ObservableRangeCollection<OldVariable>();
     }
 }

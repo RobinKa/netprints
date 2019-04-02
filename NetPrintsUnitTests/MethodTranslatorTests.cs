@@ -64,7 +64,8 @@ namespace NetPrints.Tests
             }
 
             // Create nodes
-            VariableGetterNode getLengthNode = new VariableGetterNode(stringLengthMethod, TypeSpecifier.FromType<string>(), new Variable("Length", TypeSpecifier.FromType<int>()));
+            var getLengthNode = new VariableGetterNode(stringLengthMethod, new VariableSpecifier("Length", TypeSpecifier.FromType<int>(),
+                MemberVisibility.Public,MemberVisibility.Public, TypeSpecifier.FromType<string>(), VariableModifiers.None));
 
             // Connect node execs
             GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNodes.First().ReturnPin);

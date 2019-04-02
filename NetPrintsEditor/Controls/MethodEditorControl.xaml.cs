@@ -67,21 +67,14 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        public void ShowVariableGetSet(VariableGetSetInfo variableInfo, Point? position = null)
+        public void ShowVariableGetSet(VariableSpecifier variableSpecifier, Point? position = null)
         {
-            // Check that the tag is unused
-            if(variableInfo.Tag != null)
-            {
-                throw new ArgumentException("variableInfo needs to have its Tag set to null because it is used for position");
-            }
-
             grid.ContextMenu.IsOpen = false;
 
             // Use current mouse position if position is not set
             Point pos = position ?? Mouse.GetPosition(drawCanvas);
 
-            variableInfo.Tag = pos;
-            variableGetSet.VariableInfo = variableInfo;
+            variableGetSet.VariableSpecifier = variableSpecifier;
 
             Canvas.SetLeft(variableGetSet, pos.X - variableGetSet.Width / 2);
             Canvas.SetTop(variableGetSet, pos.Y - variableGetSet.Height / 2);
@@ -91,7 +84,7 @@ namespace NetPrintsEditor.Controls
 
         public void HideVariableGetSet()
         {
-            variableGetSet.VariableInfo = null;
+            variableGetSet.VariableSpecifier = null;
             variableGetSet.Visibility = Visibility.Hidden;
         }
 
@@ -101,23 +94,9 @@ namespace NetPrintsEditor.Controls
         }
 
         private void OnVariableSetClicked(VariableGetSetControl sender,
-            VariableGetSetInfo variableInfo, bool wasSet)
+            VariableSpecifier variableSpecifier, bool wasSet)
         {
-            Point position;
-
-            // Try to get the spawn position from the variableInfo's Tag
-            // Otherwise use current mouse location
-
-            if(variableInfo.Tag is Point infoPosition)
-            {
-                position = infoPosition;
-            }
-            else
-            {
-                position = Mouse.GetPosition(drawCanvas);
-            }
-
-            var variable = new Variable(variableInfo.Name, variableInfo.Type) { Modifiers = variableInfo.Modifiers };
+            Point position = Mouse.GetPosition(drawCanvas);
 
             if (wasSet)
             {
@@ -127,7 +106,7 @@ namespace NetPrintsEditor.Controls
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(VariableSetterNode), Method.Method, position.X, position.Y,
-                    variableInfo.TargetType, variable
+                    variableSpecifier
                 ));
             }
             else
@@ -138,7 +117,7 @@ namespace NetPrintsEditor.Controls
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
                     typeof(VariableGetterNode), Method.Method, position.X, position.Y,
-                    variableInfo.TargetType, variable
+                    variableSpecifier
                 ));
             }
 
@@ -154,10 +133,7 @@ namespace NetPrintsEditor.Controls
                 bool canSet = !(variable.Modifiers.HasFlag(VariableModifiers.ReadOnly) ||
                     variable.Modifiers.HasFlag(VariableModifiers.Const));
 
-                VariableGetSetInfo variableInfo = new VariableGetSetInfo(
-                    variable.Name, variable.VariableType, true, canSet, variable.Modifiers, Method.Class.Type);
-
-                ShowVariableGetSet(variableInfo, e.GetPosition(drawCanvas));
+                ShowVariableGetSet(variable.Specifier, e.GetPosition(drawCanvas));
 
                 e.Handled = true;
             }
@@ -176,8 +152,8 @@ namespace NetPrintsEditor.Controls
                         IEnumerable<object> suggestions = new object[] { new MakeDelegateTypeInfo(pinTypeSpec) };
 
                         // Add properties and methods of the pin type
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetProperties(
-                            new ReflectionProviderPropertyQuery()
+                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
                                 .WithType(pinTypeSpec)
                                 .WithVisibility(MemberVisibility.Public)
                                 .WithStatic(false)));
@@ -211,11 +187,11 @@ namespace NetPrintsEditor.Controls
                     if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
                     {
                         // Properties of base class that inherit from needed type
-                        IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetProperties(
-                            new ReflectionProviderPropertyQuery()
+                        IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
                                 .WithType(Method.Class.SuperType)
                                 .WithVisibility(MemberVisibility.Public)
-                                .WithPropertyType(pinTypeSpec, true));
+                                .WithVariableType(pinTypeSpec, true));
 
                         Suggestions = baseProperties
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
@@ -240,8 +216,8 @@ namespace NetPrintsEditor.Controls
                             new ReflectionProviderMethodQuery()
                             .WithStatic(true)
                             .WithVisibility(MemberVisibility.Public)))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetProperties(
-                            new ReflectionProviderPropertyQuery()
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
                                 .WithStatic(true)
                                 .WithVisibility(MemberVisibility.Public)))
                         .Distinct();
@@ -258,8 +234,8 @@ namespace NetPrintsEditor.Controls
                             new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
                                 .WithVisibility(MemberVisibility.Public)))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetProperties(
-                            new ReflectionProviderPropertyQuery()
+                        .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
                                 .WithStatic(true)
                                 .WithVisibility(MemberVisibility.Public)))
                         .Distinct();
@@ -364,8 +340,8 @@ namespace NetPrintsEditor.Controls
             if (Method != null)
             {
                 // Get properties and methods of base class.
-                IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetProperties(
-                    new ReflectionProviderPropertyQuery()
+                IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
+                    new ReflectionProviderVariableQuery()
                         .WithVisibility(MemberVisibility.ProtectedOrPublic)
                         .WithType(Method.Class.SuperType)
                         .WithStatic(false));
@@ -383,8 +359,8 @@ namespace NetPrintsEditor.Controls
                         new ReflectionProviderMethodQuery()
                             .WithStatic(true)
                             .WithVisibility(MemberVisibility.Public)))
-                    .Concat(ProjectVM.Instance.ReflectionProvider.GetProperties(
-                            new ReflectionProviderPropertyQuery()
+                    .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
                                 .WithStatic(true)
                                 .WithVisibility(MemberVisibility.Public)))
                     .Distinct();

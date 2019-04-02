@@ -31,12 +31,12 @@ namespace NetPrintsEditor.Commands
         /// <summary>
         /// Command for adding an attribute to a class.
         /// </summary>
-        public static readonly RoutedUICommand AddAttribute = new RoutedUICommand(nameof(AddAttribute), nameof(AddAttribute), typeof(NetPrintsCommands));
+        public static readonly RoutedUICommand AddVariable = new RoutedUICommand(nameof(AddVariable), nameof(AddVariable), typeof(NetPrintsCommands));
 
         /// <summary>
         /// Command for removing an attribute from a class.
         /// </summary>
-        public static readonly RoutedUICommand RemoveAttribute = new RoutedUICommand(nameof(RemoveAttribute), nameof(RemoveAttribute), typeof(NetPrintsCommands));
+        public static readonly RoutedUICommand RemoveVariable = new RoutedUICommand(nameof(RemoveVariable), nameof(RemoveVariable), typeof(NetPrintsCommands));
 
         /// <summary>
         /// Command for setting the position of a node.
@@ -67,6 +67,27 @@ namespace NetPrintsEditor.Commands
         /// Command for changing the overload of a node.
         /// </summary>
         public static readonly RoutedUICommand ChangeNodeOverload = new RoutedUICommand(nameof(ChangeNodeOverload), nameof(ChangeNodeOverload), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for adding a getter to a variable.
+        /// </summary>
+        public static readonly RoutedUICommand AddGetter = new RoutedUICommand(nameof(AddGetter), nameof(AddGetter), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for adding a setter to a variable.
+        /// </summary>
+        public static readonly RoutedUICommand AddSetter = new RoutedUICommand(nameof(AddSetter), nameof(AddSetter), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for removing a getter from a variable.
+        /// </summary>
+        public static readonly RoutedUICommand RemoveGetter = new RoutedUICommand(nameof(RemoveGetter), nameof(RemoveGetter), typeof(NetPrintsCommands));
+
+        /// <summary>
+        /// Command for removing a setter from a variable.
+        /// </summary>
+        public static readonly RoutedUICommand RemoveSetter = new RoutedUICommand(nameof(RemoveSetter), nameof(RemoveSetter), typeof(NetPrintsCommands));
+
 
         public class SetNodePositionParameters
         {
@@ -139,8 +160,8 @@ namespace NetPrintsEditor.Commands
             { AddMethod, (p) => new Tuple<ICommand, object>(RemoveMethod, p) },
             { OverrideMethod, (p) => new Tuple<ICommand, object>(RemoveMethod, (p as MethodSpecifier)?.Name) },
             { RemoveMethod, (p) => new Tuple<ICommand, object>(AddMethod, p) },
-            { AddAttribute, (p) => new Tuple<ICommand, object>(RemoveAttribute, p) },
-            { RemoveAttribute, (p) => new Tuple<ICommand, object>(AddAttribute, p) },
+            { AddVariable, (p) => new Tuple<ICommand, object>(RemoveVariable, p) },
+            { RemoveVariable, (p) => new Tuple<ICommand, object>(AddVariable, p) },
             {
                 SetNodePosition, (p) =>
                 {
@@ -173,6 +194,10 @@ namespace NetPrintsEditor.Commands
                     throw new ArgumentException("Expected parameters of type SetNodeOverloadParameters");
                 }
             },
+            { AddGetter, (p) => new Tuple<ICommand, object>(RemoveGetter, p) },
+            { AddSetter, (p) => new Tuple<ICommand, object>(RemoveSetter, p) },
+            { RemoveGetter, (p) => new Tuple<ICommand, object>(AddGetter, p) }, // TODO: Restore old method
+            { RemoveSetter, (p) => new Tuple<ICommand, object>(AddSetter, p) }, // TODO: Restore old method
         };
     }
 }

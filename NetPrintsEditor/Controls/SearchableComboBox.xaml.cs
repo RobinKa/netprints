@@ -106,22 +106,15 @@ namespace NetPrintsEditor.Controls
                         methodSpecifier.GenericArguments.Select(genArg => new GenericType(genArg.Name)).Cast<BaseType>().ToList()
                     ));
                 }
-                else if(item.DataContext is PropertySpecifier propertySpecifier)
+                else if(item.DataContext is Variable variableSpecifier)
                 {
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
                     // and the return type of the accessor methods
-                    // TODO: Get correct variable modifiers
 
-                    VariableGetSetInfo variableInfo = new VariableGetSetInfo(
-                        propertySpecifier.Name, propertySpecifier.Type, 
-                        propertySpecifier.HasPublicGetter, propertySpecifier.HasPublicSetter,
-                        propertySpecifier.IsStatic ? VariableModifiers.Static : VariableModifiers.None,
-                        propertySpecifier.DeclaringType);
-
-                    if (EditorCommands.OpenVariableGetSet.CanExecute(variableInfo))
+                    if (EditorCommands.OpenVariableGetSet.CanExecute(variableSpecifier))
                     {
-                        EditorCommands.OpenVariableGetSet.Execute(variableInfo);
+                        EditorCommands.OpenVariableGetSet.Execute(variableSpecifier);
                     }
                 }
                 else if (item.DataContext is MakeDelegateTypeInfo makeDelegateTypeInfo)
