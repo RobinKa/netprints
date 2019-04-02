@@ -234,7 +234,10 @@ namespace NetPrintsEditor.ViewModels
 
         ~ClassVM()
         {
-            codeTimer.Stop();
+            if (codeTimer != null)
+            {
+                codeTimer.Stop();
+            }
         }
 
 #region INotifyPropertyChanged
