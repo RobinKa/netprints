@@ -151,9 +151,20 @@ namespace NetPrintsEditor.ViewModels
                 Visibility = Visibility
             };
 
+            // Set position of entry and return node
+            method.EntryNode.PositionX = 560;
+            method.EntryNode.PositionY = 504;
+            method.MainReturnNode.PositionX = method.EntryNode.PositionX + 672;
+            method.MainReturnNode.PositionY = method.EntryNode.PositionY;
+
+            // Connect entry and return node execution pins
+            GraphUtil.ConnectExecPins(method.EntryNode.InitialExecutionPin, method.MainReturnNode.ReturnPin);
+
             // Create return input pin with correct type
             // TODO: Make sure we can't delete type pins.
-            TypeNode returnTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.MainReturnNode.PositionX, method.MainReturnNode.PositionY);
+            int offsetX = -308;
+            int offsetY = -112;
+            TypeNode returnTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.MainReturnNode.PositionX + offsetX, method.MainReturnNode.PositionY + offsetY);
             method.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
 
@@ -179,9 +190,20 @@ namespace NetPrintsEditor.ViewModels
                 Visibility = Visibility
             };
 
+            // Set position of entry and return node
+            method.EntryNode.PositionX = 560;
+            method.EntryNode.PositionY = 504;
+            method.MainReturnNode.PositionX = method.EntryNode.PositionX + 672;
+            method.MainReturnNode.PositionY = method.EntryNode.PositionY;
+
+            // Connect entry and return node execution pins
+            GraphUtil.ConnectExecPins(method.EntryNode.InitialExecutionPin, method.MainReturnNode.ReturnPin);
+
             // Create argument output pin with correct type
             // TODO: Make sure we can't delete type pins.
-            TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX, method.EntryNode.PositionY);
+            int offsetX = -308;
+            int offsetY = -112;
+            TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX + offsetX, method.EntryNode.PositionY + offsetY);
             method.EntryNode.AddArgument();
             GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
 
