@@ -287,7 +287,7 @@ namespace NetPrintsEditor.ViewModels
                         {
                             p.UnconnectedValue = Convert.ChangeType(value, t);
                         }
-                        catch (InvalidCastException ex)
+                        catch (InvalidCastException)
                         {
                         }
                     }
