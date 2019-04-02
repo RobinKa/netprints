@@ -15,6 +15,7 @@ namespace NetPrints.Core
         Sealed = 8,
         Abstract = 16,
         Static = 32,
+        Partial = 64,
 
         // Deprecated
         [Obsolete]

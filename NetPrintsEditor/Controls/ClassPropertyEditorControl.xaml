@@ -45,6 +45,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -72,8 +73,11 @@
             <Label Grid.Row="5" Content="Static" />
             <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Static}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="6" Content="Base Type" />
-            <ComboBox Grid.Row="6" Grid.Column="1"
+            <Label Grid.Row="6" Content="Partial" />
+            <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Partial}}" VerticalContentAlignment="Center" />
+            
+            <Label Grid.Row="7" Content="Base Type" />
+            <ComboBox Grid.Row="7" Grid.Column="1"
                       IsEditable="True"
                       Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
                       SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 

@@ -71,6 +71,11 @@ namespace NetPrints.Translator
                 modifiers.Append("sealed ");
             }
 
+            if (c.Modifiers.HasFlag(ClassModifiers.Partial))
+            {
+                modifiers.Append("partial ");
+            }
+
             string genericArguments = "";
             if(c.DeclaredGenericArguments.Count > 0)
             {
