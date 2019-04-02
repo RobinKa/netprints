@@ -48,7 +48,7 @@
                                                 ToolTip="Remove getter">
                     <iconPacks:PackIconMaterial Kind="Minus" />
                 </Button>
-                <Label Grid.Column="1" PreviewMouseLeftButtonDown="OnGetterClicked" MouseMove="OnMouseMoveTryDrag"
+                <Label Grid.Column="1" MouseDoubleClick="OnGetterClicked" MouseMove="OnMouseMoveTryDrag"
                         FontSize="14" FontWeight="SemiBold">
                     <TextBlock Text="Get" TextTrimming="CharacterEllipsis" />
                 </Label>
@@ -67,7 +67,7 @@
                                                 ToolTip="Remove setter">
                     <iconPacks:PackIconMaterial Kind="Minus" />
                 </Button>
-                <Label Grid.Column="1" PreviewMouseLeftButtonDown="OnSetterClicked" MouseMove="OnMouseMoveTryDrag"
+                <Label Grid.Column="1" MouseDoubleClick="OnSetterClicked" MouseMove="OnMouseMoveTryDrag"
                         FontSize="14" FontWeight="SemiBold">
                     <TextBlock Text="Set" TextTrimming="CharacterEllipsis" />
                 </Label>
