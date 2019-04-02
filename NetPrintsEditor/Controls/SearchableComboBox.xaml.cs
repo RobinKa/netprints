@@ -92,7 +92,7 @@ namespace NetPrintsEditor.Controls
 
             if (sender is ListViewItem item)
             {
-                if(item.DataContext is MethodSpecifier methodSpecifier)
+                if (item.DataContext is MethodSpecifier methodSpecifier)
                 {
                     UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                     (
@@ -106,7 +106,7 @@ namespace NetPrintsEditor.Controls
                         methodSpecifier.GenericArguments.Select(genArg => new GenericType(genArg.Name)).Cast<BaseType>().ToList()
                     ));
                 }
-                else if(item.DataContext is Variable variableSpecifier)
+                else if (item.DataContext is VariableSpecifier variableSpecifier)
                 {
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
@@ -144,9 +144,9 @@ namespace NetPrintsEditor.Controls
                         ));
                     }
                 }
-                else if(item.DataContext is TypeSpecifier t)
+                else if (item.DataContext is TypeSpecifier t)
                 {
-                    if(t == TypeSpecifier.FromType<ForLoopNode>())
+                    if (t == TypeSpecifier.FromType<ForLoopNode>())
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -156,7 +156,7 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
-                    else if(t == TypeSpecifier.FromType<IfElseNode>())
+                    else if (t == TypeSpecifier.FromType<IfElseNode>())
                     {
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
@@ -166,7 +166,7 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
-                    else if(t == TypeSpecifier.FromType<ConstructorNode>())
+                    else if (t == TypeSpecifier.FromType<ConstructorNode>())
                     {
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
                         if(selectTypeDialog.ShowDialog() == true)

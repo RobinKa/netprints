@@ -29,5 +29,28 @@ namespace NetPrints.Core
                 i++;
             }
         }
+
+        /// <summary>
+        /// Returns whether a given visibility for a member of a type is visible from another type.
+        /// </summary>
+        /// <param name="fromType">Type that we are seeing from.</param>
+        /// <param name="type">Type that we are looking at.</param>
+        /// <param name="visibility">Visibility of the member on type.</param>
+        /// <returns></returns>
+        public static bool IsVisible(TypeSpecifier fromType, TypeSpecifier type, MemberVisibility visibility, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf)
+        {
+            // TODO: Internal
+
+            if (fromType == type)
+            {
+                return true;
+            }
+            else if (isSubclassOf(fromType, type))
+            {
+                return visibility.HasFlag(MemberVisibility.ProtectedOrPublic);
+            }
+
+            return visibility.HasFlag(MemberVisibility.Public);
+        }
     }
 }

@@ -74,7 +74,11 @@ namespace NetPrintsEditor.Controls
             // Use current mouse position if position is not set
             Point pos = position ?? Mouse.GetPosition(drawCanvas);
 
+            Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf = ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf;
+
             variableGetSet.VariableSpecifier = variableSpecifier;
+            variableGetSet.CanGet = NetPrintsUtil.IsVisible(Method.Class.Type, variableSpecifier.DeclaringType, variableSpecifier.GetterVisibility, isSubclassOf);
+            variableGetSet.CanSet = NetPrintsUtil.IsVisible(Method.Class.Type, variableSpecifier.DeclaringType, variableSpecifier.SetterVisibility, isSubclassOf);
 
             Canvas.SetLeft(variableGetSet, pos.X - variableGetSet.Width / 2);
             Canvas.SetTop(variableGetSet, pos.Y - variableGetSet.Height / 2);
@@ -126,187 +130,187 @@ namespace NetPrintsEditor.Controls
 
         private void OnGridDrop(object sender, DragEventArgs e)
         {
-            if (Method != null && e.Data.GetDataPresent(typeof(VariableVM)))
+            if (Method != null)
             {
-                VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
-
-                bool canSet = !(variable.Modifiers.HasFlag(VariableModifiers.ReadOnly) ||
-                    variable.Modifiers.HasFlag(VariableModifiers.Const));
-
-                ShowVariableGetSet(variable.Specifier, e.GetPosition(drawCanvas));
-
-                e.Handled = true;
-            }
-            else if (e.Data.GetDataPresent(typeof(NodePinVM)))
-            {
-                // Show all relevant methods for the type of the pin if its a data pin
-
-                NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-                SuggestionPin = pin;
-
-                if (pin.Pin is NodeOutputDataPin odp)
+                if (e.Data.GetDataPresent(typeof(VariableVM)))
                 {
-                    if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
-                    {
-                        // Add make delegate
-                        IEnumerable<object> suggestions = new object[] { new MakeDelegateTypeInfo(pinTypeSpec) };
+                    VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
 
-                        // Add properties and methods of the pin type
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithType(pinTypeSpec)
-                                .WithVisibility(MemberVisibility.Public)
-                                .WithStatic(false)));
+                    ShowVariableGetSet(variable.Specifier, e.GetPosition(drawCanvas));
 
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithVisibility(MemberVisibility.Public)
-                                .WithStatic(false)
-                                .WithType(pinTypeSpec)));
-
-                        // Add methods of the super type that can accept the pin type as argument
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithVisibility(MemberVisibility.ProtectedOrPublic)
-                                .WithStatic(false)
-                                .WithArgumentType(pinTypeSpec)
-                                .WithType(Method.Class.SuperType)));
-
-                        // Add static functions taking the type of the pin
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithArgumentType(pinTypeSpec)
-                                .WithVisibility(MemberVisibility.Public)
-                                .WithStatic(true)));
-
-                        Suggestions = suggestions.Distinct();
-                    }
+                    e.Handled = true;
                 }
-                else if (pin.Pin is NodeInputDataPin idp)
+                else if (e.Data.GetDataPresent(typeof(NodePinVM)))
                 {
-                    if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
-                    {
-                        // Properties of base class that inherit from needed type
-                        IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithType(Method.Class.SuperType)
-                                .WithVisibility(MemberVisibility.Public)
-                                .WithVariableType(pinTypeSpec, true));
+                    // Show all relevant methods for the type of the pin if its a data pin
 
-                        Suggestions = baseProperties
+                    NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
+                    SuggestionPin = pin;
+
+                    if (pin.Pin is NodeOutputDataPin odp)
+                    {
+                        if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
+                        {
+                            // Add make delegate
+                            IEnumerable<object> suggestions = new object[] { new MakeDelegateTypeInfo(pinTypeSpec) };
+
+                            // Add properties and methods of the pin type
+                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                                new ReflectionProviderVariableQuery()
+                                    .WithType(pinTypeSpec)
+                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithStatic(false)));
+
+                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithStatic(false)
+                                    .WithType(pinTypeSpec)));
+
+                            // Add methods of the super type that can accept the pin type as argument
+                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithVisibility(MemberVisibility.ProtectedOrPublic)
+                                    .WithStatic(false)
+                                    .WithArgumentType(pinTypeSpec)
+                                    .WithType(Method.Class.SuperType)));
+
+                            // Add static functions taking the type of the pin
+                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithArgumentType(pinTypeSpec)
+                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithStatic(true)));
+
+                            Suggestions = suggestions.Distinct();
+                        }
+                    }
+                    else if (pin.Pin is NodeInputDataPin idp)
+                    {
+                        if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
+                        {
+                            // Properties of base class that inherit from needed type
+                            IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
+                                new ReflectionProviderVariableQuery()
+                                    .WithType(Method.Class.SuperType)
+                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithVariableType(pinTypeSpec, true));
+
+                            Suggestions = baseProperties
+                                .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                    new ReflectionProviderMethodQuery()
+                                        .WithStatic(true)
+                                        .WithVisibility(MemberVisibility.Public)
+                                        .WithReturnType(pinTypeSpec)))
+                                .Distinct();
+                        }
+                    }
+                    else if (pin.Pin is NodeOutputExecPin oxp)
+                    {
+                        pin.ConnectedPin = null;
+
+                        Suggestions = builtInNodes
+                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithType(Method.Class.SuperType)
+                                    .WithStatic(false)
+                                    .WithVisibility(MemberVisibility.ProtectedOrPublic)))
+                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                .WithStatic(true)
+                                .WithVisibility(MemberVisibility.Public)))
+                            .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                                new ReflectionProviderVariableQuery()
+                                    .WithStatic(true)
+                                    .WithVisibility(MemberVisibility.Public)))
+                            .Distinct();
+                    }
+                    else if (pin.Pin is NodeInputExecPin ixp)
+                    {
+                        Suggestions = builtInNodes
+                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithType(Method.Class.SuperType)
+                                    .WithStatic(false)
+                                    .WithVisibility(MemberVisibility.ProtectedOrPublic)))
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithStatic(true)
-                                    .WithVisibility(MemberVisibility.Public)
-                                    .WithReturnType(pinTypeSpec)))
+                                    .WithVisibility(MemberVisibility.Public)))
+                            .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
+                                new ReflectionProviderVariableQuery()
+                                    .WithStatic(true)
+                                    .WithVisibility(MemberVisibility.Public)))
                             .Distinct();
                     }
-                }
-                else if (pin.Pin is NodeOutputExecPin oxp)
-                {
-                    pin.ConnectedPin = null;
-
-                    Suggestions = builtInNodes
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithType(Method.Class.SuperType)
-                                .WithStatic(false)
-                                .WithVisibility(MemberVisibility.ProtectedOrPublic)))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                            .WithStatic(true)
-                            .WithVisibility(MemberVisibility.Public)))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithStatic(true)
-                                .WithVisibility(MemberVisibility.Public)))
-                        .Distinct();
-                }
-                else if (pin.Pin is NodeInputExecPin ixp)
-                {
-                    Suggestions = builtInNodes
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithType(Method.Class.SuperType)
-                                .WithStatic(false)
-                                .WithVisibility(MemberVisibility.ProtectedOrPublic)))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithStatic(true)
-                                .WithVisibility(MemberVisibility.Public)))
-                        .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithStatic(true)
-                                .WithVisibility(MemberVisibility.Public)))
-                        .Distinct();
-                }
-                else if (pin.Pin is NodeInputTypePin itp)
-                {
-                    Suggestions = ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes();
-                }
-                else if (pin.Pin is NodeOutputTypePin otp)
-                {
-                    IEnumerable<object> suggestions = new object[0];
-
-                    if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
+                    else if (pin.Pin is NodeInputTypePin itp)
                     {
+                        Suggestions = ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes();
+                    }
+                    else if (pin.Pin is NodeOutputTypePin otp)
+                    {
+                        IEnumerable<object> suggestions = new object[0];
+
+                        if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
+                        {
+                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
+                                .GetMethods(
+                                    new ReflectionProviderMethodQuery()
+                                        .WithType(typeSpecifier)
+                                        .WithStatic(true)
+                                        .WithVisibility(MemberVisibility.Public)));
+                        }
+
+                        // Types with type parameters
+                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
+                            .Where(t => t.GenericArguments.Any()));
+
+                        // Public static methods that have type parameters
                         suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
                             .GetMethods(
                                 new ReflectionProviderMethodQuery()
-                                    .WithType(typeSpecifier)
                                     .WithStatic(true)
+                                    .WithHasGenericArguments(true)
                                     .WithVisibility(MemberVisibility.Public)));
+
+                        Suggestions = suggestions.Distinct();
+                    }
+                    else
+                    {
+                        // Unknown type, no suggestions
+                        Suggestions = new object[0];
                     }
 
-                    // Types with type parameters
-                    suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
-                        .Where(t => t.GenericArguments.Any()));
+                    // Open the context menu
+                    grid.ContextMenu.PlacementTarget = grid;
+                    grid.ContextMenu.IsOpen = true;
 
-                    // Public static methods that have type parameters
-                    suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
-                        .GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithStatic(true)
-                                .WithHasGenericArguments(true)
-                                .WithVisibility(MemberVisibility.Public)));
-
-                    Suggestions = suggestions.Distinct();
+                    e.Handled = true;
                 }
-                else
+                else if (e.Data.GetDataPresent(typeof(MethodVM)))
                 {
-                    // Unknown type, no suggestions
-                    Suggestions = new object[0];
+                    Point mousePosition = e.GetPosition(methodEditorWindow);
+                    MethodVM method = e.Data.GetData(typeof(MethodVM)) as MethodVM;
+
+                    // CallMethodNode(Method method, MethodSpecifier methodSpecifier)
+
+                    // TODO: Get this from method directly somehow
+                    // TODO: Get named type specifiers from method
+                    MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name,
+                        method.ArgumentTypes.Select(t => new MethodParameter("TODO", t, MethodParameterPassType.Default)),
+                        method.ReturnTypes.Cast<TypeSpecifier>(),
+                        method.Modifiers, method.Visibility,
+                        method.Class.Type, Array.Empty<BaseType>());
+
+                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                    (
+                        typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
+                        methodSpecifier,
+                        Array.Empty<GenericType>()
+                    ));
+
+                    e.Handled = true;
                 }
-
-                // Open the context menu
-                grid.ContextMenu.PlacementTarget = grid;
-                grid.ContextMenu.IsOpen = true;
-
-                e.Handled = true;
-            }
-            if (Method != null && e.Data.GetDataPresent(typeof(MethodVM)))
-            {
-                Point mousePosition = e.GetPosition(methodEditorWindow);
-                MethodVM method = e.Data.GetData(typeof(MethodVM)) as MethodVM;
-
-                // CallMethodNode(Method method, MethodSpecifier methodSpecifier)
-
-                // TODO: Get this from method directly somehow
-                // TODO: Get named type specifiers from method
-                MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name, 
-                    method.ArgumentTypes.Select(t => new MethodParameter("TODO", t, MethodParameterPassType.Default)), 
-                    method.ReturnTypes.Cast<TypeSpecifier>(),
-                    method.Modifiers, method.Visibility,
-                    method.Class.Type, Array.Empty<BaseType>());
-
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                (
-                    typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
-                    methodSpecifier,
-                    Array.Empty<GenericType>()
-                ));
-
-                e.Handled = true;
             }
         }
 
@@ -314,24 +318,27 @@ namespace NetPrintsEditor.Controls
         {
             e.Effects = DragDropEffects.None;
 
-            if (Method != null && e.Data.GetDataPresent(typeof(VariableVM)))
+            if (Method != null)
             {
-                e.Effects = DragDropEffects.Copy;
-                e.Handled = true;
-            }
-            else if(e.Data.GetDataPresent(typeof(NodePinVM)))
-            {
-                // Set connecting position to the correct relative mouse position
-                NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-                pin.ConnectingAbsolutePosition = e.GetPosition(drawCanvas);
+                if (e.Data.GetDataPresent(typeof(VariableVM)))
+                {
+                    e.Effects = DragDropEffects.Copy;
+                    e.Handled = true;
+                }
+                else if (e.Data.GetDataPresent(typeof(NodePinVM)))
+                {
+                    // Set connecting position to the correct relative mouse position
+                    NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
+                    pin.ConnectingAbsolutePosition = e.GetPosition(drawCanvas);
 
-                e.Effects = DragDropEffects.Link;
-                e.Handled = true;
-            }
-            else if(Method != null && e.Data.GetDataPresent(typeof(MethodVM)))
-            {
-                e.Effects = DragDropEffects.Copy;
-                e.Handled = true;
+                    e.Effects = DragDropEffects.Link;
+                    e.Handled = true;
+                }
+                else if (e.Data.GetDataPresent(typeof(MethodVM)))
+                {
+                    e.Effects = DragDropEffects.Copy;
+                    e.Handled = true;
+                }
             }
         }
 

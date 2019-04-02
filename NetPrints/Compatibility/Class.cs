@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using NetPrints.Graph;
 
 namespace NetPrints.Core
 {
@@ -7,7 +10,7 @@ namespace NetPrints.Core
     {
         [Obsolete]
         [OnDeserialized]
-        private void FixVisibility(StreamingContext context)
+        private void FixCompatibility(StreamingContext context)
         {
             // Set new visibility from old modifiers
             if (Modifiers.HasFlag(ClassModifiers.Public))
@@ -29,13 +32,27 @@ namespace NetPrints.Core
             {
                 Visibility = MemberVisibility.Private;
             }
+
+            // Fix old variables in VariableNode. Called from here to make sure class
+            // is initialized for finding its new variables.
+            foreach (var varNode in Methods.SelectMany(m => m.Nodes).OfType<VariableNode>())
+            {
+                varNode.FixOldVariable();
+            }
         }
 
         /// <summary>
         /// Attributes this class has.
         /// </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, IsRequired = false)]
         [Obsolete]
-        public ObservableRangeCollection<OldVariable> Attributes { get; set; } = new ObservableRangeCollection<OldVariable>();
+        public ObservableRangeCollection<OldVariable> Attributes
+        {
+            get => null;
+            set
+            {
+                Variables = new ObservableRangeCollection<Variable>((value.Select(oldVar => new Variable(this, oldVar.Name, oldVar.VariableType, null, null, oldVar.Modifiers) { Visibility = oldVar.Visibility })));
+            }
+        }
     }
 }

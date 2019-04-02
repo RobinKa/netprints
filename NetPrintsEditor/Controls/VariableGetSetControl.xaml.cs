@@ -12,15 +12,33 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class VariableGetSetControl : UserControl
     {
-        public static DependencyProperty VariableInfoProperty = DependencyProperty.Register(
+        public static DependencyProperty VariableSpecifierProperty = DependencyProperty.Register(
             nameof(VariableSpecifier), typeof(VariableSpecifier), typeof(VariableGetSetControl));
+
+        public static DependencyProperty CanGetProperty = DependencyProperty.Register(
+            nameof(CanGet), typeof(bool), typeof(VariableGetSetControl));
+
+        public static DependencyProperty CanSetProperty = DependencyProperty.Register(
+            nameof(CanSet), typeof(bool), typeof(VariableGetSetControl));
 
         public event VariableGetSetDelegate OnVariableGetSet;
 
         public VariableSpecifier VariableSpecifier
         {
-            get => (VariableSpecifier)GetValue(VariableInfoProperty);
-            set => SetValue(VariableInfoProperty, value);
+            get => (VariableSpecifier)GetValue(VariableSpecifierProperty);
+            set => SetValue(VariableSpecifierProperty, value);
+        }
+
+        public bool CanGet
+        {
+            get => (bool)GetValue(CanGetProperty);
+            set => SetValue(CanGetProperty, value);
+        }
+
+        public bool CanSet
+        {
+            get => (bool)GetValue(CanSetProperty);
+            set => SetValue(CanSetProperty, value);
         }
 
         public VariableGetSetControl()

@@ -144,8 +144,6 @@ namespace NetPrintsEditor.Reflection
                 modifiers |= MethodModifiers.Override;
             }
 
-            // TODO: Protected / Internal
-
             BaseType[] returnTypes = method.ReturnsVoid ?
                 new BaseType[] { } :
                 new BaseType[] { BaseTypeSpecifierFromSymbol(method.ReturnType) };

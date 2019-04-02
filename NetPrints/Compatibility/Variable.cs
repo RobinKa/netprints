@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Core
 {
-    [DataContract]
+    [DataContract(Name = "Variable")]
     [Obsolete]
     public class OldVariable
     {

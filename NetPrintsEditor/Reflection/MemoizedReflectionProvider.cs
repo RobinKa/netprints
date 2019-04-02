@@ -57,9 +57,6 @@ namespace NetPrintsEditor.Reflection
             memoizedGetMethods = provider.GetMethods;
             memoizedGetMethods = memoizedGetMethods.Memoize();
 
-            memoizedGetVariables= provider.GetVariables;
-            memoizedGetVariables = memoizedGetVariables.Memoize();
-
             memoizedGetPublicMethodOverloads = provider.GetPublicMethodOverloads;
             memoizedGetPublicMethodOverloads = memoizedGetPublicMethodOverloads.Memoize();
 
