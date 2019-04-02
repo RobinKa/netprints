@@ -152,25 +152,25 @@ namespace NetPrintsEditor.Controls
                         if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
                         {
                             // Add make delegate
-                            IEnumerable<object> suggestions = new object[] { new MakeDelegateTypeInfo(pinTypeSpec) };
+                            IEnumerable<object> suggestions = new object[] { new MakeDelegateTypeInfo(pinTypeSpec, Method.Class.Type) };
 
                             // Add properties and methods of the pin type
                             suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
                                 new ReflectionProviderVariableQuery()
                                     .WithType(pinTypeSpec)
-                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(false)));
 
                             suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
-                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(false)
                                     .WithType(pinTypeSpec)));
 
                             // Add methods of the super type that can accept the pin type as argument
                             suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
-                                    .WithVisibility(MemberVisibility.ProtectedOrPublic)
+                                    .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(false)
                                     .WithArgumentType(pinTypeSpec)
                                     .WithType(Method.Class.SuperType)));
@@ -179,7 +179,7 @@ namespace NetPrintsEditor.Controls
                             suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithArgumentType(pinTypeSpec)
-                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(true)));
 
                             Suggestions = suggestions.Distinct();
@@ -193,14 +193,14 @@ namespace NetPrintsEditor.Controls
                             IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
                                 new ReflectionProviderVariableQuery()
                                     .WithType(Method.Class.SuperType)
-                                    .WithVisibility(MemberVisibility.Public)
+                                    .WithVisibleFrom(Method.Class.Type)
                                     .WithVariableType(pinTypeSpec, true));
 
                             Suggestions = baseProperties
                                 .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                     new ReflectionProviderMethodQuery()
                                         .WithStatic(true)
-                                        .WithVisibility(MemberVisibility.Public)
+                                        .WithVisibleFrom(Method.Class.Type)
                                         .WithReturnType(pinTypeSpec)))
                                 .Distinct();
                         }
@@ -214,15 +214,15 @@ namespace NetPrintsEditor.Controls
                                 new ReflectionProviderMethodQuery()
                                     .WithType(Method.Class.SuperType)
                                     .WithStatic(false)
-                                    .WithVisibility(MemberVisibility.ProtectedOrPublic)))
+                                    .WithVisibleFrom(Method.Class.Type)))
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
-                                .WithVisibility(MemberVisibility.Public)))
+                                .WithVisibleFrom(Method.Class.Type)))
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
                                 new ReflectionProviderVariableQuery()
                                     .WithStatic(true)
-                                    .WithVisibility(MemberVisibility.Public)))
+                                    .WithVisibleFrom(Method.Class.Type)))
                             .Distinct();
                     }
                     else if (pin.Pin is NodeInputExecPin ixp)
@@ -232,15 +232,15 @@ namespace NetPrintsEditor.Controls
                                 new ReflectionProviderMethodQuery()
                                     .WithType(Method.Class.SuperType)
                                     .WithStatic(false)
-                                    .WithVisibility(MemberVisibility.ProtectedOrPublic)))
+                                    .WithVisibleFrom(Method.Class.Type)))
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithStatic(true)
-                                    .WithVisibility(MemberVisibility.Public)))
+                                    .WithVisibleFrom(Method.Class.Type)))
                             .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
                                 new ReflectionProviderVariableQuery()
                                     .WithStatic(true)
-                                    .WithVisibility(MemberVisibility.Public)))
+                                    .WithVisibleFrom(Method.Class.Type)))
                             .Distinct();
                     }
                     else if (pin.Pin is NodeInputTypePin itp)
@@ -258,7 +258,7 @@ namespace NetPrintsEditor.Controls
                                     new ReflectionProviderMethodQuery()
                                         .WithType(typeSpecifier)
                                         .WithStatic(true)
-                                        .WithVisibility(MemberVisibility.Public)));
+                                        .WithVisibleFrom(Method.Class.Type)));
                         }
 
                         // Types with type parameters
@@ -271,7 +271,7 @@ namespace NetPrintsEditor.Controls
                                 new ReflectionProviderMethodQuery()
                                     .WithStatic(true)
                                     .WithHasGenericArguments(true)
-                                    .WithVisibility(MemberVisibility.Public)));
+                                    .WithVisibleFrom(Method.Class.Type)));
 
                         Suggestions = suggestions.Distinct();
                     }
@@ -349,14 +349,14 @@ namespace NetPrintsEditor.Controls
                 // Get properties and methods of base class.
                 IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
                     new ReflectionProviderVariableQuery()
-                        .WithVisibility(MemberVisibility.ProtectedOrPublic)
+                        .WithVisibleFrom(Method.Class.Type)
                         .WithType(Method.Class.SuperType)
                         .WithStatic(false));
 
                 IEnumerable<object> baseMethods = ProjectVM.Instance.ReflectionProvider.GetMethods(
                     new ReflectionProviderMethodQuery()
                         .WithType(Method.Class.SuperType)
-                        .WithVisibility(MemberVisibility.ProtectedOrPublic)
+                        .WithVisibleFrom(Method.Class.Type)
                         .WithStatic(false));
 
                 Suggestions = builtInNodes
@@ -365,11 +365,11 @@ namespace NetPrintsEditor.Controls
                     .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
                         new ReflectionProviderMethodQuery()
                             .WithStatic(true)
-                            .WithVisibility(MemberVisibility.Public)))
+                            .WithVisibleFrom(Method.Class.Type)))
                     .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
                             new ReflectionProviderVariableQuery()
                                 .WithStatic(true)
-                                .WithVisibility(MemberVisibility.Public)))
+                                .WithVisibleFrom(Method.Class.Type)))
                     .Distinct();
             }
             else

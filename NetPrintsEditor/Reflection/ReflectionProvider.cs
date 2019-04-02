@@ -13,7 +13,7 @@ namespace NetPrintsEditor.Reflection
     public static class ISymbolExtensions
     {
         private static readonly Dictionary<ITypeSymbol, List<ISymbol>> allMembersCache = new Dictionary<ITypeSymbol, List<ISymbol>>();
-        
+
         /// <summary>
         /// Gets all members of a symbol including inherited ones, but not overriden ones.
         /// </summary>
@@ -479,28 +479,12 @@ namespace NetPrintsEditor.Reflection
             }
 
             // Check visibility
-            if (query.Visibility.HasValue)
+            if (!(query.VisibleFrom is null))
             {
-                bool wantFriend = false; // TODO: Figure out if we want this or not
-                bool wantInternal = query.Visibility.Value.HasFlag(MemberVisibility.Internal);
-                bool wantPublic = query.Visibility.Value.HasFlag(MemberVisibility.Public);
-                bool wantProtected = query.Visibility.Value.HasFlag(MemberVisibility.Protected) && !wantInternal;
-                bool wantPrivate = query.Visibility.Value.HasFlag(MemberVisibility.Private);
-                bool wantProtectedAndFriend = wantProtected && wantFriend;
-                bool wantProtectedAndInternal = wantProtected && wantInternal;
-                bool wantProtectedOrFriend = wantProtected || wantFriend;
-                bool wantProtectedOrInternal = wantProtected || wantInternal;
-
-                methodSymbols = methodSymbols.Where(m =>
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public) ? wantPublic :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Protected) ? wantProtected :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Private) ? wantPrivate :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Internal) ? wantInternal :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal) ? wantProtectedAndInternal :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndFriend :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrFriend) ? wantProtectedOrFriend :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal) ? wantProtectedOrInternal :
-                    (m.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Friend) ? wantFriend : false);
+                methodSymbols = methodSymbols.Where(m => NetPrintsUtil.IsVisible(query.VisibleFrom,
+                    ReflectionConverter.TypeSpecifierFromSymbol(m.ContainingType),
+                    ReflectionConverter.VisibilityFromAccessibility(m.DeclaredAccessibility),
+                    TypeSpecifierIsSubclassOf));
             }
 
             // Check argument type
@@ -611,28 +595,12 @@ namespace NetPrintsEditor.Reflection
             }
 
             // Check visibility
-            if (query.Visibility.HasValue)
+            if (!(query.VisibleFrom is null))
             {
-                bool wantFriend = true; // TODO: Figure out if we want this or not
-                bool wantInternal = query.Visibility.Value.HasFlag(MemberVisibility.Internal);
-                bool wantPublic = query.Visibility.Value.HasFlag(MemberVisibility.Public);
-                bool wantProtected = query.Visibility.Value.HasFlag(MemberVisibility.Protected) && !wantInternal;
-                bool wantPrivate = query.Visibility.Value.HasFlag(MemberVisibility.Private);
-                bool wantProtectedAndFriend = wantProtected && wantFriend;
-                bool wantProtectedAndInternal = wantProtected && wantInternal;
-                bool wantProtectedOrFriend = wantProtected || wantFriend;
-                bool wantProtectedOrInternal = wantProtected || wantInternal;
-
-                propertySymbols = propertySymbols.Where(p =>
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public) ? wantPublic :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Protected) ? wantProtected :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Private) ? wantPrivate :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Internal) ? wantInternal :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal) ? wantProtectedAndInternal :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedAndFriend) ? wantProtectedAndFriend :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrFriend) ? wantProtectedOrFriend :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal) ? wantProtectedOrInternal :
-                    (p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Friend) ? wantFriend : false);
+                propertySymbols = propertySymbols.Where(p => NetPrintsUtil.IsVisible(query.VisibleFrom,
+                    ReflectionConverter.TypeSpecifierFromSymbol(p.ContainingType),
+                    ReflectionConverter.VisibilityFromAccessibility(p.DeclaredAccessibility),
+                    TypeSpecifierIsSubclassOf));
             }
 
             // Check property type

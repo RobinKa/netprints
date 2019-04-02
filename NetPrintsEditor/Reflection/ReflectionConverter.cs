@@ -19,6 +19,18 @@ namespace NetPrintsEditor.Reflection
             [Microsoft.CodeAnalysis.Accessibility.Internal] = MemberVisibility.Internal,
         };
 
+        public static MemberVisibility VisibilityFromAccessibility(Microsoft.CodeAnalysis.Accessibility accessibility)
+        {
+            if (roslynToNetprintsVisibility.TryGetValue(accessibility, out var visibility))
+            {
+                return visibility;
+            }
+
+            // TODO: Do this correctly (eg. internal protected, private protected etc.)
+            // https://stackoverflow.com/a/585869/4332314
+            return MemberVisibility.Public;
+        }
+
         public static TypeSpecifier TypeSpecifierFromSymbol(ITypeSymbol type)
         {
             string typeName;
@@ -115,7 +127,7 @@ namespace NetPrintsEditor.Reflection
 
         public static MethodSpecifier MethodSpecifierFromSymbol(IMethodSymbol method)
         {
-            MemberVisibility visibility = roslynToNetprintsVisibility[method.DeclaredAccessibility];
+            MemberVisibility visibility = VisibilityFromAccessibility(method.DeclaredAccessibility);
 
             var modifiers = MethodModifiers.None;
 
@@ -186,15 +198,15 @@ namespace NetPrintsEditor.Reflection
             return new VariableSpecifier(
                 property.Name,
                 TypeSpecifierFromSymbol(property.Type),
-                getterAccessibility.HasValue ? roslynToNetprintsVisibility[getterAccessibility.Value] : MemberVisibility.Private,
-                setterAccessibility.HasValue ? roslynToNetprintsVisibility[setterAccessibility.Value] : MemberVisibility.Private,
+                getterAccessibility.HasValue ? VisibilityFromAccessibility(getterAccessibility.Value) : MemberVisibility.Private,
+                setterAccessibility.HasValue ? VisibilityFromAccessibility(setterAccessibility.Value) : MemberVisibility.Private,
                 TypeSpecifierFromSymbol(property.ContainingType),
                 modifiers);
         }
 
         public static VariableSpecifier VariableSpecifierFromField(IFieldSymbol field)
         {
-            var visibility = roslynToNetprintsVisibility[field.DeclaredAccessibility];
+            var visibility = VisibilityFromAccessibility(field.DeclaredAccessibility);
 
             var modifiers = new VariableModifiers();
 

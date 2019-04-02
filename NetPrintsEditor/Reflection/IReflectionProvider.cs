@@ -12,7 +12,7 @@ namespace NetPrintsEditor.Reflection
     {
         public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
-        public MemberVisibility? Visibility { get; set; }
+        public TypeSpecifier VisibleFrom { get; set; }
         public TypeSpecifier ReturnType { get; set; }
         public TypeSpecifier ArgumentType { get; set; }
         public bool? HasGenericArguments { get; set; }
@@ -29,9 +29,9 @@ namespace NetPrintsEditor.Reflection
             return this;
         }
 
-        public ReflectionProviderMethodQuery WithVisibility(MemberVisibility visibility)
+        public ReflectionProviderMethodQuery WithVisibleFrom(TypeSpecifier visibleFrom)
         {
-            Visibility = visibility;
+            VisibleFrom = visibleFrom;
             return this;
         }
 
@@ -58,7 +58,7 @@ namespace NetPrintsEditor.Reflection
     {
         public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
-        public MemberVisibility? Visibility { get; set; }
+        public TypeSpecifier VisibleFrom { get; set; }
         public TypeSpecifier VariableType { get; set; }
         public bool VariableTypeDerivesFrom { get; set; } = false;
 
@@ -74,9 +74,9 @@ namespace NetPrintsEditor.Reflection
             return this;
         }
 
-        public ReflectionProviderVariableQuery WithVisibility(MemberVisibility visibility)
+        public ReflectionProviderVariableQuery WithVisibleFrom(TypeSpecifier visibleFrom)
         {
-            Visibility = visibility;
+            VisibleFrom = visibleFrom;
             return this;
         }
 

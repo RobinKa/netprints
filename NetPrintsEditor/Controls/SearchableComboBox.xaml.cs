@@ -122,7 +122,7 @@ namespace NetPrintsEditor.Controls
                     var methods = ProjectVM.Instance.ReflectionProvider.GetMethods(
                         new Reflection.ReflectionProviderMethodQuery()
                         .WithType(makeDelegateTypeInfo.Type)
-                        .WithVisibility(MemberVisibility.Public));
+                        .WithVisibleFrom(makeDelegateTypeInfo.FromType));
 
                     SelectMethodDialog selectMethodDialog = new SelectMethodDialog()
                     {
