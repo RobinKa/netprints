@@ -64,7 +64,7 @@ namespace NetPrintsEditor.Controls
 
         private void OnSetterClicked(object sender, MouseButtonEventArgs e)
         {
-            Variable.GetterMethod.Class = ProjectVM.Instance.Classes.Single(cls => cls.Class == Variable.Variable.Class);
+            Variable.SetterMethod.Class = ProjectVM.Instance.Classes.Single(cls => cls.Class == Variable.Variable.Class);
 
             if (EditorCommands.OpenMethod.CanExecute(Variable.SetterMethod))
             {

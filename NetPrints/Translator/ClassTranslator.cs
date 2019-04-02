@@ -25,6 +25,10 @@ namespace NetPrints.Translator
             }";
 
         private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName%;";
+        private const string PROPERTY_TEMPLATE = @"%VariableModifiers%%VariableType% %VariableName%
+            {
+                %Get%%Set%
+            }";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
         
@@ -126,10 +130,42 @@ namespace NetPrints.Translator
 
             // TODO: Translate get / set methods
 
-            return VARIABLE_TEMPLATE
-                .Replace("%VariableModifiers%", modifiers.ToString())
-                .Replace("%VariableType%", variable.Type.FullCodeName)
-                .Replace("%VariableName%", variable.Name);
+            if (variable.HasAccessors)
+            {
+                string output = PROPERTY_TEMPLATE
+                    .Replace("%VariableModifiers%", modifiers.ToString())
+                    .Replace("%VariableType%", variable.Type.FullCodeName)
+                    .Replace("%VariableName%", variable.Name);
+
+                if (variable.GetterMethod != null)
+                {
+                    string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false);
+                    output = output.Replace("%Get%", "get\n" + getterMethodCode);
+                }
+                else
+                {
+                    output = output.Replace("%Get%", "");
+                }
+
+                if (variable.SetterMethod != null)
+                {
+                    string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false);
+                    output = output.Replace("%Set%", "set\n" + setterMethodCode);
+                }
+                else
+                {
+                    output = output.Replace("%Set%", "");
+                }
+
+                return output;
+            }
+            else
+            {
+                return VARIABLE_TEMPLATE
+                    .Replace("%VariableModifiers%", modifiers.ToString())
+                    .Replace("%VariableType%", variable.Type.FullCodeName)
+                    .Replace("%VariableName%", variable.Name);
+            }
         }
 
         /// <summary>
@@ -139,7 +175,7 @@ namespace NetPrints.Translator
         /// <returns>C# code for the method.</returns>
         public string TranslateMethod(Method m)
         {
-            return methodTranslator.Translate(m);
+            return methodTranslator.Translate(m, true);
         }
     }
 }
