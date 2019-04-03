@@ -77,7 +77,7 @@ namespace NetPrintsEditor.ViewModels
                 {
                     return MakeDelegateNodeBrush;
                 }
-                else if (Node is TypeNode)
+                else if (Node is TypeNode || Node is MakeArrayTypeNode)
                 {
                     return TypeNodeBrush;
                 }
