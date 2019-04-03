@@ -16,6 +16,7 @@
     
     <Window.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddConstructor" CanExecute="CommandAddConstructor_CanExecute" Executed="CommandAddConstructor_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.OverrideMethod" CanExecute="CommandOverrideMethod_CanExecute" Executed="CommandOverrideMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
@@ -83,9 +84,11 @@
                     <RowDefinition/>
                     <RowDefinition Height="5"/>
                     <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <Grid>
+                <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition />
@@ -93,9 +96,9 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
+                    <Label Grid.Row="0" Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" x:Name="methodList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -125,9 +128,44 @@
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 
-                <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <GridSplitter Grid.Row="1" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
                 <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Content="Constructors" FontSize="24px" HorizontalContentAlignment="Center" />
+
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding ElementName=classWindow, Path=Class.Constructors}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
+                                            ToolTip="Remove constructor">
+                                        <iconPacks:PackIconMaterial Kind="Minus" />
+                                    </Button>
+                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </Label>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Row="2" Content="Create Constructor" Click="AddConstructorButton_Click" FontSize="16" />
+                </Grid>
+
+                <GridSplitter Grid.Row="3" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+                <Grid Grid.Row="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />

@@ -57,6 +57,21 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<MethodVM, Method> methods;
 
+        public ObservableViewModelCollection<MethodVM, Method> Constructors
+        {
+            get => constructors;
+            set
+            {
+                if (constructors != value)
+                {
+                    constructors = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableViewModelCollection<MethodVM, Method> constructors;
+
         /// <summary>
         /// Specifiers for methods that this class can override.
         /// </summary>
@@ -249,6 +264,9 @@ namespace NetPrintsEditor.ViewModels
             {
                 Methods = new ObservableViewModelCollection<MethodVM, Method>(
                     cls.Methods, m => new MethodVM(m) { Class = this } );
+
+                Constructors = new ObservableViewModelCollection<MethodVM, Method>(
+                    cls.Constructors, c => new MethodVM(c) { Class = this });
 
                 Variables = new ObservableViewModelCollection<VariableVM, Variable>(
                     cls.Variables, v => new VariableVM(v));

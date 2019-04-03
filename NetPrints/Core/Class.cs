@@ -58,10 +58,15 @@ namespace NetPrints.Core
         public ObservableRangeCollection<Variable> Variables { get; set; } = new ObservableRangeCollection<Variable>();
 
         /// <summary>
-        /// Methods this class has.
+        /// Methods of this class.
         /// </summary>
         [DataMember]
         public ObservableRangeCollection<Method> Methods { get; set; } = new ObservableRangeCollection<Method>();
+
+        /// <summary>
+        /// Constructors of this class.
+        /// </summary>
+        public ObservableRangeCollection<Method> Constructors { get; set; } = new ObservableRangeCollection<Method>();
 
         /// <summary>
         /// Base / super type of this class. The ultimate base type of all classes is System.Object.

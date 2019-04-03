@@ -137,6 +137,32 @@ namespace NetPrintsEditor
             methodEditor.Method = Class.Methods.Single(m => m.Method == newMethod);
         }
 
+        // Add constructor
+
+        private void CommandAddConstructor_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Class != null && e.Parameter is string && !Class.Methods.Any(m => m.Name == e.Parameter as string);
+        }
+
+        private void CommandAddConstructor_Execute(object sender, ExecutedRoutedEventArgs e)
+        {
+            Method newMethod = new Method(e.Parameter as string)
+            {
+                Class = Class.Class,
+            };
+
+            newMethod.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
+            newMethod.EntryNode.PositionY = MethodEditorControl.GridCellSize * 4;
+            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + MethodEditorControl.GridCellSize * 15;
+            newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
+            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
+
+            Class.Class.Constructors.Add(newMethod);
+            methodEditor.Method = Class.Constructors.Single(m => m.Method == newMethod);
+        }
+
+        // Override method
+
         private void CommandOverrideMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = Class != null && e.Parameter is MethodSpecifier methodSpecifier &&
@@ -321,6 +347,7 @@ namespace NetPrintsEditor
 
             NodeVM node = e.Parameter as NodeVM;
             MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node)) ??
+                Class?.Constructors.FirstOrDefault(c => c.Nodes.Contains(node)) ??
                 Class?.Variables?.FirstOrDefault(v => v.HasGetter && v.GetterMethod.Nodes.Contains(node))?.GetterMethod ??
                 Class?.Variables?.FirstOrDefault(v => v.HasSetter && v.SetterMethod.Nodes.Contains(node))?.SetterMethod;
 
@@ -451,6 +478,12 @@ namespace NetPrintsEditor
             undoRedoStack.DoCommand(NetPrintsCommands.AddMethod, uniqueName);
         }
 
+        // Add Constructor Button
+        private void AddConstructorButton_Click(object sender, RoutedEventArgs e)
+        {
+            undoRedoStack.DoCommand(NetPrintsCommands.AddConstructor, Class.Name);
+        }
+
         // Add Variable Button
         private void AddVariableButton_Click(object sender, RoutedEventArgs e)
         {
@@ -498,7 +531,14 @@ namespace NetPrintsEditor
                     methodEditor.Method = null;
                 }
 
-                Class.Class.Methods.Remove(m.Method);
+                if (Class.Class.Methods.Contains(m.Method))
+                {
+                    Class.Class.Methods.Remove(m.Method);
+                }
+                else if (Class.Class.Constructors.Contains(m.Method))
+                {
+                    Class.Class.Constructors.Remove(m.Method);
+                }
             }
         }
 

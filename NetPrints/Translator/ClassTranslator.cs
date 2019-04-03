@@ -52,7 +52,12 @@ namespace NetPrints.Translator
                 content.AppendLine(TranslateVariable(v));
             }
 
-            foreach(Method m in c.Methods)
+            foreach (Method constructor in c.Constructors)
+            {
+                content.AppendLine(TranslateConstructor(constructor));
+            }
+
+            foreach (Method m in c.Methods)
             {
                 content.AppendLine(TranslateMethod(m));
             }
@@ -140,7 +145,7 @@ namespace NetPrints.Translator
 
                 if (variable.GetterMethod != null)
                 {
-                    string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false);
+                    string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false, false);
                     string visibilityPrefix = variable.GetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.GetterMethod.Visibility]} " : "";
 
                     output = output.Replace("%Get%", $"{visibilityPrefix}get\n{getterMethodCode}");
@@ -152,7 +157,7 @@ namespace NetPrints.Translator
 
                 if (variable.SetterMethod != null)
                 {
-                    string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false);
+                    string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false, false);
                     string visibilityPrefix = variable.SetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.SetterMethod.Visibility]} " : "";
 
                     output = output.Replace("%Set%", $"{visibilityPrefix}set\n{setterMethodCode}");
@@ -180,7 +185,12 @@ namespace NetPrints.Translator
         /// <returns>C# code for the method.</returns>
         public string TranslateMethod(Method m)
         {
-            return methodTranslator.Translate(m, true);
+            return methodTranslator.Translate(m, true, false);
+        }
+
+        public string TranslateConstructor(Method m)
+        {
+            return methodTranslator.Translate(m, true, true);
         }
     }
 }

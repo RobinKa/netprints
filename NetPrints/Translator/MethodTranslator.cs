@@ -177,7 +177,7 @@ namespace NetPrints.Translator
             }
         }
 
-        private void TranslateSignature()
+        private void TranslateSignature(bool isConstructor)
         {
             builder.AppendLine($"// Method {method.Name}");
 
@@ -209,22 +209,25 @@ namespace NetPrints.Translator
                 builder.Append("virtual ");
             }
 
-            // Write return type
-            if (method.ReturnTypes.Count() > 1)
+            if (!isConstructor)
             {
-                // Tuple<Types..> (won't be needed in the future)
-                string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes.Select(t => t.FullCodeName)) + ">";
-                builder.Append(returnType + " ");
+                // Write return type
+                if (method.ReturnTypes.Count() > 1)
+                {
+                    // Tuple<Types..> (won't be needed in the future)
+                    string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes.Select(t => t.FullCodeName)) + ">";
+                    builder.Append(returnType + " ");
 
-                //builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
-            }
-            else if (method.ReturnTypes.Count() == 1)
-            {
-                builder.Append($"{method.ReturnTypes.Single().FullCodeName} ");
-            }
-            else
-            {
-                builder.Append("void ");
+                    //builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
+                }
+                else if (method.ReturnTypes.Count() == 1)
+                {
+                    builder.Append($"{method.ReturnTypes.Single().FullCodeName} ");
+                }
+                else
+                {
+                    builder.Append("void ");
+                }
             }
 
             // Write name
@@ -267,7 +270,7 @@ namespace NetPrints.Translator
         /// <param name="method">Method to translate.</param>
         /// <param name="withSignature">Whether to translate the signature.</param>
         /// <returns>C# code for the method.</returns>
-        public string Translate(Method method, bool withSignature)
+        public string Translate(Method method, bool withSignature, bool isConstructor)
         {
             this.method = method;
 
@@ -295,7 +298,7 @@ namespace NetPrints.Translator
             // Write the signatures
             if (withSignature)
             {
-                TranslateSignature();
+                TranslateSignature(isConstructor);
             }
 
             builder.AppendLine("{"); // Method start
