@@ -11,6 +11,7 @@
              d:DesignHeight="300" d:DesignWidth="300" x:Name="wnd">
     <UserControl.Resources>
         <converters:MethodModifierConverter x:Key="methodModifierConverter" />
+        <converters:BoolToVisibilityConverter x:Key="InvBoolToVis" True="Collapsed" False="Visible" />
     </UserControl.Resources>
 
     <StackPanel>
@@ -41,20 +42,20 @@
                       SelectedItem="{Binding Path=Method.Visibility, ElementName=wnd}" 
                       ItemsSource="{Binding Path=Method.PossibleVisibilities, ElementName=wnd}"/>
 
-            <Label Grid.Row="2" Content="Sealed" />
-            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Sealed}}" VerticalContentAlignment="Center" />
+            <Label Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="2" Content="Sealed" />
+            <CheckBox Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="2" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Sealed}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="3" Content="Abstract" />
-            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
+            <Label Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="3" Content="Abstract" />
+            <CheckBox Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Abstract}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="4" Content="Static" />
-            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
+            <Label Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="4" Content="Static" />
+            <CheckBox Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Static}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="5" Content="Virtual" />
-            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Virtual}}" VerticalContentAlignment="Center" />
+            <Label Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="5" Content="Virtual" />
+            <CheckBox Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Virtual}}" VerticalContentAlignment="Center" />
 
-            <Label Grid.Row="6" Content="Override" />
-            <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Override}}" VerticalContentAlignment="Center" />
+            <Label Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="6" Content="Override" />
+            <CheckBox Visibility="{Binding ElementName=wnd, Path=Method.IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Method.Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Override}}" VerticalContentAlignment="Center" />
         </Grid>
     </StackPanel>
 </UserControl>
