@@ -114,10 +114,14 @@
                     IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Settings" Click="OnSettingsButtonClicked" FontWeight="Bold" FontSize="16"/>
 
             <Button Grid.Column="3" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
+                    ToolTipService.ShowOnDisabled="True"
+                    ToolTip="Compiles the project and outputs the source code if chosen."
                     IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontWeight="Bold" FontSize="16" />
 
             <Button Grid.Column="4" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
-                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Run" Click="OnRunButtonClicked" FontWeight="Bold" FontSize="16" />
+                    ToolTipService.ShowOnDisabled="True"
+                    ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
+                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompileAndRun}" Content="Run" Click="OnRunButtonClicked" FontWeight="Bold" FontSize="16" />
         </Grid>
 
         <Label Grid.Row="2" Content="Classes" Margin="5,10,5,0" FontSize="24" HorizontalAlignment="Center" />
