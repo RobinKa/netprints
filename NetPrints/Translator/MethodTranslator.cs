@@ -485,11 +485,11 @@ namespace NetPrints.Translator
 
                 builder.Append($"{returnName} = ");
             }
-            else if (node.OutputDataPins.Count > 1)
+            else if (node.ReturnValuePins.Count > 1)
             {
                 temporaryReturnName = TranslatorUtil.GetTemporaryVariableName(random);
 
-                var returnTypeNames = string.Join(", ", node.MethodSpecifier.ReturnTypes.Select(t => t.FullCodeName));
+                var returnTypeNames = string.Join(", ", node.ReturnValuePins.Select(pin => pin.PinType.Value.FullCodeName));
                 
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
