@@ -12,6 +12,9 @@ namespace NetPrints.Graph
     [DataContract]
     public class CallMethodNode : ExecNode
     {
+        private const string ExceptionPinName = "Exception";
+        private const string CatchPinName = "Catch";
+
         public override bool CanSetPure
         {
             get => true;
@@ -107,7 +110,7 @@ namespace NetPrints.Graph
         /// </summary>
         public NodeOutputDataPin ExceptionPin
         {
-            get { return OutputDataPins.Single(p => p.Name == "Exception"); }
+            get { return OutputDataPins.SingleOrDefault(p => p.Name == ExceptionPinName); }
         }
 
         /// <summary>
@@ -115,7 +118,7 @@ namespace NetPrints.Graph
         /// </summary>
         public NodeOutputExecPin CatchPin
         {
-            get { return OutputExecPins.Single(p => p.Name == "Catch"); }
+            get { return OutputExecPins.SingleOrDefault(p => p.Name == CatchPinName); }
         }
         
         /// <summary>
@@ -123,7 +126,7 @@ namespace NetPrints.Graph
         /// </summary>
         public bool HandlesExceptions
         {
-            get => !IsPure && OutputExecPins.Any(p => p.Name == "Catch") && CatchPin.OutgoingPin != null;
+            get => !IsPure && OutputExecPins.Any(p => p.Name == CatchPinName) && CatchPin.OutgoingPin != null;
         }
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace NetPrints.Graph
         /// </summary>
         public IList<NodeOutputDataPin> ReturnValuePins
         {
-            get => (OutputDataPins.Where(p => p.Name != "Exception")).ToList();
+            get => (OutputDataPins.Where(p => p.Name != ExceptionPinName)).ToList();
         }
 
         public CallMethodNode(Method method, MethodSpecifier methodSpecifier, 
@@ -188,8 +191,41 @@ namespace NetPrints.Graph
 
         private void AddExceptionPins()
         {
-            AddOutputDataPin("Exception", TypeSpecifier.FromType<Exception>());
-            AddOutputExecPin("Catch");
+            AddOutputExecPin(CatchPinName);
+            AddCatchPinChangedEvent();
+        }
+
+        private void AddCatchPinChangedEvent()
+        {
+            if (CatchPin != null)
+            {
+                // Add / remove exception pin when catch is connected / unconnected
+                CatchPin.OutgoingPinChanged += (pin, oldPin, newPin) => UpdateExceptionPin();
+            }
+        }
+
+        /// <summary>
+        /// Adds or removes the exception output data pin depending on
+        /// whether the catch pin is connected.
+        /// </summary>
+        private void UpdateExceptionPin()
+        {
+            if (CatchPin?.OutgoingPin == null && ExceptionPin != null)
+            {
+                GraphUtil.DisconnectOutputDataPin(ExceptionPin);
+                OutputDataPins.Remove(ExceptionPin);
+            }
+            else if (CatchPin?.OutgoingPin != null && ExceptionPin == null)
+            {
+                AddOutputDataPin(ExceptionPinName, TypeSpecifier.FromType<Exception>());
+            }
+        }
+
+        public override void OnMethodDeserialized()
+        {
+            base.OnMethodDeserialized();
+            AddCatchPinChangedEvent();
+            UpdateExceptionPin();
         }
 
         protected override void SetPurity(bool pure)
@@ -198,11 +234,10 @@ namespace NetPrints.Graph
 
             if (pure)
             {
+                // Remove catch pin. Exception pin gets automatically removed because
+                // of its pin changed ev ent.
                 GraphUtil.DisconnectOutputExecPin(CatchPin);
                 OutputExecPins.Remove(CatchPin);
-
-                GraphUtil.DisconnectOutputDataPin(ExceptionPin);
-                OutputDataPins.Remove(ExceptionPin);
             }
             else
             {
