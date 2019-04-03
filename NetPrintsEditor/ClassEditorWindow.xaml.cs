@@ -117,7 +117,7 @@ namespace NetPrintsEditor
 
         private void CommandAddMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is string && !Class.Methods.Any(m => m.Name == e.Parameter as string);
+            e.CanExecute = Class != null && e.Parameter is string;
         }
 
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -141,7 +141,7 @@ namespace NetPrintsEditor
 
         private void CommandAddConstructor_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is string && !Class.Methods.Any(m => m.Name == e.Parameter as string);
+            e.CanExecute = Class != null && e.Parameter is string;
         }
 
         private void CommandAddConstructor_Execute(object sender, ExecutedRoutedEventArgs e)
