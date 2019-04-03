@@ -58,7 +58,7 @@ namespace NetPrints.Tests
             // Connect node data
             GraphUtil.ConnectDataPins(makeDelegateNode.OutputDataPins[0], delegateMethod.ReturnNodes.First().InputDataPins[0]);
 
-            string translated = methodTranslator.Translate(delegateMethod, true);
+            string translated = methodTranslator.Translate(delegateMethod, true, false);
         }
     }
 }
