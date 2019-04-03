@@ -271,12 +271,12 @@ namespace NetPrintsEditor
             }
         }
 
-        private async void OnAssembliesButtonClicked(object sender, RoutedEventArgs e)
+        private async void OnReferencesButtonClicked(object sender, RoutedEventArgs e)
         {
-            AssemblyListWindow assemblyListWindow = new AssemblyListWindow(Project);
-            assemblyListWindow.CloseButton.Click += async (sender, e) => await this.HideMetroDialogAsync(assemblyListWindow);
+            var referenceListWindow = new ReferenceListWindow(Project);
+            referenceListWindow.CloseButton.Click += async (sender, e) => await this.HideMetroDialogAsync(referenceListWindow);
 
-            await this.ShowMetroDialogAsync(assemblyListWindow);
+            await this.ShowMetroDialogAsync(referenceListWindow);
         }
     }
 }

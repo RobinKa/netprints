@@ -12,12 +12,12 @@ using MahApps.Metro.Controls.Dialogs;
 namespace NetPrintsEditor
 {
     /// <summary>
-    /// Interaction logic for AssemblyListWindow.xaml
+    /// Interaction logic for ReferenceListWindow.xaml
     /// </summary>
-    public partial class AssemblyListWindow : CustomDialog
+    public partial class ReferenceListWindow : CustomDialog
     {
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(
-            nameof(Project), typeof(ProjectVM), typeof(AssemblyListWindow));
+            nameof(Project), typeof(ProjectVM), typeof(ReferenceListWindow));
 
         public ProjectVM Project
         {
@@ -25,7 +25,7 @@ namespace NetPrintsEditor
             set => SetValue(ProjectProperty, value);
         }
 
-        public AssemblyListWindow(ProjectVM project)
+        public ReferenceListWindow(ProjectVM project)
         {
             InitializeComponent();
 

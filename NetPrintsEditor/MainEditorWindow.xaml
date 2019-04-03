@@ -108,7 +108,7 @@
                     Content="Project" Click="OnProjectButtonClicked" FontWeight="Bold" FontSize="16" />
 
             <Button Grid.Column="1" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
-                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Assemblies" Click="OnAssembliesButtonClicked" FontWeight="Bold" FontSize="16"/>
+                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="References" Click="OnReferencesButtonClicked" FontWeight="Bold" FontSize="16"/>
             
             <Button Grid.Column="2" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
                     IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Settings" Click="OnSettingsButtonClicked" FontWeight="Bold" FontSize="16"/>
