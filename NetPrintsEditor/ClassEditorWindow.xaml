@@ -165,14 +165,14 @@
 
                 <GridSplitter Grid.Row="3" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Label Content="Attributes" FontSize="24px" HorizontalContentAlignment="Center" />
+                    <Label Content="Variables" FontSize="24px" HorizontalContentAlignment="Center" />
 
                     <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Variables}">
                         <ListView.ItemTemplate>
