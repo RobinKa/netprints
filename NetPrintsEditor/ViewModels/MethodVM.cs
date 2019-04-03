@@ -84,6 +84,11 @@ namespace NetPrintsEditor.ViewModels
             get => method.ArgumentTypes;
         }
 
+        public IEnumerable<Named<BaseType>> NamedArgumentTypes
+        {
+            get => method.NamedArgumentTypes;
+        }
+
         public IEnumerable<BaseType> ReturnTypes
         {
             get => method.ReturnTypes;

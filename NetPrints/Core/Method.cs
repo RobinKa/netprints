@@ -92,6 +92,15 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Ordered argument types with their names this method takes.
+        /// </summary>
+        public IEnumerable<Named<BaseType>> NamedArgumentTypes
+        {
+            get => EntryNode != null ? EntryNode.InputTypePins.Zip(EntryNode.OutputDataPins, (type, data) => (type, data))
+                .Select(pair => new Named<BaseType>(pair.data.Name, pair.type.InferredType?.Value ?? TypeSpecifier.FromType<object>())).ToList() : new List<Named<BaseType>>();
+        }
+
+        /// <summary>
         /// Generic type arguments of the method.
         /// </summary>
         public IEnumerable<GenericType> GenericArgumentTypes
