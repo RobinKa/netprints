@@ -48,6 +48,7 @@
                 </Grid.ColumnDefinitions>
 
                 <ComboBox x:Name="nodeVariants" Margin="2" Width="16" Grid.Column="0" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.Overloads, Mode=OneWay}" 
+                    ToolTip="Overloads"
                     SelectionChanged="NodeVariants_SelectionChanged" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowOverloads, Converter={StaticResource ResourceKey=BoolToVis}}" />
                 
                 <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Label}" Padding="10, 10"
