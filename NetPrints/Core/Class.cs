@@ -66,6 +66,7 @@ namespace NetPrints.Core
         /// <summary>
         /// Constructors of this class.
         /// </summary>
+        [DataMember]
         public ObservableRangeCollection<Method> Constructors { get; set; } = new ObservableRangeCollection<Method>();
 
         /// <summary>
