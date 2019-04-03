@@ -489,7 +489,7 @@ namespace NetPrints.Translator
             {
                 temporaryReturnName = TranslatorUtil.GetTemporaryVariableName(random);
 
-                var returnTypeNames = string.Join(", ", node.OutputDataPins.Select(pin => pin.PinType.Value.FullCodeName));
+                var returnTypeNames = string.Join(", ", node.MethodSpecifier.ReturnTypes.Select(t => t.FullCodeName));
                 
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
