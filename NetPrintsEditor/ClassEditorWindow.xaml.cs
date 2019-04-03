@@ -122,7 +122,7 @@ namespace NetPrintsEditor
 
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Method newMethod = new Method(e.Parameter as string)
+            var newMethod = new Method(e.Parameter as string)
             {
                 Class = Class.Class,
             };
@@ -146,9 +146,10 @@ namespace NetPrintsEditor
 
         private void CommandAddConstructor_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            Method newMethod = new Method(e.Parameter as string)
+            var newMethod = new Method(e.Parameter as string)
             {
                 Class = Class.Class,
+                Visibility = MemberVisibility.Public,
             };
 
             newMethod.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
