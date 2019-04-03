@@ -410,7 +410,8 @@ namespace NetPrints.Graph
             Method newMethod = new Method(methodSpecifier.Name)
             {
                 Class = cls,
-                Modifiers = modifiers
+                Modifiers = modifiers,
+                Visibility = methodSpecifier.Visibility
             };
 
             // Set position of entry and return node
