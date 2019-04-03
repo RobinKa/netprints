@@ -39,6 +39,12 @@ namespace NetPrints.Core
             {
                 varNode.FixOldVariable();
             }
+
+            // Fix old saves not having constructors
+            if (Constructors is null)
+            {
+                Constructors = new ObservableRangeCollection<Method>();
+            }
         }
 
         /// <summary>
