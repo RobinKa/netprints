@@ -34,7 +34,7 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.Row="0" Content="Name" />
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="{Binding ElementName=wnd, Path=Method.IsConstructor}" Text="{Binding ElementName=wnd, Path=Method.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="1" Content="Visibility" />
             <ComboBox Grid.Row="1" Grid.Column="1"

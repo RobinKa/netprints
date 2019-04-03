@@ -59,6 +59,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public bool IsConstructor
+        {
+            get => method.Name == Class.Name;
+        }
+
         public ObservableViewModelCollection<NodeVM, Node> Nodes
         {
             get => nodes;

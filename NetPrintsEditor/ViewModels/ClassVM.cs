@@ -127,6 +127,11 @@ namespace NetPrintsEditor.ViewModels
                 OnPropertyChanged(nameof(StoragePath));
                 OnPropertyChanged(nameof(FullName));
                 OnPropertyChanged(nameof(Type));
+
+                foreach (MethodVM constructor in Constructors)
+                {
+                    constructor.Name = cls.Name;
+                }
             }
         }
 
