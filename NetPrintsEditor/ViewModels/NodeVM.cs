@@ -44,7 +44,7 @@ namespace NetPrintsEditor.ViewModels
             new SolidColorBrush(Color.FromArgb(0xFF, 0x1A, 0x5A, 0x30));
 
         private static readonly SolidColorBrush ThrowBrush =
-            new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x10, 0x10));
+            new SolidColorBrush(Color.FromArgb(0xFF, 0xBB, 0x20, 0x20));
 
         /// <summary>
         /// Brush for the header of the node.
