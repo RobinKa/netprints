@@ -293,22 +293,42 @@ namespace NetPrintsEditor.Controls
                     Point mousePosition = e.GetPosition(methodEditorWindow);
                     MethodVM method = e.Data.GetData(typeof(MethodVM)) as MethodVM;
 
-                    // CallMethodNode(Method method, MethodSpecifier methodSpecifier)
+                    if (method.IsConstructor)
+                    {
+                        // ConstructorNode(Method method, ConstructorSpecifier specifier)
 
-                    // TODO: Get this from method directly somehow
-                    // TODO: Get named type specifiers from method
-                    MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name,
-                        method.ArgumentTypes.Select(t => new MethodParameter("TODO", t, MethodParameterPassType.Default)),
-                        method.ReturnTypes.Cast<TypeSpecifier>(),
-                        method.Modifiers, method.Visibility,
-                        method.Class.Type, Array.Empty<BaseType>());
+                        // TODO: Get this from constructor directly somehow
+                        // TODO: Get named type specifiers from method
+                        ConstructorSpecifier constructorSpecifier = new ConstructorSpecifier(
+                            method.ArgumentTypes.Select(t => new MethodParameter("TODO", t, MethodParameterPassType.Default)),
+                            method.Class.Type
+                        );
 
-                    UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
-                    (
-                        typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
-                        methodSpecifier,
-                        Array.Empty<GenericType>()
-                    ));
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(ConstructorNode), Method.Method, mousePosition.X, mousePosition.Y,
+                            constructorSpecifier
+                        ));
+                    }
+                    else
+                    {
+                        // CallMethodNode(Method method, MethodSpecifier methodSpecifier, IList<BaseType> genericArgumentTypes)
+
+                        // TODO: Get this from method directly somehow
+                        // TODO: Get named type specifiers from method
+                        MethodSpecifier methodSpecifier = new MethodSpecifier(method.Name,
+                            method.ArgumentTypes.Select(t => new MethodParameter("TODO", t, MethodParameterPassType.Default)),
+                            method.ReturnTypes.Cast<TypeSpecifier>(),
+                            method.Modifiers, method.Visibility,
+                            method.Class.Type, Array.Empty<BaseType>());
+
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
+                            methodSpecifier,
+                            Array.Empty<GenericType>()
+                        ));
+                    }
 
                     e.Handled = true;
                 }
