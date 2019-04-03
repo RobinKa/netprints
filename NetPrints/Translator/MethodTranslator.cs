@@ -42,6 +42,7 @@ namespace NetPrints.Translator
             { typeof(IfElseNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateIfElseNode(node as IfElseNode) } },
             { typeof(ConstructorNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateConstructorNode(node as ConstructorNode) } },
             { typeof(ExplicitCastNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateExplicitCastNode(node as ExplicitCastNode) } },
+            { typeof(ThrowNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateThrowNode(node as ThrowNode) } },
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
@@ -693,6 +694,12 @@ namespace NetPrints.Translator
                     }
                 }
             }
+        }
+
+        public void TranslateThrowNode(ThrowNode node)
+        {
+            TranslateDependentPureNodes(node);
+            builder.AppendLine($"throw {GetPinIncomingValue(node.ExceptionPin)};");
         }
 
         public void TranslateVariableSetterNode(VariableSetterNode node)

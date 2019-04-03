@@ -248,6 +248,18 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
+                    else if (t == TypeSpecifier.FromType<ThrowNode>())
+                    {
+                        // ThrowNode(Method method)
+
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(ThrowNode),
+                            null,
+                            0,
+                            0
+                        ));
+                    }
                     else if (t == TypeSpecifier.FromType<LiteralNode>())
                     {
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();

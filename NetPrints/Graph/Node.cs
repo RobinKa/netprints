@@ -26,6 +26,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(MakeArrayNode))]
     [KnownType(typeof(TypeNode))]
     [KnownType(typeof(MakeArrayTypeNode))]
+    [KnownType(typeof(ThrowNode))]
     public abstract class Node
     {
         /// <summary>

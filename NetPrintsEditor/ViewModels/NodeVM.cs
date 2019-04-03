@@ -43,6 +43,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush MakeArrayBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x1A, 0x5A, 0x30));
 
+        private static readonly SolidColorBrush ThrowBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x10, 0x10));
+
         /// <summary>
         /// Brush for the header of the node.
         /// </summary>
@@ -92,6 +95,10 @@ namespace NetPrintsEditor.ViewModels
                 else if (Node is MakeArrayNode)
                 {
                     return MakeArrayBrush;
+                }
+                else if (Node is ThrowNode)
+                {
+                    return ThrowBrush;
                 }
 
                 return DefaultNodeBrush;
