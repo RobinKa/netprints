@@ -42,10 +42,10 @@ namespace NetPrintsEditor
                 {
                     var assemblyReference = new AssemblyReference(openFileDialog.FileName);
                     
-                    if (!Project.References.OfType<AssemblyReference>().Any(r =>
-                        string.Equals(Path.GetFullPath(assemblyReference.AssemblyPath), Path.GetFullPath(assemblyReference.AssemblyPath), StringComparison.OrdinalIgnoreCase)))
+                    if (!Project.Project.References.OfType<AssemblyReference>().Any(r =>
+                        string.Equals(Path.GetFullPath(r.AssemblyPath), Path.GetFullPath(assemblyReference.AssemblyPath), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Project.References.Add(new CompilationReferenceVM(assemblyReference));
+                        Project.Project.References.Add(assemblyReference);
                     }
                 }
                 catch (Exception ex)
@@ -64,10 +64,10 @@ namespace NetPrintsEditor
                 {
                     var sourceDirectoryReference = new SourceDirectoryReference(openFolderDialog.SelectedPath);
 
-                    if (!Project.References.OfType<SourceDirectoryReference>().Any(r =>
+                    if (!Project.Project.References.OfType<SourceDirectoryReference>().Any(r =>
                         string.Equals(Path.GetFullPath(r.SourceDirectory), Path.GetFullPath(sourceDirectoryReference.SourceDirectory), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Project.References.Add(new CompilationReferenceVM(sourceDirectoryReference));
+                        Project.Project.References.Add(sourceDirectoryReference);
                     }
                 }
                 catch (Exception ex)
@@ -81,7 +81,7 @@ namespace NetPrintsEditor
         {
             if (sender is Button button && button.DataContext is CompilationReferenceVM reference)
             {
-                Project.References.Remove(reference);
+                Project.Project.References.Remove(reference.Reference);
             }
         }
     }

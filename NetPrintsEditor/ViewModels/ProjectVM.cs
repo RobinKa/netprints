@@ -108,14 +108,14 @@ namespace NetPrintsEditor.ViewModels
                 {
                     if (references != null)
                     {
-                        project.References.CollectionChanged -= OnReferencesChanged;
+                        references.CollectionChanged -= OnReferencesChanged;
                     }
 
                     references = value;
 
                     if (references != null)
                     {
-                        value.CollectionChanged += OnReferencesChanged;
+                        references.CollectionChanged += OnReferencesChanged;
                         FixReferencePaths();
                     }
 
@@ -215,7 +215,14 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(OutputBinaryType));
                     OnPropertyChanged(nameof(CanCompileAndRun));
 
-                    References = new ObservableViewModelCollection<CompilationReferenceVM, CompilationReference>(project.References, reference => new CompilationReferenceVM(reference));
+                    if (project != null)
+                    {
+                        References = new ObservableViewModelCollection<CompilationReferenceVM, CompilationReference>(project.References, reference => new CompilationReferenceVM(reference));
+                    }
+                    else
+                    {
+                        References = null;
+                    }
                 }
             }
         }
@@ -336,7 +343,7 @@ namespace NetPrintsEditor.ViewModels
             // Save original thread dispatcher
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
-            var references = References.Select(reference => reference.Reference).ToArray();
+            var references = Project.References.ToArray();
 
             // Compile in another thread
             new Thread(() =>
@@ -497,12 +504,12 @@ namespace NetPrintsEditor.ViewModels
 
         private void FixReferencePaths()
         {
-            var referencesToRemove = new List<CompilationReferenceVM>();
+            var referencesToRemove = new List<CompilationReference>();
 
             // Fix references
-            foreach (var reference in References)
+            foreach (var reference in Project.References)
             {
-                if (reference.Reference is AssemblyReference assemblyReference)
+                if (reference is AssemblyReference assemblyReference)
                 {
                     // Check if the assembly exists at the path and
                     // give the user a chance to select another one.
@@ -529,7 +536,7 @@ namespace NetPrintsEditor.ViewModels
             // Remove references which couldn't be fixed
             if (referencesToRemove.Count > 0)
             {
-                References.RemoveRange(referencesToRemove);
+                Project.References.RemoveRange(referencesToRemove);
 
                 MessageBox.Show("The following assemblies could not be found and have been removed from the project:\n\n" +
                     string.Join(Environment.NewLine, referencesToRemove.Select(n => n.ToString())),
