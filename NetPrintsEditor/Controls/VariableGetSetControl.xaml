@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" x:Name="ctrl">
     
-    <Border BorderBrush="#FF212121" BorderThickness="3" CornerRadius="4">
+    <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="5" CornerRadius="4">
         <Border.Effect>
             <DropShadowEffect/>
         </Border.Effect>
@@ -17,8 +17,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button IsEnabled="{Binding ElementName=ctrl, Path=CanGet}" Content="Get" Click="OnVariableGetClicked" FontSize="20" FontWeight="Bold"/>
-            <Button IsEnabled="{Binding ElementName=ctrl, Path=CanSet}" Grid.Column="1" Content="Set" Click="OnVariableSetClicked" FontSize="20" FontWeight="Bold"/>
+            <Button Focusable="False" BorderThickness="0" IsEnabled="{Binding ElementName=ctrl, Path=CanGet}" Content="Get" Click="OnVariableGetClicked" FontSize="20" FontWeight="Bold"/>
+            <Button Grid.Column="1" Focusable="False" BorderThickness="0" IsEnabled="{Binding ElementName=ctrl, Path=CanSet}"  Content="Set" Click="OnVariableSetClicked" FontSize="20" FontWeight="Bold"/>
         </Grid>
     </Border>
 </UserControl>
