@@ -60,15 +60,20 @@ namespace NetPrintsEditor.Reflection
                 x.ReturnType == y.ReturnType && x.ArgumentType == y.ArgumentType && x.HasGenericArguments == y.HasGenericArguments;
         }
 
+        public int GetHashCode(ReflectionProviderMethodQuery obj)
+        {
+            return HashCode.Combine(Type, Static, VisibleFrom, ReturnType, ArgumentType, HasGenericArguments);
+        }
+
         public override bool Equals(object obj)
         {
             return ReferenceEquals(this, obj) ||
                 (obj is ReflectionProviderMethodQuery query && Equals(this, query));
         }
 
-        public int GetHashCode(ReflectionProviderMethodQuery obj)
+        public override int GetHashCode()
         {
-            return HashCode.Combine(Type, Static, VisibleFrom, ReturnType, ArgumentType, HasGenericArguments);
+            return GetHashCode(this);
         }
     }
 
@@ -111,15 +116,20 @@ namespace NetPrintsEditor.Reflection
                 x.VariableType == y.VariableType && x.VariableTypeDerivesFrom == y.VariableTypeDerivesFrom;
         }
 
+        public int GetHashCode(ReflectionProviderVariableQuery obj)
+        {
+            return HashCode.Combine(Type, Static, VisibleFrom, VariableType, VariableTypeDerivesFrom);
+        }
+
         public override bool Equals(object obj)
         {
             return ReferenceEquals(this, obj) ||
                 (obj is ReflectionProviderVariableQuery query && Equals(this, query));
         }
 
-        public int GetHashCode(ReflectionProviderVariableQuery obj)
+        public override int GetHashCode()
         {
-            return HashCode.Combine(Type, Static, VisibleFrom, VariableType, VariableTypeDerivesFrom);
+            return GetHashCode(this);
         }
     }
 
