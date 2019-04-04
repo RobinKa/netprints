@@ -4,11 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
+             xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800" x:Name="methodEditorWindow">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:BoolToDoubleConverter x:Key="FaintToOpacity" True="0.1" False="0.7" />
+        <converters:BoolToDoubleConverter x:Key="FaintToThickness" True="2" False="4" />
     </UserControl.Resources>
 
     <Grid x:Name="grid" ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop"
@@ -64,7 +67,7 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
 
-            <ItemsControl Panel.ZIndex="-1" x:Name="cableList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.AllPins}">
+            <ItemsControl Panel.ZIndex="-1" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.AllPins}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
@@ -73,9 +76,10 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Path MouseDown="CablePath_MouseDown" MouseEnter="CablePath_MouseEnter" MouseLeave="CablePath_MouseLeave"
+                        <Path MouseDown="CablePath_MouseDown" MouseUp="CablePath_MouseUp" MouseEnter="CablePath_MouseEnter" MouseLeave="CablePath_MouseLeave"
                               x:Name="cablePath" Visibility="{Binding IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}"
-                              Stroke="{Binding BorderBrush}" StrokeThickness="4" Opacity="0.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                              Stroke="{Binding BorderBrush}" StrokeThickness="{Binding IsFaint, Converter={StaticResource FaintToThickness}}"
+                              Opacity="{Binding IsFaint, Converter={StaticResource FaintToOpacity}}" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                             <Path.Data>
                                 <PathGeometry>
                                     <PathGeometry.Figures>

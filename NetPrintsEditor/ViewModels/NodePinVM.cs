@@ -112,6 +112,22 @@ namespace NetPrintsEditor.ViewModels
 
         private bool isBeingConnected = false;
 
+        // TODO: Save this property (perhaps move to model)
+        public bool IsFaint
+        {
+            get => isFaint;
+            set
+            {
+                if (isFaint != value)
+                {
+                    isFaint = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool isFaint;
+
         public NodePin Pin
         {
             get => pin;

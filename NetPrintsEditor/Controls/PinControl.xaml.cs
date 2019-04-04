@@ -154,5 +154,14 @@ namespace NetPrintsEditor.Controls
                 e.Handled = true;
             }
         }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.XButton1 && Pin.IsConnected)
+            {
+                Pin.IsFaint = !Pin.IsFaint;
+                e.Handled = true;
+            }
+        }
     }
 }

@@ -653,7 +653,7 @@ namespace NetPrintsEditor.Controls
 
         private void CablePath_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (sender is Path path)
+            if (sender is Path path && path.DataContext is NodePinVM pin && !pin.IsFaint)
             {
                 path.Opacity = 1;
             }
@@ -661,7 +661,7 @@ namespace NetPrintsEditor.Controls
 
         private void CablePath_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (sender is Path path)
+            if (sender is Path path && path.DataContext is NodePinVM pin && !pin.IsFaint)
             {
                 path.Opacity = 0.7;
             }
@@ -684,6 +684,22 @@ namespace NetPrintsEditor.Controls
             else if (e.ChangedButton == MouseButton.Middle)
             {
                 pin.DisconnectAll();
+            }
+        }
+
+        private void CablePath_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var pin = element?.DataContext as NodePinVM;
+
+            if (pin == null)
+            {
+                throw new Exception("Could not find cable's pin.");
+            }
+
+            if (e.ChangedButton == MouseButton.XButton1 && e.RightButton == MouseButtonState.Released)
+            {
+                pin.IsFaint = !pin.IsFaint;
             }
         }
     }

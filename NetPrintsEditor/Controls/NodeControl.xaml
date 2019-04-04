@@ -23,7 +23,8 @@
         <converters:BoolToThicknessConverter x:Key="MarginConverter" True="0" False="10,10,10,5" />
     </UserControl.Resources>
 
-    <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToDouble}}" Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
+    <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToDouble}}"
+          Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
         <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#AA202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>

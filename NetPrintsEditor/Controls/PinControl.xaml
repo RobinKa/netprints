@@ -13,7 +13,7 @@
         <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
     </UserControl.Resources>
 
-    <Grid x:Name="grid" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" MouseDown="OnMouseDown">
+    <Grid x:Name="grid" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" MouseDown="OnMouseDown" MouseUp="OnMouseUp">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="Auto" />
