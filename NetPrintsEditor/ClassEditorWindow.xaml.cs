@@ -211,12 +211,12 @@ namespace NetPrintsEditor
 
         private void CommandRemoveVariable_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is string && Class.Variables.Any(m => m.Name == e.Parameter as string);
+            e.CanExecute = Class != null && e.Parameter is VariableVM variable && Class.Variables.Any(v => v.Variable == variable.Variable);
         }
 
         private void CommandRemoveVariable_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            VariableVM variable = Class.Variables.Single(m => m.Name == e.Parameter as string);
+            VariableVM variable = (VariableVM)e.Parameter;
 
             if (viewerTabControl.SelectedIndex == 1 && variableViewer.Variable == variable)
             {

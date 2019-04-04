@@ -18,7 +18,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Focusable="False" BorderThickness="0" IsEnabled="{Binding ElementName=ctrl, Path=CanGet}" Content="Get" Click="OnVariableGetClicked" FontSize="20" FontWeight="Bold"/>
-            <Button Grid.Column="1" Focusable="False" BorderThickness="0" IsEnabled="{Binding ElementName=ctrl, Path=CanSet}"  Content="Set" Click="OnVariableSetClicked" FontSize="20" FontWeight="Bold"/>
+            <Button Grid.Column="1" Focusable="False" BorderThickness="0" IsEnabled="{Binding ElementName=ctrl, Path=CanSet}" Content="Set" Click="OnVariableSetClicked" FontSize="20" FontWeight="Bold"/>
         </Grid>
     </Border>
 </UserControl>
