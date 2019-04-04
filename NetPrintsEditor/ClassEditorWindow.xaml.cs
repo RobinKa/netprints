@@ -229,7 +229,7 @@ namespace NetPrintsEditor
                 methodEditor.Method = null;
             }
 
-            Class.Variables.Remove(variable);
+            Class.Class.Variables.Remove(variable.Variable);
         }
 
         // Move node
