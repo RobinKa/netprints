@@ -37,7 +37,7 @@ namespace NetPrintsEditor.Controls
         public IEnumerable<SearchableComboBoxItem> Suggestions
         {
             get => (IEnumerable<SearchableComboBoxItem>)GetValue(SuggestionsProperty);
-            set => SetValue(SuggestionsProperty, value.ToList());
+            set => SetValue(SuggestionsProperty, value/*.ToList()*/);
         }
 
         /// <summary>

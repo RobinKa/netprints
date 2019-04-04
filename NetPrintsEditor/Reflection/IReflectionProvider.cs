@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using System;
 using System.Collections.Generic;
 
 namespace NetPrintsEditor.Reflection
@@ -8,7 +9,7 @@ namespace NetPrintsEditor.Reflection
 
     }
 
-    public class ReflectionProviderMethodQuery : IReflectionProviderQuery
+    public class ReflectionProviderMethodQuery : IReflectionProviderQuery, IEqualityComparer<ReflectionProviderMethodQuery>
     {
         public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
@@ -52,9 +53,26 @@ namespace NetPrintsEditor.Reflection
             HasGenericArguments = hasGenericArguments;
             return this;
         }
+
+        public bool Equals(ReflectionProviderMethodQuery x, ReflectionProviderMethodQuery y)
+        {
+            return x.Type == y.Type && x.Static == y.Static && x.VisibleFrom == y.VisibleFrom &&
+                x.ReturnType == y.ReturnType && x.ArgumentType == y.ArgumentType && x.HasGenericArguments == y.HasGenericArguments;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) ||
+                (obj is ReflectionProviderMethodQuery query && Equals(this, query));
+        }
+
+        public int GetHashCode(ReflectionProviderMethodQuery obj)
+        {
+            return HashCode.Combine(Type, Static, VisibleFrom, ReturnType, ArgumentType, HasGenericArguments);
+        }
     }
 
-    public class ReflectionProviderVariableQuery : IReflectionProviderQuery
+    public class ReflectionProviderVariableQuery : IReflectionProviderQuery, IEqualityComparer<ReflectionProviderVariableQuery>
     {
         public TypeSpecifier Type { get; set; }
         public bool? Static { get; set; }
@@ -85,6 +103,23 @@ namespace NetPrintsEditor.Reflection
             VariableType = type;
             VariableTypeDerivesFrom = derivesFrom;
             return this;
+        }
+
+        public bool Equals(ReflectionProviderVariableQuery x, ReflectionProviderVariableQuery y)
+        {
+            return x.Type == y.Type && x.Static == y.Static && x.VisibleFrom == y.VisibleFrom &&
+                x.VariableType == y.VariableType && x.VariableTypeDerivesFrom == y.VariableTypeDerivesFrom;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) ||
+                (obj is ReflectionProviderVariableQuery query && Equals(this, query));
+        }
+
+        public int GetHashCode(ReflectionProviderVariableQuery obj)
+        {
+            return HashCode.Combine(Type, Static, VisibleFrom, VariableType, VariableTypeDerivesFrom);
         }
     }
 
