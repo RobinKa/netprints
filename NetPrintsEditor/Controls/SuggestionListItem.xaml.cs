@@ -11,6 +11,9 @@ namespace NetPrintsEditor.Controls
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
             nameof(Text), typeof(object), typeof(SuggestionListItem));
 
+        public static readonly DependencyProperty CategoryProperty = DependencyProperty.Register(
+            nameof(Category), typeof(string), typeof(SuggestionListItem));
+
         public static readonly DependencyProperty IconPathProperty = DependencyProperty.Register(
             nameof(IconPath), typeof(string), typeof(SuggestionListItem));
 
@@ -18,6 +21,12 @@ namespace NetPrintsEditor.Controls
         {
             get => GetValue(TextProperty);
             set => SetValue(TextProperty, value);
+        }
+
+        public string Category
+        {
+            get => (string)GetValue(CategoryProperty);
+            set => SetValue(CategoryProperty, value);
         }
 
         public string IconPath

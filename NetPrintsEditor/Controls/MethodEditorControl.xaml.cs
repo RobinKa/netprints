@@ -32,11 +32,11 @@ namespace NetPrintsEditor.Controls
             nameof(Method), typeof(MethodVM), typeof(MethodEditorControl));
         
         public static DependencyProperty SuggestionsProperty = DependencyProperty.Register(
-            nameof(Suggestions), typeof(IEnumerable<object>), typeof(MethodEditorControl));
+            nameof(Suggestions), typeof(IEnumerable<SearchableComboBoxItem>), typeof(MethodEditorControl));
 
-        public IEnumerable<object> Suggestions
+        public IEnumerable<SearchableComboBoxItem> Suggestions
         {
-            get => (IEnumerable<object>)GetValue(SuggestionsProperty);
+            get => (IEnumerable<SearchableComboBoxItem>)GetValue(SuggestionsProperty);
             set => SetValue(SuggestionsProperty, value.ToList());
         }
 
@@ -149,28 +149,36 @@ namespace NetPrintsEditor.Controls
                     NodePinVM pin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
                     SuggestionPin = pin;
 
+                    IEnumerable<(string, object)> suggestions = new (string, object)[0];
+
+                    void AddSuggestionsWithCategory(string category, IEnumerable<object> newSuggestions)
+                    {
+                        suggestions = suggestions.Concat(newSuggestions.Select(suggestion => (category, suggestion)));
+                    }
+
                     if (pin.Pin is NodeOutputDataPin odp)
                     {
                         if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
                         {
                             // Add make delegate
-                            IEnumerable<object> suggestions = new object[] { new MakeDelegateTypeInfo(pinTypeSpec, Method.Class.Type) };
+                            AddSuggestionsWithCategory("NetPrints", new[] { new MakeDelegateTypeInfo(pinTypeSpec, Method.Class.Type) });
 
-                            // Add properties and methods of the pin type
-                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                                new ReflectionProviderVariableQuery()
-                                    .WithType(pinTypeSpec)
-                                    .WithVisibleFrom(Method.Class.Type)
-                                    .WithStatic(false)));
+                            // Add variables and methods of the pin type
+                            AddSuggestionsWithCategory("Pin Variables", 
+                                ProjectVM.Instance.ReflectionProvider.GetVariables(
+                                    new ReflectionProviderVariableQuery()
+                                        .WithType(pinTypeSpec)
+                                        .WithVisibleFrom(Method.Class.Type)
+                                        .WithStatic(false)));
 
-                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            AddSuggestionsWithCategory("Pin Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(false)
                                     .WithType(pinTypeSpec)));
 
                             // Add methods of the super type that can accept the pin type as argument
-                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(false)
@@ -178,110 +186,109 @@ namespace NetPrintsEditor.Controls
                                     .WithType(Method.Class.SuperType)));
 
                             // Add static functions taking the type of the pin
-                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithArgumentType(pinTypeSpec)
                                     .WithVisibleFrom(Method.Class.Type)
                                     .WithStatic(true)));
-
-                            Suggestions = suggestions.Distinct();
                         }
                     }
                     else if (pin.Pin is NodeInputDataPin idp)
                     {
                         if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
                         {
-                            // Properties of base class that inherit from needed type
-                            IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            // Variables of base class that inherit from needed type
+                            AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
                                 new ReflectionProviderVariableQuery()
                                     .WithType(Method.Class.SuperType)
                                     .WithVisibleFrom(Method.Class.Type)
-                                    .WithVariableType(pinTypeSpec, true));
+                                    .WithVariableType(pinTypeSpec, true)));
 
-                            Suggestions = baseProperties
-                                .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                    new ReflectionProviderMethodQuery()
-                                        .WithStatic(true)
-                                        .WithVisibleFrom(Method.Class.Type)
-                                        .WithReturnType(pinTypeSpec)))
-                                .Distinct();
+                            // Add static functions returning the type of the pin
+                            AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithStatic(true)
+                                    .WithVisibleFrom(Method.Class.Type)
+                                    .WithReturnType(pinTypeSpec)));
                         }
                     }
                     else if (pin.Pin is NodeOutputExecPin oxp)
                     {
                         pin.ConnectedPin = null;
 
-                        Suggestions = builtInNodes
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
-                                    .WithType(Method.Class.SuperType)
-                                    .WithStatic(false)
-                                    .WithVisibleFrom(Method.Class.Type)))
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
+                        AddSuggestionsWithCategory("NetPrints", builtInNodes);
+
+                        AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            new ReflectionProviderMethodQuery()
+                                .WithType(Method.Class.SuperType)
+                                .WithStatic(false)
+                                .WithVisibleFrom(Method.Class.Type)));
+
+                        AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
-                                .WithVisibleFrom(Method.Class.Type)))
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                                new ReflectionProviderVariableQuery()
-                                    .WithStatic(true)
-                                    .WithVisibleFrom(Method.Class.Type)))
-                            .Distinct();
+                                .WithVisibleFrom(Method.Class.Type)));
+
+                        // TODO: Consider if this is necessary
+                        AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
+                                .WithStatic(true)
+                                .WithVisibleFrom(Method.Class.Type)));
                     }
                     else if (pin.Pin is NodeInputExecPin ixp)
                     {
-                        Suggestions = builtInNodes
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
-                                    .WithType(Method.Class.SuperType)
-                                    .WithStatic(false)
-                                    .WithVisibleFrom(Method.Class.Type)))
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
-                                    .WithStatic(true)
-                                    .WithVisibleFrom(Method.Class.Type)))
-                            .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                                new ReflectionProviderVariableQuery()
-                                    .WithStatic(true)
-                                    .WithVisibleFrom(Method.Class.Type)))
-                            .Distinct();
+                        AddSuggestionsWithCategory("NetPrints", builtInNodes);
+
+                        AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            new ReflectionProviderMethodQuery()
+                                .WithType(Method.Class.SuperType)
+                                .WithStatic(false)
+                                .WithVisibleFrom(Method.Class.Type)));
+
+                        AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            new ReflectionProviderMethodQuery()
+                                .WithStatic(true)
+                                .WithVisibleFrom(Method.Class.Type)));
+
+                        // TODO: Consider if this is necessary
+                        AddSuggestionsWithCategory("Static Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
+                            new ReflectionProviderVariableQuery()
+                                .WithStatic(true)
+                                .WithVisibleFrom(Method.Class.Type)));
                     }
                     else if (pin.Pin is NodeInputTypePin itp)
                     {
-                        Suggestions = ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes();
+                        // TODO: Consider static types
+                        AddSuggestionsWithCategory("Types", ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes());
                     }
                     else if (pin.Pin is NodeOutputTypePin otp)
                     {
-                        IEnumerable<object> suggestions = new object[0];
-
                         if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
                         {
-                            suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
-                                .GetMethods(
-                                    new ReflectionProviderMethodQuery()
-                                        .WithType(typeSpecifier)
-                                        .WithStatic(true)
-                                        .WithVisibleFrom(Method.Class.Type)));
+                            AddSuggestionsWithCategory("Pin Static Methods", ProjectVM.Instance.ReflectionProvider
+                                .GetMethods(new ReflectionProviderMethodQuery()
+                                    .WithType(typeSpecifier)
+                                    .WithStatic(true)
+                                    .WithVisibleFrom(Method.Class.Type)));
                         }
 
                         // Types with type parameters
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
+                        AddSuggestionsWithCategory("Generic Types", ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
                             .Where(t => t.GenericArguments.Any()));
 
                         // Public static methods that have type parameters
-                        suggestions = suggestions.Concat(ProjectVM.Instance.ReflectionProvider
-                            .GetMethods(
-                                new ReflectionProviderMethodQuery()
-                                    .WithStatic(true)
-                                    .WithHasGenericArguments(true)
-                                    .WithVisibleFrom(Method.Class.Type)));
-
-                        Suggestions = suggestions.Distinct();
+                        AddSuggestionsWithCategory("Generic Static Methods", ProjectVM.Instance.ReflectionProvider
+                            .GetMethods(new ReflectionProviderMethodQuery()
+                                .WithStatic(true)
+                                .WithHasGenericArguments(true)
+                                .WithVisibleFrom(Method.Class.Type)));
                     }
                     else
                     {
                         // Unknown type, no suggestions
-                        Suggestions = new object[0];
                     }
+
+                    Suggestions = suggestions.Distinct().Select(x => new SearchableComboBoxItem(x.Item1, x.Item2));
 
                     // Open the context menu
                     grid.ContextMenu.PlacementTarget = grid;
@@ -366,38 +373,46 @@ namespace NetPrintsEditor.Controls
 
         private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
+            IEnumerable<(string, object)> suggestions = new (string, object)[0];
+
+            void AddSuggestionsWithCategory(string category, IEnumerable<object> newSuggestions)
+            {
+                suggestions = suggestions.Concat(newSuggestions.Select(suggestion => (category, suggestion)));
+            }
+
             if (Method != null)
             {
+                AddSuggestionsWithCategory("NetPrints", builtInNodes);
+
                 // Get properties and methods of base class.
-                IEnumerable<object> baseProperties = ProjectVM.Instance.ReflectionProvider.GetVariables(
+                AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
                     new ReflectionProviderVariableQuery()
                         .WithVisibleFrom(Method.Class.Type)
                         .WithType(Method.Class.SuperType)
-                        .WithStatic(false));
+                        .WithStatic(false)));
 
-                IEnumerable<object> baseMethods = ProjectVM.Instance.ReflectionProvider.GetMethods(
+                AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                     new ReflectionProviderMethodQuery()
                         .WithType(Method.Class.SuperType)
                         .WithVisibleFrom(Method.Class.Type)
-                        .WithStatic(false));
+                        .WithStatic(false)));
 
-                Suggestions = builtInNodes
-                    .Concat(baseProperties)
-                    .Concat(baseMethods)
-                    .Concat(ProjectVM.Instance.ReflectionProvider.GetMethods(
-                        new ReflectionProviderMethodQuery()
-                            .WithStatic(true)
-                            .WithVisibleFrom(Method.Class.Type)))
-                    .Concat(ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithStatic(true)
-                                .WithVisibleFrom(Method.Class.Type)))
-                    .Distinct();
+                AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                    new ReflectionProviderMethodQuery()
+                        .WithStatic(true)
+                        .WithVisibleFrom(Method.Class.Type)));
+
+                AddSuggestionsWithCategory("Static Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
+                    new ReflectionProviderVariableQuery()
+                        .WithStatic(true)
+                        .WithVisibleFrom(Method.Class.Type)));
             }
             else
             {
-                Suggestions = new object[0];
+                // No suggestions
             }
+
+            Suggestions = suggestions.Distinct().Select(x => new SearchableComboBoxItem(x.Item1, x.Item2));
 
             SuggestionPin = null;
         }

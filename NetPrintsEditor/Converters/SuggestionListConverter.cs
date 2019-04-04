@@ -13,10 +13,14 @@ namespace NetPrintsEditor.Converters
     {
         private MethodSpecifierConverter methodSpecifierConverter = new MethodSpecifierConverter();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object tupleObject, Type targetType, object parameter, CultureInfo culture)
         {
             string text = "";
             string iconPath = "";
+
+            SearchableComboBoxItem item = (SearchableComboBoxItem)tupleObject;
+            string category = item.Category;
+            object value = item.Value;
 
             if (value is MethodSpecifier methodSpecifier)
             {
@@ -109,6 +113,7 @@ namespace NetPrintsEditor.Converters
             else
             {
                 var listItem = new SuggestionListItem();
+                listItem.Category = category;
                 listItem.Text = text;
 
                 // See https://docs.microsoft.com/en-us/dotnet/framework/wpf/app-development/pack-uris-in-wpf for format

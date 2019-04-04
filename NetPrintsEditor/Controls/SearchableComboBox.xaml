@@ -11,17 +11,27 @@
         <converters:SuggestionListConverter x:Key="converter" />
 
         <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource MetroListView}">
+            <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+            <Setter Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="True" />
             <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True"
+                        <VirtualizingStackPanel
+                                IsVirtualizing="True"
+                                IsItemsHost="True"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
                                 VirtualizationMode="Recycling" />
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <CollectionViewSource x:Key="itemsSource" Source="{Binding ElementName=ctrl, Path=Items}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Category" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
     </UserControl.Resources>
     
     <Border BorderBrush="#FF222222" Background="#DD333333" BorderThickness="2" CornerRadius="4">
@@ -33,13 +43,38 @@
 
             <TextBox Background="Transparent" x:Name="searchText" TextChanged="OnSearchTextChanged" />
 
-            <ListView Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding ElementName=ctrl, Path=Items}" Foreground="#FFC9C9C9">
+            <ListView Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding Source={StaticResource itemsSource}}" Foreground="#FFC9C9C9">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
                         <Setter Property="Content" Value="{Binding Converter={StaticResource converter}}" />
                     </Style>
                 </ListView.ItemContainerStyle>
+                
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="{x:Type GroupItem}">
+                                <Setter Property="Margin" Value="0,0,0,5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                            <Expander IsExpanded="True" BorderThickness="0">
+                                                <Expander.Header>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" />
+                                                </Expander.Header>
+                                                <Expander.Content>
+                                                    <ItemsPresenter />
+                                                </Expander.Content>
+                                            </Expander>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+               
             </ListView>
         </Grid>
     </Border>

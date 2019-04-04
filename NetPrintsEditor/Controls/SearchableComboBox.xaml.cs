@@ -16,6 +16,23 @@ using System.Windows.Input;
 
 namespace NetPrintsEditor.Controls
 {
+    public class SearchableComboBoxItem
+    {
+        public string Category { get; set; }
+        public object Value { get; set; }
+
+        public SearchableComboBoxItem(string c, object v)
+        {
+            Category = c;
+            Value = v;
+        }
+
+        public static implicit operator SearchableComboBoxItem((string, object) tuple)
+        {
+            return new SearchableComboBoxItem(tuple.Item1, tuple.Item2);
+        }
+    }
+
     /// <summary>
     /// Interaction logic for SearchableComboBox.xaml
     /// </summary>
@@ -24,15 +41,15 @@ namespace NetPrintsEditor.Controls
         //public delegate void ItemSelectedHandler(object sender, object item);
         
         public static DependencyProperty ItemsProperty = DependencyProperty.Register(
-            nameof(Items), typeof(IEnumerable<object>), typeof(SearchableComboBox));
+            nameof(Items), typeof(IEnumerable<SearchableComboBoxItem>), typeof(SearchableComboBox));
 
         private SuggestionListConverter suggestionConverter;
 
         //public event ItemSelectedHandler OnItemSelected;
 
-        public IEnumerable<object> Items
+        public IEnumerable<SearchableComboBoxItem> Items
         {
-            get => GetValue(ItemsProperty) as IEnumerable<object>;
+            get => GetValue(ItemsProperty) as IEnumerable<SearchableComboBoxItem>;
             set
             {
                 SetValue(ItemsProperty, value);
@@ -87,12 +104,12 @@ namespace NetPrintsEditor.Controls
         {
             /*if (sender is ListViewItem item)
             {
-                OnItemSelected?.Invoke(item, item.DataContext);
+                OnItemSelected?.Invoke(item, data.Value);
             }*/
 
-            if (sender is ListViewItem item)
+            if (sender is ListViewItem item && item.DataContext is SearchableComboBoxItem data)
             {
-                if (item.DataContext is MethodSpecifier methodSpecifier)
+                if (data.Value is MethodSpecifier methodSpecifier)
                 {
                     UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                     (
@@ -106,7 +123,7 @@ namespace NetPrintsEditor.Controls
                         methodSpecifier.GenericArguments.Select(genArg => new GenericType(genArg.Name)).Cast<BaseType>().ToList()
                     ));
                 }
-                else if (item.DataContext is VariableSpecifier variableSpecifier)
+                else if (data.Value is VariableSpecifier variableSpecifier)
                 {
                     // Open variable get / set for the property
                     // Determine whether the getters / setters are public via GetAccessors
@@ -117,7 +134,7 @@ namespace NetPrintsEditor.Controls
                         EditorCommands.OpenVariableGetSet.Execute(variableSpecifier);
                     }
                 }
-                else if (item.DataContext is MakeDelegateTypeInfo makeDelegateTypeInfo)
+                else if (data.Value is MakeDelegateTypeInfo makeDelegateTypeInfo)
                 {
                     var methods = ProjectVM.Instance.ReflectionProvider.GetMethods(
                         new Reflection.ReflectionProviderMethodQuery()
@@ -144,7 +161,7 @@ namespace NetPrintsEditor.Controls
                         ));
                     }
                 }
-                else if (item.DataContext is TypeSpecifier t)
+                else if (data.Value is TypeSpecifier t)
                 {
                     if (t == TypeSpecifier.FromType<ForLoopNode>())
                     {
