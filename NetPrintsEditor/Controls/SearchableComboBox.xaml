@@ -10,9 +10,11 @@
     <UserControl.Resources>
         <converters:SuggestionListConverter x:Key="converter" />
 
-        <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource MetroListView}">
+        <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MetroDataGrid}">
             <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
             <Setter Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="True" />
+            <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True" />
+
             <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
             <Setter Property="ItemsPanel">
                 <Setter.Value>
@@ -38,24 +40,45 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <TextBox Background="Transparent" x:Name="searchText" TextChanged="OnSearchTextChanged" />
 
-            <ListView Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding Source={StaticResource itemsSource}}" Foreground="#FFC9C9C9">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
-                        <Setter Property="Content" Value="{Binding Converter={StaticResource converter}}" />
-                    </Style>
-                </ListView.ItemContainerStyle>
+            <DataGrid Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding Source={StaticResource itemsSource}}"
+                HeadersVisibility="None" Foreground="#FFC9C9C9" AutoGenerateColumns="False"
+                VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.IsContainerVirtualizable="True"
+                VirtualizingPanel.ScrollUnit="Item"
+                ScrollViewer.CanContentScroll ="True" >
                 
-                <ListView.GroupStyle>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn />
+                </DataGrid.Columns>
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+                        <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
+                    </Style>
+                </DataGrid.RowStyle>
+                
+                <DataGrid.CellStyle>
+                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MetroDataGridCell}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                    <local:SuggestionListItem DataContext="{Binding Converter={StaticResource converter}}" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.CellStyle>
+
+                <DataGrid.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.ContainerStyle>
                             <Style TargetType="{x:Type GroupItem}">
-                                <Setter Property="Margin" Value="0,0,0,5"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type GroupItem}">
@@ -73,9 +96,9 @@
                             </Style>
                         </GroupStyle.ContainerStyle>
                     </GroupStyle>
-                </ListView.GroupStyle>
-               
-            </ListView>
+                </DataGrid.GroupStyle>
+
+            </DataGrid>
         </Grid>
     </Border>
 </UserControl>

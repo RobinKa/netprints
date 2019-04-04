@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace NetPrintsEditor.Controls
 {
@@ -25,11 +26,6 @@ namespace NetPrintsEditor.Controls
         {
             Category = c;
             Value = v;
-        }
-
-        public static implicit operator SearchableComboBoxItem((string, object) tuple)
-        {
-            return new SearchableComboBoxItem(tuple.Item1, tuple.Item2);
         }
     }
 
@@ -107,7 +103,7 @@ namespace NetPrintsEditor.Controls
                 OnItemSelected?.Invoke(item, data.Value);
             }*/
 
-            if (sender is ListViewItem item && item.DataContext is SearchableComboBoxItem data)
+            if (sender is FrameworkElement element && element.DataContext is SearchableComboBoxItem data)
             {
                 if (data.Value is MethodSpecifier methodSpecifier)
                 {
@@ -359,6 +355,20 @@ namespace NetPrintsEditor.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            // Unselect
+            searchList.SelectedItem = null;
+
+            // Scroll to top left
+            // https://stackoverflow.com/a/7182603/4332314
+            var border = VisualTreeHelper.GetChild(searchList, 0) as Decorator;
+            if (border != null)
+            {
+                var scrollViewer = border.Child as ScrollViewer;
+                scrollViewer.ScrollToTop();
+                scrollViewer.ScrollToLeftEnd();
+            }
+
+            // Clear search box and focus it
             searchText.Clear();
             searchText.Focus();
         }

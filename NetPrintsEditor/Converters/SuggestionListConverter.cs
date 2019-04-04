@@ -35,64 +35,64 @@ namespace NetPrintsEditor.Converters
             }
             else if (value is MakeDelegateTypeInfo makeDelegateTypeInfo)
             {
-                text = $"NetPrints - Make Delegate For A Method Of {makeDelegateTypeInfo.Type.ShortName}";
+                text = $"Make Delegate For A Method Of {makeDelegateTypeInfo.Type.ShortName}";
                 iconPath = "Delegate_16x.png";
             }
             else if (value is TypeSpecifier t)
             {
                 if (t == TypeSpecifier.FromType<ForLoopNode>())
                 {
-                    text = "NetPrints - For Loop";
+                    text = "For Loop";
                     iconPath = "Loop_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<IfElseNode>())
                 {
-                    text = "NetPrints - If Else";
+                    text = "If Else";
                     iconPath = "If_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<ConstructorNode>())
                 {
-                    text = "NetPrints - Construct New Object";
+                    text = "Construct New Object";
                     iconPath = "Create_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<TypeOfNode>())
                 {
-                    text = "NetPrints - Type Of";
+                    text = "Type Of";
                     iconPath = "Type_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<ExplicitCastNode>())
                 {
-                    text = "NetPrints - Explicit Cast";
+                    text = "Explicit Cast";
                     iconPath = "Convert_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<ReturnNode>())
                 {
-                    text = "NetPrints - Return";
+                    text = "Return";
                     iconPath = "Return_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<MakeArrayNode>())
                 {
-                    text = "NetPrints - Make Array";
+                    text = "Make Array";
                     iconPath = "ListView_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<LiteralNode>())
                 {
-                    text = "NetPrints - Literal";
+                    text = "Literal";
                     iconPath = "Literal_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<TypeNode>())
                 {
-                    text = "NetPrints - Type";
+                    text = "Type";
                     iconPath = "Type_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<MakeArrayTypeNode>())
                 {
-                    text = "NetPrints - Make Array Type";
+                    text = "Make Array Type";
                     iconPath = "Type_16x.png";
                 }
                 else if (t == TypeSpecifier.FromType<ThrowNode>())
                 {
-                    text = "NetPrints - Throw";
+                    text = "Throw";
                     iconPath = "Throw_16x.png";
                 }
                 else
@@ -108,18 +108,14 @@ namespace NetPrintsEditor.Converters
 
             if (targetType == typeof(string))
             {
-                return text;
+                return $"{category} {text}";
             }
             else
             {
-                var listItem = new SuggestionListItem();
-                listItem.Category = category;
-                listItem.Text = text;
-
                 // See https://docs.microsoft.com/en-us/dotnet/framework/wpf/app-development/pack-uris-in-wpf for format
-                listItem.IconPath = $"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Resources/{iconPath}";
+                var fullIconPath = $"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/Resources/{iconPath}";
 
-                return listItem;
+                return new SuggestionListItemBinding(text, fullIconPath);
             }
         }
 

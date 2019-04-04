@@ -15,7 +15,7 @@
             <RowDefinition Height="16" />
         </Grid.RowDefinitions>
         
-        <Image Source="{Binding ElementName=item, Path=IconPath}" VerticalAlignment="Stretch" Grid.Column="0" />
-        <TextBlock Text="{Binding ElementName=item, Path=Text}" Height="Auto" Grid.Column="1" Margin="2,0,0,0" />
+        <Image Source="{Binding IconPath}" VerticalAlignment="Stretch" Grid.Column="0" />
+        <TextBlock Text="{Binding Text}" Height="Auto" Grid.Column="1" Margin="2,0,0,0" />
     </Grid>
 </UserControl>
