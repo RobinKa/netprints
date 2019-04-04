@@ -46,7 +46,7 @@
             <TextBox Background="Transparent" x:Name="searchText" TextChanged="OnSearchTextChanged" />
 
             <DataGrid Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding Source={StaticResource itemsSource}}"
-                HeadersVisibility="None" Foreground="#FFC9C9C9" AutoGenerateColumns="False"
+                HeadersVisibility="None" Foreground="#FFC9C9C9" AutoGenerateColumns="False" IsReadOnly="True"
                 VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.IsContainerVirtualizable="True"
