@@ -14,6 +14,9 @@ namespace NetPrintsEditor.Reflection
             {
                 if (all == null)
                 {
+                    var boolType = TypeSpecifier.FromType<bool>();
+                    var intType = TypeSpecifier.FromType<int>();
+
                     all = new List<MethodSpecifier>();
 
                     // Numerical
@@ -28,16 +31,19 @@ namespace NetPrintsEditor.Reflection
                         {
                             AddOperator(unaryOpName, false, defaultNumericType, defaultNumericType);
                         }
+
+                        foreach (var unaryOpName in defaultNumericComparisonOperatorNames)
+                        {
+                            AddOperator(unaryOpName, false, defaultNumericType, boolType);
+                        }
                     }
 
                     // Logical (boolean)
-                    var boolType = TypeSpecifier.FromType<bool>();
                     AddOperator("op_LogicalNot", true, boolType, boolType);
                     AddOperator("op_LogicalAnd", false, boolType, boolType);
                     AddOperator("op_LogicalOr", false, boolType, boolType);
 
                     // Integer bitwise operators
-                    var intType = TypeSpecifier.FromType<int>();
                     AddOperator("op_LogicalNot", true, intType, intType);
                     AddOperator("op_BitwiseAnd", false, intType, intType);
                     AddOperator("op_BitwiseOr", false, intType, intType);
@@ -90,6 +96,16 @@ namespace NetPrintsEditor.Reflection
             "op_Multiply",
             "op_Division",
             "op_Modulus",
+        };
+
+        private static readonly IEnumerable<string> defaultNumericComparisonOperatorNames = new[]
+        {
+            "op_GreaterThan",
+            "op_GreaterThanOrEqual",
+            "op_Equality",
+            "op_Inequality",
+            "op_LessThan",
+            "op_LessThanOrEqual",
         };
 
         private static readonly IEnumerable<string> defaultNumericUnaryOperatorNames = new[]
