@@ -390,7 +390,7 @@ namespace NetPrints.Graph
         /// <param name="cls">Class to add the method to.</param>
         /// <param name="methodSpecifier">Method specifier for the method to override.</param>
         /// <returns>Method in the class that represents the overriding method.</returns>
-        public static MethodGraph AddOverrideMethod(Class cls, MethodSpecifier methodSpecifier)
+        public static MethodGraph AddOverrideMethod(ClassGraph cls, MethodSpecifier methodSpecifier)
         {
             if (cls.Methods.Any(m => m.Name == methodSpecifier.Name)
                 || !(methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual)

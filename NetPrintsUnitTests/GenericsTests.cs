@@ -17,7 +17,7 @@ namespace NetPrintsUnitTests
 
             GenericType genericClassArg = new GenericType("T");
 
-            Class openClass = new Class();
+            ClassGraph openClass = new ClassGraph();
             openClass.Name = "OpenClass";
             openClass.Namespace = "Namespace";
             openClass.DeclaredGenericArguments.Add(genericClassArg);
@@ -41,7 +41,7 @@ namespace NetPrintsUnitTests
 
             // Create the closed class which contains a List<string>
 
-            Class closedClass = new Class();
+            ClassGraph closedClass = new ClassGraph();
             closedClass.Name = "ClosedClass";
             closedClass.Namespace = "Namespace";
 

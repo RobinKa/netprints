@@ -45,7 +45,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -75,15 +74,8 @@
 
             <Label Grid.Row="6" Content="Partial" />
             <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Partial}}" VerticalContentAlignment="Center" />
-            
-            <Label Grid.Row="7" Content="Base Type" />
-            <ComboBox Grid.Row="7" Grid.Column="1"
-                      IsEditable="True"
-                      Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
-                      SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 
-                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
 
-            <TextBox Margin="4" Grid.Row="8" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
+            <TextBox Margin="4" Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
         </Grid>
     </Grid>
 </UserControl>

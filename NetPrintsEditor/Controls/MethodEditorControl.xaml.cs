@@ -183,7 +183,7 @@ namespace NetPrintsEditor.Controls
                                     .WithVisibleFrom(Graph.Class.Type)
                                     .WithStatic(false)
                                     .WithArgumentType(pinTypeSpec)
-                                    .WithType(Graph.Class.SuperType)));
+                                    .WithType(Graph.Class.Class.SuperType)));
 
                             // Add static functions taking the type of the pin
                             AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
@@ -200,7 +200,7 @@ namespace NetPrintsEditor.Controls
                             // Variables of base class that inherit from needed type
                             AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
                                 new ReflectionProviderVariableQuery()
-                                    .WithType(Graph.Class.SuperType)
+                                    .WithType(Graph.Class.Class.SuperType)
                                     .WithVisibleFrom(Graph.Class.Type)
                                     .WithVariableType(pinTypeSpec, true)));
 
@@ -220,7 +220,7 @@ namespace NetPrintsEditor.Controls
 
                         AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                                .WithType(Graph.Class.SuperType)
+                                .WithType(Graph.Class.Class.SuperType)
                                 .WithStatic(false)
                                 .WithVisibleFrom(Graph.Class.Type)));
 
@@ -241,7 +241,7 @@ namespace NetPrintsEditor.Controls
 
                         AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                                .WithType(Graph.Class.SuperType)
+                                .WithType(Graph.Class.Class.SuperType)
                                 .WithStatic(false)
                                 .WithVisibleFrom(Graph.Class.Type)));
 
@@ -388,12 +388,12 @@ namespace NetPrintsEditor.Controls
                 AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
                     new ReflectionProviderVariableQuery()
                         .WithVisibleFrom(Graph.Class.Type)
-                        .WithType(Graph.Class.SuperType)
+                        .WithType(Graph.Class.Class.SuperType)
                         .WithStatic(false)));
 
                 AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                     new ReflectionProviderMethodQuery()
-                        .WithType(Graph.Class.SuperType)
+                        .WithType(Graph.Class.Class.SuperType)
                         .WithVisibleFrom(Graph.Class.Type)
                         .WithStatic(false)));
 

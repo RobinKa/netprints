@@ -20,7 +20,7 @@ namespace NetPrintsEditor.Converters
             {
                 return new NodeVM(node);
             }
-            else if (value is Class cls)
+            else if (value is ClassGraph cls)
             {
                 return new ClassVM(cls);
             }

@@ -17,6 +17,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(IfElseNode))]
     [KnownType(typeof(LiteralNode))]
     [KnownType(typeof(ReturnNode))]
+    [KnownType(typeof(ClassReturnNode))]
     [KnownType(typeof(VariableGetterNode))]
     [KnownType(typeof(VariableSetterNode))]
     [KnownType(typeof(ConstructorNode))]

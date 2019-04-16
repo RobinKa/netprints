@@ -46,7 +46,7 @@ namespace NetPrints.Core
         /// Class this variable is contained in.
         /// </summary>
         [DataMember]
-        public Class Class
+        public ClassGraph Class
         {
             get;
             private set;
@@ -154,7 +154,7 @@ namespace NetPrints.Core
         /// <param name="getter">Get method for the property. Can be null if there is none.</param>
         /// <param name="setter">Set method for the property. Can be null if there is none.</param>
         /// <param name="declaringType">Specifier for the type the property is contained in.</param>
-        public Variable(Class cls, string name, TypeSpecifier type, MethodGraph getter,
+        public Variable(ClassGraph cls, string name, TypeSpecifier type, MethodGraph getter,
             MethodGraph setter, VariableModifiers modifiers)
         {
             Class = cls;

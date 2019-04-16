@@ -6,7 +6,7 @@ namespace NetPrints.Serialization
 {
     public static class SerializationHelper
     {
-        private static readonly DataContractSerializer classSerializer = new DataContractSerializer(typeof(Class), new DataContractSerializerSettings()
+        private static readonly DataContractSerializer classSerializer = new DataContractSerializer(typeof(ClassGraph), new DataContractSerializerSettings()
         {
             PreserveObjectReferences = true,
             MaxItemsInObjectGraph = int.MaxValue,
@@ -17,7 +17,7 @@ namespace NetPrints.Serialization
         /// </summary>
         /// <param name="cls">Class to save.</param>
         /// <param name="outputPath">Path to save the class at.</param>
-        public static void SaveClass(Class cls, string outputPath)
+        public static void SaveClass(ClassGraph cls, string outputPath)
         {
             using FileStream fileStream = File.Open(outputPath, FileMode.Create);
             classSerializer.WriteObject(fileStream, cls);
@@ -27,11 +27,11 @@ namespace NetPrints.Serialization
         /// Loads a class from a path.
         /// </summary>
         /// <param name="outputPath">Path to load the class from. Throws a FileLoadException if the read object was not a class.</param>
-        public static Class LoadClass(string path)
+        public static ClassGraph LoadClass(string path)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                if (classSerializer.ReadObject(fileStream) is Class cls)
+                if (classSerializer.ReadObject(fileStream) is ClassGraph cls)
                 {
                     return cls;
                 }

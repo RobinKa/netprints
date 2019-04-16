@@ -341,10 +341,11 @@ namespace NetPrintsEditor
 
             // TODO: Make selection nicer. Finding the corresponding method view model seems wrong since
             //       we have to search in all possible places that have methods.
+            // TODO: Make this work with the class graph.
 
             NodeVM node = e.Parameter as NodeVM;
-            NodeGraphVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node)) ??
-                Class?.Constructors.FirstOrDefault(c => c.Nodes.Contains(node)) ??
+            NodeGraphVM method = Class?.Methods?.FirstOrDefault(m => m.Nodes.Contains(node)) ??
+                Class?.Constructors?.FirstOrDefault(c => c.Nodes.Contains(node)) ??
                 Class?.Variables?.FirstOrDefault(v => v.HasGetter && v.GetterMethod.Nodes.Contains(node))?.GetterMethod ??
                 Class?.Variables?.FirstOrDefault(v => v.HasSetter && v.SetterMethod.Nodes.Contains(node))?.SetterMethod;
 
@@ -441,7 +442,7 @@ namespace NetPrintsEditor
             {
                 foreach (var selectedNode in methodEditor.Graph.SelectedNodes)
                 {
-                    if (!(selectedNode.Node is MethodEntryNode)
+                    if (!(selectedNode.Node is MethodEntryNode) && !(selectedNode.Node is ClassReturnNode)
                         && selectedNode.Node != (methodEditor.Graph.Graph as MethodGraph)?.MainReturnNode)
                     {
                         // Remove the node from its method
@@ -549,6 +550,16 @@ namespace NetPrintsEditor
         {
             viewerTabControl.SelectedIndex = 0;
             classViewer.Class = Class;
+
+            var graphVM = new NodeGraphVM(Class.Class)
+            {
+                Class = Class
+            };
+
+            if (EditorCommands.OpenMethod.CanExecute(graphVM))
+            {
+                EditorCommands.OpenMethod.Execute(graphVM);
+            }
         }
 
         private void OnSaveButtonClicked(object sender, RoutedEventArgs e)

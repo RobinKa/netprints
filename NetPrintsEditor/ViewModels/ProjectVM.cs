@@ -289,7 +289,7 @@ namespace NetPrintsEditor.ViewModels
 
         // Keep track of the save location of classes, so if they change their
         // name we can delete the old file on saving.
-        private readonly Dictionary<Class, string> previousStoragePath = new Dictionary<Class, string>();
+        private readonly Dictionary<ClassGraph, string> previousStoragePath = new Dictionary<ClassGraph, string>();
 
         public ProjectVM(Project project)
         {
@@ -563,7 +563,7 @@ namespace NetPrintsEditor.ViewModels
 
             Parallel.ForEach(p.ClassPaths, classPath =>
             {
-                Class cls = SerializationHelper.LoadClass(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(p.Path), classPath));
+                ClassGraph cls = SerializationHelper.LoadClass(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(p.Path), classPath));
                 classes.Add(new ClassVM(cls) { Project = p });
             });
 
@@ -639,7 +639,7 @@ namespace NetPrintsEditor.ViewModels
             // numbers, but this is not guaranteed forever).
             string name = storageName.Split(".").Last();
 
-            Class cls = new Class()
+            ClassGraph cls = new ClassGraph()
             {
                 Name = name,
                 Namespace = DefaultNamespace

@@ -38,7 +38,7 @@ namespace NetPrints.Translator
         /// </summary>
         /// <param name="c">Class to translate.</param>
         /// <returns>C# code for the class.</returns>
-        public string TranslateClass(Class c)
+        public string TranslateClass(ClassGraph c)
         {
             StringBuilder content = new StringBuilder();
 

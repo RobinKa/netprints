@@ -15,7 +15,7 @@ namespace NetPrints.Tests
         private MethodGraph stringLengthMethod;
         private MethodGraph mainMethod;
 
-        private Class cls;
+        private ClassGraph cls;
 
         public void CreateStringLengthMethod()
         {
@@ -89,7 +89,7 @@ namespace NetPrints.Tests
         {
             classTranslator = new ClassTranslator();
 
-            cls = new Class()
+            cls = new ClassGraph()
             {
                 Name = "TestClass",
                 Namespace = "TestNamespace",

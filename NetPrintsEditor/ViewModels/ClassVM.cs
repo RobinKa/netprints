@@ -77,21 +77,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public IEnumerable<MethodSpecifier> OverridableMethods
         {
-            get => ProjectVM.Instance.ReflectionProvider.GetOverridableMethodsForType(SuperType);
-        }
-
-        public TypeSpecifier SuperType
-        {
-            get => cls?.SuperType;
-            set
-            {
-                if (!(value is null))
-                {
-                    cls.SuperType = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(OverridableMethods));
-                }
-            }
+            get => ProjectVM.Instance.ReflectionProvider.GetOverridableMethodsForType(Class.SuperType);
         }
 
         public TypeSpecifier Type
@@ -169,7 +155,7 @@ namespace NetPrintsEditor.ViewModels
                 };
         }
 
-        public Class Class
+        public ClassGraph Class
         {
             get => cls;
             set
@@ -178,7 +164,6 @@ namespace NetPrintsEditor.ViewModels
                 {
                     cls = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(SuperType));
                     OnPropertyChanged(nameof(OverridableMethods));
                     OnPropertyChanged(nameof(Type));
                     OnPropertyChanged(nameof(Modifiers));
@@ -219,13 +204,13 @@ namespace NetPrintsEditor.ViewModels
 
         private string generatedCode;
 
-        private Class cls;
+        private ClassGraph cls;
 
         private readonly ClassTranslator classTranslator = new ClassTranslator();
 
         private readonly Timer codeTimer;
 
-        public ClassVM(Class cls)
+        public ClassVM(ClassGraph cls)
         {
             Class = cls;
 

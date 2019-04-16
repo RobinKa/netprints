@@ -6,6 +6,7 @@ namespace NetPrints.Core
     [DataContract]
     [KnownType(typeof(MethodGraph))]
     [KnownType(typeof(ConstructorGraph))]
+    [KnownType(typeof(ClassGraph))]
     public abstract class NodeGraph
     {
         /// <summary>
@@ -22,7 +23,7 @@ namespace NetPrints.Core
         /// Class this graph is contained in.
         /// </summary>
         [DataMember]
-        public Class Class
+        public ClassGraph Class
         {
             get;
             set;
