@@ -1,5 +1,4 @@
 ﻿using NetPrints.Core;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph

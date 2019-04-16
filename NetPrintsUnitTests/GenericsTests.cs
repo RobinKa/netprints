@@ -2,11 +2,8 @@
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrints.Translator;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetPrintsUnitTests
 {

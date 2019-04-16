@@ -1,9 +1,6 @@
-﻿using NetPrints.Core;
-using NetPrintsEditor.ViewModels;
-using System;
+﻿using NetPrintsEditor.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace NetPrintsEditor.Controls
 {

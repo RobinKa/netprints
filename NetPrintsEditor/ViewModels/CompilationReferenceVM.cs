@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using NetPrintsEditor.Compilation;
 
 namespace NetPrintsEditor.ViewModels

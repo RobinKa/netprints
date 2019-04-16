@@ -1,7 +1,6 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Controls;
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;

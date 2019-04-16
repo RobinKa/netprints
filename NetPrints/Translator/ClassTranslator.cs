@@ -1,5 +1,4 @@
 ﻿using NetPrints.Core;
-using System.Linq;
 using System.Text;
 
 namespace NetPrints.Translator

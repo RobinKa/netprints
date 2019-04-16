@@ -1,5 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
