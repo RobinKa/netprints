@@ -83,11 +83,11 @@ namespace NetPrints.Graph
         [DataMember(Name = "FieldOrProperty")]
         public VariableSpecifier Variable { get; private set; }
 
-        public VariableNode(Method method, VariableSpecifier variable)
+        protected VariableNode(Method method, VariableSpecifier variable)
             : base(method)
         {
             Variable = variable;
-            
+
             // Add target input pin if not local or static
             if (!IsLocalVariable && !Variable.Modifiers.HasFlag(VariableModifiers.Static))
             {

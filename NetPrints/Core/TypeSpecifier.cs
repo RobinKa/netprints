@@ -252,7 +252,7 @@ namespace NetPrints.Core
         /// <returns>Constructed type with generic type arguments replaced by the given ones.</returns>
         public TypeSpecifier Construct(IReadOnlyDictionary<GenericType, BaseType> typeSpecifiers)
         {
-            if (GenericArguments.Count != typeSpecifiers.Count())
+            if (GenericArguments.Count != typeSpecifiers.Count)
             {
                 throw new ArgumentException("Need to replace all generic arguments when constructing type.");
             }
@@ -275,9 +275,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, TypeSpecifier b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return ReferenceEquals(a, null);
+                return a is null;
             }
 
             return a.Equals(b);
@@ -285,9 +285,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(TypeSpecifier a, TypeSpecifier b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return !ReferenceEquals(a, null);
+                return !(a is null);
             }
 
             return !a.Equals(b);
@@ -295,9 +295,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, GenericType b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return ReferenceEquals(a, null);
+                return a is null;
             }
 
             return a.Equals(b);
@@ -305,9 +305,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(TypeSpecifier a, GenericType b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return !ReferenceEquals(a, null);
+                return !(a is null);
             }
 
             return !a.Equals(b);
@@ -315,9 +315,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, BaseType b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return ReferenceEquals(a, null);
+                return a is null;
             }
 
             return a.Equals(b);
@@ -325,9 +325,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(TypeSpecifier a, BaseType b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return !ReferenceEquals(a, null);
+                return !(a is null);
             }
 
             return !a.Equals(b);
@@ -335,9 +335,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(BaseType a, TypeSpecifier b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return ReferenceEquals(a, null);
+                return a is null;
             }
 
             return a.Equals(b);
@@ -345,9 +345,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(BaseType a, TypeSpecifier b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return !ReferenceEquals(a, null);
+                return !(a is null);
             }
 
             return !a.Equals(b);

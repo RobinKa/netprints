@@ -20,7 +20,7 @@ namespace NetPrints.Graph
         {
             get { return InputExecPins[0]; }
         }
-        
+
         public ReturnNode(Method method)
             : base(method)
         {

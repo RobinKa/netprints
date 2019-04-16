@@ -20,7 +20,6 @@ namespace NetPrints.Graph
         public NodeOutputDataPin(Node node, string name, ObservableValue<BaseType> pinType)
             : base(node, name, pinType)
         {
-
         }
     }
 }

@@ -38,13 +38,13 @@ namespace NetPrints.Translator
             if(additionalLength > 0)
             {
                 string addition = new string(Enumerable.Repeat(chars, additionalLength).Select(s => s[random.Next(s.Length)]).ToArray());
-                addition = addition.First().ToString().ToUpper() + string.Join("", addition.Skip(1));
+                addition = addition[0].ToString().ToUpper() + string.Join("", addition.Skip(1));
                 name += addition;
             }
 
             return name;
         }
-        
+
         /// <summary>
         /// Translates an object into a literal value (eg. a float 32.32 -> "32.32f")
         /// </summary>
@@ -207,7 +207,7 @@ namespace NetPrints.Translator
 
             foreach (NodeInputDataPin pin in node.InputDataPins)
             {
-                if (pin.IncomingPin != null && pin.IncomingPin.Node.IsPure && !nodes.Contains(pin.IncomingPin.Node))
+                if (pin.IncomingPin?.Node.IsPure == true && !nodes.Contains(pin.IncomingPin.Node))
                 {
                     AddDependentPureNodes(pin.IncomingPin.Node, ref nodes);
                 }
@@ -222,7 +222,7 @@ namespace NetPrints.Translator
         public static IEnumerable<Node> GetDependentPureNodes(Node node)
         {
             HashSet<Node> nodes = new HashSet<Node>();
-            
+
             AddDependentPureNodes(node, ref nodes);
 
             return nodes;
@@ -248,13 +248,12 @@ namespace NetPrints.Translator
                 foreach (Node evalNode in remainingNodes)
                 {
                     // Check whether all of this node's dependencies have been evaluated
-                    if (evalNode.InputDataPins.All(inNode => inNode.IncomingPin == null || !inNode.IncomingPin.Node.IsPure || sortedNodes.Contains(inNode.IncomingPin.Node)))
+                    if (evalNode.InputDataPins.All(inNode => inNode.IncomingPin?.Node.IsPure != true || sortedNodes.Contains(inNode.IncomingPin.Node)))
                     {
                         newNodes.Add(evalNode);
                     }
                 }
 
-                
                 // Add newly found nodes
                 foreach (Node newNode in newNodes)
                 {

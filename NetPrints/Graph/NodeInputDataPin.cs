@@ -31,7 +31,7 @@ namespace NetPrints.Graph
                 if(incomingPin != value)
                 {
                     var oldPin = incomingPin;
-                    
+
                     incomingPin = value;
 
                     IncomingPinChanged?.Invoke(this, oldPin, incomingPin);
@@ -65,7 +65,7 @@ namespace NetPrints.Graph
                 // this pin uses the unconnected value
                 // the value is of the same type or string if enum
 
-                if (value != null && (!UsesUnconnectedValue || 
+                if (value != null && (!UsesUnconnectedValue ||
                     (PinType.Value is TypeSpecifier t && (
                         (!t.IsEnum && TypeSpecifier.FromType(value.GetType()) != t) ||
                         (t.IsEnum && value.GetType() != typeof(string))))))
@@ -82,7 +82,6 @@ namespace NetPrints.Graph
         public NodeInputDataPin(Node node, string name, ObservableValue<BaseType> pinType)
             : base(node, name, pinType)
         {
-            
         }
     }
 }

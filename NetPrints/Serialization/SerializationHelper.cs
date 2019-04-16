@@ -4,9 +4,9 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Serialization
 {
-    public class SerializationHelper
+    public static class SerializationHelper
     {
-        private static DataContractSerializer classSerializer = new DataContractSerializer(typeof(Class), new DataContractSerializerSettings()
+        private static readonly DataContractSerializer classSerializer = new DataContractSerializer(typeof(Class), new DataContractSerializerSettings()
         {
             PreserveObjectReferences = true,
             MaxItemsInObjectGraph = int.MaxValue,
@@ -19,10 +19,8 @@ namespace NetPrints.Serialization
         /// <param name="outputPath">Path to save the class at.</param>
         public static void SaveClass(Class cls, string outputPath)
         {
-            using (FileStream fileStream = File.Open(outputPath, FileMode.Create))
-            {
-                classSerializer.WriteObject(fileStream, cls);
-            }
+            using FileStream fileStream = File.Open(outputPath, FileMode.Create);
+            classSerializer.WriteObject(fileStream, cls);
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using NetPrints.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -33,7 +32,7 @@ namespace NetPrints.Graph
         /// </summary>
         [DataMember]
         public TypeSpecifier LiteralType { get; private set; }
-        
+
         public LiteralNode(Method method, TypeSpecifier literalType)
             : base(method)
         {

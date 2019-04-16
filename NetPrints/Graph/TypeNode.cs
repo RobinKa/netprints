@@ -20,7 +20,7 @@ namespace NetPrints.Graph
             set
             {
                 this.value = value;
-                OnValueChanged?.Invoke(this, new EventArgs());
+                OnValueChanged?.Invoke(this, EventArgs.Empty);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             }
         }
@@ -63,7 +63,7 @@ namespace NetPrints.Graph
             : base(method)
         {
             Type = type;
-            
+
             // Add type pins for each generic argument of the literal type
             // and monitor them for changes to reconstruct the actual pin types.
             if (Type is TypeSpecifier typeSpecifier)

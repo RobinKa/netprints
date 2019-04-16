@@ -20,7 +20,6 @@ namespace NetPrints.Graph
         private RerouteNode(Method method)
             : base(method)
         {
-            
         }
 
         public static RerouteNode MakeExecution(Method method, int numExecs)
@@ -50,6 +49,7 @@ namespace NetPrints.Graph
             {
                 node.AddInputDataPin($"Data{index}", dataType.Item1);
                 node.AddOutputDataPin($"Data{index}", dataType.Item2);
+                index++;
             }
 
             return node;

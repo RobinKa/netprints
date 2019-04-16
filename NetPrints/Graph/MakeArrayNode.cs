@@ -79,7 +79,6 @@ namespace NetPrints.Graph
                 {
                     return new TypeSpecifier($"{ElementType.Name}[]");
                 }
-                
             }
         }
 

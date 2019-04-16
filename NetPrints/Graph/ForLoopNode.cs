@@ -16,7 +16,7 @@ namespace NetPrints.Graph
         {
             get { return OutputExecPins[0]; }
         }
-        
+
         /// <summary>
         /// Execution pin that gets executed when the loop is over.
         /// </summary>
@@ -73,7 +73,7 @@ namespace NetPrints.Graph
         {
             AddInputExecPin("Exec");
             AddInputExecPin("Continue");
-            
+
             AddOutputExecPin("Loop");
             AddOutputExecPin("Completed");
 

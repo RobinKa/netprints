@@ -107,7 +107,7 @@ namespace NetPrints.Graph
                 OnPositionChanged?.Invoke(this, positionX, positionY);
             }
         }
-        
+
         private double positionX;
         private double positionY;
 
@@ -151,7 +151,6 @@ namespace NetPrints.Graph
 
         protected virtual void SetPurity(bool pure)
         {
-
         }
 
         /// <summary>
@@ -164,14 +163,14 @@ namespace NetPrints.Graph
             private set;
         }
 
-        public Node(Method method)
+        protected Node(Method method)
         {
             Method = method;
             method.Nodes.Add(this);
 
             Name = NetPrintsUtil.GetUniqueName(GetType().Name, method.Nodes.Select(n => n.Name).ToList());
         }
-        
+
         public override string ToString()
         {
             return GraphUtil.SplitCamelCase(GetType().Name);
@@ -238,13 +237,13 @@ namespace NetPrints.Graph
 
         private void OnIncomingTypePinChanged(NodeInputTypePin pin, NodeOutputTypePin oldPin, NodeOutputTypePin newPin)
         {
-            if (oldPin != null && oldPin.InferredType != null)
+            if (oldPin?.InferredType != null)
                 oldPin.InferredType.OnValueChanged -= EventInputTypeChanged;
 
-            if (newPin != null && newPin.InferredType != null)
+            if (newPin?.InferredType != null)
                 newPin.InferredType.OnValueChanged += EventInputTypeChanged;
 
-            EventInputTypeChanged(this, new EventArgs());
+            EventInputTypeChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -262,7 +261,6 @@ namespace NetPrints.Graph
 
         protected virtual void OnInputTypeChanged(object sender, EventArgs eventArgs)
         {
-            
         }
 
         [OnDeserialized]

@@ -57,7 +57,7 @@ namespace NetPrints.Core
             get => null;
             set
             {
-                Variables = new ObservableRangeCollection<Variable>((value.Select(oldVar => new Variable(this, oldVar.Name, oldVar.VariableType, null, null, oldVar.Modifiers) { Visibility = oldVar.Visibility })));
+                Variables = new ObservableRangeCollection<Variable>(value.Select(oldVar => new Variable(this, oldVar.Name, oldVar.VariableType, null, null, oldVar.Modifiers) { Visibility = oldVar.Visibility }));
             }
         }
     }

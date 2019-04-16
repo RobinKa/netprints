@@ -21,7 +21,7 @@ namespace NetPrints.Core
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
 
             foreach (var item in collection)
@@ -39,7 +39,7 @@ namespace NetPrints.Core
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
 
             foreach (var item in collection)
@@ -65,7 +65,7 @@ namespace NetPrints.Core
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
 
             Items.Clear();

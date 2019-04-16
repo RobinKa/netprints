@@ -21,7 +21,7 @@ namespace NetPrints.Graph
             get;
             private set;
         }
-        
+
         /// <summary>
         /// The target this delegate is for ("this").
         /// Accessing this for static methods (IsFromStaticMethod==true)
@@ -44,7 +44,7 @@ namespace NetPrints.Graph
             : base(method)
         {
             MethodSpecifier = methodSpecifier;
-            
+
             if (!IsFromStaticMethod)
             {
                 AddInputDataPin("Target", methodSpecifier.DeclaringType);

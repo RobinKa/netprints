@@ -34,7 +34,7 @@ namespace NetPrints.Graph
             private set;
         }
 
-        public NodePin(Node node, string name)
+        protected NodePin(Node node, string name)
         {
             Node = node;
             Name = name;

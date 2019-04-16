@@ -196,9 +196,9 @@ namespace NetPrints.Core
 
         public static bool operator==(MethodSpecifier a, MethodSpecifier b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return ReferenceEquals(a, null);
+                return a is null;
             }
 
             return a.Equals(b);
@@ -206,9 +206,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(MethodSpecifier a, MethodSpecifier b)
         {
-            if (ReferenceEquals(b, null))
+            if (b is null)
             {
-                return !ReferenceEquals(a, null);
+                return !(a is null);
             }
 
             return !a.Equals(b);

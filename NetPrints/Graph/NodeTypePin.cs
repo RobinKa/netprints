@@ -17,7 +17,7 @@ namespace NetPrints.Graph
             get;
         }
 
-        public NodeTypePin(Node node, string name)
+        protected NodeTypePin(Node node, string name)
             : base(node, name)
         {
         }

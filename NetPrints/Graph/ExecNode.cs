@@ -12,7 +12,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(ConstructorNode))]
     public abstract class ExecNode : Node
     {
-        public ExecNode(Method method)
+        protected ExecNode(Method method)
             : base(method)
         {
             AddExecPins();

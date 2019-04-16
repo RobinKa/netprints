@@ -26,7 +26,7 @@ namespace NetPrints.Graph
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Specifier for the type this constructor creates.
         /// </summary>
@@ -66,7 +66,7 @@ namespace NetPrints.Graph
             {
                 AddInputDataPin(argument.Name, argument.Value);
             }
-            
+
             AddOutputDataPin(ConstructorSpecifier.DeclaringType.ShortName, ConstructorSpecifier.DeclaringType);
 
             // TODO: Set the correct types to begin with.

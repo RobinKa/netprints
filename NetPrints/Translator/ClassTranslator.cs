@@ -25,6 +25,7 @@ namespace NetPrints.Translator
             }";
 
         private const string VARIABLE_TEMPLATE = "%VariableModifiers%%VariableType% %VariableName%;";
+
         private const string PROPERTY_TEMPLATE = @"%VariableModifiers%%VariableType% %VariableName%
             {
                 %Get%
@@ -32,11 +33,6 @@ namespace NetPrints.Translator
             }";
 
         private MethodTranslator methodTranslator = new MethodTranslator();
-        
-        public ClassTranslator()
-        {
-
-        }
 
         /// <summary>
         /// Translates a class into C#.

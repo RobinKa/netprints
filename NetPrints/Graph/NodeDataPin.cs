@@ -16,7 +16,7 @@ namespace NetPrints.Graph
         [DataMember]
         public ObservableValue<BaseType> PinType { get; private set; }
 
-        public NodeDataPin(Node node, string name, ObservableValue<BaseType> pinType)
+        protected NodeDataPin(Node node, string name, ObservableValue<BaseType> pinType)
             : base(node, name)
         {
             PinType = pinType;

@@ -24,7 +24,7 @@ namespace NetPrints.Translator
         private HashSet<NodeInputExecPin> pinsJumpedTo = new HashSet<NodeInputExecPin>();
 
         private int jumpStackStateId;
-        
+
         private StringBuilder builder = new StringBuilder();
 
         private Method method;
@@ -33,7 +33,7 @@ namespace NetPrints.Translator
 
         private delegate void NodeTypeHandler(MethodTranslator translator, Node node);
 
-        private Dictionary<Type, List<NodeTypeHandler>> nodeTypeHandlers = new Dictionary<Type, List<NodeTypeHandler>>()
+        private readonly Dictionary<Type, List<NodeTypeHandler>> nodeTypeHandlers = new Dictionary<Type, List<NodeTypeHandler>>()
         {
             { typeof(CallMethodNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateCallMethodNode(node as CallMethodNode) } },
             { typeof(VariableSetterNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateVariableSetterNode(node as VariableSetterNode) } },
@@ -80,7 +80,6 @@ namespace NetPrints.Translator
                 return variableNames[pin];
             }
 
-
             string pinName;
 
             // Special case for property setters, input name "value".
@@ -116,7 +115,7 @@ namespace NetPrints.Translator
                 return GetOrCreatePinName(pin.IncomingPin);
             }
         }
-        
+
         private IEnumerable<string> GetOrCreatePinNames(IEnumerable<NodeOutputDataPin> pins)
         {
             return pins.Select(pin => GetOrCreatePinName(pin)).ToList();
@@ -292,7 +291,7 @@ namespace NetPrints.Translator
             // Assign jump stack state id
             // Write it later once we know which states get jumped to
             jumpStackStateId = GetNextStateId();
-            
+
             // Create variables for all output pins for every node
             CreateVariables();
 
@@ -317,7 +316,7 @@ namespace NetPrints.Translator
             {
                 WriteGotoOutputPin(method.EntryNode.OutputExecPins[0]);
             }
-            
+
             // Translate every exec node
             foreach (Node node in execNodes)
             {
@@ -325,7 +324,7 @@ namespace NetPrints.Translator
                 {
                     for (int pinIndex = 0; pinIndex < node.InputExecPins.Count; pinIndex++)
                     {
-                        builder.AppendLine($"State{(nodeStateIds[node][pinIndex])}:");
+                        builder.AppendLine($"State{nodeStateIds[node][pinIndex]}:");
                         TranslateNode(node, pinIndex);
                         builder.AppendLine();
                     }
@@ -336,22 +335,20 @@ namespace NetPrints.Translator
             if (pinsJumpedTo.Count > 0)
             {
                 TranslateJumpStack();
-                
+
                 builder.Replace("%JUMPSTACKPLACEHOLDER%", $"{JumpStackType} {JumpStackVarName} = new {JumpStackType}();{Environment.NewLine}");
             }
             else
             {
                 builder.Replace("%JUMPSTACKPLACEHOLDER%", "");
             }
-            
+
             builder.AppendLine("}"); // Method end
 
             string code = builder.ToString();
 
             // Remove unused labels
-            code = RemoveUnnecessaryLabels(code);
-
-            return code;
+            return RemoveUnnecessaryLabels(code);
         }
 
         private string RemoveUnnecessaryLabels(string code)
@@ -371,7 +368,7 @@ namespace NetPrints.Translator
         {
             if (!(node is RerouteNode))
             {
-                builder.AppendLine($"// {node.ToString()}");
+                builder.AppendLine($"// {node}");
             }
 
             if (nodeTypeHandlers.ContainsKey(node.GetType()))
@@ -430,7 +427,6 @@ namespace NetPrints.Translator
             }
             else
             {
-                
                 int toId = GetExecPinStateId(pin.OutgoingPin);
 
                 // Only write the goto if the next state is not
@@ -460,7 +456,7 @@ namespace NetPrints.Translator
                 WriteGotoOutputPin(node.OutputExecPins[0]);
             }*/
         }
-        
+
         public void TranslateCallMethodNode(CallMethodNode node)
         {
             // Wrap in try / catch
@@ -491,7 +487,7 @@ namespace NetPrints.Translator
                 temporaryReturnName = TranslatorUtil.GetTemporaryVariableName(random);
 
                 var returnTypeNames = string.Join(", ", node.ReturnValuePins.Select(pin => pin.PinType.Value.FullCodeName));
-                
+
                 builder.Append($"{typeof(Tuple).FullName}<{returnTypeNames}> {temporaryReturnName} = ");
             }
 
@@ -638,7 +634,7 @@ namespace NetPrints.Translator
             // Write assignment and constructor
             string returnName = GetOrCreatePinName(node.OutputDataPins[0]);
             builder.Append($"{returnName} = new {node.ClassType}");
-            
+
             // Write constructor arguments
             var argumentNames = GetPinIncomingValues(node.ArgumentPins);
             builder.AppendLine($"({string.Join(", ", argumentNames)});");
@@ -707,7 +703,7 @@ namespace NetPrints.Translator
             // Translate all the pure nodes this node depends on in
             // the correct order
             TranslateDependentPureNodes(node);
-            
+
             string valueName = GetPinIncomingValue(node.NewValuePin);
 
             // Add target name if there is a target (null for local and static variables)
@@ -824,7 +820,7 @@ namespace NetPrints.Translator
             // Translate all the pure nodes this node depends on in
             // the correct order
             TranslateDependentPureNodes(node);
-            
+
             builder.AppendLine($"{GetOrCreatePinName(node.IndexPin)} = {GetPinIncomingValue(node.InitialIndexPin)};");
             builder.AppendLine($"if ({GetOrCreatePinName(node.IndexPin)} < {GetPinIncomingValue(node.MaxIndexPin)})");
             builder.AppendLine("{");
@@ -852,7 +848,7 @@ namespace NetPrints.Translator
         public void PureTranslateVariableGetterNode(VariableGetterNode node)
         {
             string valueName = GetOrCreatePinName(node.OutputDataPins[0]);
-            
+
             builder.Append($"{valueName} = ");
 
             if (node.IsStatic)
@@ -868,7 +864,7 @@ namespace NetPrints.Translator
             }
             else
             {
-                if (node.TargetPin != null && node.TargetPin.IncomingPin != null)
+                if (node.TargetPin?.IncomingPin != null)
                 {
                     string targetName = GetOrCreatePinName(node.TargetPin.IncomingPin);
                     builder.Append(targetName);

@@ -8,10 +8,9 @@ namespace NetPrints.Graph
     [DataContract]
     public abstract class NodeExecPin : NodePin
     {
-        public NodeExecPin(Node node, string name)
+        protected NodeExecPin(Node node, string name)
             : base(node, name)
         {
-
         }
     }
 }

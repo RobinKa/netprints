@@ -94,7 +94,7 @@ namespace NetPrints.Core
         public bool HasPublicGetter
         {
             get => HasAccessors ?
-                (GetterMethod != null ? GetterMethod.Visibility == MemberVisibility.Public : false) :
+                (GetterMethod?.Visibility == MemberVisibility.Public) :
                 Visibility == MemberVisibility.Public;
         }
 
@@ -104,7 +104,7 @@ namespace NetPrints.Core
         public bool HasPublicSetter
         {
             get => HasAccessors ?
-                (SetterMethod != null ? SetterMethod.Visibility == MemberVisibility.Public : false) :
+                (SetterMethod?.Visibility == MemberVisibility.Public) :
                 Visibility == MemberVisibility.Public;
         }
 

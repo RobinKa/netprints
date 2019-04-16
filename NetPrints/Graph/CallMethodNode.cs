@@ -29,7 +29,7 @@ namespace NetPrints.Graph
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Name of the method without any prefixes.
         /// </summary>
@@ -56,7 +56,7 @@ namespace NetPrints.Graph
                 return boundName;
             }
         }
-        
+
         /// <summary>
         /// Whether the method is static.
         /// </summary>
@@ -64,7 +64,7 @@ namespace NetPrints.Graph
         {
             get => MethodSpecifier.Modifiers.HasFlag(MethodModifiers.Static);
         }
-        
+
         /// <summary>
         /// Specifier for the type the method is contained in.
         /// </summary>
@@ -81,7 +81,7 @@ namespace NetPrints.Graph
             get => InputDataPins.Select(p => p.PinType.Value).ToList();
         }
 
-        // <summary>
+        /// <summary>
         /// List of named type specifiers the method takes.
         /// </summary>
         public IReadOnlyList<Named<BaseType>> Arguments
@@ -96,7 +96,7 @@ namespace NetPrints.Graph
         {
             get => OutputDataPins.Select(p => p.PinType.Value).ToList();
         }
-        
+
         /// <summary>
         /// Target ("this") to call the method on.
         /// </summary>
@@ -120,7 +120,7 @@ namespace NetPrints.Graph
         {
             get { return OutputExecPins.SingleOrDefault(p => p.Name == CatchPinName); }
         }
-        
+
         /// <summary>
         /// Whether this node has exception handling (try/catch).
         /// </summary>
@@ -156,7 +156,7 @@ namespace NetPrints.Graph
             get => (OutputDataPins.Where(p => p.Name != ExceptionPinName)).ToList();
         }
 
-        public CallMethodNode(Method method, MethodSpecifier methodSpecifier, 
+        public CallMethodNode(Method method, MethodSpecifier methodSpecifier,
             IList<BaseType> genericArgumentTypes = null)
             : base(method)
         {
@@ -167,7 +167,7 @@ namespace NetPrints.Graph
             {
                 AddInputTypePin(genericArg.Name);
             }
-            
+
             if (!IsStatic)
             {
                 AddInputDataPin("Target", DeclaringType);

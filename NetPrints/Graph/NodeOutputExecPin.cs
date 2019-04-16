@@ -29,7 +29,7 @@ namespace NetPrints.Graph
                 if(outgoingPin != value)
                 {
                     var oldPin = outgoingPin;
-                    
+
                     outgoingPin = value;
 
                     OutgoingPinChanged?.Invoke(this, oldPin, outgoingPin);
@@ -42,7 +42,6 @@ namespace NetPrints.Graph
         public NodeOutputExecPin(Node node, string name)
             : base(node, name)
         {
-            
         }
     }
 }

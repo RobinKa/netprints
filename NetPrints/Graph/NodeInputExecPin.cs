@@ -13,13 +13,12 @@ namespace NetPrints.Graph
         /// Output execution pins connected to this pin.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<NodeOutputExecPin> IncomingPins { get; private set; } = 
+        public ObservableRangeCollection<NodeOutputExecPin> IncomingPins { get; private set; } =
             new ObservableRangeCollection<NodeOutputExecPin>();
 
         public NodeInputExecPin(Node node, string name)
             : base(node, name)
         {
-            
         }
     }
 }

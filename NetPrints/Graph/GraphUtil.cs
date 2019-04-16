@@ -41,13 +41,13 @@ namespace NetPrints.Graph
             {
                 // Both are TypeSpecifier
 
-                if(datA.PinType.Value is TypeSpecifier typeSpecA && 
-                    datB.PinType.Value is TypeSpecifier typeSpecB &&
-                    (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA) || hasImplicitCast(typeSpecB, typeSpecA)))
+                if (datA.PinType.Value is TypeSpecifier typeSpecA
+                    && datB.PinType.Value is TypeSpecifier typeSpecB
+                    && (typeSpecA == typeSpecB || isSubclassOf(typeSpecB, typeSpecA) || hasImplicitCast(typeSpecB, typeSpecA)))
                 {
                     return true;
                 }
-                
+
                 // A is GenericType, B is whatever
 
                 if (datA.PinType.Value is GenericType genTypeA)
@@ -284,7 +284,6 @@ namespace NetPrints.Graph
             pin.IncomingPins.Clear();
         }
 
-
         /// <summary>
         /// Adds a data reroute node and does the necessary rewiring.
         /// </summary>
@@ -360,8 +359,8 @@ namespace NetPrints.Graph
         /// <returns>Type node outputting the given type.</returns>
         public static TypeNode CreateNestedTypeNode(Method method, BaseType type, double x, double y)
         {
-            double offsetX = -308;
-            double offsetY = -112;
+            const double offsetX = -308;
+            const double offsetY = -112;
 
             var typeNode = new TypeNode(method, type)
             {
@@ -393,10 +392,10 @@ namespace NetPrints.Graph
         /// <returns>Method in the class that represents the overriding method.</returns>
         public static Method AddOverrideMethod(Class cls, MethodSpecifier methodSpecifier)
         {
-            if (cls.Methods.Any(m => m.Name == methodSpecifier.Name) ||
-                !(methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual) ||
-                methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override) ||
-                methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract)))
+            if (cls.Methods.Any(m => m.Name == methodSpecifier.Name)
+                || !(methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual)
+                || methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override)
+                || methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract)))
             {
                 return null;
             }
@@ -429,8 +428,8 @@ namespace NetPrints.Graph
                 newMethod.EntryNode.AddGenericArgument();
             }
 
-            int offsetX = -308;
-            int offsetY = -112;
+            const int offsetX = -308;
+            const int offsetY = -112;
 
             // Add argument pins, their type nodes and connect them
             for (int i = 0; i < methodSpecifier.Parameters.Count; i++)
