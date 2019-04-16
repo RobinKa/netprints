@@ -167,13 +167,13 @@ namespace NetPrintsEditor.Reflection
             // Try to compile, on success create a new compilation that references the created assembly instead of the sources.
             // The compilation will fail eg. if the sources have references to the not-yet-compiled assembly.
             (EmitResult compilationResults, Stream stream) = CompileInMemory(compilation);
-            
+
             if (compilationResults.Success)
             {
                 assemblyReferences = assemblyReferences.Concat(new[] { MetadataReference.CreateFromStream(stream) });
                 compilation = CSharpCompilation.Create("C", references: assemblyReferences);
             }
-            
+
             documentationUtil = new DocumentationUtil(compilation);
         }
 
@@ -225,8 +225,8 @@ namespace NetPrintsEditor.Reflection
 
                 return type.GetMethods()
                     .Where(m =>
-                        (m.IsVirtual || m.IsOverride || m.IsAbstract) &&
-                        m.MethodKind == MethodKind.Ordinary)
+                        (m.IsVirtual || m.IsOverride || m.IsAbstract)
+                        && m.MethodKind == MethodKind.Ordinary)
                     .OrderBy(m => m.ContainingNamespace?.Name)
                     .ThenBy(m => m.ContainingType?.Name)
                     .ThenBy(m => m.Name)
@@ -249,10 +249,10 @@ namespace NetPrintsEditor.Reflection
             {
                 return type.GetMethods()
                         .Where(m =>
-                            m.Name == methodSpecifier.Name &&
-                            m.IsPublic() &&
-                            m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static) &&
-                            (isOperator ? 
+                            m.Name == methodSpecifier.Name
+                            && m.IsPublic()
+                            && m.IsStatic == methodSpecifier.Modifiers.HasFlag(MethodModifiers.Static)
+                            && (isOperator ?
                                 (m.MethodKind == MethodKind.BuiltinOperator || m.MethodKind == MethodKind.UserDefinedOperator) :
                                 m.MethodKind == MethodKind.Ordinary))
                         .OrderBy(m => m.ContainingNamespace?.Name)
@@ -265,7 +265,7 @@ namespace NetPrintsEditor.Reflection
                 return new MethodSpecifier[0];
             }
         }
-        
+
         public IEnumerable<ConstructorSpecifier> GetConstructors(TypeSpecifier typeSpecifier)
         {
             var symbol = GetTypeFromSpecifier<INamedTypeSymbol>(typeSpecifier);
@@ -291,7 +291,7 @@ namespace NetPrintsEditor.Reflection
 
             return new string[0];
         }
-        
+
         public bool TypeSpecifierIsSubclassOf(TypeSpecifier a, TypeSpecifier b)
         {
             ITypeSymbol typeA = GetTypeFromSpecifier(a);
@@ -384,10 +384,9 @@ namespace NetPrintsEditor.Reflection
         private IMethodSymbol GetMethodInfoFromSpecifier(MethodSpecifier specifier)
         {
             INamedTypeSymbol declaringType = GetTypeFromSpecifier<INamedTypeSymbol>(specifier.DeclaringType);
-            return declaringType?.GetMethods().Where(
-                    m => m.Name == specifier.Name && 
-                    m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.ArgumentTypes))
-                .FirstOrDefault();
+            return declaringType?.GetMethods().FirstOrDefault(
+                    m => m.Name == specifier.Name
+                    && m.Parameters.Select(p => ReflectionConverter.BaseTypeSpecifierFromSymbol(p.Type)).SequenceEqual(specifier.ArgumentTypes));
         }
 
         // Documentation
@@ -396,7 +395,7 @@ namespace NetPrintsEditor.Reflection
         {
             IMethodSymbol methodInfo = GetMethodInfoFromSpecifier(methodSpecifier);
 
-            if(methodInfo == null)
+            if (methodInfo == null)
             {
                 return null;
             }
@@ -435,14 +434,14 @@ namespace NetPrintsEditor.Reflection
             ITypeSymbol fromSymbol = GetTypeFromSpecifier(fromType);
             ITypeSymbol toSymbol = GetTypeFromSpecifier(toType);
 
-            return fromSymbol != null && toSymbol != null &&
-                compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
+            return fromSymbol != null && toSymbol != null
+                && compilation.ClassifyConversion(fromSymbol, toSymbol).IsImplicit;
         }
 
         public IEnumerable<MethodSpecifier> GetMethods(ReflectionProviderMethodQuery query)
         {
             IEnumerable<IMethodSymbol> methodSymbols;
-            
+
             // Check if type is set (no type => get all methods)
             if (!(query.Type is null))
             {
@@ -495,9 +494,9 @@ namespace NetPrintsEditor.Reflection
                 methodSymbols = methodSymbols
                     .Where(m => m.Parameters
                         .Select(p => p.Type)
-                        .Any(t => t == searchType ||
-                                    searchType.IsSubclassOf(t) ||
-                                    t.TypeKind == TypeKind.TypeParameter));
+                        .Any(t => t == searchType
+                                    || searchType.IsSubclassOf(t)
+                                    || t.TypeKind == TypeKind.TypeParameter));
             }
 
             // Check return type
@@ -506,9 +505,9 @@ namespace NetPrintsEditor.Reflection
                 var searchType = GetTypeFromSpecifier(query.ReturnType);
 
                 methodSymbols = methodSymbols
-                    .Where(m => m.ReturnType == searchType ||
-                                m.ReturnType.IsSubclassOf(searchType) ||
-                                m.ReturnType.TypeKind == TypeKind.TypeParameter);
+                    .Where(m => m.ReturnType == searchType
+                                || m.ReturnType.IsSubclassOf(searchType)
+                                || m.ReturnType.TypeKind == TypeKind.TypeParameter);
             }
 
             var methodSpecifiers = methodSymbols
@@ -550,7 +549,7 @@ namespace NetPrintsEditor.Reflection
             //       so there is some extra logic for handling the fields.
             //       This should be unified or seperated later.
 
-            ITypeSymbol TypeSymbolFromFieldOrProperty(ISymbol symbol)
+            static ITypeSymbol TypeSymbolFromFieldOrProperty(ISymbol symbol)
             {
                 if (symbol is IFieldSymbol fieldSymbol)
                 {

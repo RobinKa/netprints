@@ -93,7 +93,6 @@ namespace NetPrintsEditor.Commands
         /// </summary>
         public static readonly RoutedUICommand RemoveSetter = new RoutedUICommand(nameof(RemoveSetter), nameof(RemoveSetter), typeof(NetPrintsCommands));
 
-
         public class SetNodePositionParameters
         {
             public NodeVM Node;
@@ -118,7 +117,7 @@ namespace NetPrintsEditor.Commands
 
             public AddNodeParameters(Type nodeType, Method method, double posX, double posY, params object[] constructorParameters)
             {
-                if(!nodeType.IsSubclassOf(typeof(Node)) || nodeType.IsAbstract)
+                if (!nodeType.IsSubclassOf(typeof(Node)) || nodeType.IsAbstract)
                 {
                     throw new ArgumentException("Invalid type for node");
                 }

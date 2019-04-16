@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace NetPrintsEditor.Controls
 {
-    public delegate void VariableGetSetDelegate(VariableGetSetControl sender, 
+    public delegate void VariableGetSetDelegate(VariableGetSetControl sender,
         VariableSpecifier variableInfo, bool wasSet);
 
     /// <summary>

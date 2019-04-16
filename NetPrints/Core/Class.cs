@@ -124,7 +124,6 @@ namespace NetPrints.Core
 
         public Class()
         {
-
         }
     }
 }

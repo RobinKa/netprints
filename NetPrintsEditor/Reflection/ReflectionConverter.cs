@@ -35,7 +35,7 @@ namespace NetPrintsEditor.Reflection
         {
             string typeName;
 
-            if (type is IArrayTypeSymbol arrayType)
+            if (type is IArrayTypeSymbol)
             {
                 // TODO: Get more interesting type?
                 typeName = typeof(Array).FullName;
@@ -62,7 +62,7 @@ namespace NetPrintsEditor.Reflection
             TypeSpecifier typeSpecifier = new TypeSpecifier(typeName,
                     type.TypeKind == TypeKind.Enum,
                     type.TypeKind == TypeKind.Interface);
-            
+
             if (type is INamedTypeSymbol namedType)
             {
                 if (namedType.IsUnboundGenericType)
@@ -83,7 +83,7 @@ namespace NetPrintsEditor.Reflection
                     }
                 }
             }
-            
+
             return typeSpecifier;
         }
 

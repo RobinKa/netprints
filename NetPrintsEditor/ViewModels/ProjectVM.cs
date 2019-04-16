@@ -39,8 +39,8 @@ namespace NetPrintsEditor.ViewModels
 
         public bool CanCompileAndRun
         {
-            get => CanCompile && project.OutputBinaryType == BinaryType.Executable &&
-                project.CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries);
+            get => CanCompile && project.OutputBinaryType == BinaryType.Executable
+                && project.CompilationOutput.HasFlag(ProjectCompilationOutput.Binaries);
         }
 
         public ObservableRangeCollection<ClassVM> Classes
@@ -48,7 +48,7 @@ namespace NetPrintsEditor.ViewModels
             get => classes;
             set
             {
-                if(classes != value)
+                if (classes != value)
                 {
                     classes = value;
                     OnPropertyChanged();
@@ -76,7 +76,7 @@ namespace NetPrintsEditor.ViewModels
             get => project.LastCompiledAssemblyPath;
             set
             {
-                if(project.LastCompiledAssemblyPath != value)
+                if (project.LastCompiledAssemblyPath != value)
                 {
                     project.LastCompiledAssemblyPath = value;
                     OnPropertyChanged();
@@ -89,7 +89,7 @@ namespace NetPrintsEditor.ViewModels
             get => lastCompileErrors;
             set
             {
-                if(lastCompileErrors != value)
+                if (lastCompileErrors != value)
                 {
                     lastCompileErrors = value;
                     OnPropertyChanged();
@@ -174,7 +174,7 @@ namespace NetPrintsEditor.ViewModels
 
         public ProjectCompilationOutput CompilationOutput
         {
-            get => project != null ? project.CompilationOutput : ProjectCompilationOutput.Nothing;
+            get => project?.CompilationOutput ?? ProjectCompilationOutput.Nothing;
             set
             {
                 if (project.CompilationOutput != value)
@@ -237,7 +237,7 @@ namespace NetPrintsEditor.ViewModels
             get => compilationMessage;
             set
             {
-                if(compilationMessage != value)
+                if (compilationMessage != value)
                 {
                     compilationMessage = value;
                     OnPropertyChanged();
@@ -266,7 +266,7 @@ namespace NetPrintsEditor.ViewModels
             get => lastCompilationSucceeded;
             set
             {
-                if(lastCompilationSucceeded != value)
+                if (lastCompilationSucceeded != value)
                 {
                     lastCompilationSucceeded = value;
                     OnPropertyChanged();
@@ -289,7 +289,7 @@ namespace NetPrintsEditor.ViewModels
 
         // Keep track of the save location of classes, so if they change their
         // name we can delete the old file on saving.
-        private Dictionary<Class, string> previousStoragePath = new Dictionary<Class, string>();
+        private readonly Dictionary<Class, string> previousStoragePath = new Dictionary<Class, string>();
 
         public ProjectVM(Project project)
         {
@@ -323,7 +323,7 @@ namespace NetPrintsEditor.ViewModels
         public void CompileProject()
         {
             // Check if we are already compiling
-            if(!CanCompile || project.CompilationOutput == ProjectCompilationOutput.Nothing)
+            if (!CanCompile || project.CompilationOutput == ProjectCompilationOutput.Nothing)
             {
                 return;
             }
@@ -382,7 +382,7 @@ namespace NetPrintsEditor.ViewModels
 
                     string[] directories = cls.FullName.Split(".");
                     directories = directories
-                        .Take(directories.Count() - 1)
+                        .Take(directories.Length - 1)
                         .Prepend(compiledDir)
                         .ToArray();
 
@@ -420,7 +420,7 @@ namespace NetPrintsEditor.ViewModels
                         .Select(sourcePath => File.ReadAllText(sourcePath)))
                     .Distinct()
                     .ToArray();
-                    
+
                 CodeCompileResults results = codeCompiler.CompileSources(
                     outputPath, assemblyPaths, sources, generateExecutable);
 
@@ -440,7 +440,7 @@ namespace NetPrintsEditor.ViewModels
                     File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{Project.Name}_errors.txt"),
                         string.Join(Environment.NewLine, results.Errors));
                 }
-                
+
                 // Notify UI that we are done and refresh reflection provider
 
                 dispatcher.Invoke(() =>
@@ -494,7 +494,7 @@ namespace NetPrintsEditor.ViewModels
             string projectDir = System.IO.Path.GetDirectoryName(Path);
             string exePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(projectDir, $"Compiled_{Name}", $"{Project.Name}.exe"));
 
-            if(!File.Exists(exePath))
+            if (!File.Exists(exePath))
             {
                 throw new Exception($"The executable does not exist at {exePath}");
             }
@@ -586,12 +586,12 @@ namespace NetPrintsEditor.ViewModels
             string outputPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), cls.StoragePath);
 
             // Delete old save file if different path and exists
-            if (previousStoragePath.TryGetValue(cls.Class, out string prevPath) &&
-                !string.Equals(
+            if (previousStoragePath.TryGetValue(cls.Class, out string prevPath)
+                && !string.Equals(
                     System.IO.Path.GetFullPath(prevPath),
                     System.IO.Path.GetFullPath(outputPath),
-                    StringComparison.OrdinalIgnoreCase) &&
-                File.Exists(prevPath))
+                    StringComparison.OrdinalIgnoreCase)
+                && File.Exists(prevPath))
             {
                 File.Delete(prevPath);
             }

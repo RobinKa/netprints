@@ -93,7 +93,6 @@ namespace NetPrints.Core
         public ObservableRangeCollection()
             : base()
         {
-
         }
 
         /// <summary> 
@@ -104,7 +103,6 @@ namespace NetPrints.Core
         public ObservableRangeCollection(IEnumerable<T> collection)
             : base(collection)
         {
-
         }
     }
 }

@@ -38,7 +38,7 @@ namespace NetPrintsEditor.Dialogs
         {
             base.OnPropertyChanged(e);
 
-            if(e.Property == MethodsProperty)
+            if (e.Property == MethodsProperty)
             {
                 SelectedMethod = Methods.FirstOrDefault();
             }

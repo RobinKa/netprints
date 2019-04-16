@@ -77,8 +77,8 @@ namespace NetPrintsEditor.Controls
 
         private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && sender is FrameworkElement element &&
-                element.DataContext != null)
+            if (e.LeftButton == MouseButtonState.Pressed && sender is FrameworkElement element
+                && element.DataContext != null)
             {
                 DragDrop.DoDragDrop(element, element.DataContext, DragDropEffects.Copy);
             }

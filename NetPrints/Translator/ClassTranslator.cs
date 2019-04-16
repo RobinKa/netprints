@@ -32,7 +32,7 @@ namespace NetPrints.Translator
                 %Set%
             }";
 
-        private MethodTranslator methodTranslator = new MethodTranslator();
+        private readonly MethodTranslator methodTranslator = new MethodTranslator();
 
         /// <summary>
         /// Translates a class into C#.
@@ -67,7 +67,7 @@ namespace NetPrints.Translator
                 modifiers.Append("static ");
             }
 
-            if(c.Modifiers.HasFlag(ClassModifiers.Abstract))
+            if (c.Modifiers.HasFlag(ClassModifiers.Abstract))
             {
                 modifiers.Append("abstract ");
             }
@@ -83,7 +83,7 @@ namespace NetPrints.Translator
             }
 
             string genericArguments = "";
-            if(c.DeclaredGenericArguments.Count > 0)
+            if (c.DeclaredGenericArguments.Count > 0)
             {
                 genericArguments = "<" + string.Join(", ", c.DeclaredGenericArguments) + ">";
             }

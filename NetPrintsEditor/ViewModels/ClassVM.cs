@@ -16,7 +16,7 @@ namespace NetPrintsEditor.ViewModels
             get => project;
             set
             {
-                if(project != value)
+                if (project != value)
                 {
                     project = value;
                     OnPropertyChanged();
@@ -47,7 +47,7 @@ namespace NetPrintsEditor.ViewModels
             get => methods;
             set
             {
-                if(methods != value)
+                if (methods != value)
                 {
                     methods = value;
                     OnPropertyChanged();
@@ -221,9 +221,9 @@ namespace NetPrintsEditor.ViewModels
 
         private Class cls;
 
-        private ClassTranslator classTranslator = new ClassTranslator();
+        private readonly ClassTranslator classTranslator = new ClassTranslator();
 
-        private Timer codeTimer;
+        private readonly Timer codeTimer;
 
         public ClassVM(Class cls)
         {
@@ -254,10 +254,7 @@ namespace NetPrintsEditor.ViewModels
 
         ~ClassVM()
         {
-            if (codeTimer != null)
-            {
-                codeTimer.Stop();
-            }
+            codeTimer?.Stop();
         }
 
 #region INotifyPropertyChanged
@@ -265,7 +262,7 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if(propertyName == nameof(Class))
+            if (propertyName == nameof(Class))
             {
                 Methods = new ObservableViewModelCollection<MethodVM, Method>(
                     cls.Methods, m => new MethodVM(m) { Class = this } );

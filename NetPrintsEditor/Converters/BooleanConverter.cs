@@ -26,7 +26,7 @@ namespace NetPrintsEditor.Converters
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is T && EqualityComparer<T>.Default.Equals((T)value, True);
+            return value is T convertedValue && EqualityComparer<T>.Default.Equals(convertedValue, True);
         }
     }
 

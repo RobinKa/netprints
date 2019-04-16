@@ -16,16 +16,16 @@ namespace NetPrints.Translator
         private const string JumpStackVarName = "jumpStack";
         private const string JumpStackType = "System.Collections.Generic.Stack<int>";
 
-        private Dictionary<NodeOutputDataPin, string> variableNames = new Dictionary<NodeOutputDataPin, string>();
-        private Dictionary<Node, List<int>> nodeStateIds = new Dictionary<Node, List<int>>();
+        private readonly Dictionary<NodeOutputDataPin, string> variableNames = new Dictionary<NodeOutputDataPin, string>();
+        private readonly Dictionary<Node, List<int>> nodeStateIds = new Dictionary<Node, List<int>>();
         private int nextStateId = 0;
         private IEnumerable<Node> execNodes = new List<Node>();
         private IEnumerable<Node> nodes = new List<Node>();
-        private HashSet<NodeInputExecPin> pinsJumpedTo = new HashSet<NodeInputExecPin>();
+        private readonly HashSet<NodeInputExecPin> pinsJumpedTo = new HashSet<NodeInputExecPin>();
 
         private int jumpStackStateId;
 
-        private StringBuilder builder = new StringBuilder();
+        private readonly StringBuilder builder = new StringBuilder();
 
         private Method method;
 
@@ -99,7 +99,7 @@ namespace NetPrints.Translator
 
         private string GetPinIncomingValue(NodeInputDataPin pin)
         {
-            if(pin.IncomingPin == null)
+            if (pin.IncomingPin == null)
             {
                 if (pin.UsesUnconnectedValue && pin.UnconnectedValue != null)
                 {
@@ -190,21 +190,21 @@ namespace NetPrints.Translator
                 builder.Append("static ");
             }
 
-            if(method.Modifiers.HasFlag(MethodModifiers.Abstract))
+            if (method.Modifiers.HasFlag(MethodModifiers.Abstract))
             {
                 builder.Append("abstract ");
             }
 
-            if(method.Modifiers.HasFlag(MethodModifiers.Sealed))
+            if (method.Modifiers.HasFlag(MethodModifiers.Sealed))
             {
                 builder.Append("sealed ");
             }
 
-            if(method.Modifiers.HasFlag(MethodModifiers.Override))
+            if (method.Modifiers.HasFlag(MethodModifiers.Override))
             {
                 builder.Append("override ");
             }
-            else if(method.Modifiers.HasFlag(MethodModifiers.Virtual))
+            else if (method.Modifiers.HasFlag(MethodModifiers.Virtual))
             {
                 builder.Append("virtual ");
             }
@@ -234,7 +234,7 @@ namespace NetPrints.Translator
             builder.Append(method.Name);
 
             // Write generic arguments if any
-            if(method.GenericArgumentTypes.Any())
+            if (method.GenericArgumentTypes.Any())
             {
                 builder.Append("<" + string.Join(", ", method.GenericArgumentTypes.Select(arg => arg.FullCodeName)) + ">");
             }
@@ -248,8 +248,8 @@ namespace NetPrints.Translator
             builder.AppendLine("// Jump stack");
 
             builder.AppendLine($"State{jumpStackStateId}:");
-            builder.AppendLine($"if({JumpStackVarName}.Count == 0) throw new System.Exception();");
-            builder.AppendLine($"switch({JumpStackVarName}.Pop())");
+            builder.AppendLine($"if ({JumpStackVarName}.Count == 0) throw new System.Exception();");
+            builder.AppendLine($"switch ({JumpStackVarName}.Pop())");
             builder.AppendLine("{");
 
             foreach (NodeInputExecPin pin in pinsJumpedTo)
@@ -403,7 +403,7 @@ namespace NetPrints.Translator
 
         private void WriteGotoOutputPin(NodeOutputExecPin pin)
         {
-            if(pin.OutgoingPin == null)
+            if (pin.OutgoingPin == null)
             {
                 WriteGotoJumpStack();
             }
@@ -576,7 +576,7 @@ namespace NetPrints.Translator
             }
 
             // Assign the real variables from the temporary tuple
-            if(node.ReturnValuePins.Count > 1)
+            if (node.ReturnValuePins.Count > 1)
             {
                 var returnNames = GetOrCreatePinNames(node.ReturnValuePins);
                 for(int i = 0; i < returnNames.Count(); i++)
@@ -764,7 +764,7 @@ namespace NetPrints.Translator
                     builder.AppendLine("return;");
                 }
             }
-            else if(node.InputDataPins.Count == 1)
+            else if (node.InputDataPins.Count == 1)
             {
                 builder.AppendLine($"return {GetPinIncomingValue(node.InputDataPins[0])};");
             }

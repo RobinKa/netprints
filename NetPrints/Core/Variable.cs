@@ -160,7 +160,7 @@ namespace NetPrints.Core
         /// <param name="getter">Get method for the property. Can be null if there is none.</param>
         /// <param name="setter">Set method for the property. Can be null if there is none.</param>
         /// <param name="declaringType">Specifier for the type the property is contained in.</param>
-        public Variable(Class cls, string name, TypeSpecifier type, Method getter, 
+        public Variable(Class cls, string name, TypeSpecifier type, Method getter,
             Method setter, VariableModifiers modifiers)
         {
             Class = cls;

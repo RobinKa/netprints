@@ -227,7 +227,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if(Node is CallMethodNode callMethodNode)
+                if (Node is CallMethodNode callMethodNode)
                 {
                     return ProjectVM.Instance.ReflectionProvider.GetMethodDocumentation(callMethodNode.MethodSpecifier);
                 }
@@ -235,7 +235,6 @@ namespace NetPrintsEditor.ViewModels
                 return null;
             }
         }
-
 
         // Wrapped attributes of Node
 
@@ -260,7 +259,7 @@ namespace NetPrintsEditor.ViewModels
             get => inputDataPins;
             set
             {
-                if(inputDataPins != value)
+                if (inputDataPins != value)
                 {
                     inputDataPins = value;
                     OnPropertyChanged();
@@ -431,6 +430,7 @@ namespace NetPrintsEditor.ViewModels
                 OnPropertyChanged(nameof(ShowOverloads));
             }
         }
+
         private ObservableRangeCollection<object> overloads = new ObservableRangeCollection<object>();
 
         /// <summary>
@@ -440,7 +440,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get => Overloads.Count > 0;
         }
-        
+
         /// <summary>
         /// Currently overload or null if invalid for the node type.
         /// </summary>
@@ -473,12 +473,11 @@ namespace NetPrintsEditor.ViewModels
         public void ChangeOverload(object overload)
         {
             Node newNode = null;
-
-            if (overload is MethodSpecifier methodSpecifier && Node is CallMethodNode callMethodNode)
+            if (overload is MethodSpecifier methodSpecifier && Node is CallMethodNode)
             {
                 newNode = new CallMethodNode(Node.Method, methodSpecifier);
             }
-            else if (overload is ConstructorSpecifier constructorSpecifier && Node is ConstructorNode constructorNode)
+            else if (overload is ConstructorSpecifier constructorSpecifier && Node is ConstructorNode)
             {
                 newNode = new ConstructorNode(Node.Method, constructorSpecifier);
             }

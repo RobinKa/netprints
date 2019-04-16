@@ -9,16 +9,16 @@ namespace NetPrintsEditor.Reflection
 {
     public class DocumentationUtil
     {
-        private Dictionary<string, XmlDocument> cachedDocuments =
+        private readonly Dictionary<string, XmlDocument> cachedDocuments =
             new Dictionary<string, XmlDocument>();
 
-        private Dictionary<string, string> cachedMethodSummaries =
+        private readonly Dictionary<string, string> cachedMethodSummaries =
             new Dictionary<string, string>();
 
-        private Dictionary<Tuple<string, string>, string> cachedMethodParameterInfos =
+        private readonly Dictionary<Tuple<string, string>, string> cachedMethodParameterInfos =
             new Dictionary<Tuple<string, string>, string>();
 
-        private Dictionary<string, string> cachedMethodReturnInfo =
+        private readonly Dictionary<string, string> cachedMethodReturnInfo =
             new Dictionary<string, string>();
 
         private readonly Microsoft.CodeAnalysis.Compilation compilation;
@@ -165,7 +165,6 @@ namespace NetPrintsEditor.Reflection
             XmlDocument doc = GetAssemblyDocumentationDocument(methodSymbol.ContainingAssembly);
             if (doc != null)
             {
-
                 string searchName = $"M:{methodSymbol.ContainingType.GetFullName()}.{methodSymbol.Name}";
                 if (methodSymbol.Parameters.Length > 0)
                 {

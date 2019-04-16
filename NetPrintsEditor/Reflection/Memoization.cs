@@ -9,13 +9,15 @@ namespace NetPrintsEditor.Reflection
 
         public static Func<R> Memoize<R>(this Func<R> f)
         {
-            R r = default(R);
+            R r = default;
+
             return () =>
             {
                 if (r == null)
                 {
                     r = f();
                 }
+
                 return r;
             };
         }
@@ -23,14 +25,15 @@ namespace NetPrintsEditor.Reflection
         public static Func<A, R> Memoize<A, R>(this Func<A, R> f)
         {
             var d = new Dictionary<A, R>();
+
             return a =>
             {
-                R r;
-                if (!d.TryGetValue(a, out r))
+                if (!d.TryGetValue(a, out R r))
                 {
                     r = f(a);
                     d.Add(a, r);
                 }
+
                 return r;
             };
         }

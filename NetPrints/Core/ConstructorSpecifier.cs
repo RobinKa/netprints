@@ -26,7 +26,7 @@ namespace NetPrints.Core
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Specifiers for the arguments this constructor takes.
         /// </summary>

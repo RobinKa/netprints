@@ -40,7 +40,7 @@ namespace NetPrintsEditor.Controls
 
         public static readonly DependencyProperty PinProperty =
             DependencyProperty.Register(nameof(Pin), typeof(NodePinVM), typeof(PinControl));
-        
+
         public NodePinVM Pin
         {
             get => GetValue(PinProperty) as NodePinVM;
@@ -84,7 +84,7 @@ namespace NetPrintsEditor.Controls
 
         private void OnPinElementMouseMove(object sender, MouseEventArgs e)
         {
-            if(sender is Shape shape && e.LeftButton == MouseButtonState.Pressed)
+            if (sender is Shape shape && e.LeftButton == MouseButtonState.Pressed)
             {
                 Pin.IsBeingConnected = true;
                 DragDrop.DoDragDrop(shape, Pin, DragDropEffects.Link);
@@ -120,13 +120,13 @@ namespace NetPrintsEditor.Controls
                 // Another pin is being hovered over this one, see if it can be linked to this pin
 
                 NodePinVM draggingPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-                
-                if(GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin, 
+
+                if (GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin,
                     (a, b) => ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
                     (a, b) => ProjectVM.Instance.ReflectionProvider.HasImplicitCast(a, b)))
                 {
                     e.Effects = DragDropEffects.Link;
-                    
+
                     draggingPin.ConnectingAbsolutePosition = Pin.AbsolutePosition;
                 }
                 else

@@ -26,7 +26,7 @@ namespace NetPrintsEditor
             set => SetValue(ProjectProperty, value);
         }
 
-        private Dictionary<ClassVM, ClassEditorWindow> classEditorWindows = new Dictionary<ClassVM, ClassEditorWindow>();
+        private readonly Dictionary<ClassVM, ClassEditorWindow> classEditorWindows = new Dictionary<ClassVM, ClassEditorWindow>();
 
         public MainEditorWindow()
         {
@@ -34,12 +34,12 @@ namespace NetPrintsEditor
 
             Project = new ProjectVM(null);
 
-            if (App.StartupArguments != null && App.StartupArguments.Length == 1 && App.StartupArguments[0] != null)
+            if (App.StartupArguments?.Length == 1 && App.StartupArguments[0] != null)
             {
                 _ = LoadProject(App.StartupArguments[0]);
             }
         }
-        
+
         private void OpenOrCreateClassEditorWindow(ClassVM cls)
         {
             if (classEditorWindows.ContainsKey(cls))
@@ -87,7 +87,7 @@ namespace NetPrintsEditor
         #region UI Events
         private void OnClassButtonClicked(object sender, RoutedEventArgs e)
         {
-            if(sender is Button button && button.DataContext is ClassVM cls)
+            if (sender is Button button && button.DataContext is ClassVM cls)
             {
                 OpenOrCreateClassEditorWindow(cls);
             }
@@ -97,7 +97,7 @@ namespace NetPrintsEditor
         {
             if (sender is Button button && button.DataContext is ClassVM cls)
             {
-                if(classEditorWindows.ContainsKey(cls))
+                if (classEditorWindows.ContainsKey(cls))
                 {
                     classEditorWindows[cls].Close();
                     classEditorWindows.Remove(cls);
@@ -116,7 +116,7 @@ namespace NetPrintsEditor
 
         private void NewClassButtonClicked(object sender, RoutedEventArgs e)
         {
-            ClassVM newClass = Project.CreateNewClass();
+            _ = Project.CreateNewClass();
         }
 
         private void ExistingClassButtonClicked(object sender, RoutedEventArgs e)
@@ -134,7 +134,7 @@ namespace NetPrintsEditor
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to load existing class at path {openFileDialog.FileName}:\n\n{ex}", 
+                    MessageBox.Show($"Failed to load existing class at path {openFileDialog.FileName}:\n\n{ex}",
                         "Failed to load existing class", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -149,14 +149,14 @@ namespace NetPrintsEditor
             try
             {
                 Project = await Task.Run(() => ProjectVM.LoadFromPath(path));
-                await overlay.CloseAsync();
+                await overlay.CloseAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 await overlay.CloseAsync();
-                var result = await this.ShowMessageAsync("Failed to load project", $"Failed to load project at path {path}. The exception has been copied to your clipboard.\n\n{ex}",
-                    MessageDialogStyle.Affirmative, new MetroDialogSettings());
                 Clipboard.SetText(ex.ToString());
+                var result = await this.ShowMessageAsync("Failed to load project", $"Failed to load project at path {path}. The exception has been copied to your clipboard.\n\n{ex}",
+                    MessageDialogStyle.Affirmative, new MetroDialogSettings()).ConfigureAwait(false);
             }
         }
 
@@ -241,7 +241,7 @@ namespace NetPrintsEditor
                 Project = oldProject;
             }
 
-            if (Project != null && Project.Project != null)
+            if (Project?.Project != null)
             {
                 Project.Name = Path.GetFileNameWithoutExtension(Project.Path);
             }
@@ -260,7 +260,7 @@ namespace NetPrintsEditor
 
         private void OnProjectPropertyChangedWhileCompiling(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(Project.IsCompiling) && !Project.IsCompiling)
+            if (e.PropertyName == nameof(Project.IsCompiling) && !Project.IsCompiling)
             {
                 Project.PropertyChanged -= OnProjectPropertyChangedWhileCompiling;
 
@@ -274,9 +274,9 @@ namespace NetPrintsEditor
         private async void OnReferencesButtonClicked(object sender, RoutedEventArgs e)
         {
             var referenceListWindow = new ReferenceListWindow(Project);
-            referenceListWindow.CloseButton.Click += async (sender, e) => await this.HideMetroDialogAsync(referenceListWindow);
+            referenceListWindow.CloseButton.Click += async (sender, e) => await this.HideMetroDialogAsync(referenceListWindow).ConfigureAwait(false);
 
-            await this.ShowMetroDialogAsync(referenceListWindow);
+            await this.ShowMetroDialogAsync(referenceListWindow).ConfigureAwait(false);
         }
     }
 }

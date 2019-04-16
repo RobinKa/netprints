@@ -14,7 +14,6 @@ namespace NetPrints.Core
     [DataContract]
     public class GenericTypeConstraint
     {
-        
     }
 
     /// <summary>
@@ -36,7 +35,7 @@ namespace NetPrints.Core
         public GenericType(string name, IEnumerable<GenericTypeConstraint> constraints = null)
             : base(name)
         {
-            if(constraints == null)
+            if (constraints == null)
             {
                 Constraints = new ObservableRangeCollection<GenericTypeConstraint>();
             }

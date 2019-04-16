@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsUnitTests", "NetPr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsEditorUnitTests", "NetPrintsEditorUnitTests\NetPrintsEditorUnitTests.csproj", "{B4288686-0B8A-453C-B654-4257F56BAB33}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{56BFC8BD-C86A-4C00-8DED-6F9F508BC3C7}"
+	ProjectSection(SolutionItems) = preProject
+		CSharpRuleSet.ruleset = CSharpRuleSet.ruleset
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

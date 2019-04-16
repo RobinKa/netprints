@@ -52,17 +52,17 @@ namespace NetPrints.Graph
                 {
                     oldConnections.Add(i, pin.IncomingPin);
                 }
-                
+
                 GraphUtil.DisconnectInputDataPin(pin);
             }
-            
+
             InputDataPins.Clear();
-            
+
             foreach (NodeInputDataPin mainInputPin in mainInputPins)
             {
                 AddInputDataPin(mainInputPin.Name, mainInputPin.PinType.Value);
             }
-            
+
             // Restore old connections
             foreach (var oldConn in oldConnections)
             {

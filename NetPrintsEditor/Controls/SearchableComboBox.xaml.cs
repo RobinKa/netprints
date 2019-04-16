@@ -35,11 +35,11 @@ namespace NetPrintsEditor.Controls
     public partial class SearchableComboBox : UserControl
     {
         //public delegate void ItemSelectedHandler(object sender, object item);
-        
+
         public static DependencyProperty ItemsProperty = DependencyProperty.Register(
             nameof(Items), typeof(IEnumerable<SearchableComboBoxItem>), typeof(SearchableComboBox));
 
-        private SuggestionListConverter suggestionConverter;
+        private readonly SuggestionListConverter suggestionConverter;
 
         //public event ItemSelectedHandler OnItemSelected;
 
@@ -62,8 +62,8 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
 
             suggestionConverter = new SuggestionListConverter();
-            
-            if(searchList.Items.CanFilter)
+
+            if (searchList.Items.CanFilter)
             {
                 searchList.Items.Filter = Filter;
             }
@@ -71,7 +71,7 @@ namespace NetPrintsEditor.Controls
 
         private bool Filter(object item)
         {
-            if(string.IsNullOrEmpty(searchText.Text))
+            if (string.IsNullOrEmpty(searchText.Text))
             {
                 return true;
             }
@@ -182,20 +182,20 @@ namespace NetPrintsEditor.Controls
                     else if (t == TypeSpecifier.FromType<ConstructorNode>())
                     {
                         SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
-                        if(selectTypeDialog.ShowDialog() == true)
+                        if (selectTypeDialog.ShowDialog() == true)
                         {
                             TypeSpecifier selectedType = selectTypeDialog.SelectedType;
 
-                            if(selectedType.Equals(null))
+                            if (selectedType.Equals(null))
                             {
                                 throw new Exception($"Type {selectTypeDialog.SelectedType} was not found using reflection.");
                             }
 
                             // Get all public constructors for the type
-                            IEnumerable<ConstructorSpecifier> constructors = 
+                            IEnumerable<ConstructorSpecifier> constructors =
                                 ProjectVM.Instance.ReflectionProvider.GetConstructors(selectedType);
 
-                            if (constructors != null && constructors.Count() > 0)
+                            if (constructors?.Any() == true)
                             {
                                 // Just choose the first constructor we find
                                 ConstructorSpecifier constructorSpecifier = constructors.ElementAt(0);
@@ -360,8 +360,7 @@ namespace NetPrintsEditor.Controls
 
             // Scroll to top left
             // https://stackoverflow.com/a/7182603/4332314
-            var border = VisualTreeHelper.GetChild(searchList, 0) as Decorator;
-            if (border != null)
+            if (VisualTreeHelper.GetChild(searchList, 0) is Decorator border)
             {
                 var scrollViewer = border.Child as ScrollViewer;
                 scrollViewer.ScrollToTop();

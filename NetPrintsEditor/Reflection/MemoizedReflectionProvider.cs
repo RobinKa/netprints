@@ -6,7 +6,7 @@ namespace NetPrintsEditor.Reflection
 {
     public class MemoizedReflectionProvider : IReflectionProvider
     {
-        private IReflectionProvider provider;
+        private readonly IReflectionProvider provider;
 
         private Func<TypeSpecifier, IEnumerable<ConstructorSpecifier>> memoizedGetConstructors;
         private Func<TypeSpecifier, IEnumerable<string>> memoizedGetEnumNames;

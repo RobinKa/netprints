@@ -28,7 +28,7 @@ namespace NetPrints.Graph
             get => incomingPin;
             set
             {
-                if(incomingPin != value)
+                if (incomingPin != value)
                 {
                     var oldPin = incomingPin;
 
@@ -65,10 +65,10 @@ namespace NetPrints.Graph
                 // this pin uses the unconnected value
                 // the value is of the same type or string if enum
 
-                if (value != null && (!UsesUnconnectedValue ||
-                    (PinType.Value is TypeSpecifier t && (
-                        (!t.IsEnum && TypeSpecifier.FromType(value.GetType()) != t) ||
-                        (t.IsEnum && value.GetType() != typeof(string))))))
+                if (value != null && (!UsesUnconnectedValue
+                    || (PinType.Value is TypeSpecifier t && (
+                        (!t.IsEnum && TypeSpecifier.FromType(value.GetType()) != t)
+                        || (t.IsEnum && value.GetType() != typeof(string))))))
                 {
                     throw new ArgumentException();
                 }

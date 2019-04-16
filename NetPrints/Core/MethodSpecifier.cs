@@ -156,13 +156,13 @@ namespace NetPrints.Core
 
             methodString += $"({argTypeString})";
 
-            if(GenericArguments.Count > 0)
+            if (GenericArguments.Count > 0)
             {
                 string genArgTypeString = string.Join(", ", GenericArguments.Select(s => s.ShortName));
                 methodString += $"<{genArgTypeString}>";
             }
 
-            if(ReturnTypes.Count > 0)
+            if (ReturnTypes.Count > 0)
             {
                 string returnTypeString = string.Join(", ", ReturnTypes.Select(s => s.ShortName));
                 methodString += $" : {returnTypeString}";
@@ -173,15 +173,15 @@ namespace NetPrints.Core
 
         public override bool Equals(object obj)
         {
-            if(obj is MethodSpecifier methodSpec)
+            if (obj is MethodSpecifier methodSpec)
             {
                 return
-                    methodSpec.Name == Name &&
-                    methodSpec.DeclaringType == DeclaringType &&
-                    methodSpec.ArgumentTypes.SequenceEqual(ArgumentTypes) &&
-                    methodSpec.ReturnTypes.SequenceEqual(ReturnTypes) &&
-                    methodSpec.Modifiers == Modifiers &&
-                    methodSpec.GenericArguments.SequenceEqual(GenericArguments);
+                    methodSpec.Name == Name
+                    && methodSpec.DeclaringType == DeclaringType
+                    && methodSpec.ArgumentTypes.SequenceEqual(ArgumentTypes)
+                    && methodSpec.ReturnTypes.SequenceEqual(ReturnTypes)
+                    && methodSpec.Modifiers == Modifiers
+                    && methodSpec.GenericArguments.SequenceEqual(GenericArguments);
             }
             else
             {

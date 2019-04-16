@@ -26,7 +26,7 @@ namespace NetPrints.Graph
             get => outgoingPin;
             set
             {
-                if(outgoingPin != value)
+                if (outgoingPin != value)
                 {
                     var oldPin = outgoingPin;
 

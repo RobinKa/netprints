@@ -71,7 +71,7 @@ namespace NetPrintsEditor.ViewModels
                     }
 
                     variable.Visibility = value;
-                    
+
                     OnPropertyChanged();
                 }
             }
@@ -162,8 +162,8 @@ namespace NetPrintsEditor.ViewModels
 
             // Create return input pin with correct type
             // TODO: Make sure we can't delete type pins.
-            int offsetX = -308;
-            int offsetY = -112;
+            const int offsetX = -308;
+            const int offsetY = -112;
             TypeNode returnTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.MainReturnNode.PositionX + offsetX, method.MainReturnNode.PositionY + offsetY);
             method.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
@@ -201,8 +201,8 @@ namespace NetPrintsEditor.ViewModels
 
             // Create argument output pin with correct type
             // TODO: Make sure we can't delete type pins.
-            int offsetX = -308;
-            int offsetY = -112;
+            const int offsetX = -308;
+            const int offsetY = -112;
             TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX + offsetX, method.EntryNode.PositionY + offsetY);
             method.EntryNode.AddArgument();
             GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);

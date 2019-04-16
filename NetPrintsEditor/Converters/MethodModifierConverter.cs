@@ -8,7 +8,7 @@ namespace NetPrintsEditor.Converters
     [ValueConversion(typeof(MethodModifiers), typeof(string))]
     public class MethodModifierConverter : IValueConverter
     {
-        MethodModifiers modifiers;
+        private MethodModifiers modifiers;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

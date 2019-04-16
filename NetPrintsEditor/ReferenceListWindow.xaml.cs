@@ -36,12 +36,12 @@ namespace NetPrintsEditor
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            if(openFileDialog.ShowDialog() == true)
+            if (openFileDialog.ShowDialog() == true)
             {
                 try
                 {
                     var assemblyReference = new AssemblyReference(openFileDialog.FileName);
-                    
+
                     if (!Project.Project.References.OfType<AssemblyReference>().Any(r =>
                         string.Equals(Path.GetFullPath(r.AssemblyPath), Path.GetFullPath(assemblyReference.AssemblyPath), StringComparison.OrdinalIgnoreCase)))
                     {

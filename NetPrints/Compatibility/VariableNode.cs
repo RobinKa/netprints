@@ -39,8 +39,10 @@ namespace NetPrints.Graph
                 if (Variable is null)
                 {
                     Variable = new VariableSpecifier(oldVariable.Name, oldVariable.VariableType, oldVariable.Visibility,
-                        oldVariable.Visibility, oldTargetType, oldVariable.Modifiers);
-                    Variable.Visibility = oldVariable.Visibility;
+                        oldVariable.Visibility, oldTargetType, oldVariable.Modifiers)
+                    {
+                        Visibility = oldVariable.Visibility
+                    };
                 }
             }
         }

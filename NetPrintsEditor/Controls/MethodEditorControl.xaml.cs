@@ -30,7 +30,7 @@ namespace NetPrintsEditor.Controls
 
         public static DependencyProperty MethodProperty = DependencyProperty.Register(
             nameof(Method), typeof(MethodVM), typeof(MethodEditorControl));
-        
+
         public static DependencyProperty SuggestionsProperty = DependencyProperty.Register(
             nameof(Suggestions), typeof(IEnumerable<SearchableComboBoxItem>), typeof(MethodEditorControl));
 
@@ -50,7 +50,7 @@ namespace NetPrintsEditor.Controls
             set;
         }
 
-        private List<object> builtInNodes = new List<object>() {
+        private readonly List<object> builtInNodes = new List<object>() {
             TypeSpecifier.FromType<ForLoopNode>(),
             TypeSpecifier.FromType<IfElseNode>(),
             TypeSpecifier.FromType<ConstructorNode>(),
@@ -164,7 +164,7 @@ namespace NetPrintsEditor.Controls
                             AddSuggestionsWithCategory("NetPrints", new[] { new MakeDelegateTypeInfo(pinTypeSpec, Method.Class.Type) });
 
                             // Add variables and methods of the pin type
-                            AddSuggestionsWithCategory("Pin Variables", 
+                            AddSuggestionsWithCategory("Pin Variables",
                                 ProjectVM.Instance.ReflectionProvider.GetVariables(
                                     new ReflectionProviderVariableQuery()
                                         .WithType(pinTypeSpec)
@@ -510,23 +510,22 @@ namespace NetPrintsEditor.Controls
 
         private void OnDrawCanvasRightMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TranslateTransform currentTransform = drawCanvas.RenderTransform as TranslateTransform;
             dragCanvas = true;
             dragCanvasStartLocation = e.GetPosition(this);
-            dragCanvasStartOffset = currentTransform != null ?
+            dragCanvasStartOffset = drawCanvas.RenderTransform is TranslateTransform currentTransform ?
                     new Vector(currentTransform.X, currentTransform.Y) :
                     new Vector(0, 0);
 
             movedDuringDrag = false;
 
             drawCanvas.CaptureMouse();
-            
+
             e.Handled = true;
         }
 
         private void OnDrawCanvasMouseMove(object sender, MouseEventArgs e)
         {
-            if(dragCanvas)
+            if (dragCanvas)
             {
                 if (e.RightButton == MouseButtonState.Pressed)
                 {
@@ -616,8 +615,7 @@ namespace NetPrintsEditor.Controls
             // Translate if the scale did not stay the same
             if (oldScale != DrawCanvasScale)
             {
-                TranslateTransform currentTransform = drawCanvas.RenderTransform as TranslateTransform;
-                Vector currentOffset = currentTransform != null ?
+                Vector currentOffset = drawCanvas.RenderTransform is TranslateTransform currentTransform ?
                     new Vector(currentTransform.X, currentTransform.Y) :
                     new Vector(0, 0);
 
@@ -644,7 +642,7 @@ namespace NetPrintsEditor.Controls
         {
             base.OnPropertyChanged(e);
 
-            if(e.Property == MethodProperty)
+            if (e.Property == MethodProperty)
             {
                 ResetDrawCanvasTransform();
             }
@@ -670,9 +668,7 @@ namespace NetPrintsEditor.Controls
         private void CablePath_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var element = sender as FrameworkElement;
-            var pin = element?.DataContext as NodePinVM;
-
-            if (pin == null)
+            if (!(element?.DataContext is NodePinVM pin))
             {
                 throw new Exception("Could not find cable's pin.");
             }
@@ -690,9 +686,7 @@ namespace NetPrintsEditor.Controls
         private void CablePath_MouseUp(object sender, MouseButtonEventArgs e)
         {
             var element = sender as FrameworkElement;
-            var pin = element?.DataContext as NodePinVM;
-
-            if (pin == null)
+            if (!(element?.DataContext is NodePinVM pin))
             {
                 throw new Exception("Could not find cable's pin.");
             }

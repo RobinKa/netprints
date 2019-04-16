@@ -11,12 +11,12 @@ namespace NetPrintsEditor.Converters
 {
     public class SuggestionListConverter : IValueConverter
     {
-        private MethodSpecifierConverter methodSpecifierConverter = new MethodSpecifierConverter();
+        private readonly MethodSpecifierConverter methodSpecifierConverter = new MethodSpecifierConverter();
 
         public object Convert(object tupleObject, Type targetType, object parameter, CultureInfo culture)
         {
-            string text = "";
-            string iconPath = "";
+            string text;
+            string iconPath;
 
             SearchableComboBoxItem item = (SearchableComboBoxItem)tupleObject;
             string category = item.Category;

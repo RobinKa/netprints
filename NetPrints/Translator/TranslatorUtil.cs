@@ -35,7 +35,7 @@ namespace NetPrints.Translator
 
             string name = TemporaryVariablePrefix;
             int additionalLength = TemporaryVariableNameLength - name.Length;
-            if(additionalLength > 0)
+            if (additionalLength > 0)
             {
                 string addition = new string(Enumerable.Repeat(chars, additionalLength).Select(s => s[random.Next(s.Length)]).ToArray());
                 addition = addition[0].ToString().ToUpper() + string.Join("", addition.Skip(1));
@@ -54,7 +54,7 @@ namespace NetPrints.Translator
         public static string ObjectToLiteral(object obj, TypeSpecifier type)
         {
             // Interpret object string as enum field
-            if(type.IsEnum)
+            if (type.IsEnum)
             {
                 return $"{type}.{obj}";
             }
@@ -67,7 +67,7 @@ namespace NetPrints.Translator
             {
                 return $"{obj}F";
             }
-            else if(type == TypeSpecifier.FromType<double>())
+            else if (type == TypeSpecifier.FromType<double>())
             {
                 return $"{obj}D";
             }
@@ -80,15 +80,15 @@ namespace NetPrints.Translator
             {
                 return $"'{obj}'";
             }
-            else if(type == TypeSpecifier.FromType<long>())
+            else if (type == TypeSpecifier.FromType<long>())
             {
                 return $"{obj}L";
             }
-            else if(type == TypeSpecifier.FromType<ulong>())
+            else if (type == TypeSpecifier.FromType<ulong>())
             {
                 return $"{obj}UL";
             }
-            else if(type == TypeSpecifier.FromType<decimal>())
+            else if (type == TypeSpecifier.FromType<decimal>())
             {
                 return $"{obj}M";
             }
@@ -133,7 +133,7 @@ namespace NetPrints.Translator
 
             foreach (NodeOutputExecPin pin in node.OutputExecPins)
             {
-                if(pin.OutgoingPin != null && !nodes.Contains(pin.OutgoingPin.Node))
+                if (pin.OutgoingPin != null && !nodes.Contains(pin.OutgoingPin.Node))
                 {
                     AddAllNodes(pin.OutgoingPin.Node, ref nodes);
                 }
@@ -141,7 +141,7 @@ namespace NetPrints.Translator
 
             foreach (NodeInputDataPin pin in node.InputDataPins)
             {
-                if(pin.IncomingPin != null && !nodes.Contains(pin.IncomingPin.Node))
+                if (pin.IncomingPin != null && !nodes.Contains(pin.IncomingPin.Node))
                 {
                     AddAllNodes(pin.IncomingPin.Node, ref nodes);
                 }

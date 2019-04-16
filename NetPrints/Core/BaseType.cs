@@ -54,7 +54,7 @@ namespace NetPrints.Core
             get => Name;
         }
 
-        public BaseType(string name)
+        protected BaseType(string name)
         {
             Name = name;
         }

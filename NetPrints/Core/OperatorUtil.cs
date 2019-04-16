@@ -35,7 +35,7 @@ namespace NetPrints.Core
             ["op_UnaryPlus"] = new OperatorInfo("Unary Plus", "+", true),
             ["op_UnaryNegation"] = new OperatorInfo("Unary Negation", "-", true),
             ["op_LogicalNot"] = new OperatorInfo("Not", "!", true),
-            
+
             // Binary
             ["op_Addition"] = new OperatorInfo("Add", "+", false),
             ["op_Subtraction"] = new OperatorInfo("Subtract", "-", false),

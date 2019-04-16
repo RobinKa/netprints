@@ -6,7 +6,6 @@ namespace NetPrintsEditor.Reflection
 {
     public interface IReflectionProviderQuery
     {
-
     }
 
     public class ReflectionProviderMethodQuery : IReflectionProviderQuery, IEqualityComparer<ReflectionProviderMethodQuery>
@@ -56,8 +55,8 @@ namespace NetPrintsEditor.Reflection
 
         public bool Equals(ReflectionProviderMethodQuery x, ReflectionProviderMethodQuery y)
         {
-            return x.Type == y.Type && x.Static == y.Static && x.VisibleFrom == y.VisibleFrom &&
-                x.ReturnType == y.ReturnType && x.ArgumentType == y.ArgumentType && x.HasGenericArguments == y.HasGenericArguments;
+            return x.Type == y.Type && x.Static == y.Static && x.VisibleFrom == y.VisibleFrom
+                && x.ReturnType == y.ReturnType && x.ArgumentType == y.ArgumentType && x.HasGenericArguments == y.HasGenericArguments;
         }
 
         public int GetHashCode(ReflectionProviderMethodQuery obj)
@@ -67,8 +66,8 @@ namespace NetPrintsEditor.Reflection
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) ||
-                (obj is ReflectionProviderMethodQuery query && Equals(this, query));
+            return ReferenceEquals(this, obj)
+                || (obj is ReflectionProviderMethodQuery query && Equals(this, query));
         }
 
         public override int GetHashCode()
@@ -112,8 +111,8 @@ namespace NetPrintsEditor.Reflection
 
         public bool Equals(ReflectionProviderVariableQuery x, ReflectionProviderVariableQuery y)
         {
-            return x.Type == y.Type && x.Static == y.Static && x.VisibleFrom == y.VisibleFrom &&
-                x.VariableType == y.VariableType && x.VariableTypeDerivesFrom == y.VariableTypeDerivesFrom;
+            return x.Type == y.Type && x.Static == y.Static && x.VisibleFrom == y.VisibleFrom
+                && x.VariableType == y.VariableType && x.VariableTypeDerivesFrom == y.VariableTypeDerivesFrom;
         }
 
         public int GetHashCode(ReflectionProviderVariableQuery obj)
@@ -123,8 +122,8 @@ namespace NetPrintsEditor.Reflection
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) ||
-                (obj is ReflectionProviderVariableQuery query && Equals(this, query));
+            return ReferenceEquals(this, obj)
+                || (obj is ReflectionProviderVariableQuery query && Equals(this, query));
         }
 
         public override int GetHashCode()

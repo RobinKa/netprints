@@ -153,7 +153,6 @@ namespace NetPrintsEditor.Models
 
         private Project()
         {
-
         }
 
         /// <summary>
@@ -163,10 +162,8 @@ namespace NetPrintsEditor.Models
         {
             SaveVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
-            using (FileStream fileStream = File.Open(Path, FileMode.Create))
-            {
-                ProjectSerializer.WriteObject(fileStream, this);
-            }
+            using FileStream fileStream = File.Open(Path, FileMode.Create);
+            ProjectSerializer.WriteObject(fileStream, this);
         }
 
         /// <summary>

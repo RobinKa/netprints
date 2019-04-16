@@ -11,7 +11,7 @@ namespace NetPrintsEditor.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is MethodSpecifier methodSpecifier)
+            if (value is MethodSpecifier methodSpecifier)
             {
                 string name;
 
@@ -28,7 +28,7 @@ namespace NetPrintsEditor.Converters
                 string paramTypeNames = string.Join(", ", methodSpecifier.Parameters);
                 string s = $"{methodSpecifier.DeclaringType} {name} ({paramTypeNames})";
 
-                if(methodSpecifier.ReturnTypes.Count > 0)
+                if (methodSpecifier.ReturnTypes.Count > 0)
                 {
                     s += $" : {string.Join(", ", methodSpecifier.ReturnTypes)}";
                 }

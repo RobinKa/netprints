@@ -56,7 +56,7 @@ namespace NetPrints.Graph
             {
                 delegateType = new TypeSpecifier("System.Action", false, false, methodSpecifier.ArgumentTypes);
             }
-            else if(methodSpecifier.ReturnTypes.Count == 1)
+            else if (methodSpecifier.ReturnTypes.Count == 1)
             {
                 delegateType = new TypeSpecifier("System.Func", false, false, methodSpecifier.ArgumentTypes.Concat(methodSpecifier.ReturnTypes).ToList());
             }
@@ -70,7 +70,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            if(IsFromStaticMethod)
+            if (IsFromStaticMethod)
             {
                 return $"Make Delegate from {MethodSpecifier.DeclaringType} {MethodSpecifier.Name}";
             }

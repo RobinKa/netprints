@@ -8,6 +8,5 @@ namespace NetPrintsEditor.Compilation
     [KnownType(typeof(SourceDirectoryReference))]
     public abstract class CompilationReference : ICompilationReference
     {
-
     }
 }

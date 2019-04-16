@@ -32,8 +32,8 @@ namespace NetPrintsEditor.ViewModels
         {
             Contract.EndContractBlock();
 
-            this.source = source ?? throw new ArgumentNullException("source");
-            this.viewModelFactory = viewModelFactory ?? throw new ArgumentNullException("viewModelFactory");
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            this.viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             this.source.CollectionChanged += OnSourceCollectionChanged;
         }
 

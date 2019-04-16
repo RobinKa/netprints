@@ -52,11 +52,11 @@ namespace NetPrints.Graph
 
                 if (datA.PinType.Value is GenericType genTypeA)
                 {
-                    if(datB.PinType.Value is GenericType genTypeB)
+                    if (datB.PinType.Value is GenericType genTypeB)
                     {
                         return genTypeA == genTypeB;
                     }
-                    else if(datB.PinType.Value is TypeSpecifier typeSpecB2)
+                    else if (datB.PinType.Value is TypeSpecifier typeSpecB2)
                     {
                         return genTypeA == typeSpecB2;
                     }
@@ -76,7 +76,7 @@ namespace NetPrints.Graph
                     }
                 }
             }
-            else if(!swapped)
+            else if (!swapped)
             {
                 // Try the same for swapped order
                 return CanConnectNodePins(pinB, pinA, isSubclassOf, hasImplicitCast, true);
@@ -124,7 +124,7 @@ namespace NetPrints.Graph
         public static void ConnectExecPins(NodeOutputExecPin fromPin, NodeInputExecPin toPin)
         {
             // Remove from old pin if any
-            if(fromPin.OutgoingPin != null)
+            if (fromPin.OutgoingPin != null)
             {
                 fromPin.OutgoingPin.IncomingPins.Remove(fromPin);
             }
@@ -141,7 +141,7 @@ namespace NetPrints.Graph
         public static void ConnectDataPins(NodeOutputDataPin fromPin, NodeInputDataPin toPin)
         {
             // Remove from old pin if any
-            if(toPin.IncomingPin != null)
+            if (toPin.IncomingPin != null)
             {
                 toPin.IncomingPin.OutgoingPins.Remove(toPin);
             }

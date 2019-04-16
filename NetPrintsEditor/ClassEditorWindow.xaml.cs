@@ -27,7 +27,7 @@ namespace NetPrintsEditor
 
         public static DependencyProperty ClassProperty = DependencyProperty.Register("Class", typeof(ClassVM), typeof(ClassEditorWindow));
 
-        private UndoRedoStack undoRedoStack = UndoRedoStack.Instance;
+        private readonly UndoRedoStack undoRedoStack = UndoRedoStack.Instance;
 
         public ClassEditorWindow(ClassVM cls)
         {
@@ -40,8 +40,8 @@ namespace NetPrintsEditor
 
         private void OnMethodDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is MethodVM method &&
-                EditorCommands.OpenMethod.CanExecute(method))
+            if (sender is FrameworkElement element && element.DataContext is MethodVM method
+                && EditorCommands.OpenMethod.CanExecute(method))
             {
                 EditorCommands.OpenMethod.Execute(method);
             }
@@ -49,8 +49,8 @@ namespace NetPrintsEditor
 
         private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && sender is FrameworkElement element && 
-                element.DataContext != null)
+            if (e.LeftButton == MouseButtonState.Pressed && sender is FrameworkElement element
+                && element.DataContext != null)
             {
                 DragDrop.DoDragDrop(element, element.DataContext, DragDropEffects.Copy);
             }
@@ -166,11 +166,11 @@ namespace NetPrintsEditor
 
         private void CommandOverrideMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is MethodSpecifier methodSpecifier &&
-                !Class.Methods.Any(m => m.Name == methodSpecifier.Name) &&
-                (methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual) ||
-                 methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override) ||
-                 methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract));
+            e.CanExecute = Class != null && e.Parameter is MethodSpecifier methodSpecifier
+                && !Class.Methods.Any(m => m.Name == methodSpecifier.Name)
+                && (methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual)
+                 || methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override)
+                 || methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract));
         }
 
         private void CommandOverrideMethod_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -236,8 +236,8 @@ namespace NetPrintsEditor
 
         private void CommandSetNodePosition_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is SetNodePositionParameters p && 
-                FindNodeVMFromSetNodePositionParameters(p) != null;
+            e.CanExecute = e.Parameter is SetNodePositionParameters p
+                && FindNodeVMFromSetNodePositionParameters(p) != null;
         }
 
         private void CommandSetNodePosition_Execute(object sender, ExecutedRoutedEventArgs e)
@@ -249,8 +249,8 @@ namespace NetPrintsEditor
         }
 
         public NodeVM FindNodeVMFromSetNodePositionParameters(SetNodePositionParameters p)
-        {            
-            if(p.Node != null)
+        {
+            if (p.Node != null)
             {
                 return p.Node;
             }
@@ -267,9 +267,9 @@ namespace NetPrintsEditor
         private void CommandConnectPins_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             ConnectPinsParameters xcp = e.Parameter as ConnectPinsParameters;
-            
-            e.CanExecute = e.Parameter is ConnectPinsParameters cp && 
-                GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin, 
+
+            e.CanExecute = e.Parameter is ConnectPinsParameters cp
+                && GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin,
                 (a, b) => ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
                 (a, b) => ProjectVM.Instance.ReflectionProvider.HasImplicitCast(a, b));
         }
@@ -298,7 +298,7 @@ namespace NetPrintsEditor
         private void CommandAddNode_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AddNodeParameters p = e.Parameter as AddNodeParameters;
-            
+
             if (p.Method == null)
             {
                 p.Method = methodEditor.Method.Method;
@@ -326,7 +326,6 @@ namespace NetPrintsEditor
                 methodEditor.SuggestionPin.ConnectRelevant(node);
                 methodEditor.SuggestionPin = null;
             }
-            
 
             methodEditor.grid.ContextMenu.IsOpen = false;
         }
@@ -373,8 +372,8 @@ namespace NetPrintsEditor
         // Change node overload
         private void CommandChangeNodeOverload_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is ChangeNodeOverloadParameters overloadParams &&
-                overloadParams.Node != null && overloadParams.Node.CurrentOverload != null
+            e.CanExecute = e.Parameter is ChangeNodeOverloadParameters overloadParams
+                && overloadParams.Node?.CurrentOverload != null
                 && overloadParams.Node.Overloads.Contains(overloadParams.NewOverload);
         }
 
@@ -445,8 +444,8 @@ namespace NetPrintsEditor
             {
                 foreach (var selectedNode in methodEditor.Method.SelectedNodes)
                 {
-                    if (!(selectedNode.Node is EntryNode) &&
-                        selectedNode.Node != methodEditor.Method.Method.MainReturnNode)
+                    if (!(selectedNode.Node is EntryNode)
+                        && selectedNode.Node != methodEditor.Method.Method.MainReturnNode)
                     {
                         // Remove the node from its method
                         // This will trigger the correct events in MethodVM

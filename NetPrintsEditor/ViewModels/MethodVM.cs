@@ -51,7 +51,7 @@ namespace NetPrintsEditor.ViewModels
             get => method.Name;
             set
             {
-                if(method.Name != value)
+                if (method.Name != value)
                 {
                     method.Name = value;
                     OnPropertyChanged();
@@ -69,7 +69,7 @@ namespace NetPrintsEditor.ViewModels
             get => nodes;
             set
             {
-                if(nodes != value)
+                if (nodes != value)
                 {
                     nodes = value;
                     OnPropertyChanged();
@@ -214,7 +214,7 @@ namespace NetPrintsEditor.ViewModels
         private double nodeDragAccumX;
         private double nodeDragAccumY;
 
-        private Dictionary<NodeVM, (double X, double Y)> nodeStartPositions = new Dictionary<NodeVM, (double, double)>();
+        private readonly Dictionary<NodeVM, (double X, double Y)> nodeStartPositions = new Dictionary<NodeVM, (double, double)>();
 
         /// <summary>
         /// Called when a node starts dragging.
@@ -245,8 +245,8 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var selectedNode in SelectedNodes)
                 {
-                    selectedNode.PositionX = selectedNode.PositionX - selectedNode.PositionX % MethodEditorControl.GridCellSize;
-                    selectedNode.PositionY = selectedNode.PositionY - selectedNode.PositionY % MethodEditorControl.GridCellSize;
+                    selectedNode.PositionX -= selectedNode.PositionX % MethodEditorControl.GridCellSize;
+                    selectedNode.PositionY -= selectedNode.PositionY % MethodEditorControl.GridCellSize;
                 }
             }
         }
@@ -381,9 +381,9 @@ namespace NetPrintsEditor.ViewModels
             if (!add)
             {
                 AllPins.Where(p =>
-                    node.InputExecPins.Contains(p.ConnectedPin) ||
-                    node.OutputDataPins.Contains(p.ConnectedPin) ||
-                    node.OutputTypePins.Contains(p.ConnectedPin)
+                    node.InputExecPins.Contains(p.ConnectedPin)
+                    || node.OutputDataPins.Contains(p.ConnectedPin)
+                    || node.OutputTypePins.Contains(p.ConnectedPin)
                 ).ToList().ForEach(p => p.ConnectedPin = null);
             }
         }
@@ -409,7 +409,7 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(Visibility));
 
                     Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
-                    
+
                     if (method != null)
                     {
                         Nodes.CollectionChanged += OnNodeCollectionChanged;
@@ -457,7 +457,7 @@ namespace NetPrintsEditor.ViewModels
                 removedPins.ToList().ForEach(p => SetupPinEvents(p, false));
             }
 
-            if(e.NewItems != null)
+            if (e.NewItems != null)
             {
                 var addedPins = e.NewItems.Cast<NodePinVM>();
 

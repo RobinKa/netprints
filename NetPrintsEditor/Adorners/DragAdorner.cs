@@ -53,7 +53,7 @@ namespace NetPrintsEditor.Adorners
                 Vector offset = mousePosition - dragStartMousePosition;
 
                 TranslateTransform transform = AdornedElement.RenderTransform as TranslateTransform;
-                
+
                 transform.X = dragStartElementPosition.X + offset.X;
                 transform.Y = dragStartElementPosition.Y + offset.Y;
 
@@ -68,8 +68,7 @@ namespace NetPrintsEditor.Adorners
         {
             dragging = true;
 
-            TranslateTransform transform = AdornedElement.RenderTransform as TranslateTransform;
-            if (transform == null)
+            if (!(AdornedElement.RenderTransform is TranslateTransform transform))
             {
                 transform = new TranslateTransform();
                 AdornedElement.RenderTransform = transform;
@@ -81,7 +80,7 @@ namespace NetPrintsEditor.Adorners
             AdornedElement.CaptureMouse();
             e.Handled = true;
 
-            OnDragStart?.Invoke(this, new EventArgs());
+            OnDragStart?.Invoke(this, EventArgs.Empty);
         }
 
         private void AdornedElement_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -93,7 +92,7 @@ namespace NetPrintsEditor.Adorners
                 AdornedElement.ReleaseMouseCapture();
                 e.Handled = true;
 
-                OnDragEnd?.Invoke(this, new EventArgs());
+                OnDragEnd?.Invoke(this, EventArgs.Empty);
             }
         }
     }

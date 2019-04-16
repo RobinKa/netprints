@@ -14,7 +14,7 @@ namespace NetPrints.Graph
         /// Connected input data pins.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<NodeInputTypePin> OutgoingPins { get; private set; } 
+        public ObservableRangeCollection<NodeInputTypePin> OutgoingPins { get; private set; }
             = new ObservableRangeCollection<NodeInputTypePin>();
 
         public override ObservableValue<BaseType> InferredType

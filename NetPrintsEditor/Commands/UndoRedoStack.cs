@@ -22,8 +22,8 @@ namespace NetPrintsEditor.Commands
             public object UndoParameters;
         }
 
-        private Stack<DoUndoPair> undoStack = new Stack<DoUndoPair>();
-        private Stack<DoUndoPair> redoStack = new Stack<DoUndoPair>();
+        private readonly Stack<DoUndoPair> undoStack = new Stack<DoUndoPair>();
+        private readonly Stack<DoUndoPair> redoStack = new Stack<DoUndoPair>();
 
         /// <summary>
         /// Executes a command and adds it to the stack.
@@ -43,7 +43,7 @@ namespace NetPrintsEditor.Commands
             });
 
             redoStack.Clear();
-            
+
             if (doCommand.CanExecute(doParameters))
             {
                 doCommand.Execute(doParameters);
@@ -56,11 +56,11 @@ namespace NetPrintsEditor.Commands
         /// <returns>Whether a command was undone.</returns>
         public bool Undo()
         {
-            if(undoStack.Count > 0)
+            if (undoStack.Count > 0)
             {
                 DoUndoPair pair = undoStack.Peek();
-            
-                if(pair.UndoCommand.CanExecute(pair.UndoParameters))
+
+                if (pair.UndoCommand.CanExecute(pair.UndoParameters))
                 {
                     undoStack.Pop();
                     redoStack.Push(pair);

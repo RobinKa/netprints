@@ -14,7 +14,7 @@ namespace NetPrints.Graph
         /// Connected input data pins.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<NodeInputDataPin> OutgoingPins { get; private set; } 
+        public ObservableRangeCollection<NodeInputDataPin> OutgoingPins { get; private set; }
             = new ObservableRangeCollection<NodeInputDataPin>();
 
         public NodeOutputDataPin(Node node, string name, ObservableValue<BaseType> pinType)

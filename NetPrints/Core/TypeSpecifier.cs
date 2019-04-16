@@ -33,7 +33,7 @@ namespace NetPrints.Core
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Generic arguments this type takes.
         /// </summary>
@@ -109,16 +109,16 @@ namespace NetPrints.Core
         {
             get
             {
-                return this == FromType<byte>() || this == FromType<char>() ||
-                    this == FromType<short>() || this == FromType<ushort>() ||
-                    this == FromType<int>() || this == FromType<uint>() ||
-                    this == FromType<long>() || this == FromType<ulong>() ||
-                    this == FromType<float>() || this == FromType<double>() ||
-                    this == FromType<string>() || this == FromType<bool>() ||
-                    IsEnum;
+                return this == FromType<byte>() || this == FromType<char>()
+                    || this == FromType<short>() || this == FromType<ushort>()
+                    || this == FromType<int>() || this == FromType<uint>()
+                    || this == FromType<long>() || this == FromType<ulong>()
+                    || this == FromType<float>() || this == FromType<double>()
+                    || this == FromType<string>() || this == FromType<bool>()
+                    || IsEnum;
             }
         }
-        
+
         /// <summary>
         /// Creates a TypeSpecifier describing a type.
         /// </summary>
@@ -132,7 +132,7 @@ namespace NetPrints.Core
             IsEnum = isEnum;
             IsInterface = isInterface;
 
-            if(genericArguments == null)
+            if (genericArguments == null)
             {
                 GenericArguments = new ObservableRangeCollection<BaseType>();
             }
@@ -189,7 +189,7 @@ namespace NetPrints.Core
 
             return typeSpecifier;
         }
-        
+
         public override bool Equals(object obj)
         {
             if (obj is TypeSpecifier t)
@@ -234,7 +234,7 @@ namespace NetPrints.Core
         {
             string s = Name.Replace("+", ".");
 
-            if(GenericArguments.Count > 0)
+            if (GenericArguments.Count > 0)
             {
                 s += "<" + string.Join(", ", GenericArguments) + ">";
             }
@@ -261,8 +261,8 @@ namespace NetPrints.Core
             var newGenericArgs = new List<BaseType>(GenericArguments);
             for (int i = 0; i < newGenericArgs.Count; i++)
             {
-                if (newGenericArgs[i] is GenericType oldGenericType &&
-                    typeSpecifiers.TryGetValue(oldGenericType, out BaseType newType))
+                if (newGenericArgs[i] is GenericType oldGenericType
+                    && typeSpecifiers.TryGetValue(oldGenericType, out BaseType newType))
                 {
                     newGenericArgs[i] = newType;
                 }

@@ -11,15 +11,15 @@ namespace NetPrintsEditor.ViewModels
     {
         public bool ShowIncludeInCompilationCheckBox
         {
-            get => reference is SourceDirectoryReference;
+            get => Reference is SourceDirectoryReference;
         }
 
         public bool IncludeInCompilation
         {
-            get => reference is SourceDirectoryReference sourceReference && sourceReference.IncludeInCompilation;
+            get => Reference is SourceDirectoryReference sourceReference && sourceReference.IncludeInCompilation;
             set
             {
-                if (reference is SourceDirectoryReference sourceDirectoryReference)
+                if (Reference is SourceDirectoryReference sourceDirectoryReference)
                 {
                     sourceDirectoryReference.IncludeInCompilation = value;
                     OnPropertyChanged();
@@ -31,16 +31,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public CompilationReference Reference
-        {
-            get => reference;
-        }
-
-        private readonly CompilationReference reference;
+        public CompilationReference Reference { get; }
 
         public CompilationReferenceVM(CompilationReference compilationReference)
         {
-            reference = compilationReference;
+            Reference = compilationReference;
         }
 
         #region INotifyPropertyChanged
