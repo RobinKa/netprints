@@ -9,9 +9,9 @@ using System.Text;
 namespace NetPrints.Translator
 {
     /// <summary>
-    /// Translates methods into C#.
+    /// Translates execution graphs into C#.
     /// </summary>
-    public class MethodTranslator
+    public class ExecutionGraphTranslator
     {
         private const string JumpStackVarName = "jumpStack";
         private const string JumpStackType = "System.Collections.Generic.Stack<int>";
@@ -27,18 +27,18 @@ namespace NetPrints.Translator
 
         private readonly StringBuilder builder = new StringBuilder();
 
-        private Method method;
+        private ExecutionGraph graph;
 
         private Random random;
 
-        private delegate void NodeTypeHandler(MethodTranslator translator, Node node);
+        private delegate void NodeTypeHandler(ExecutionGraphTranslator translator, Node node);
 
         private readonly Dictionary<Type, List<NodeTypeHandler>> nodeTypeHandlers = new Dictionary<Type, List<NodeTypeHandler>>()
         {
             { typeof(CallMethodNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateCallMethodNode(node as CallMethodNode) } },
             { typeof(VariableSetterNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateVariableSetterNode(node as VariableSetterNode) } },
             { typeof(ReturnNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateReturnNode(node as ReturnNode) } },
-            { typeof(EntryNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateMethodEntry(node as EntryNode) } },
+            { typeof(MethodEntryNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateMethodEntry(node as MethodEntryNode) } },
             { typeof(IfElseNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateIfElseNode(node as IfElseNode) } },
             { typeof(ConstructorNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateConstructorNode(node as ConstructorNode) } },
             { typeof(ExplicitCastNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateExplicitCastNode(node as ExplicitCastNode) } },
@@ -84,7 +84,8 @@ namespace NetPrints.Translator
 
             // Special case for property setters, input name "value".
             // TODO: Don't rely on set_ prefix
-            if (pin.Node is EntryNode && method.Name.StartsWith("set_"))
+            // TODO: Use PropertyGraph instead of MethodGraph
+            if (pin.Node is MethodEntryNode && graph is MethodGraph methodGraph && methodGraph.Name.StartsWith("set_"))
             {
                 pinName = "value";
             }
@@ -141,7 +142,7 @@ namespace NetPrints.Translator
         {
             foreach(Node node in execNodes)
             {
-                if (!(node is EntryNode))
+                if (!(node is MethodEntryNode))
                 {
                     nodeStateIds.Add(node, new List<int>());
 
@@ -170,59 +171,61 @@ namespace NetPrints.Translator
                 NodeOutputDataPin pin = v.Key;
                 string variableName = v.Value;
 
-                if (!(pin.Node is EntryNode))
+                if (!(pin.Node is MethodEntryNode))
                 {
                     builder.AppendLine($"{pin.PinType.Value.FullCodeName} {variableName} = default({pin.PinType.Value.FullCodeName});");
                 }
             }
         }
 
-        private void TranslateSignature(bool isConstructor)
+        private void TranslateSignature()
         {
-            builder.AppendLine($"// Method {method.Name}");
+            builder.AppendLine($"// {graph}");
 
             // Write visibility
-            builder.Append($"{TranslatorUtil.VisibilityTokens[method.Visibility]} ");
+            builder.Append($"{TranslatorUtil.VisibilityTokens[graph.Visibility]} ");
 
-            // Write modifiers
-            if (method.Modifiers.HasFlag(MethodModifiers.Static))
-            {
-                builder.Append("static ");
-            }
+            MethodGraph methodGraph = graph as MethodGraph;
 
-            if (method.Modifiers.HasFlag(MethodModifiers.Abstract))
+            if (methodGraph != null)
             {
-                builder.Append("abstract ");
-            }
+                // Write modifiers
+                if (methodGraph.Modifiers.HasFlag(MethodModifiers.Static))
+                {
+                    builder.Append("static ");
+                }
 
-            if (method.Modifiers.HasFlag(MethodModifiers.Sealed))
-            {
-                builder.Append("sealed ");
-            }
+                if (methodGraph.Modifiers.HasFlag(MethodModifiers.Abstract))
+                {
+                    builder.Append("abstract ");
+                }
 
-            if (method.Modifiers.HasFlag(MethodModifiers.Override))
-            {
-                builder.Append("override ");
-            }
-            else if (method.Modifiers.HasFlag(MethodModifiers.Virtual))
-            {
-                builder.Append("virtual ");
-            }
+                if (methodGraph.Modifiers.HasFlag(MethodModifiers.Sealed))
+                {
+                    builder.Append("sealed ");
+                }
 
-            if (!isConstructor)
-            {
+                if (methodGraph.Modifiers.HasFlag(MethodModifiers.Override))
+                {
+                    builder.Append("override ");
+                }
+                else if (methodGraph.Modifiers.HasFlag(MethodModifiers.Virtual))
+                {
+                    builder.Append("virtual ");
+                }
+
                 // Write return type
-                if (method.ReturnTypes.Count() > 1)
+                if (methodGraph.ReturnTypes.Count() > 1)
                 {
                     // Tuple<Types..> (won't be needed in the future)
-                    string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", method.ReturnTypes.Select(t => t.FullCodeName)) + ">";
+                    string returnType = typeof(Tuple).FullName + "<" + string.Join(", ", methodGraph.ReturnTypes.Select(t => t.FullCodeName)) + ">";
                     builder.Append(returnType + " ");
 
                     //builder.Append($"({string.Join(", ", method.ReturnTypes.Select(t => t.FullName))}) ");
                 }
-                else if (method.ReturnTypes.Count() == 1)
+                else if (methodGraph.ReturnTypes.Count() == 1)
                 {
-                    builder.Append($"{method.ReturnTypes.Single().FullCodeName} ");
+                    builder.Append($"{methodGraph.ReturnTypes.Single().FullCodeName} ");
                 }
                 else
                 {
@@ -231,16 +234,19 @@ namespace NetPrints.Translator
             }
 
             // Write name
-            builder.Append(method.Name);
+            builder.Append(graph.ToString());
 
-            // Write generic arguments if any
-            if (method.GenericArgumentTypes.Any())
+            if (methodGraph != null)
             {
-                builder.Append("<" + string.Join(", ", method.GenericArgumentTypes.Select(arg => arg.FullCodeName)) + ">");
+                // Write generic arguments if any
+                if (methodGraph.GenericArgumentTypes.Any())
+                {
+                    builder.Append("<" + string.Join(", ", methodGraph.GenericArgumentTypes.Select(arg => arg.FullCodeName)) + ">");
+                }
             }
 
             // Write parameters
-            builder.AppendLine($"({string.Join(", ", GetOrCreateTypedPinNames(method.EntryNode.OutputDataPins))})");
+            builder.AppendLine($"({string.Join(", ", GetOrCreateTypedPinNames(graph.EntryNode.OutputDataPins))})");
         }
 
         private void TranslateJumpStack()
@@ -267,12 +273,12 @@ namespace NetPrints.Translator
         /// <summary>
         /// Translates a method to C#.
         /// </summary>
-        /// <param name="method">Method to translate.</param>
+        /// <param name="graph">Execution graph to translate.</param>
         /// <param name="withSignature">Whether to translate the signature.</param>
         /// <returns>C# code for the method.</returns>
-        public string Translate(Method method, bool withSignature, bool isConstructor)
+        public string Translate(ExecutionGraph graph, bool withSignature)
         {
-            this.method = method;
+            this.graph = graph;
 
             // Reset state
             variableNames.Clear();
@@ -282,8 +288,8 @@ namespace NetPrints.Translator
             builder.Clear();
             random = new Random(0);
 
-            nodes = TranslatorUtil.GetAllNodesInMethod(method);
-            execNodes = TranslatorUtil.GetExecNodesInMethod(method);
+            nodes = TranslatorUtil.GetAllNodesInExecGraph(graph);
+            execNodes = TranslatorUtil.GetExecNodesInExecGraph(graph);
 
             // Assign a state id to every non-pure node
             CreateStates();
@@ -298,7 +304,7 @@ namespace NetPrints.Translator
             // Write the signatures
             if (withSignature)
             {
-                TranslateSignature(isConstructor);
+                TranslateSignature();
             }
 
             builder.AppendLine("{"); // Method start
@@ -312,15 +318,15 @@ namespace NetPrints.Translator
             builder.AppendLine();
 
             // Start at node after method entry if necessary (id!=0)
-            if (method.EntryNode.OutputExecPins[0].OutgoingPin != null && GetExecPinStateId(method.EntryNode.OutputExecPins[0].OutgoingPin) != 0)
+            if (graph.EntryNode.OutputExecPins[0].OutgoingPin != null && GetExecPinStateId(graph.EntryNode.OutputExecPins[0].OutgoingPin) != 0)
             {
-                WriteGotoOutputPin(method.EntryNode.OutputExecPins[0]);
+                WriteGotoOutputPin(graph.EntryNode.OutputExecPins[0]);
             }
 
             // Translate every exec node
             foreach (Node node in execNodes)
             {
-                if (!(node is EntryNode))
+                if (!(node is MethodEntryNode))
                 {
                     for (int pinIndex = 0; pinIndex < node.InputExecPins.Count; pinIndex++)
                     {
@@ -447,7 +453,7 @@ namespace NetPrints.Translator
             }
         }
 
-        public void TranslateMethodEntry(EntryNode node)
+        public void TranslateMethodEntry(MethodEntryNode node)
         {
             /*// Go to the next state.
             // Only write if it's not the initial state (id==0) anyway.
@@ -715,7 +721,7 @@ namespace NetPrints.Translator
                 }
                 else
                 {
-                    builder.Append(node.Method.Class.Name);
+                    builder.Append(node.Graph.Class.Name);
                 }
             }
             if (node.TargetPin != null)
@@ -859,7 +865,7 @@ namespace NetPrints.Translator
                 }
                 else
                 {
-                    builder.Append(node.Method.Class.Name);
+                    builder.Append(node.Graph.Class.Name);
                 }
             }
             else

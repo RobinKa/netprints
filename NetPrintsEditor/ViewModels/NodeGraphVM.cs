@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class MethodVM : INotifyPropertyChanged
+    public class NodeGraphVM : INotifyPropertyChanged
     {
         public IEnumerable<NodeVM> SelectedNodes
         {
@@ -47,12 +47,12 @@ namespace NetPrintsEditor.ViewModels
 
         public string Name
         {
-            get => method.Name;
+            get => graph is MethodGraph methodGraph ? methodGraph.Name : graph.ToString();
             set
             {
-                if (method.Name != value)
+                if (graph is MethodGraph methodGraph && methodGraph.Name != value)
                 {
-                    method.Name = value;
+                    methodGraph.Name = value;
                     OnPropertyChanged();
                 }
             }
@@ -60,7 +60,7 @@ namespace NetPrintsEditor.ViewModels
 
         public bool IsConstructor
         {
-            get => method.Name == Class.Name;
+            get => graph is ConstructorGraph;
         }
 
         public ObservableViewModelCollection<NodeVM, Node> Nodes
@@ -80,17 +80,17 @@ namespace NetPrintsEditor.ViewModels
 
         public IEnumerable<BaseType> ArgumentTypes
         {
-            get => method.ArgumentTypes;
+            get => graph is ExecutionGraph execGraph ? execGraph.ArgumentTypes : null;
         }
 
         public IEnumerable<Named<BaseType>> NamedArgumentTypes
         {
-            get => method.NamedArgumentTypes;
+            get => graph is ExecutionGraph execGraph ? execGraph.NamedArgumentTypes : null;
         }
 
         public IEnumerable<BaseType> ReturnTypes
         {
-            get => method.ReturnTypes;
+            get => graph is MethodGraph methodGraph ? methodGraph.ReturnTypes : null;
         }
 
         public ClassVM Class
@@ -110,12 +110,12 @@ namespace NetPrintsEditor.ViewModels
 
         public MethodModifiers Modifiers
         {
-            get => method.Modifiers;
+            get => graph is MethodGraph methodGraph ? methodGraph.Modifiers : MethodModifiers.None;
             set
             {
-                if (method.Modifiers != value)
+                if (graph is MethodGraph methodGraph && methodGraph.Modifiers != value)
                 {
-                    method.Modifiers = value;
+                    methodGraph.Modifiers = value;
                     OnPropertyChanged();
                 }
             }
@@ -123,12 +123,12 @@ namespace NetPrintsEditor.ViewModels
 
         public MemberVisibility Visibility
         {
-            get => method.Visibility;
+            get => graph is ExecutionGraph execGraph ? execGraph.Visibility : MemberVisibility.Invalid;
             set
             {
-                if (method.Visibility != value)
+                if (graph is ExecutionGraph execGraph && execGraph.Visibility != value)
                 {
-                    method.Visibility = value;
+                    execGraph.Visibility = value;
                     OnPropertyChanged();
                 }
             }
@@ -387,14 +387,14 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public Method Method
+        public NodeGraph Graph
         {
-            get => method;
+            get => graph;
             set
             {
-                if (method != value)
+                if (graph != value)
                 {
-                    if (method != null)
+                    if (graph != null)
                     {
                         Nodes.CollectionChanged -= OnNodeCollectionChanged;
                         Nodes.ToList().ForEach(n => SetupNodeEvents(n, false));
@@ -402,14 +402,14 @@ namespace NetPrintsEditor.ViewModels
                         Nodes.ToList().ForEach(n => SetupNodeConnections(n, false));
                     }
 
-                    method = value;
+                    graph = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(AllPins));
                     OnPropertyChanged(nameof(Visibility));
 
-                    Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
+                    Nodes = new ObservableViewModelCollection<NodeVM, Node>(Graph.Nodes, n => new NodeVM(n));
 
-                    if (method != null)
+                    if (graph != null)
                     {
                         Nodes.CollectionChanged += OnNodeCollectionChanged;
                         Nodes.ToList().ForEach(n => SetupNodeEvents(n, true));
@@ -421,6 +421,8 @@ namespace NetPrintsEditor.ViewModels
                 }
             }
         }
+
+        private NodeGraph graph;
 
         private void OnNodeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -508,7 +510,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 List<NodePinVM> pins = new List<NodePinVM>();
 
-                if (Method != null)
+                if (Graph != null)
                 {
                     foreach (NodeVM node in Nodes)
                     {
@@ -525,11 +527,9 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private Method method;
-
-        public MethodVM(Method method)
+        public NodeGraphVM(NodeGraph graph)
         {
-            Method = method;
+            Graph = graph;
         }
 
         #region INotifyPropertyChanged

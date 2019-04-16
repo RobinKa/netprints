@@ -40,7 +40,7 @@ namespace NetPrintsEditor
 
         private void OnMethodDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is MethodVM method
+            if (sender is FrameworkElement element && element.DataContext is NodeGraphVM method
                 && EditorCommands.OpenMethod.CanExecute(method))
             {
                 EditorCommands.OpenMethod.Execute(method);
@@ -89,12 +89,12 @@ namespace NetPrintsEditor
 
         private void CommandOpenMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Class != null && e.Parameter is MethodVM;
+            e.CanExecute = Class != null && e.Parameter is NodeGraphVM;
         }
 
         private void CommandOpenMethod_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            methodEditor.Method = (MethodVM)e.Parameter;
+            methodEditor.Graph = (NodeGraphVM)e.Parameter;
         }
 
         // Select variable
@@ -122,7 +122,7 @@ namespace NetPrintsEditor
 
         private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var newMethod = new Method(e.Parameter as string)
+            var newMethod = new MethodGraph(e.Parameter as string)
             {
                 Class = Class.Class,
             };
@@ -134,7 +134,7 @@ namespace NetPrintsEditor
             GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
 
             Class.Class.Methods.Add(newMethod);
-            methodEditor.Method = Class.Methods.Single(m => m.Method == newMethod);
+            methodEditor.Graph = Class.Methods.Single(m => m.Graph == newMethod);
         }
 
         // Add constructor
@@ -146,20 +146,17 @@ namespace NetPrintsEditor
 
         private void CommandAddConstructor_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            var newMethod = new Method(e.Parameter as string)
+            var newConstructor = new ConstructorGraph()
             {
                 Class = Class.Class,
                 Visibility = MemberVisibility.Public,
             };
 
-            newMethod.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
-            newMethod.EntryNode.PositionY = MethodEditorControl.GridCellSize * 4;
-            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + MethodEditorControl.GridCellSize * 15;
-            newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
-            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
+            newConstructor.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
+            newConstructor.EntryNode.PositionY = MethodEditorControl.GridCellSize * 4;
 
-            Class.Class.Constructors.Add(newMethod);
-            methodEditor.Method = Class.Constructors.Single(m => m.Method == newMethod);
+            Class.Class.Constructors.Add(newConstructor);
+            methodEditor.Graph = Class.Constructors.Single(m => m.Graph == newConstructor);
         }
 
         // Override method
@@ -175,11 +172,11 @@ namespace NetPrintsEditor
 
         private void CommandOverrideMethod_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Method method = GraphUtil.AddOverrideMethod(Class.Class, (MethodSpecifier)e.Parameter);
+            MethodGraph method = GraphUtil.AddOverrideMethod(Class.Class, (MethodSpecifier)e.Parameter);
 
             if (method != null)
             {
-                methodEditor.Method = Class.Methods.Single(m => m.Method == method);
+                methodEditor.Graph = Class.Methods.Single(m => m.Graph == method);
             }
         }
 
@@ -224,9 +221,9 @@ namespace NetPrintsEditor
                 viewerTabControl.SelectedIndex = 0;
             }
 
-            if (methodEditor.Method == variable.GetterMethod || methodEditor.Method == variable.SetterMethod)
+            if (methodEditor.Graph == variable.GetterMethod || methodEditor.Graph == variable.SetterMethod)
             {
-                methodEditor.Method = null;
+                methodEditor.Graph = null;
             }
 
             Class.Class.Variables.Remove(variable.Variable);
@@ -292,16 +289,16 @@ namespace NetPrintsEditor
 
         private void CommandAddNode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is AddNodeParameters p && (p.Method != null || methodEditor.Method != null);
+            e.CanExecute = e.Parameter is AddNodeParameters p && (p.Graph != null || methodEditor.Graph != null);
         }
 
         private void CommandAddNode_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AddNodeParameters p = e.Parameter as AddNodeParameters;
 
-            if (p.Method == null)
+            if (p.Graph == null)
             {
-                p.Method = methodEditor.Method.Method;
+                p.Graph = methodEditor.Graph.Graph;
                 Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow.drawCanvas);
                 p.PositionX = mouseLoc.X - mouseLoc.X % MethodEditorControl.GridCellSize;
                 p.PositionY = mouseLoc.Y - mouseLoc.Y % MethodEditorControl.GridCellSize;
@@ -314,7 +311,7 @@ namespace NetPrintsEditor
             if (p.PositionY < 0)
                 p.PositionY = 0;
 
-            object[] parameters = new object[] { p.Method }.Concat(p.ConstructorParameters).ToArray();
+            object[] parameters = new object[] { p.Graph }.Concat(p.ConstructorParameters).ToArray();
             Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
             node.PositionX = p.PositionX;
             node.PositionY = p.PositionY;
@@ -346,7 +343,7 @@ namespace NetPrintsEditor
             //       we have to search in all possible places that have methods.
 
             NodeVM node = e.Parameter as NodeVM;
-            MethodVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node)) ??
+            NodeGraphVM method = Class?.Methods.FirstOrDefault(m => m.Nodes.Contains(node)) ??
                 Class?.Constructors.FirstOrDefault(c => c.Nodes.Contains(node)) ??
                 Class?.Variables?.FirstOrDefault(v => v.HasGetter && v.GetterMethod.Nodes.Contains(node))?.GetterMethod ??
                 Class?.Variables?.FirstOrDefault(v => v.HasSetter && v.SetterMethod.Nodes.Contains(node))?.SetterMethod;
@@ -440,22 +437,22 @@ namespace NetPrintsEditor
             // Delete the currently selected node in the currently open method.
             // Only delete the node if it is not an entry or the main return node.
 
-            if (methodEditor?.Method?.SelectedNodes != null)
+            if (methodEditor?.Graph?.SelectedNodes != null)
             {
-                foreach (var selectedNode in methodEditor.Method.SelectedNodes)
+                foreach (var selectedNode in methodEditor.Graph.SelectedNodes)
                 {
-                    if (!(selectedNode.Node is EntryNode)
-                        && selectedNode.Node != methodEditor.Method.Method.MainReturnNode)
+                    if (!(selectedNode.Node is MethodEntryNode)
+                        && selectedNode.Node != (methodEditor.Graph.Graph as MethodGraph)?.MainReturnNode)
                     {
                         // Remove the node from its method
                         // This will trigger the correct events in MethodVM
                         // so everything gets disconnected properly
 
-                        selectedNode.Method.Nodes.Remove(selectedNode.Node);
+                        selectedNode.Graph.Nodes.Remove(selectedNode.Node);
                     }
                 }
 
-                methodEditor.Method.SelectedNodes = null;
+                methodEditor.Graph.SelectedNodes = null;
             }
         }
 
@@ -509,35 +506,35 @@ namespace NetPrintsEditor
 
         private void OnMethodClicked(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
+            if (sender is FrameworkElement element && element.DataContext is NodeGraphVM m)
             {
                 viewerTabControl.SelectedIndex = 2;
-                methodViewer.Method = m;
+                methodViewer.DataContext = m;
             }
         }
 
         private void OnRemoveMethodClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is MethodVM m)
+            if (sender is FrameworkElement element && element.DataContext is NodeGraphVM m)
             {
-                if (viewerTabControl.SelectedIndex == 2 && methodViewer.Method == m)
+                if (viewerTabControl.SelectedIndex == 2 && methodViewer.Graph?.Graph == m.Graph)
                 {
-                    methodViewer.Method = null;
+                    methodViewer.DataContext = null;
                     viewerTabControl.SelectedIndex = 0;
                 }
 
-                if (methodEditor.Method == m)
+                if (methodEditor.Graph.Graph == m.Graph)
                 {
-                    methodEditor.Method = null;
+                    methodEditor.Graph = null;
                 }
 
-                if (Class.Class.Methods.Contains(m.Method))
+                if (m.Graph is MethodGraph methodGraph && Class.Class.Methods.Contains(methodGraph))
                 {
-                    Class.Class.Methods.Remove(m.Method);
+                    Class.Class.Methods.Remove(methodGraph);
                 }
-                else if (Class.Class.Constructors.Contains(m.Method))
+                else if (m.Graph is ConstructorGraph constructorGraph && Class.Class.Constructors.Contains(constructorGraph))
                 {
-                    Class.Class.Constructors.Remove(m.Method);
+                    Class.Class.Constructors.Remove(constructorGraph);
                 }
             }
         }

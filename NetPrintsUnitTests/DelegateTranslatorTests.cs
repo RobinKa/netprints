@@ -11,19 +11,19 @@ namespace NetPrints.Tests
     [TestClass]
     public class DelegateTranslatorTests
     {
-        private MethodTranslator methodTranslator;
+        private ExecutionGraphTranslator methodTranslator;
 
         [TestInitialize]
         public void Setup()
         {
-            methodTranslator = new MethodTranslator();
+            methodTranslator = new ExecutionGraphTranslator();
         }
 
         [TestMethod]
         public void TestDelegate()
         {
             // Create method
-            Method delegateMethod = new Method("DelegateMethod")
+            MethodGraph delegateMethod = new MethodGraph("DelegateMethod")
             {
                 Visibility = MemberVisibility.Public
             };

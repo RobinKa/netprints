@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace NetPrints.Core
 {
-    public partial class Method
+    public partial class MethodGraph
     {
         [Obsolete]
         private void FixVisibility(StreamingContext context)

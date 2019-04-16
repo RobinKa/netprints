@@ -18,8 +18,8 @@ namespace NetPrints.Graph
             get { return InputDataPins[0]; }
         }
 
-        public ThrowNode(Method method)
-            : base(method)
+        public ThrowNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputExecPin("Exec");
             AddInputDataPin("Exception", TypeSpecifier.FromType<Exception>());

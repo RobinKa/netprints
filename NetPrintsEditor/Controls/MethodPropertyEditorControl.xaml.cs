@@ -9,13 +9,9 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class MethodPropertyEditorControl : UserControl
     {
-        public static DependencyProperty MethodProperty = DependencyProperty.Register(
-            nameof(Method), typeof(MethodVM), typeof(MethodPropertyEditorControl));
-
-        public MethodVM Method
+        public NodeGraphVM Graph
         {
-            get => GetValue(MethodProperty) as MethodVM;
-            set => SetValue(MethodProperty, value);
+            get => DataContext as NodeGraphVM;
         }
 
         public MethodPropertyEditorControl()

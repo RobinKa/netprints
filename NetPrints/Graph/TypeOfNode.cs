@@ -26,8 +26,8 @@ namespace NetPrints.Graph
             get { return InputTypePins[0]; }
         }
 
-        public TypeOfNode(Method method)
-            : base(method)
+        public TypeOfNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputTypePin("Type");
             AddOutputDataPin("Type", TypeSpecifier.FromType<Type>());

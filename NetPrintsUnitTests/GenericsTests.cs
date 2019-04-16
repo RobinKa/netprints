@@ -28,7 +28,7 @@ namespace NetPrintsUnitTests
 
             listType.GenericArguments[0] = genericClassArg;
 
-            Method openMethod = new Method("OpenMethod");
+            MethodGraph openMethod = new MethodGraph("OpenMethod");
 
             // Add open list parameter
             TypeNode listTypeNode = new TypeNode(openMethod, listType);
@@ -47,7 +47,7 @@ namespace NetPrintsUnitTests
 
             TypeSpecifier closedListType = TypeSpecifier.FromType<string>();
 
-            Method closedMethod = new Method("ClosedMethod");
+            MethodGraph closedMethod = new MethodGraph("ClosedMethod");
 
             // Add closed list parameter
             TypeNode closedListTypeNode = new TypeNode(closedMethod, closedListType);
@@ -70,7 +70,7 @@ namespace NetPrintsUnitTests
         [TestMethod]
         public void TestTypeGraph()
         {
-            Method method = new Method("Method");
+            MethodGraph method = new MethodGraph("Method");
 
             var unboundListType = new TypeSpecifier("System.Collections.Generic.List", genericArguments: new BaseType[] { new GenericType("T") });
 

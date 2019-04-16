@@ -60,13 +60,13 @@ namespace NetPrints.Core
         /// Methods of this class.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<Method> Methods { get; set; } = new ObservableRangeCollection<Method>();
+        public ObservableRangeCollection<MethodGraph> Methods { get; set; } = new ObservableRangeCollection<MethodGraph>();
 
         /// <summary>
         /// Constructors of this class.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<Method> Constructors { get; set; } = new ObservableRangeCollection<Method>();
+        public ObservableRangeCollection<ConstructorGraph> Constructors { get; set; } = new ObservableRangeCollection<ConstructorGraph>();
 
         /// <summary>
         /// Base / super type of this class. The ultimate base type of all classes is System.Object.

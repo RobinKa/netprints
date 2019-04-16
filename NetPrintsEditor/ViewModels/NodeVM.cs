@@ -53,7 +53,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (Node is EntryNode)
+                if (Node is ExecutionEntryNode)
                 {
                     return EntryNodeBrush;
                 }
@@ -132,7 +132,7 @@ namespace NetPrintsEditor.ViewModels
                 {
                     return "Add array element";
                 }
-                else if (node is EntryNode)
+                else if (node is MethodEntryNode)
                 {
                     return "Add method parameter";
                 }
@@ -153,7 +153,7 @@ namespace NetPrintsEditor.ViewModels
                 {
                     return "Remove array element";
                 }
-                else if (node is EntryNode)
+                else if (node is MethodEntryNode)
                 {
                     return "Remove method parameter";
                 }
@@ -170,7 +170,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (node is EntryNode)
+                if (node is MethodEntryNode)
                 {
                     return "Add method generic type parameter";
                 }
@@ -183,7 +183,7 @@ namespace NetPrintsEditor.ViewModels
         {
             get
             {
-                if (node is EntryNode)
+                if (node is MethodEntryNode)
                 {
                     return "Remove method generic type parameter";
                 }
@@ -475,11 +475,11 @@ namespace NetPrintsEditor.ViewModels
             Node newNode = null;
             if (overload is MethodSpecifier methodSpecifier && Node is CallMethodNode)
             {
-                newNode = new CallMethodNode(Node.Method, methodSpecifier);
+                newNode = new CallMethodNode(Node.Graph, methodSpecifier);
             }
             else if (overload is ConstructorSpecifier constructorSpecifier && Node is ConstructorNode)
             {
-                newNode = new ConstructorNode(Node.Method, constructorSpecifier);
+                newNode = new ConstructorNode(Node.Graph, constructorSpecifier);
             }
             else if (overload is string overloadString && Node is MakeArrayNode makeArrayNode)
             {
@@ -509,7 +509,7 @@ namespace NetPrintsEditor.ViewModels
 
                 // Disconnect the old node from other nodes and remove it
                 GraphUtil.DisconnectNodePins(Node);
-                Node.Method.Nodes.Remove(Node);
+                Node.Graph.Nodes.Remove(Node);
 
                 // Move the new node to the same location
                 newNode.PositionX = Node.PositionX;
@@ -543,9 +543,14 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public Method Method
+        public MethodGraph Method
         {
-            get => node.Method;
+            get => node.MethodGraph;
+        }
+
+        public NodeGraph Graph
+        {
+            get => node.Graph;
         }
 
         public double PositionX
@@ -580,7 +585,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool ShowLeftPinButtons
         {
-            get => node is MakeArrayNode || node is EntryNode || (node is ReturnNode && node == Method.MainReturnNode);
+            get => node is MakeArrayNode || node is MethodEntryNode || (node is ReturnNode && node == Method.MainReturnNode);
         }
 
         /// <summary>
@@ -589,7 +594,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool ShowRightPinButtons
         {
-            get => node is EntryNode;
+            get => node is MethodEntryNode;
         }
 
         /// <summary>
@@ -601,7 +606,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 makeArrayNode.AddElementPin();
             }
-            else if (node is EntryNode entryNode)
+            else if (node is MethodEntryNode entryNode)
             {
                 entryNode.AddArgument();
             }
@@ -620,7 +625,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 makeArrayNode.RemoveElementPin();
             }
-            else if (node is EntryNode entryNode)
+            else if (node is MethodEntryNode entryNode)
             {
                 entryNode.RemoveArgument();
             }
@@ -635,7 +640,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void RightPinsPlusClicked()
         {
-            if (node is EntryNode entryNode)
+            if (node is MethodEntryNode entryNode)
             {
                 entryNode.AddGenericArgument();
             }
@@ -646,7 +651,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void RightPinsMinusClicked()
         {
-            if (node is EntryNode entryNode)
+            if (node is MethodEntryNode entryNode)
             {
                 entryNode.RemoveGenericArgument();
             }

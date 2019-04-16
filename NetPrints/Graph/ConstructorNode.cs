@@ -51,8 +51,8 @@ namespace NetPrints.Graph
             get { return InputDataPins; }
         }
 
-        public ConstructorNode(Method method, ConstructorSpecifier specifier)
-            : base(method)
+        public ConstructorNode(NodeGraph graph, ConstructorSpecifier specifier)
+            : base(graph)
         {
             ConstructorSpecifier = specifier;
 

@@ -42,8 +42,8 @@ namespace NetPrints.Graph
             get { return InputDataPins[0]; }
         }
 
-        public IfElseNode(Method method)
-            : base(method)
+        public IfElseNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputExecPin("Exec");
 

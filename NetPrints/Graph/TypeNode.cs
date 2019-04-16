@@ -57,8 +57,8 @@ namespace NetPrints.Graph
         [DataMember]
         private ObservableValue<BaseType> constructedType;
 
-        public TypeNode(Method method, BaseType type)
-            : base(method)
+        public TypeNode(NodeGraph graph, BaseType type)
+            : base(graph)
         {
             Type = type;
 

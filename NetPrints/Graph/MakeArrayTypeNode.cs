@@ -10,8 +10,8 @@ namespace NetPrints.Graph
         [DataMember]
         private ObservableValue<BaseType> arrayType;
 
-        public MakeArrayTypeNode(Method method)
-            : base(method)
+        public MakeArrayTypeNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputTypePin("ElementType");
 

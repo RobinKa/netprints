@@ -10,16 +10,16 @@ namespace NetPrints.Tests
     [TestClass]
     public class MethodTranslatorTests
     {
-        private Method stringLengthMethod;
-        private Method ifElseMethod;
-        private Method forLoopMethod;
+        private MethodGraph stringLengthMethod;
+        private MethodGraph ifElseMethod;
+        private MethodGraph forLoopMethod;
 
-        private MethodTranslator methodTranslator;
+        private ExecutionGraphTranslator methodTranslator;
 
         [TestInitialize]
         public void Setup()
         {
-            methodTranslator = new MethodTranslator();
+            methodTranslator = new ExecutionGraphTranslator();
             CreateStringLengthMethod();
             CreateIfElseMethod();
             CreateForLoopMethod();
@@ -33,7 +33,7 @@ namespace NetPrints.Tests
             };
 
             // Create method
-            stringLengthMethod = new Method("StringLength")
+            stringLengthMethod = new MethodGraph("StringLength")
             {
                 Visibility = MemberVisibility.Public
             };
@@ -77,7 +77,7 @@ namespace NetPrints.Tests
         public void CreateIfElseMethod()
         {
             // Create method
-            ifElseMethod = new Method("IfElse")
+            ifElseMethod = new MethodGraph("IfElse")
             {
                 Visibility = MemberVisibility.Public
             };
@@ -125,7 +125,7 @@ namespace NetPrints.Tests
         public void CreateForLoopMethod()
         {
             // Create method
-            forLoopMethod = new Method("ForLoop")
+            forLoopMethod = new MethodGraph("ForLoop")
             {
                 Visibility = MemberVisibility.Public
             };

@@ -42,7 +42,7 @@ namespace NetPrints.Core
             // Fix old saves not having constructors
             if (Constructors is null)
             {
-                Constructors = new ObservableRangeCollection<Method>();
+                Constructors = new ObservableRangeCollection<ConstructorGraph>();
             }
         }
 

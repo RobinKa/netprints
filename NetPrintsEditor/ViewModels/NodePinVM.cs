@@ -364,7 +364,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool IsNameEditable
         {
-            get => (pin.Node is EntryNode && pin.Node.OutputDataPins.Contains(pin))
+            get => (pin.Node is MethodEntryNode && pin.Node.OutputDataPins.Contains(pin))
                 || (pin.Node is ReturnNode && pin.Node.InputDataPins.Contains(pin));
         }
 

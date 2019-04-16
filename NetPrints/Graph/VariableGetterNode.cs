@@ -9,8 +9,8 @@ namespace NetPrints.Graph
     [DataContract]
     public class VariableGetterNode : VariableNode
     {
-        public VariableGetterNode(Method method, VariableSpecifier variable)
-            : base(method, variable)
+        public VariableGetterNode(NodeGraph graph, VariableSpecifier variable)
+            : base(graph, variable)
         {
         }
 

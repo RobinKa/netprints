@@ -16,14 +16,14 @@ namespace NetPrints.Graph
         public int DataRerouteCount { get => InputDataPins.Count; }
         public int TypeRerouteCount { get => InputTypePins.Count; }
 
-        private RerouteNode(Method method)
-            : base(method)
+        private RerouteNode(NodeGraph graph)
+            : base(graph)
         {
         }
 
-        public static RerouteNode MakeExecution(Method method, int numExecs)
+        public static RerouteNode MakeExecution(NodeGraph graph, int numExecs)
         {
-            var node = new RerouteNode(method);
+            var node = new RerouteNode(graph);
 
             for (int i = 0; i < numExecs; i++)
             {
@@ -34,14 +34,14 @@ namespace NetPrints.Graph
             return node;
         }
 
-        public static RerouteNode MakeData(Method method, IEnumerable<Tuple<BaseType, BaseType>> dataTypes)
+        public static RerouteNode MakeData(NodeGraph graph, IEnumerable<Tuple<BaseType, BaseType>> dataTypes)
         {
             if (dataTypes is null)
             {
                 throw new ArgumentException("dataTypes was null in RerouteNode.MakeData.");
             }
 
-            var node = new RerouteNode(method);
+            var node = new RerouteNode(graph);
 
             int index = 0;
             foreach (var dataType in dataTypes)
@@ -54,9 +54,9 @@ namespace NetPrints.Graph
             return node;
         }
 
-        public static RerouteNode MakeType(Method method, int numTypes)
+        public static RerouteNode MakeType(NodeGraph graph, int numTypes)
         {
-            var node = new RerouteNode(method);
+            var node = new RerouteNode(graph);
 
             for (int i = 0; i < numTypes; i++)
             {

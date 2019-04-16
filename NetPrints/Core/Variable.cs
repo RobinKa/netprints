@@ -66,7 +66,7 @@ namespace NetPrints.Core
         /// Get method for this variable. Can be null.
         /// </summary>
         [DataMember]
-        public Method GetterMethod
+        public MethodGraph GetterMethod
         {
             get;
             set;
@@ -76,7 +76,7 @@ namespace NetPrints.Core
         /// Set method for this variable. Can be null.
         /// </summary>
         [DataMember]
-        public Method SetterMethod
+        public MethodGraph SetterMethod
         {
             get;
             set;
@@ -154,8 +154,8 @@ namespace NetPrints.Core
         /// <param name="getter">Get method for the property. Can be null if there is none.</param>
         /// <param name="setter">Set method for the property. Can be null if there is none.</param>
         /// <param name="declaringType">Specifier for the type the property is contained in.</param>
-        public Variable(Class cls, string name, TypeSpecifier type, Method getter,
-            Method setter, VariableModifiers modifiers)
+        public Variable(Class cls, string name, TypeSpecifier type, MethodGraph getter,
+            MethodGraph setter, VariableModifiers modifiers)
         {
             Class = cls;
             Name = name;

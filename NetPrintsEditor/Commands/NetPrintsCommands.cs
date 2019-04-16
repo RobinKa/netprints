@@ -110,19 +110,20 @@ namespace NetPrintsEditor.Commands
         public class AddNodeParameters
         {
             public Type NodeType;
-            public Method Method;
+            public NodeGraph Graph;
             public double PositionX;
             public double PositionY;
             public object[] ConstructorParameters;
 
-            public AddNodeParameters(Type nodeType, Method method, double posX, double posY, params object[] constructorParameters)
+            public AddNodeParameters(Type nodeType, NodeGraph graph, double posX, double posY, params object[] constructorParameters)
             {
                 if (!nodeType.IsSubclassOf(typeof(Node)) || nodeType.IsAbstract)
                 {
                     throw new ArgumentException("Invalid type for node");
                 }
 
-                Type[] constructorParamTypes = (new Type[] { typeof(Method) }).Concat
+                // TODO: Get MethodGraph / ConstructorGraph is graph is one of them.
+                Type[] constructorParamTypes = (new Type[] { typeof(NodeGraph) }).Concat
                     (constructorParameters.Select(p => p.GetType()))
                     .ToArray();
 
@@ -132,7 +133,7 @@ namespace NetPrintsEditor.Commands
                 }
 
                 NodeType = nodeType;
-                Method = method;
+                Graph = graph;
                 PositionX = posX;
                 PositionY = posY;
                 ConstructorParameters = constructorParameters;

@@ -9,18 +9,10 @@ namespace NetPrints.Graph
     /// Node representing the initial execution node of a method.
     /// </summary>
     [DataContract]
-    public class EntryNode : Node
+    public class MethodEntryNode : ExecutionEntryNode
     {
-        /// <summary>
-        /// Output execution pin that initially executes when a method gets called.
-        /// </summary>
-        public NodeOutputExecPin InitialExecutionPin
-        {
-            get { return OutputExecPins[0]; }
-        }
-
-        public EntryNode(Method method)
-            : base(method)
+        public MethodEntryNode(MethodGraph graph)
+            : base(graph)
         {
             AddOutputExecPin("Exec");
         }
@@ -37,7 +29,7 @@ namespace NetPrints.Graph
 
         public override string ToString()
         {
-            return $"{Method.Name} Entry";
+            return $"{MethodGraph.Name} Entry";
         }
 
         public void AddArgument()

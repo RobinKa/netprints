@@ -12,9 +12,9 @@ namespace NetPrintsEditor.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Method method)
+            if (value is NodeGraph graph)
             {
-                return new MethodVM(method);
+                return new NodeGraphVM(graph);
             }
             else if (value is Node node)
             {

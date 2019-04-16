@@ -42,7 +42,7 @@ namespace NetPrintsEditor.ViewModels
 
         private ObservableViewModelCollection<VariableVM, Variable> variables;
 
-        public ObservableViewModelCollection<MethodVM, Method> Methods
+        public ObservableViewModelCollection<NodeGraphVM, MethodGraph> Methods
         {
             get => methods;
             set
@@ -55,9 +55,9 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private ObservableViewModelCollection<MethodVM, Method> methods;
+        private ObservableViewModelCollection<NodeGraphVM, MethodGraph> methods;
 
-        public ObservableViewModelCollection<MethodVM, Method> Constructors
+        public ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> Constructors
         {
             get => constructors;
             set
@@ -70,7 +70,7 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private ObservableViewModelCollection<MethodVM, Method> constructors;
+        private ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> constructors;
 
         /// <summary>
         /// Specifiers for methods that this class can override.
@@ -128,7 +128,7 @@ namespace NetPrintsEditor.ViewModels
                 OnPropertyChanged(nameof(FullName));
                 OnPropertyChanged(nameof(Type));
 
-                foreach (MethodVM constructor in Constructors)
+                foreach (NodeGraphVM constructor in Constructors)
                 {
                     constructor.Name = cls.Name;
                 }
@@ -264,11 +264,11 @@ namespace NetPrintsEditor.ViewModels
         {
             if (propertyName == nameof(Class))
             {
-                Methods = new ObservableViewModelCollection<MethodVM, Method>(
-                    cls.Methods, m => new MethodVM(m) { Class = this } );
+                Methods = new ObservableViewModelCollection<NodeGraphVM, MethodGraph>(
+                    cls.Methods, m => new NodeGraphVM(m) { Class = this } );
 
-                Constructors = new ObservableViewModelCollection<MethodVM, Method>(
-                    cls.Constructors, c => new MethodVM(c) { Class = this });
+                Constructors = new ObservableViewModelCollection<NodeGraphVM, ConstructorGraph>(
+                    cls.Constructors, c => new NodeGraphVM(c) { Class = this });
 
                 Variables = new ObservableViewModelCollection<VariableVM, Variable>(
                     cls.Variables, v => new VariableVM(v));

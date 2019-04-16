@@ -92,13 +92,13 @@ namespace NetPrintsEditor.ViewModels
             get => variable.SetterMethod != null;
         }
 
-        public MethodVM GetterMethod
+        public NodeGraphVM GetterMethod
         {
             get;
             private set;
         }
 
-        public MethodVM SetterMethod
+        public NodeGraphVM SetterMethod
         {
             get;
             private set;
@@ -139,13 +139,13 @@ namespace NetPrintsEditor.ViewModels
         public VariableVM(Variable variable)
         {
             Variable = variable;
-            GetterMethod = variable.GetterMethod != null ? new MethodVM(variable.GetterMethod) : null;
-            SetterMethod = variable.SetterMethod != null ? new MethodVM(variable.SetterMethod) : null;
+            GetterMethod = variable.GetterMethod != null ? new NodeGraphVM(variable.GetterMethod) : null;
+            SetterMethod = variable.SetterMethod != null ? new NodeGraphVM(variable.SetterMethod) : null;
         }
 
         public void AddGetter()
         {
-            var method = new Method($"get_{Name}")
+            var method = new MethodGraph($"get_{Name}")
             {
                 Class = variable.Class,
                 Visibility = Visibility
@@ -168,7 +168,7 @@ namespace NetPrintsEditor.ViewModels
             method.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
 
-            GetterMethod = new MethodVM(method);
+            GetterMethod = new NodeGraphVM(method);
             variable.GetterMethod = method;
             OnPropertyChanged(nameof(HasGetter));
             OnPropertyChanged(nameof(GetterMethod));
@@ -184,7 +184,7 @@ namespace NetPrintsEditor.ViewModels
 
         public void AddSetter()
         {
-            var method = new Method($"set_{Name}")
+            var method = new MethodGraph($"set_{Name}")
             {
                 Class = variable.Class,
                 Visibility = Visibility
@@ -204,10 +204,10 @@ namespace NetPrintsEditor.ViewModels
             const int offsetX = -308;
             const int offsetY = -112;
             TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX + offsetX, method.EntryNode.PositionY + offsetY);
-            method.EntryNode.AddArgument();
+            method.MethodEntryNode.AddArgument();
             GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
 
-            SetterMethod = new MethodVM(method);
+            SetterMethod = new NodeGraphVM(method);
             variable.SetterMethod = method;
             OnPropertyChanged(nameof(HasSetter));
             OnPropertyChanged(nameof(SetterMethod));
