@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace NetPrintsEditor.Compilation
+namespace NetPrints.Core
 {
     [DataContract]
     [KnownType(typeof(AssemblyReference))]

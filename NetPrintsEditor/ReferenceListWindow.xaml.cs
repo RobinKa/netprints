@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using NetPrints.Core;
 
 namespace NetPrintsEditor
 {
@@ -15,20 +15,15 @@ namespace NetPrintsEditor
     /// </summary>
     public partial class ReferenceListWindow : CustomDialog
     {
-        public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(
-            nameof(Project), typeof(ProjectVM), typeof(ReferenceListWindow));
-
-        public ProjectVM Project
+        public ReferenceListViewModel ViewModel
         {
-            get => (ProjectVM)GetValue(ProjectProperty);
-            set => SetValue(ProjectProperty, value);
+            get => DataContext as ReferenceListViewModel;
+            set => DataContext = value;
         }
 
-        public ReferenceListWindow(ProjectVM project)
+        public ReferenceListWindow()
         {
             InitializeComponent();
-
-            Project = project;
         }
 
         private void OnAddAssemblyReferenceClicked(object sender, RoutedEventArgs e)
@@ -41,10 +36,10 @@ namespace NetPrintsEditor
                 {
                     var assemblyReference = new AssemblyReference(openFileDialog.FileName);
 
-                    if (!Project.Project.References.OfType<AssemblyReference>().Any(r =>
+                    if (!ViewModel.Project.References.OfType<AssemblyReference>().Any(r =>
                         string.Equals(Path.GetFullPath(r.AssemblyPath), Path.GetFullPath(assemblyReference.AssemblyPath), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Project.Project.References.Add(assemblyReference);
+                        ViewModel.Project.References.Add(assemblyReference);
                     }
                 }
                 catch (Exception ex)
@@ -63,10 +58,10 @@ namespace NetPrintsEditor
                 {
                     var sourceDirectoryReference = new SourceDirectoryReference(openFolderDialog.SelectedPath);
 
-                    if (!Project.Project.References.OfType<SourceDirectoryReference>().Any(r =>
+                    if (!ViewModel.Project.References.OfType<SourceDirectoryReference>().Any(r =>
                         string.Equals(Path.GetFullPath(r.SourceDirectory), Path.GetFullPath(sourceDirectoryReference.SourceDirectory), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Project.Project.References.Add(sourceDirectoryReference);
+                        ViewModel.Project.References.Add(sourceDirectoryReference);
                     }
                 }
                 catch (Exception ex)
@@ -80,7 +75,7 @@ namespace NetPrintsEditor
         {
             if (sender is Button button && button.DataContext is CompilationReferenceVM reference)
             {
-                Project.Project.References.Remove(reference.Reference);
+                ViewModel.Project.References.Remove(reference.Reference);
             }
         }
     }

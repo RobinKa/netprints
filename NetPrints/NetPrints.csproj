@@ -8,6 +8,11 @@
     <CodeAnalysisRuleSet>../CSharpRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Fody" Version="4.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="2.6.1" />
   </ItemGroup>
 </Project>

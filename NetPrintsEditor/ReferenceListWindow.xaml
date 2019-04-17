@@ -8,11 +8,11 @@
         xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="References"
-        x:Name="referenceListWindow">
+        Title="References">
 
     <mah:CustomDialog.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
+        <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
     </mah:CustomDialog.Resources>
 
     <Grid>
@@ -35,10 +35,10 @@
         </Grid>
             
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="referenceList" ItemsSource="{Binding ElementName=referenceListWindow, Path=Project.References}">
+            <ItemsControl x:Name="referenceList" ItemsSource="{Binding Project.References}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
+                        <Grid DataContext="{Binding Converter={StaticResource modelToViewModelConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="150" />

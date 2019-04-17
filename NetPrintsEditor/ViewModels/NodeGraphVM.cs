@@ -93,7 +93,7 @@ namespace NetPrintsEditor.ViewModels
             get => graph is MethodGraph methodGraph ? methodGraph.ReturnTypes : null;
         }
 
-        public ClassVM Class
+        public ClassEditorVM Class
         {
             get => classVM;
             set
@@ -106,7 +106,7 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private ClassVM classVM;
+        private ClassEditorVM classVM;
 
         public MethodModifiers Modifiers
         {

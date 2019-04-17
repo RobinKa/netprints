@@ -56,7 +56,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:NodeControl Node="{Binding}" />
+                        <local:NodeControl />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 

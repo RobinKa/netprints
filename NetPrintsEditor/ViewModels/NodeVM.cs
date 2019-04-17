@@ -229,7 +229,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (Node is CallMethodNode callMethodNode)
                 {
-                    return ProjectVM.Instance.ReflectionProvider.GetMethodDocumentation(callMethodNode.MethodSpecifier);
+                    return App.ReflectionProvider.GetMethodDocumentation(callMethodNode.MethodSpecifier);
                 }
 
                 return null;
@@ -669,13 +669,13 @@ namespace NetPrintsEditor.ViewModels
             // Get the new overloads. Exclude the current method.
             if (node is CallMethodNode callMethodNode && callMethodNode.MethodSpecifier != null)
             {
-                Overloads.ReplaceRange(ProjectVM.Instance.ReflectionProvider
+                Overloads.ReplaceRange(App.ReflectionProvider
                     .GetPublicMethodOverloads(callMethodNode.MethodSpecifier)
                     .Except(new MethodSpecifier[] { callMethodNode.MethodSpecifier }));
             }
             else if (node is ConstructorNode constructorNode && constructorNode.ConstructorSpecifier != null)
             {
-                Overloads.ReplaceRange(ProjectVM.Instance.ReflectionProvider
+                Overloads.ReplaceRange(App.ReflectionProvider
                     .GetConstructors(constructorNode.ConstructorSpecifier.DeclaringType)
                     .Except(new ConstructorSpecifier[] { constructorNode.ConstructorSpecifier }));
             }

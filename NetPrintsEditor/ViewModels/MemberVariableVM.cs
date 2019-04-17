@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class VariableVM : INotifyPropertyChanged
+    public class MemberVariableVM : INotifyPropertyChanged
     {
         public TypeSpecifier Type
         {
@@ -92,18 +92,6 @@ namespace NetPrintsEditor.ViewModels
             get => variable.SetterMethod != null;
         }
 
-        public NodeGraphVM GetterMethod
-        {
-            get;
-            private set;
-        }
-
-        public NodeGraphVM SetterMethod
-        {
-            get;
-            private set;
-        }
-
         public string VisibilityName
         {
             get => Enum.GetName(typeof(MemberVisibility), Visibility);
@@ -136,11 +124,9 @@ namespace NetPrintsEditor.ViewModels
 
         private Variable variable;
 
-        public VariableVM(Variable variable)
+        public MemberVariableVM(Variable variable)
         {
             Variable = variable;
-            GetterMethod = variable.GetterMethod != null ? new NodeGraphVM(variable.GetterMethod) : null;
-            SetterMethod = variable.SetterMethod != null ? new NodeGraphVM(variable.SetterMethod) : null;
         }
 
         public void AddGetter()
@@ -168,18 +154,14 @@ namespace NetPrintsEditor.ViewModels
             method.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
 
-            GetterMethod = new NodeGraphVM(method);
             variable.GetterMethod = method;
             OnPropertyChanged(nameof(HasGetter));
-            OnPropertyChanged(nameof(GetterMethod));
         }
 
         public void RemoveGetter()
         {
-            GetterMethod = null;
             variable.GetterMethod = null;
             OnPropertyChanged(nameof(HasGetter));
-            OnPropertyChanged(nameof(GetterMethod));
         }
 
         public void AddSetter()
@@ -207,18 +189,14 @@ namespace NetPrintsEditor.ViewModels
             method.MethodEntryNode.AddArgument();
             GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
 
-            SetterMethod = new NodeGraphVM(method);
             variable.SetterMethod = method;
             OnPropertyChanged(nameof(HasSetter));
-            OnPropertyChanged(nameof(SetterMethod));
         }
 
         public void RemoveSetter()
         {
-            SetterMethod = null;
             variable.SetterMethod = null;
             OnPropertyChanged(nameof(HasSetter));
-            OnPropertyChanged(nameof(SetterMethod));
         }
 
         #region INotifyPropertyChanged

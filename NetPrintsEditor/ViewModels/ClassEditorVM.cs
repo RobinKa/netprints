@@ -9,30 +9,20 @@ using System.Windows.Threading;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class ClassVM : INotifyPropertyChanged
+    public class ClassEditorVM : INotifyPropertyChanged
     {
-        public ProjectVM Project
+        public Project Project
         {
-            get => project;
-            set
-            {
-                if (project != value)
-                {
-                    project = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => Class.Project;
         }
 
-        private ProjectVM project;
-
         // Wrapped attributes of Class
-        public ObservableViewModelCollection<VariableVM, Variable> Variables
+        public ObservableViewModelCollection<MemberVariableVM, Variable> Variables
         {
             get => variables;
             set
             {
-                if(variables != value)
+                if (variables != value)
                 {
                     variables = value;
                     OnPropertyChanged();
@@ -40,7 +30,7 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private ObservableViewModelCollection<VariableVM, Variable> variables;
+        private ObservableViewModelCollection<MemberVariableVM, Variable> variables;
 
         public ObservableViewModelCollection<NodeGraphVM, MethodGraph> Methods
         {
@@ -77,7 +67,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public IEnumerable<MethodSpecifier> OverridableMethods
         {
-            get => ProjectVM.Instance.ReflectionProvider.GetOverridableMethodsForType(Class.SuperType);
+            get => App.ReflectionProvider.GetOverridableMethodsForType(Class.SuperType);
         }
 
         public TypeSpecifier Type
@@ -97,7 +87,6 @@ namespace NetPrintsEditor.ViewModels
             {
                 cls.Namespace = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(StoragePath));
                 OnPropertyChanged(nameof(FullName));
                 OnPropertyChanged(nameof(Type));
             }
@@ -110,7 +99,6 @@ namespace NetPrintsEditor.ViewModels
             {
                 cls.Name = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(StoragePath));
                 OnPropertyChanged(nameof(FullName));
                 OnPropertyChanged(nameof(Type));
 
@@ -168,19 +156,10 @@ namespace NetPrintsEditor.ViewModels
                     OnPropertyChanged(nameof(Type));
                     OnPropertyChanged(nameof(Modifiers));
                     OnPropertyChanged(nameof(Name));
-                    OnPropertyChanged(nameof(StoragePath));
                     OnPropertyChanged(nameof(FullName));
                     OnPropertyChanged(nameof(Visibility));
                 }
             }
-        }
-
-        /// <summary>
-        /// Path where the class is stored.
-        /// </summary>
-        public string StoragePath
-        {
-            get => $"{Class.FullName}.netpc";
         }
 
         /// <summary>
@@ -210,7 +189,7 @@ namespace NetPrintsEditor.ViewModels
 
         private readonly Timer codeTimer;
 
-        public ClassVM(ClassGraph cls)
+        public ClassEditorVM(ClassGraph cls)
         {
             Class = cls;
 
@@ -237,7 +216,7 @@ namespace NetPrintsEditor.ViewModels
             codeTimer.Start();
         }
 
-        ~ClassVM()
+        ~ClassEditorVM()
         {
             codeTimer?.Stop();
         }
@@ -255,8 +234,8 @@ namespace NetPrintsEditor.ViewModels
                 Constructors = new ObservableViewModelCollection<NodeGraphVM, ConstructorGraph>(
                     cls.Constructors, c => new NodeGraphVM(c) { Class = this });
 
-                Variables = new ObservableViewModelCollection<VariableVM, Variable>(
-                    cls.Variables, v => new VariableVM(v));
+                Variables = new ObservableViewModelCollection<MemberVariableVM, Variable>(
+                    cls.Variables, v => new MemberVariableVM(v));
             }
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

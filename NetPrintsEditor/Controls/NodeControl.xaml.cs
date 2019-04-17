@@ -11,13 +11,10 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class NodeControl : UserControl
     {
-        public static DependencyProperty NodeProperty = DependencyProperty.Register(
-            nameof(NetPrints.Graph.Node), typeof(NodeVM), typeof(NodeControl));
-
         public NodeVM Node
         {
-            get => GetValue(NodeProperty) as NodeVM;
-            set => SetValue(NodeProperty, value);
+            get => DataContext as NodeVM;
+            set => DataContext = value;
         }
 
         public NodeControl()

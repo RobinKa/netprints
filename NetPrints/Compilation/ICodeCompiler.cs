@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NetPrintsEditor.Compilation
+namespace NetPrints.Compilation
 {
     /// <summary>
     /// Contains results of a compilation.

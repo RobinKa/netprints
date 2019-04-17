@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using NetPrintsEditor.Compilation;
+using NetPrints.Core;
+using PropertyChanged;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class CompilationReferenceVM : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class CompilationReferenceVM
     {
         public bool ShowIncludeInCompilationCheckBox
         {
@@ -20,7 +22,6 @@ namespace NetPrintsEditor.ViewModels
                 if (Reference is SourceDirectoryReference sourceDirectoryReference)
                 {
                     sourceDirectoryReference.IncludeInCompilation = value;
-                    OnPropertyChanged();
                 }
                 else
                 {
@@ -35,14 +36,5 @@ namespace NetPrintsEditor.ViewModels
         {
             Reference = compilationReference;
         }
-
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
     }
 }

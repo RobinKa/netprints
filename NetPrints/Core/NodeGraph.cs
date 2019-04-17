@@ -28,5 +28,15 @@ namespace NetPrints.Core
             get;
             set;
         }
+
+        /// <summary>
+        /// Project the graph is part of.
+        /// </summary>
+        [DataMember]
+        public Project Project
+        {
+            get;
+            set;
+        }
     }
 }

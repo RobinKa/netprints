@@ -1,4 +1,4 @@
-﻿namespace NetPrintsEditor.Compilation
+﻿namespace NetPrints.Core
 {
     public interface ICompilationReference
     {

@@ -9,7 +9,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
-        Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
+        Title="{Binding Class.Name}" 
         Icon="NetPrintsLogo.ico"
         Height="720" Width="1280"
         x:Name="classWindow">
@@ -55,12 +55,12 @@
             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton"
                     ToolTipService.ShowOnDisabled="True"
                     ToolTip="Compiles the project and outputs the source code if chosen."
-                    IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile"
+                    IsEnabled="{Binding Project.CanCompile}" Margin="5" Content="Compile"
                     FontWeight="Bold" FontSize="16" Click="OnCompileButtonClicked"/>
             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton"
                     ToolTipService.ShowOnDisabled="True"
                     ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
-                    IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompileAndRun}"
+                    IsEnabled="{Binding Class.Project.CanCompileAndRun}"
                     Margin="5" Content="Run" FontWeight="Bold" FontSize="16" Click="OnRunButtonClicked" />
             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton"
                     ToolTip="Edit the properties of this class."
@@ -98,7 +98,7 @@
 
                     <Label Grid.Row="0" Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Methods}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -124,7 +124,7 @@
                     <ComboBox x:Name="overrideMethodBox" HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16"
                               Text="Override a method"
                               IsReadOnly="True" IsEditable="True"
-                              ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
+                              ItemsSource="{Binding OverridableMethods}"
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 
@@ -139,7 +139,7 @@
 
                     <Label Grid.Row="0" Content="Constructors" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding ElementName=classWindow, Path=Class.Constructors}">
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Constructors}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -174,7 +174,7 @@
 
                     <Label Content="Variables" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Variables}">
+                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding Variables}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Controls:MemberVariableView DataContext="{Binding}" />
@@ -200,9 +200,9 @@
 
                 <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
-                <ListView Grid.Row="2" ItemsSource="{Binding ElementName=classWindow, Path=Class.Project.LastCompileErrors}" />
+                <ListView Grid.Row="2" ItemsSource="{Binding Project.LastCompileErrors}" />
 
-                <Label Grid.Row="3" Content="{Binding ElementName=classWindow, Path=Class.Project.CompilationMessage}" />
+                <Label Grid.Row="3" Content="{Binding Project.CompilationMessage}" />
             </Grid>
 
 
@@ -220,11 +220,11 @@
                 </TabItem>
                 
                 <TabItem>
-                    <Controls:VariableEditorControl x:Name="variableViewer" />
+                    <Controls:VariableEditorControl DataContext="{x:Null}" x:Name="variableViewer" />
                 </TabItem>
 
                 <TabItem>
-                    <Controls:MethodPropertyEditorControl x:Name="methodViewer" />
+                    <Controls:MethodPropertyEditorControl DataContext="{x:Null}" x:Name="methodViewer" />
                 </TabItem>
             </TabControl>
         </Grid>

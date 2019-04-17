@@ -1,6 +1,5 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
-using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Globalization;
@@ -22,7 +21,7 @@ namespace NetPrintsEditor.Converters
             }
             else if (value is ClassGraph cls)
             {
-                return new ClassVM(cls);
+                return new ClassEditorVM(cls);
             }
             else if (value is NodePin pin)
             {

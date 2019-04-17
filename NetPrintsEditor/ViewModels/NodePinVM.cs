@@ -30,7 +30,7 @@ namespace NetPrintsEditor.ViewModels
                             int paramIndex = callMethodNode.ArgumentPins.IndexOf(inputDataPin);
                             if (paramIndex >= 0)
                             {
-                                documentation = ProjectVM.Instance.ReflectionProvider.GetMethodParameterDocumentation(callMethodNode.MethodSpecifier, paramIndex);
+                                documentation = App.ReflectionProvider.GetMethodParameterDocumentation(callMethodNode.MethodSpecifier, paramIndex);
                             }
                         }
                         else if (dataPin is NodeOutputDataPin outputDataPin)
@@ -38,7 +38,7 @@ namespace NetPrintsEditor.ViewModels
                             int returnIndex = callMethodNode.OutputDataPins.IndexOf(outputDataPin);
                             if (returnIndex >= 0)
                             {
-                                documentation = ProjectVM.Instance.ReflectionProvider.GetMethodReturnDocumentation(callMethodNode.MethodSpecifier, returnIndex);
+                                documentation = App.ReflectionProvider.GetMethodReturnDocumentation(callMethodNode.MethodSpecifier, returnIndex);
                             }
                         }
                     }
@@ -203,7 +203,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var otherOtp in node.OutputDataPins)
                 {
-                    if (GraphUtil.CanConnectNodePins(otherOtp, idp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
+                    if (GraphUtil.CanConnectNodePins(otherOtp, idp, App.ReflectionProvider.TypeSpecifierIsSubclassOf, App.ReflectionProvider.HasImplicitCast))
                     {
                         GraphUtil.ConnectDataPins(otherOtp, idp);
 
@@ -234,7 +234,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var otherIdp in node.InputDataPins)
                 {
-                    if (GraphUtil.CanConnectNodePins(odp, otherIdp, ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf, ProjectVM.Instance.ReflectionProvider.HasImplicitCast))
+                    if (GraphUtil.CanConnectNodePins(odp, otherIdp, App.ReflectionProvider.TypeSpecifierIsSubclassOf, App.ReflectionProvider.HasImplicitCast))
                     {
                         GraphUtil.ConnectDataPins(odp, otherIdp);
 
@@ -342,7 +342,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 if (Pin is NodeInputDataPin p && p.PinType.Value is TypeSpecifier typeSpec && typeSpec.IsEnum)
                 {
-                    return ProjectVM.Instance.ReflectionProvider.GetEnumNames(typeSpec);
+                    return App.ReflectionProvider.GetEnumNames(typeSpec);
                 }
 
                 return null;

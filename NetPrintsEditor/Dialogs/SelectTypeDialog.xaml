@@ -6,7 +6,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetPrintsEditor.Dialogs"
-        xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
+        xmlns:npe="clr-namespace:NetPrintsEditor"
         mc:Ignorable="d"
         x:Name="wnd"
         Title="Select Type" Height="100" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
@@ -33,7 +33,7 @@
         </Grid.RowDefinitions>
         <ComboBox IsEditable="True"
             SelectedItem="{Binding SelectedType, ElementName=wnd}" 
-            ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
+            ItemsSource="{Binding Source={x:Static npe:App.NonStaticTypes}}"/>
 
         <Button Content="Select" Grid.Row="2" Click="OnSelectButtonClicked" />
     </Grid>

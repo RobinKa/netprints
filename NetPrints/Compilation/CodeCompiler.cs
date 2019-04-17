@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Emit;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NetPrintsEditor.Compilation
+namespace NetPrints.Compilation
 {
     /// <summary>
     /// Compiles code into binaries.

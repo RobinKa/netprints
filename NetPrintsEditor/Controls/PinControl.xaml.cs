@@ -121,8 +121,8 @@ namespace NetPrintsEditor.Controls
                 NodePinVM draggingPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
 
                 if (GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin,
-                    (a, b) => ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
-                    (a, b) => ProjectVM.Instance.ReflectionProvider.HasImplicitCast(a, b)))
+                    (a, b) => App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
+                    (a, b) => App.ReflectionProvider.HasImplicitCast(a, b)))
                 {
                     e.Effects = DragDropEffects.Link;
 
