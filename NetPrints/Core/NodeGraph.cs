@@ -32,7 +32,6 @@ namespace NetPrints.Core
         /// <summary>
         /// Project the graph is part of.
         /// </summary>
-        [DataMember]
         public Project Project
         {
             get;

@@ -56,6 +56,7 @@ namespace NetPrints.Core
         public ObservableRangeCollection<ClassGraph> Classes
         {
             get;
+            private set;
         } = new ObservableRangeCollection<ClassGraph>();
 
         /// <summary>
@@ -220,6 +221,7 @@ namespace NetPrints.Core
                 Parallel.ForEach(project.ClassPaths, classPath =>
                 {
                     ClassGraph cls = SerializationHelper.LoadClass(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(project.Path), classPath));
+                    cls.Project = project;
                     classes.Add(cls);
                 });
 
@@ -344,9 +346,9 @@ namespace NetPrints.Core
                     // Translate the class to C#
                     ClassTranslator classTranslator = new ClassTranslator();
 
-                    string code = classTranslator.TranslateClass(cls.Class);
+                    string code = classTranslator.TranslateClass(cls);
 
-                    string[] directories = cls.FullName.Split(".");
+                    string[] directories = cls.FullName.Split('.');
                     directories = directories
                         .Take(directories.Length - 1)
                         .Prepend(compiledDir)
@@ -387,16 +389,16 @@ namespace NetPrints.Core
                     .Distinct()
                     .ToArray();
 
-                CodeCompileResults results = codeCompiler.CompileSources(
+                CodeCompileResults compilationResults = codeCompiler.CompileSources(
                     outputPath, assemblyPaths, sources, generateExecutable);
 
                 // Delete the output binary if we don't want it.
                 // TODO: Don't generate it in the first place.
-                if (results.PathToAssembly != null && deleteBinaries)
+                if (compilationResults.PathToAssembly != null && deleteBinaries)
                 {
-                    if (File.Exists(results.PathToAssembly))
+                    if (File.Exists(compilationResults.PathToAssembly))
                     {
-                        File.Delete(results.PathToAssembly);
+                        File.Delete(compilationResults.PathToAssembly);
                     }
                 }
 
@@ -404,10 +406,10 @@ namespace NetPrints.Core
                 if (CompilationOutput.HasFlag(ProjectCompilationOutput.Errors))
                 {
                     File.WriteAllText(System.IO.Path.Combine(compiledDir, $"{Name}_errors.txt"),
-                        string.Join(Environment.NewLine, results.Errors));
+                        string.Join(Environment.NewLine, compilationResults.Errors));
                 }
 
-                return results;
+                return compilationResults;
             });
 
             LastCompilationSucceeded = results.Success;
@@ -523,7 +525,7 @@ namespace NetPrints.Core
             string outputPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), GetClassStoragePath(cls));
 
             // Save in same directory as project
-            SerializationHelper.SaveClass(cls.Class, outputPath);
+            SerializationHelper.SaveClass(cls, outputPath);
         }
 
         #endregion
@@ -545,7 +547,7 @@ namespace NetPrints.Core
             // TODO: Might break if GetUniqueName adds a dot
             // (which it doesn't at the time of writing, it just adds
             // numbers, but this is not guaranteed forever).
-            string name = storageName.Split(".").Last();
+            string name = storageName.Split('.').Last();
 
             ClassGraph cls = new ClassGraph()
             {
@@ -594,6 +596,7 @@ namespace NetPrints.Core
             {
                 // Load the class and save it relative to the project
                 cls = SerializationHelper.LoadClass(path);
+                cls.Project = this;
                 SaveClassInProjectDirectory(cls);
                 Classes.Add(cls);
             }
@@ -601,5 +604,11 @@ namespace NetPrints.Core
             return cls;
         }
         #endregion
+
+        [OnDeserialized]
+        private void FixDefaults(StreamingContext context)
+        {
+            Classes = new ObservableRangeCollection<ClassGraph>();
+        }
     }
 }

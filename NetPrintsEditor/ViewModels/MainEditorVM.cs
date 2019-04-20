@@ -13,6 +13,10 @@ namespace NetPrintsEditor.ViewModels
             get => Project != null;
         }
 
+        public bool CanCompile => Project?.CanCompile ?? false;
+
+        public bool CanCompileAndRun => Project?.CanCompileAndRun ?? false;
+
         public Project Project
         {
             get;
