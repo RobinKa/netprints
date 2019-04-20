@@ -273,9 +273,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, TypeSpecifier b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return a is null;
+                return b is null;
             }
 
             return a.Equals(b);
@@ -283,9 +283,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(TypeSpecifier a, TypeSpecifier b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return !(a is null);
+                return !(b is null);
             }
 
             return !a.Equals(b);
@@ -293,9 +293,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, GenericType b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return a is null;
+                return b is null;
             }
 
             return a.Equals(b);
@@ -303,9 +303,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(TypeSpecifier a, GenericType b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return !(a is null);
+                return !(b is null);
             }
 
             return !a.Equals(b);
@@ -313,9 +313,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(TypeSpecifier a, BaseType b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return a is null;
+                return b is null;
             }
 
             return a.Equals(b);
@@ -323,9 +323,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(TypeSpecifier a, BaseType b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return !(a is null);
+                return !(b is null);
             }
 
             return !a.Equals(b);
@@ -333,9 +333,9 @@ namespace NetPrints.Core
 
         public static bool operator ==(BaseType a, TypeSpecifier b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return a is null;
+                return b is null;
             }
 
             return a.Equals(b);
@@ -343,9 +343,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(BaseType a, TypeSpecifier b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return !(a is null);
+                return !(b is null);
             }
 
             return !a.Equals(b);

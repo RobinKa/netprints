@@ -192,9 +192,9 @@ namespace NetPrints.Core
 
         public static bool operator==(MethodSpecifier a, MethodSpecifier b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return a is null;
+                return b is null;
             }
 
             return a.Equals(b);
@@ -202,9 +202,9 @@ namespace NetPrints.Core
 
         public static bool operator !=(MethodSpecifier a, MethodSpecifier b)
         {
-            if (b is null)
+            if (a is null)
             {
-                return !(a is null);
+                return !(b is null);
             }
 
             return !a.Equals(b);
