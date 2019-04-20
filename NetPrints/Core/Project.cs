@@ -14,6 +14,7 @@ using NetPrints.Translator;
 using System.Diagnostics;
 using NetPrints.Serialization;
 using NetPrints.Compilation;
+using PropertyChanged;
 
 namespace NetPrints.Core
 {
@@ -37,10 +38,9 @@ namespace NetPrints.Core
     /// Project model.
     /// </summary>
     [DataContract]
-    public class Project : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class Project
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private static readonly IEnumerable<FrameworkAssemblyReference> DefaultReferences = new FrameworkAssemblyReference[]
         {
             new FrameworkAssemblyReference(".NETFramework/v4.5/System.dll"),

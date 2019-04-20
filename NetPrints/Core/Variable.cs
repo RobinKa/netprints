@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PropertyChanged;
+using System;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -30,6 +31,7 @@ namespace NetPrints.Core
     /// </summary>
     [Serializable]
     [DataContract(Name = "PropertySpecifier")]
+    [AddINotifyPropertyChangedInterface]
     public class Variable
     {
         /// <summary>

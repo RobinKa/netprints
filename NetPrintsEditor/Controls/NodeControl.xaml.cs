@@ -36,7 +36,7 @@ namespace NetPrintsEditor.Controls
 
             if (!Node.IsSelected)
             {
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
+                Node.Select();
             }
 
             Node.DragStart();
@@ -61,7 +61,7 @@ namespace NetPrintsEditor.Controls
 
             if (!dragged)
             {
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
+                Node.Select();
             }
 
             e.Handled = true;

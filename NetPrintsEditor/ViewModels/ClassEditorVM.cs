@@ -1,63 +1,32 @@
-﻿using NetPrints.Core;
+﻿using GalaSoft.MvvmLight;
+using NetPrints.Core;
 using NetPrints.Translator;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using System.Windows.Threading;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class ClassEditorVM : INotifyPropertyChanged
+    public class ClassEditorVM : ViewModelBase
     {
-        public Project Project
-        {
-            get => Class.Project;
-        }
+        public Project Project => Class?.Project;
 
         // Wrapped attributes of Class
-        public ObservableViewModelCollection<MemberVariableVM, Variable> Variables
-        {
-            get => variables;
-            set
-            {
-                if (variables != value)
-                {
-                    variables = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private ObservableViewModelCollection<MemberVariableVM, Variable> variables;
+        public ObservableViewModelCollection<MemberVariableVM, Variable> Variables { get; set; }
 
         public ObservableViewModelCollection<NodeGraphVM, MethodGraph> Methods
         {
-            get => methods;
-            set
-            {
-                if (methods != value)
-                {
-                    methods = value;
-                    OnPropertyChanged();
-                }
-            }
+            get; set;
         }
-
-        private ObservableViewModelCollection<NodeGraphVM, MethodGraph> methods;
 
         public ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> Constructors
         {
             get => constructors;
-            set
-            {
-                if (constructors != value)
-                {
-                    constructors = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => constructors = value;
         }
 
         private ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> constructors;
@@ -65,125 +34,54 @@ namespace NetPrintsEditor.ViewModels
         /// <summary>
         /// Specifiers for methods that this class can override.
         /// </summary>
-        public IEnumerable<MethodSpecifier> OverridableMethods
-        {
-            get => App.ReflectionProvider.GetOverridableMethodsForType(Class.SuperType);
-        }
+        public IEnumerable<MethodSpecifier> OverridableMethods =>
+            Class.AllBaseTypes.SelectMany(type => App.ReflectionProvider.GetOverridableMethodsForType(type));
 
-        public TypeSpecifier Type
-        {
-            get => cls?.Type;
-        }
+        public TypeSpecifier Type => Class?.Type;
 
-        public string FullName
-        {
-            get => cls?.FullName;
-        }
+        public string FullName => Class?.FullName;
 
         public string Namespace
         {
-            get => cls.Namespace;
-            set
-            {
-                cls.Namespace = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FullName));
-                OnPropertyChanged(nameof(Type));
-            }
+            get => Class.Namespace;
+            set => Class.Namespace = value;
         }
 
         public string Name
         {
-            get => cls?.Name;
-            set
-            {
-                cls.Name = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FullName));
-                OnPropertyChanged(nameof(Type));
-
-                foreach (NodeGraphVM constructor in Constructors)
-                {
-                    constructor.Name = cls.Name;
-                }
-            }
+            get => Class?.Name;
+            set => Class.Name = value;
         }
 
         public ClassModifiers Modifiers
         {
-            get => cls.Modifiers;
-            set
-            {
-                cls.Modifiers = value;
-                OnPropertyChanged();
-            }
+            get => Class?.Modifiers ?? ClassModifiers.None;
+            set => Class.Modifiers = value;
         }
 
         public MemberVisibility Visibility
         {
-            get => cls.Visibility;
-            set
-            {
-                if (cls.Visibility != value)
-                {
-                    cls.Visibility = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => Class?.Visibility ?? MemberVisibility.Invalid;
+            set => Class.Visibility = value;
         }
 
-        public IEnumerable<MemberVisibility> PossibleVisibilities
+        public IEnumerable<MemberVisibility> PossibleVisibilities => new[]
         {
-            get => new[]
-                {
-                    MemberVisibility.Internal,
-                    MemberVisibility.Private,
-                    MemberVisibility.Protected,
-                    MemberVisibility.Public,
-                };
-        }
+            MemberVisibility.Internal,
+            MemberVisibility.Private,
+            MemberVisibility.Protected,
+            MemberVisibility.Public,
+        };
 
         public ClassGraph Class
         {
-            get => cls;
-            set
-            {
-                if (cls != value)
-                {
-                    cls = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(OverridableMethods));
-                    OnPropertyChanged(nameof(Type));
-                    OnPropertyChanged(nameof(Modifiers));
-                    OnPropertyChanged(nameof(Name));
-                    OnPropertyChanged(nameof(FullName));
-                    OnPropertyChanged(nameof(Visibility));
-                }
-            }
+            get; set;
         }
 
         /// <summary>
         /// Generated code for the current class.
         /// </summary>
-        public string GeneratedCode
-        {
-            get
-            {
-                return generatedCode;
-            }
-            set
-            {
-                if (generatedCode != value)
-                {
-                    generatedCode = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string generatedCode;
-
-        private ClassGraph cls;
+        public string GeneratedCode { get; set; }
 
         private readonly ClassTranslator classTranslator = new ClassTranslator();
 
@@ -221,25 +119,16 @@ namespace NetPrintsEditor.ViewModels
             codeTimer?.Stop();
         }
 
-#region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnClassChanged()
         {
-            if (propertyName == nameof(Class))
-            {
-                Methods = new ObservableViewModelCollection<NodeGraphVM, MethodGraph>(
-                    cls.Methods, m => new NodeGraphVM(m) { Class = this } );
+            Methods = new ObservableViewModelCollection<NodeGraphVM, MethodGraph>(
+                Class.Methods, m => new NodeGraphVM(m) { Class = this } );
 
-                Constructors = new ObservableViewModelCollection<NodeGraphVM, ConstructorGraph>(
-                    cls.Constructors, c => new NodeGraphVM(c) { Class = this });
+            Constructors = new ObservableViewModelCollection<NodeGraphVM, ConstructorGraph>(
+                Class.Constructors, c => new NodeGraphVM(c) { Class = this });
 
-                Variables = new ObservableViewModelCollection<MemberVariableVM, Variable>(
-                    cls.Variables, v => new MemberVariableVM(v));
-            }
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Variables = new ObservableViewModelCollection<MemberVariableVM, Variable>(
+                Class.Variables, v => new MemberVariableVM(v));
         }
-#endregion
     }
 }

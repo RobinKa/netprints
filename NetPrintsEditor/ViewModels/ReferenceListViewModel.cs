@@ -1,16 +1,13 @@
-﻿using NetPrints.Core;
-using System.ComponentModel;
+﻿using GalaSoft.MvvmLight;
+using NetPrints.Core;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class ReferenceListViewModel : INotifyPropertyChanged
+    public class ReferenceListViewModel : ViewModelBase
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public Project Project
         {
-            get;
-            set;
+            get; set;
         }
 
         public ReferenceListViewModel(Project project)

@@ -5,10 +5,11 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Linq;
 using System;
+using GalaSoft.MvvmLight;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class NodeVM : INotifyPropertyChanged
+    public class NodeVM : ViewModelBase
     {
         private static readonly SolidColorBrush DefaultNodeBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0x30, 0x30, 0x30));
@@ -140,6 +141,10 @@ namespace NetPrintsEditor.ViewModels
                 {
                     return "Add method return value";
                 }
+                else if (node is ClassReturnNode)
+                {
+                    return "Add interface";
+                }
 
                 return "";
             }
@@ -159,7 +164,11 @@ namespace NetPrintsEditor.ViewModels
                 }
                 else if (node is ReturnNode)
                 {
-                    return "Add method return value";
+                    return "Remove method return value";
+                }
+                else if (node is ClassReturnNode)
+                {
+                    return "Remove interface";
                 }
 
                 return "";
@@ -203,12 +212,14 @@ namespace NetPrintsEditor.ViewModels
                 if (isSelected != value)
                 {
                     isSelected = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(BorderBrush));
-                    OnPropertyChanged(nameof(ZIndex));
+                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(BorderBrush));
+                    RaisePropertyChanged(nameof(ZIndex));
                 }
             }
         }
+
+        private bool isSelected;
 
         /// <summary>
         /// Whether this node is a reroute node.
@@ -217,8 +228,6 @@ namespace NetPrintsEditor.ViewModels
         {
             get => node is RerouteNode;
         }
-
-        private bool isSelected;
 
         /// <summary>
         /// Tool tip of the node shown when hovering over it.
@@ -249,7 +258,7 @@ namespace NetPrintsEditor.ViewModels
                 if (node.Name != value)
                 {
                     node.Name = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -262,7 +271,7 @@ namespace NetPrintsEditor.ViewModels
                 if (inputDataPins != value)
                 {
                     inputDataPins = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -275,7 +284,7 @@ namespace NetPrintsEditor.ViewModels
                 if (outputDataPins != value)
                 {
                     outputDataPins = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -288,7 +297,7 @@ namespace NetPrintsEditor.ViewModels
                 if (inputExecPins != value)
                 {
                     inputExecPins = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -301,7 +310,7 @@ namespace NetPrintsEditor.ViewModels
                 if (outputExecPins != value)
                 {
                     outputExecPins = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -314,7 +323,7 @@ namespace NetPrintsEditor.ViewModels
                 if (inputTypePins != value)
                 {
                     inputTypePins = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -327,7 +336,7 @@ namespace NetPrintsEditor.ViewModels
                 if (outputTypePins != value)
                 {
                     outputTypePins = value;
-                    OnPropertyChanged();
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -390,26 +399,26 @@ namespace NetPrintsEditor.ViewModels
 
                     UpdateOverloads();
 
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(Brush));
-                    OnPropertyChanged(nameof(ToolTip));
-                    OnPropertyChanged(nameof(IsRerouteNode));
-                    OnPropertyChanged(nameof(ShowLeftPinButtons));
-                    OnPropertyChanged(nameof(ShowRightPinButtons));
-                    OnPropertyChanged(nameof(LeftPlusToolTip));
-                    OnPropertyChanged(nameof(LeftMinusToolTip));
-                    OnPropertyChanged(nameof(RightPlusToolTip));
-                    OnPropertyChanged(nameof(RightMinusToolTip));
-                    OnPropertyChanged(nameof(Label));
-                    OnPropertyChanged(nameof(IsPure));
-                    OnPropertyChanged(nameof(CanSetPure));
+                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(Brush));
+                    RaisePropertyChanged(nameof(ToolTip));
+                    RaisePropertyChanged(nameof(IsRerouteNode));
+                    RaisePropertyChanged(nameof(ShowLeftPinButtons));
+                    RaisePropertyChanged(nameof(ShowRightPinButtons));
+                    RaisePropertyChanged(nameof(LeftPlusToolTip));
+                    RaisePropertyChanged(nameof(LeftMinusToolTip));
+                    RaisePropertyChanged(nameof(RightPlusToolTip));
+                    RaisePropertyChanged(nameof(RightMinusToolTip));
+                    RaisePropertyChanged(nameof(Label));
+                    RaisePropertyChanged(nameof(IsPure));
+                    RaisePropertyChanged(nameof(CanSetPure));
                 }
             }
         }
 
         private void OnInputTypeChanged(object sender, EventArgs e)
         {
-            OnPropertyChanged(nameof(Label));
+            RaisePropertyChanged(nameof(Label));
         }
 
         public string Label
@@ -426,8 +435,8 @@ namespace NetPrintsEditor.ViewModels
             set
             {
                 overloads = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowOverloads));
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(ShowOverloads));
             }
         }
 
@@ -556,27 +565,13 @@ namespace NetPrintsEditor.ViewModels
         public double PositionX
         {
             get => node.PositionX;
-            set
-            {
-                if (node.PositionX != value)
-                {
-                    node.PositionX = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => node.PositionX = value;
         }
 
         public double PositionY
         {
             get => node.PositionY;
-            set
-            {
-                if (node.PositionY != value)
-                {
-                    node.PositionY = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => node.PositionY = value;
         }
 
         /// <summary>
@@ -585,7 +580,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool ShowLeftPinButtons
         {
-            get => node is MakeArrayNode || node is MethodEntryNode || (node is ReturnNode && node == Method.MainReturnNode);
+            get => node is MakeArrayNode || node is MethodEntryNode || (node is ReturnNode && node == Method.MainReturnNode) || node is ClassReturnNode;
         }
 
         /// <summary>
@@ -614,6 +609,10 @@ namespace NetPrintsEditor.ViewModels
             {
                 returnNode.AddReturnType();
             }
+            else if (node is ClassReturnNode classReturnNode)
+            {
+                classReturnNode.AddInterfacePin();
+            }
         }
 
         /// <summary>
@@ -632,6 +631,10 @@ namespace NetPrintsEditor.ViewModels
             else if (node is ReturnNode returnNode)
             {
                 returnNode.RemoveReturnType();
+            }
+            else if (node is ClassReturnNode classReturnNode)
+            {
+                classReturnNode.RemoveInterfacePin();
             }
         }
 
@@ -661,6 +664,7 @@ namespace NetPrintsEditor.ViewModels
 
         public NodeVM(Node node)
         {
+            PropertyChanged += OnPropertyChanged;
             Node = node;
         }
 
@@ -695,8 +699,8 @@ namespace NetPrintsEditor.ViewModels
                 Overloads.Clear();
             }
 
-            OnPropertyChanged(nameof(ShowOverloads));
-            OnPropertyChanged(nameof(Overloads));
+            RaisePropertyChanged(nameof(ShowOverloads));
+            RaisePropertyChanged(nameof(Overloads));
         }
 
         #region Dragging
@@ -712,20 +716,19 @@ namespace NetPrintsEditor.ViewModels
         public void DragMove(double dx, double dy) => OnDragMove?.Invoke(this, dx, dy);
         #endregion
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // HACK: call UpdateOverloads() here because for some reason it is not
             //       updated correctly.
-            if (!propertyName.Contains("overload", StringComparison.OrdinalIgnoreCase))
+            if (!e.PropertyName.Contains("overload", StringComparison.OrdinalIgnoreCase))
             {
                 UpdateOverloads();
             }
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
+
+        public void Select()
+        {
+            MessengerInstance.Send(new SelectNodeMessage(this, true));
+        }
     }
 }

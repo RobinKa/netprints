@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using PropertyChanged;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(TypeNode))]
     [KnownType(typeof(MakeArrayTypeNode))]
     [KnownType(typeof(ThrowNode))]
+    [AddINotifyPropertyChangedInterface]
     public abstract class Node
     {
         /// <summary>

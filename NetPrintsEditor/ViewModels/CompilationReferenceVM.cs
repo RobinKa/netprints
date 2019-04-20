@@ -1,18 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using GalaSoft.MvvmLight;
 using NetPrints.Core;
-using PropertyChanged;
 
 namespace NetPrintsEditor.ViewModels
 {
-    [AddINotifyPropertyChangedInterface]
-    public class CompilationReferenceVM
+    public class CompilationReferenceVM : ViewModelBase
     {
-        public bool ShowIncludeInCompilationCheckBox
-        {
-            get => Reference is SourceDirectoryReference;
-        }
+        public bool ShowIncludeInCompilationCheckBox =>
+            Reference is SourceDirectoryReference;
 
         public bool IncludeInCompilation
         {

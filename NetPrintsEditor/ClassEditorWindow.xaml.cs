@@ -215,7 +215,7 @@ namespace NetPrintsEditor
                 viewerTabControl.SelectedIndex = 0;
             }
 
-            if (methodEditor.Graph.Graph == memberVariableVM.Variable.GetterMethod || methodEditor.Graph.Graph == memberVariableVM.Variable.SetterMethod)
+            if (methodEditor.Graph?.Graph == memberVariableVM.Getter || methodEditor.Graph?.Graph == memberVariableVM.Setter)
             {
                 methodEditor.Graph = null;
             }

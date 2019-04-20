@@ -1,17 +1,12 @@
-﻿using NetPrints.Core;
-using System.ComponentModel;
+﻿using GalaSoft.MvvmLight;
+using NetPrints.Core;
 using System.Linq;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class MainEditorVM : INotifyPropertyChanged
+    public class MainEditorVM : ViewModelBase
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public bool IsProjectOpen
-        {
-            get => Project != null;
-        }
+        public bool IsProjectOpen => Project != null;
 
         public bool CanCompile => Project?.CanCompile ?? false;
 
@@ -19,16 +14,15 @@ namespace NetPrintsEditor.ViewModels
 
         public Project Project
         {
-            get;
-            set;
+            get; set;
         }
 
         public MainEditorVM(Project project)
         {
             Project = project;
-            if (project != null)
+            if (Project != null)
             {
-                project.References.CollectionChanged += (sender, e) => ReloadReflectionProvider();
+                Project.References.CollectionChanged += (sender, e) => ReloadReflectionProvider();
             }
         }
 

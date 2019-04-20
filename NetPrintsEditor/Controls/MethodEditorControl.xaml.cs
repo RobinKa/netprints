@@ -177,13 +177,16 @@ namespace NetPrintsEditor.Controls
                                     .WithStatic(false)
                                     .WithType(pinTypeSpec)));
 
-                            // Add methods of the super type that can accept the pin type as argument
-                            AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
-                                    .WithVisibleFrom(Graph.Class.Type)
-                                    .WithStatic(false)
-                                    .WithArgumentType(pinTypeSpec)
-                                    .WithType(Graph.Class.Class.SuperType)));
+                            // Add methods of the base types that can accept the pin type as argument
+                            foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                            {
+                                AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                                    new ReflectionProviderMethodQuery()
+                                        .WithVisibleFrom(Graph.Class.Type)
+                                        .WithStatic(false)
+                                        .WithArgumentType(pinTypeSpec)
+                                        .WithType(baseType)));
+                            }
 
                             // Add static functions taking the type of the pin
                             AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
@@ -197,12 +200,15 @@ namespace NetPrintsEditor.Controls
                     {
                         if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
                         {
-                            // Variables of base class that inherit from needed type
-                            AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
-                                new ReflectionProviderVariableQuery()
-                                    .WithType(Graph.Class.Class.SuperType)
-                                    .WithVisibleFrom(Graph.Class.Type)
-                                    .WithVariableType(pinTypeSpec, true)));
+                            // Variables of base classes that inherit from needed type
+                            foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                            {
+                                AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
+                                    new ReflectionProviderVariableQuery()
+                                        .WithType(baseType)
+                                        .WithVisibleFrom(Graph.Class.Type)
+                                        .WithVariableType(pinTypeSpec, true)));
+                            }
 
                             // Add static functions returning the type of the pin
                             AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
@@ -218,11 +224,14 @@ namespace NetPrintsEditor.Controls
 
                         AddSuggestionsWithCategory("NetPrints", builtInNodes);
 
-                        AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithType(Graph.Class.Class.SuperType)
-                                .WithStatic(false)
-                                .WithVisibleFrom(Graph.Class.Type)));
+                        foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                        {
+                            AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithType(baseType)
+                                    .WithStatic(false)
+                                    .WithVisibleFrom(Graph.Class.Type)));
+                        }
 
                         AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
@@ -233,11 +242,14 @@ namespace NetPrintsEditor.Controls
                     {
                         AddSuggestionsWithCategory("NetPrints", builtInNodes);
 
-                        AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                        foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                        {
+                            AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                                .WithType(Graph.Class.Class.SuperType)
+                                .WithType(baseType)
                                 .WithStatic(false)
                                 .WithVisibleFrom(Graph.Class.Type)));
+                        }
 
                         AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
@@ -373,17 +385,20 @@ namespace NetPrintsEditor.Controls
                 AddSuggestionsWithCategory("NetPrints", builtInNodes);
 
                 // Get properties and methods of base class.
-                AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
+                foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                {
+                    AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
                     new ReflectionProviderVariableQuery()
                         .WithVisibleFrom(Graph.Class.Type)
-                        .WithType(Graph.Class.Class.SuperType)
+                        .WithType(baseType)
                         .WithStatic(false)));
 
-                AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
-                    new ReflectionProviderMethodQuery()
-                        .WithType(Graph.Class.Class.SuperType)
-                        .WithVisibleFrom(Graph.Class.Type)
-                        .WithStatic(false)));
+                    AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                        new ReflectionProviderMethodQuery()
+                            .WithType(baseType)
+                            .WithVisibleFrom(Graph.Class.Type)
+                            .WithStatic(false)));
+                }
 
                 AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                     new ReflectionProviderMethodQuery()

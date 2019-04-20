@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using System.Linq;
 using System.Text;
 
 namespace NetPrints.Translator
@@ -11,14 +12,14 @@ namespace NetPrints.Translator
         private const string CLASS_TEMPLATE =
             @"namespace %Namespace%
             {
-                %ClassModifiers%class %ClassName%%GenericArguments% : %SuperType%
+                %ClassModifiers%class %ClassName%%GenericArguments% : %BaseTypes%
                 {
                     %Content%
                 }
             }";
 
         private const string CLASS_TEMPLATE_NO_NAMESPACE =
-            @"%ClassModifiers%class %ClassName%%GenericArguments% : %SuperType%
+            @"%ClassModifiers%class %ClassName%%GenericArguments% : %BaseTypes%
             {
                 %Content%
             }";
@@ -87,12 +88,14 @@ namespace NetPrints.Translator
                 genericArguments = "<" + string.Join(", ", c.DeclaredGenericArguments) + ">";
             }
 
+            string baseTypes = string.Join(", ", c.AllBaseTypes);
+
             string generatedCode = (string.IsNullOrWhiteSpace(c.Namespace) ? CLASS_TEMPLATE_NO_NAMESPACE : CLASS_TEMPLATE)
                 .Replace("%Namespace%", c.Namespace)
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
                 .Replace("%GenericArguments%", genericArguments)
-                .Replace("%SuperType%", c.SuperType.FullCodeName)
+                .Replace("%BaseTypes%", baseTypes)
                 .Replace("%Content%", content.ToString());
 
             return TranslatorUtil.FormatCode(generatedCode);

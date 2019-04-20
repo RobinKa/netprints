@@ -1,95 +1,74 @@
-﻿using NetPrints.Core;
+﻿using GalaSoft.MvvmLight;
+using NetPrints.Core;
 using NetPrints.Graph;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class MemberVariableVM : INotifyPropertyChanged
+    public class MemberVariableVM : ViewModelBase
     {
         public TypeSpecifier Type
         {
-            get => variable.Type;
-            set
-            {
-                if (variable.Type != value)
-                {
-                    variable.Type = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => Variable.Type;
+            set => Variable.Type = value;
         }
 
         public string Name
         {
-            get => variable.Name;
-            set
-            {
-                if (variable.Name != value)
-                {
-                    variable.Name = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => Variable.Name;
+            set => Variable.Name = value;
         }
 
         public VariableModifiers Modifiers
         {
-            get => variable.Modifiers;
-            set
-            {
-                if (variable.Modifiers != value)
-                {
-                    variable.Modifiers = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => Variable.Modifiers;
+            set => Variable.Modifiers = value;
         }
 
         public MemberVisibility Visibility
         {
-            get => variable.Visibility;
+            get => Variable.Visibility;
             set
             {
-                if (variable.Visibility != value)
+                if (Variable.Visibility != value)
                 {
                     // Change visibility of accessors if it was the same as the visibility
                     // of the property itself.
                     // Ideally we would have a way to check if the visibility is user-set,
                     // for example by making the getter / setter visibility nullable.
 
-                    if (variable.GetterMethod != null && variable.GetterMethod.Visibility == variable.Visibility)
+                    if (Variable.GetterMethod != null && Variable.GetterMethod.Visibility == Variable.Visibility)
                     {
-                        variable.GetterMethod.Visibility = value;
+                        Variable.GetterMethod.Visibility = value;
                     }
 
-                    if (variable.SetterMethod != null && variable.SetterMethod.Visibility == variable.Visibility)
+                    if (Variable.SetterMethod != null && Variable.SetterMethod.Visibility == Variable.Visibility)
                     {
-                        variable.SetterMethod.Visibility = value;
+                        Variable.SetterMethod.Visibility = value;
                     }
 
-                    variable.Visibility = value;
-
-                    OnPropertyChanged();
+                    Variable.Visibility = value;
                 }
             }
         }
 
-        public VariableSpecifier Specifier
+        public VariableSpecifier Specifier => Variable.Specifier;
+
+        public bool HasGetter => Getter != null;
+
+        public bool HasSetter => Setter != null;
+
+        public MethodGraph Getter
         {
-            get => variable.Specifier;
+            get => Variable.GetterMethod;
+            set => Variable.GetterMethod = value;
         }
 
-        public bool HasGetter
+        public MethodGraph Setter
         {
-            get => variable.GetterMethod != null;
-        }
-
-        public bool HasSetter
-        {
-            get => variable.SetterMethod != null;
+            get => Variable.SetterMethod;
+            set => Variable.SetterMethod = value;
         }
 
         public string VisibilityName
@@ -98,31 +77,18 @@ namespace NetPrintsEditor.ViewModels
             set => Visibility = Enum.Parse<MemberVisibility>(value);
         }
 
-        public IEnumerable<MemberVisibility> PossibleVisibilities
+        public IEnumerable<MemberVisibility> PossibleVisibilities => new[]
         {
-            get => new[]
-                {
-                    MemberVisibility.Internal,
-                    MemberVisibility.Private,
-                    MemberVisibility.Protected,
-                    MemberVisibility.Public,
-                };
-        }
+            MemberVisibility.Internal,
+            MemberVisibility.Private,
+            MemberVisibility.Protected,
+            MemberVisibility.Public,
+        };
 
         public Variable Variable
         {
-            get => variable;
-            set
-            {
-                if (variable != value)
-                {
-                    variable = value;
-                    OnPropertyChanged();
-                }
-            }
+            get; set;
         }
-
-        private Variable variable;
 
         public MemberVariableVM(Variable variable)
         {
@@ -133,7 +99,7 @@ namespace NetPrintsEditor.ViewModels
         {
             var method = new MethodGraph($"get_{Name}")
             {
-                Class = variable.Class,
+                Class = Variable.Class,
                 Visibility = Visibility
             };
 
@@ -154,21 +120,19 @@ namespace NetPrintsEditor.ViewModels
             method.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
 
-            variable.GetterMethod = method;
-            OnPropertyChanged(nameof(HasGetter));
+            Getter = method;
         }
 
         public void RemoveGetter()
         {
-            variable.GetterMethod = null;
-            OnPropertyChanged(nameof(HasGetter));
+            Getter = null;
         }
 
         public void AddSetter()
         {
             var method = new MethodGraph($"set_{Name}")
             {
-                Class = variable.Class,
+                Class = Variable.Class,
                 Visibility = Visibility
             };
 
@@ -189,23 +153,12 @@ namespace NetPrintsEditor.ViewModels
             method.MethodEntryNode.AddArgument();
             GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
 
-            variable.SetterMethod = method;
-            OnPropertyChanged(nameof(HasSetter));
+            Setter = method;
         }
 
         public void RemoveSetter()
         {
-            variable.SetterMethod = null;
-            OnPropertyChanged(nameof(HasSetter));
+            Setter = null;
         }
-
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
     }
 }

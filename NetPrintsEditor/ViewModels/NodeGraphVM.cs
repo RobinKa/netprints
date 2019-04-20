@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using GalaSoft.MvvmLight;
+using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Controls;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class NodeGraphVM : INotifyPropertyChanged
+    public class NodeGraphVM : ViewModelBase
     {
         public IEnumerable<NodeVM> SelectedNodes
         {
@@ -37,13 +38,11 @@ namespace NetPrintsEditor.ViewModels
                             node.IsSelected = true;
                         }
                     }
-
-                    OnPropertyChanged();
                 }
             }
         }
 
-        private IEnumerable<NodeVM> selectedNodes = null;
+        private IEnumerable<NodeVM> selectedNodes = new NodeVM[0];
 
         public string Name
         {
@@ -53,60 +52,24 @@ namespace NetPrintsEditor.ViewModels
                 if (graph is MethodGraph methodGraph && methodGraph.Name != value)
                 {
                     methodGraph.Name = value;
-                    OnPropertyChanged();
                 }
             }
         }
 
-        public bool IsConstructor
-        {
-            get => graph is ConstructorGraph;
-        }
+        public bool IsConstructor => graph is ConstructorGraph;
 
-        public ObservableViewModelCollection<NodeVM, Node> Nodes
-        {
-            get => nodes;
-            set
-            {
-                if (nodes != value)
-                {
-                    nodes = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        public ObservableViewModelCollection<NodeVM, Node> Nodes { get; set; }
 
-        private ObservableViewModelCollection<NodeVM, Node> nodes;
+        public IEnumerable<BaseType> ArgumentTypes =>
+            graph is ExecutionGraph execGraph ? execGraph.ArgumentTypes : null;
 
-        public IEnumerable<BaseType> ArgumentTypes
-        {
-            get => graph is ExecutionGraph execGraph ? execGraph.ArgumentTypes : null;
-        }
+        public IEnumerable<Named<BaseType>> NamedArgumentTypes =>
+            graph is ExecutionGraph execGraph ? execGraph.NamedArgumentTypes : null;
 
-        public IEnumerable<Named<BaseType>> NamedArgumentTypes
-        {
-            get => graph is ExecutionGraph execGraph ? execGraph.NamedArgumentTypes : null;
-        }
+        public IEnumerable<BaseType> ReturnTypes =>
+            graph is MethodGraph methodGraph ? methodGraph.ReturnTypes : null;
 
-        public IEnumerable<BaseType> ReturnTypes
-        {
-            get => graph is MethodGraph methodGraph ? methodGraph.ReturnTypes : null;
-        }
-
-        public ClassEditorVM Class
-        {
-            get => classVM;
-            set
-            {
-                if (classVM != value)
-                {
-                    classVM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private ClassEditorVM classVM;
+        public ClassEditorVM Class { get; set; }
 
         public MethodModifiers Modifiers
         {
@@ -116,7 +79,6 @@ namespace NetPrintsEditor.ViewModels
                 if (graph is MethodGraph methodGraph && methodGraph.Modifiers != value)
                 {
                     methodGraph.Modifiers = value;
-                    OnPropertyChanged();
                 }
             }
         }
@@ -129,21 +91,17 @@ namespace NetPrintsEditor.ViewModels
                 if (graph is ExecutionGraph execGraph && execGraph.Visibility != value)
                 {
                     execGraph.Visibility = value;
-                    OnPropertyChanged();
                 }
             }
         }
 
-        public IEnumerable<MemberVisibility> PossibleVisibilities
+        public IEnumerable<MemberVisibility> PossibleVisibilities => new[]
         {
-            get => new[]
-                {
-                    MemberVisibility.Internal,
-                    MemberVisibility.Private,
-                    MemberVisibility.Protected,
-                    MemberVisibility.Public,
-                };
-        }
+            MemberVisibility.Internal,
+            MemberVisibility.Private,
+            MemberVisibility.Protected,
+            MemberVisibility.Public,
+        };
 
         /*
         Scenarios:
@@ -403,9 +361,6 @@ namespace NetPrintsEditor.ViewModels
                     }
 
                     graph = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(AllPins));
-                    OnPropertyChanged(nameof(Visibility));
 
                     Nodes = new ObservableViewModelCollection<NodeVM, Node>(Graph.Nodes, n => new NodeVM(n));
 
@@ -441,8 +396,6 @@ namespace NetPrintsEditor.ViewModels
 
                 addedNodes.ToList().ForEach(n => SetupNodeConnections(n, true));
             }
-
-            OnPropertyChanged(nameof(AllPins));
         }
 
         private void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -468,8 +421,6 @@ namespace NetPrintsEditor.ViewModels
                 // Add events for added pins
                 addedPins.ToList().ForEach(p => SetupPinEvents(p, true));
             }
-
-            OnPropertyChanged(nameof(AllPins));
         }
 
         private void OnInputDataPinIncomingPinChanged(NodeInputDataPin pin, NodeOutputDataPin oldPin, NodeOutputDataPin newPin)
@@ -530,15 +481,32 @@ namespace NetPrintsEditor.ViewModels
         public NodeGraphVM(NodeGraph graph)
         {
             Graph = graph;
+
+            MessengerInstance.Register<SelectNodeMessage>(this, OnSelectNodeReceived);
         }
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnSelectNodeReceived(SelectNodeMessage msg)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (msg.DeselectPrevious)
+            {
+                SelectedNodes = new[] { msg.Node };
+            }
+            else if (!SelectedNodes.Contains(msg.Node))
+            {
+                SelectedNodes = SelectedNodes.Concat(new[] { msg.Node });
+            }
         }
-        #endregion
+    }
+
+    public class SelectNodeMessage
+    {
+        public NodeVM Node { get; }
+        public bool DeselectPrevious { get; }
+
+        public SelectNodeMessage(NodeVM node, bool deselectPrevious)
+        {
+            Node = node;
+            DeselectPrevious = deselectPrevious;
+        }
     }
 }

@@ -87,6 +87,14 @@ namespace NetPrints.Core
         }
 
         /// <summary>
+        /// Type this class inherits from and interfaces this class implements.
+        /// </summary>
+        public IEnumerable<TypeSpecifier> AllBaseTypes
+        {
+            get => new[] { SuperType }.Concat(ReturnNode.InterfacePins.Select(pin => (TypeSpecifier)pin.InferredType?.Value ?? TypeSpecifier.FromType<object>()));
+        }
+
+        /// <summary>
         /// Namespace this class is in.
         /// </summary>
         [DataMember]
