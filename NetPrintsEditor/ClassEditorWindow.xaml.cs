@@ -447,7 +447,8 @@ namespace NetPrintsEditor
                     }
                 }
 
-                methodEditor.Graph.SelectedNodes = null;
+                // TODO: Use own VM instead of method editor graph vm
+                methodEditor.Graph.DeselectNodes();
             }
         }
 

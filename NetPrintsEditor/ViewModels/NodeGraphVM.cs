@@ -2,6 +2,7 @@
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Controls;
+using NetPrintsEditor.Messages;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -15,7 +16,7 @@ namespace NetPrintsEditor.ViewModels
         public IEnumerable<NodeVM> SelectedNodes
         {
             get => selectedNodes;
-            set
+            private set
             {
                 if (selectedNodes != value)
                 {
@@ -478,35 +479,38 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Sends a message to deselect all nodes and select the given nodes.
+        /// </summary>
+        /// <param name="nodes">Nodes to be selected.</param>
+        public void SelectNodes(IEnumerable<NodeVM> nodes)
+        {
+            MessengerInstance.Send(new NodeSelectionMessage(nodes, true));
+        }
+
+        /// <summary>
+        /// Sends a message to deselect all nodes.
+        /// </summary>
+        public void DeselectNodes()
+        {
+            MessengerInstance.Send(NodeSelectionMessage.DeselectAll);
+        }
+
         public NodeGraphVM(NodeGraph graph)
         {
             Graph = graph;
 
-            MessengerInstance.Register<SelectNodeMessage>(this, OnSelectNodeReceived);
+            MessengerInstance.Register<NodeSelectionMessage>(this, OnNodeSelectionReceived);
         }
 
-        private void OnSelectNodeReceived(SelectNodeMessage msg)
+        private void OnNodeSelectionReceived(NodeSelectionMessage msg)
         {
             if (msg.DeselectPrevious)
             {
-                SelectedNodes = new[] { msg.Node };
+                SelectedNodes = new NodeVM[0] { };
             }
-            else if (!SelectedNodes.Contains(msg.Node))
-            {
-                SelectedNodes = SelectedNodes.Concat(new[] { msg.Node });
-            }
-        }
-    }
 
-    public class SelectNodeMessage
-    {
-        public NodeVM Node { get; }
-        public bool DeselectPrevious { get; }
-
-        public SelectNodeMessage(NodeVM node, bool deselectPrevious)
-        {
-            Node = node;
-            DeselectPrevious = deselectPrevious;
+            SelectedNodes = SelectedNodes.Concat(msg.Nodes).Distinct();
         }
     }
 }

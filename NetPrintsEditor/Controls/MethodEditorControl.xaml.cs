@@ -474,7 +474,7 @@ namespace NetPrintsEditor.Controls
                     }
                 }
 
-                Graph.SelectedNodes = selectedNodes;
+                Graph.SelectNodes(selectedNodes);
             }
         }
 
@@ -483,7 +483,7 @@ namespace NetPrintsEditor.Controls
             // Deselect node
             if (Graph?.SelectedNodes != null)
             {
-                Graph.SelectedNodes = null;
+                Graph.DeselectNodes();
             }
 
             boxSelect = true;

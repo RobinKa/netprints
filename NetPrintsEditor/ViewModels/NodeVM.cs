@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Linq;
 using System;
 using GalaSoft.MvvmLight;
+using NetPrintsEditor.Messages;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -728,7 +729,7 @@ namespace NetPrintsEditor.ViewModels
 
         public void Select()
         {
-            MessengerInstance.Send(new SelectNodeMessage(this, true));
+            MessengerInstance.Send(new NodeSelectionMessage(this));
         }
     }
 }
