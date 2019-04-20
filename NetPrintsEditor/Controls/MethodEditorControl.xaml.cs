@@ -228,12 +228,6 @@ namespace NetPrintsEditor.Controls
                             new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
                                 .WithVisibleFrom(Method.Class.Type)));
-
-                        // TODO: Consider if this is necessary
-                        AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithStatic(true)
-                                .WithVisibleFrom(Method.Class.Type)));
                     }
                     else if (pin.Pin is NodeInputExecPin ixp)
                     {
@@ -247,12 +241,6 @@ namespace NetPrintsEditor.Controls
 
                         AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                                .WithStatic(true)
-                                .WithVisibleFrom(Method.Class.Type)));
-
-                        // TODO: Consider if this is necessary
-                        AddSuggestionsWithCategory("Static Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
                                 .WithStatic(true)
                                 .WithVisibleFrom(Method.Class.Type)));
                     }
