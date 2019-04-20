@@ -228,12 +228,6 @@ namespace NetPrintsEditor.Controls
                             new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
                                 .WithVisibleFrom(Graph.Class.Type)));
-
-                        // TODO: Consider if this is necessary
-                        AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
-                                .WithStatic(true)
-                                .WithVisibleFrom(Graph.Class.Type)));
                     }
                     else if (pin.Pin is NodeInputExecPin ixp)
                     {
@@ -247,12 +241,6 @@ namespace NetPrintsEditor.Controls
 
                         AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                                .WithStatic(true)
-                                .WithVisibleFrom(Graph.Class.Type)));
-
-                        // TODO: Consider if this is necessary
-                        AddSuggestionsWithCategory("Static Variables", App.ReflectionProvider.GetVariables(
-                            new ReflectionProviderVariableQuery()
                                 .WithStatic(true)
                                 .WithVisibleFrom(Graph.Class.Type)));
                     }
