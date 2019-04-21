@@ -20,9 +20,9 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Canvas x:Name="connector" Grid.Column="0" Width="14" Height="14">
-            <Rectangle ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
-                       Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowRectangle, Converter={StaticResource ResourceKey=BoolToVis}}"
-                       Fill="{Binding ElementName=pinWindow, Path=Pin.FillBrush}"
+            <Rectangle ToolTip="{Binding ToolTip}" Width="14" Height="14"
+                       Visibility="{Binding ShowRectangle, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding FillBrush}"
                        MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
                        Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
                 <Rectangle.Style>
@@ -36,9 +36,9 @@
                 </Rectangle.Style>
             </Rectangle>
 
-            <Ellipse ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
-                       Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowCircle, Converter={StaticResource ResourceKey=BoolToVis}}"
-                       Fill="{Binding ElementName=pinWindow, Path=Pin.FillBrush}"
+            <Ellipse ToolTip="{Binding ToolTip}" Width="14" Height="14"
+                       Visibility="{Binding ShowCircle, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding FillBrush}"
                        MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
                        Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="3">
                 <Ellipse.Style>
@@ -52,10 +52,10 @@
                 </Ellipse.Style>
             </Ellipse>
 
-            <Polygon ToolTip="{Binding ElementName=pinWindow, Path=Pin.ToolTip}" Width="14" Height="14"
+            <Polygon ToolTip="{Binding ToolTip}" Width="14" Height="14"
                      Points="0,0 13,7 0,14" 
-                       Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowTriangle, Converter={StaticResource ResourceKey=BoolToVis}}"
-                       Fill="{Binding ElementName=pinWindow, Path=Pin.FillBrush}"
+                       Visibility="{Binding ShowTriangle, Converter={StaticResource ResourceKey=BoolToVis}}"
+                       Fill="{Binding FillBrush}"
                        MouseMove="OnPinElementMouseMove" DragOver="OnPinElementDragOver"
                        Drop="OnPinElementDrop" AllowDrop="True" StrokeThickness="1">
                 <Polygon.Style>
@@ -71,24 +71,24 @@
         </Canvas>
 
         <Grid x:Name="unconnectedContainer" Grid.Column="1">
-            <TextBox Text="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue, Mode=TwoWay}"
-                        Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
+            <TextBox Text="{Binding UnconnectedValue, Mode=TwoWay}"
+                        Visibility="{Binding ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
 
-            <ComboBox Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" 
-                        SelectedItem="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue}"
-                        ItemsSource="{Binding ElementName=pinWindow, Path=Pin.PossibleEnumNames}" />
+            <ComboBox Visibility="{Binding ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" 
+                        SelectedItem="{Binding UnconnectedValue}"
+                        ItemsSource="{Binding PossibleEnumNames}" />
 
-            <CheckBox IsChecked="{Binding ElementName=pinWindow, Path=Pin.UnconnectedValue, Mode=TwoWay}"
-                        Visibility="{Binding ElementName=pinWindow, Path=Pin.ShowBooleanValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
+            <CheckBox IsChecked="{Binding UnconnectedValue, Mode=TwoWay}"
+                        Visibility="{Binding ShowBooleanValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
         </Grid>
         
-        <Grid x:Name="labelContainer" Grid.Column="2" Visibility="{Binding ElementName=pinWindow, Path=Pin.IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
-            <Label x:Name="label" Content="{Binding ElementName=pinWindow, Path=Pin.DisplayName}"
-                   Visibility="{Binding ElementName=pinWindow, Path=Pin.IsNameEditable, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
+        <Grid x:Name="labelContainer" Grid.Column="2" Visibility="{Binding IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
+            <Label x:Name="label" Content="{Binding DisplayName}"
+                   Visibility="{Binding IsNameEditable, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
                    FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
             
-            <TextBox x:Name="editableLabel" Text="{Binding ElementName=pinWindow, Path=Pin.Name, Mode=TwoWay}"
-                        Visibility="{Binding ElementName=pinWindow, Path=Pin.IsNameEditable, Converter={StaticResource ResourceKey=BoolToVis}}"
+            <TextBox x:Name="editableLabel" Text="{Binding Name, Mode=TwoWay}"
+                        Visibility="{Binding IsNameEditable, Converter={StaticResource ResourceKey=BoolToVis}}"
                         FontSize="14" FontWeight="SemiBold" Foreground="#FFEEEEEE" VerticalContentAlignment="Stretch" />
         </Grid>
     </Grid>

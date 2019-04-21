@@ -362,6 +362,8 @@ namespace NetPrintsEditor.ViewModels
                     }
 
                     graph = value;
+                    RaisePropertyChanged(nameof(AllPins));
+                    RaisePropertyChanged(nameof(Visibility));
 
                     Nodes = new ObservableViewModelCollection<NodeVM, Node>(Graph.Nodes, n => new NodeVM(n));
 
@@ -397,6 +399,8 @@ namespace NetPrintsEditor.ViewModels
 
                 addedNodes.ToList().ForEach(n => SetupNodeConnections(n, true));
             }
+
+            RaisePropertyChanged(nameof(AllPins));
         }
 
         private void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -422,6 +426,8 @@ namespace NetPrintsEditor.ViewModels
                 // Add events for added pins
                 addedPins.ToList().ForEach(p => SetupPinEvents(p, true));
             }
+
+            RaisePropertyChanged(nameof(AllPins));
         }
 
         private void OnInputDataPinIncomingPinChanged(NodeInputDataPin pin, NodeOutputDataPin oldPin, NodeOutputDataPin newPin)

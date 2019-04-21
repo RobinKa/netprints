@@ -37,13 +37,10 @@ namespace NetPrintsEditor.Controls
             }
         }
 
-        public static readonly DependencyProperty PinProperty =
-            DependencyProperty.Register(nameof(Pin), typeof(NodePinVM), typeof(PinControl));
-
         public NodePinVM Pin
         {
-            get => GetValue(PinProperty) as NodePinVM;
-            set => SetValue(PinProperty, value);
+            get => DataContext as NodePinVM;
+            set => DataContext = value;
         }
 
         public PinControl()
@@ -56,7 +53,7 @@ namespace NetPrintsEditor.Controls
         {
             base.OnPropertyChanged(e);
 
-            if (e.Property == PinProperty && Pin != null)
+            if (e.Property == DataContextProperty && Pin != null)
             {
                 if (Pin.Pin is NodeInputDataPin || Pin.Pin is NodeInputExecPin || Pin.Pin is NodeInputTypePin)
                 {

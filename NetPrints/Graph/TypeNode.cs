@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using PropertyChanged;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace NetPrints.Graph
         public delegate void ObservableValueChangedEventHandler(object sender, EventArgs eventArgs);
 
         [DataMember]
+        [DoNotNotify]
         public T Value
         {
             get => value;

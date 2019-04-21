@@ -75,7 +75,7 @@
                     <ItemsControl x:Name="inputExecPinList" ItemsSource="{Binding InputExecPins}"  Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -83,7 +83,7 @@
                     <ItemsControl x:Name="inputDataPinList" ItemsSource="{Binding InputDataPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -91,7 +91,7 @@
                     <ItemsControl x:Name="inputTypePinList" ItemsSource="{Binding InputTypePins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -112,7 +112,7 @@
                     <ItemsControl x:Name="outputExecPinList" ItemsSource="{Binding OutputExecPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -120,7 +120,7 @@
                     <ItemsControl x:Name="outputDataPinList" ItemsSource="{Binding OutputDataPins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -128,7 +128,7 @@
                     <ItemsControl x:Name="outputTypePinList" ItemsSource="{Binding OutputTypePins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
