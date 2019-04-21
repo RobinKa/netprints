@@ -20,14 +20,24 @@ namespace NetPrintsEditor.ViewModels
         public MainEditorVM(Project project)
         {
             Project = project;
-            if (Project != null)
-            {
-                Project.References.CollectionChanged += (sender, e) => ReloadReflectionProvider();
-            }
         }
 
         public void OnProjectChanged()
         {
+            if (Project != null)
+            {
+                Project.References.CollectionChanged += (sender, e) => ReloadReflectionProvider();
+
+                // Reload reflection provider when IsCompiling changed to false
+                Project.PropertyChanged += (sender, e) =>
+                {
+                    if (e.PropertyName == nameof(Project.IsCompiling) && !Project.IsCompiling)
+                    {
+                        ReloadReflectionProvider();
+                    }
+                };
+            }
+
             ReloadReflectionProvider();
         }
 
