@@ -242,34 +242,6 @@ namespace NetPrintsEditor
             methodEditor.grid.ContextMenu.IsOpen = false;
         }
 
-        // Select Node
-
-        private void CommandSelectNode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = e.Parameter is NodeVM;
-        }
-
-        private void CommandSelectNode_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            // Try to find the MethodVM corresponding to the passed NodeVM
-            // and set its selected node
-
-            // TODO: Make selection nicer. Finding the corresponding method view model seems wrong since
-            //       we have to search in all possible places that have methods.
-            // TODO: Make this work with the class graph.
-
-            NodeVM node = e.Parameter as NodeVM;
-            NodeGraph graph = ViewModel?.Class?.Methods?.FirstOrDefault(m => m.Nodes.Contains(node.Node)) ??
-                ViewModel?.Class?.Constructors?.FirstOrDefault(c => c.Nodes.Contains(node.Node)) ??
-                ViewModel?.Class?.Variables?.FirstOrDefault(v => v.GetterMethod != null && v.GetterMethod.Nodes.Contains(node.Node))?.GetterMethod ??
-                (NodeGraph)ViewModel?.Class?.Variables?.FirstOrDefault(v => v.SetterMethod != null && v.SetterMethod.Nodes.Contains(node.Node))?.SetterMethod;
-
-            if (graph != null)
-            {
-                // TODO: graph.SelectedNodes = new[] { node };
-            }
-        }
-
         // Open Variable Get / Set
 
         private void CommandOpenVariableGetSet_CanExecute(object sender, CanExecuteRoutedEventArgs e)
