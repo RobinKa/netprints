@@ -127,7 +127,7 @@ namespace NetPrintsEditor.ViewModels
 
         private void OnOpenGraphReceived(OpenGraphMessage msg)
         {
-            OpenedGraph = new NodeGraphVM(msg.Graph);
+            OpenedGraph = new NodeGraphVM(msg.Graph) { Class = this };
         }
 
         public void OpenGraph(NodeGraph graph)
