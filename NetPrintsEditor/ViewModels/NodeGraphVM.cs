@@ -188,7 +188,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var selectedNode in SelectedNodes)
                 {
-                    nodeStartPositions.Add(selectedNode, (selectedNode.PositionX, selectedNode.PositionY));
+                    nodeStartPositions.Add(selectedNode, (selectedNode.Node.PositionX, selectedNode.Node.PositionY));
                 }
             }
         }
@@ -203,8 +203,8 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var selectedNode in SelectedNodes)
                 {
-                    selectedNode.PositionX -= selectedNode.PositionX % MethodEditorControl.GridCellSize;
-                    selectedNode.PositionY -= selectedNode.PositionY % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionX -= selectedNode.Node.PositionX % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionY -= selectedNode.Node.PositionY % MethodEditorControl.GridCellSize;
                 }
             }
         }
@@ -223,8 +223,8 @@ namespace NetPrintsEditor.ViewModels
                 foreach (var selectedNode in SelectedNodes)
                 {
                     // Set position by taking total delta and adding it to the initial position
-                    selectedNode.PositionX = nodeStartPositions[selectedNode].X + nodeDragAccumX - nodeDragAccumX % MethodEditorControl.GridCellSize;
-                    selectedNode.PositionY = nodeStartPositions[selectedNode].Y + nodeDragAccumY - nodeDragAccumY % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionX = nodeStartPositions[selectedNode].X + nodeDragAccumX - nodeDragAccumX % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionY = nodeStartPositions[selectedNode].Y + nodeDragAccumY - nodeDragAccumY % MethodEditorControl.GridCellSize;
                 }
             }
         }

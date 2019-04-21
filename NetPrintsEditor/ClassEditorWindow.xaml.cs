@@ -156,8 +156,8 @@ namespace NetPrintsEditor
         {
             SetNodePositionParameters p = e.Parameter as SetNodePositionParameters;
             NodeVM nodeVM = FindNodeVMFromSetNodePositionParameters(p);
-            nodeVM.PositionX = p.NewPositionX;
-            nodeVM.PositionY = p.NewPositionY;
+            nodeVM.Node.PositionX = p.NewPositionX;
+            nodeVM.Node.PositionY = p.NewPositionY;
         }
 
         public NodeVM FindNodeVMFromSetNodePositionParameters(SetNodePositionParameters p)

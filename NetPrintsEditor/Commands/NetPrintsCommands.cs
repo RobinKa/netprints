@@ -153,7 +153,7 @@ namespace NetPrintsEditor.Commands
                         var np = p as SetNodePositionParameters;
 
                         SetNodePositionParameters undoParams = new SetNodePositionParameters(
-                            np.Node, np.Node.PositionX, np.Node.PositionY);
+                            np.Node, np.Node.Node.PositionX, np.Node.Node.PositionY);
 
                         return new Tuple<ICommand, object>(SetNodePosition, undoParams);
                     }

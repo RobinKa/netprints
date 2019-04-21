@@ -11,8 +11,8 @@
 
     <UserControl.RenderTransform>
         <TranslateTransform 
-            X="{Binding PositionX}"
-            Y="{Binding PositionY}" />
+            X="{Binding Node.PositionX}"
+            Y="{Binding Node.PositionY}" />
     </UserControl.RenderTransform>
 
     <UserControl.Resources>

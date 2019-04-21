@@ -563,18 +563,6 @@ namespace NetPrintsEditor.ViewModels
             get => node.Graph;
         }
 
-        public double PositionX
-        {
-            get => node.PositionX;
-            set => node.PositionX = value;
-        }
-
-        public double PositionY
-        {
-            get => node.PositionY;
-            set => node.PositionY = value;
-        }
-
         /// <summary>
         /// Whether we should show the +/- buttons under the
         /// left pins.

@@ -463,8 +463,8 @@ namespace NetPrintsEditor.Controls
                     var nodeControl = (ContentPresenter)nodeList.ItemContainerGenerator.ContainerFromIndex(i);
                     NodeVM node = (NodeVM)nodeControl.Content;
 
-                    double nodeX = node.PositionX;
-                    double nodeY = node.PositionY;
+                    double nodeX = node.Node.PositionX;
+                    double nodeY = node.Node.PositionY;
                     double nodeWidth = nodeControl.ActualWidth;
                     double nodeHeight = nodeControl.ActualHeight;
 
