@@ -1,6 +1,8 @@
 ﻿using GalaSoft.MvvmLight;
 using NetPrints.Core;
+using NetPrints.Graph;
 using NetPrints.Translator;
+using NetPrintsEditor.Messages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,21 +17,14 @@ namespace NetPrintsEditor.ViewModels
     {
         public Project Project => Class?.Project;
 
+        public NodeGraphVM OpenedGraph { get; set; }
+
         // Wrapped attributes of Class
         public ObservableViewModelCollection<MemberVariableVM, Variable> Variables { get; set; }
 
-        public ObservableViewModelCollection<NodeGraphVM, MethodGraph> Methods
-        {
-            get; set;
-        }
+        public ObservableViewModelCollection<NodeGraphVM, MethodGraph> Methods { get; set; }
 
-        public ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> Constructors
-        {
-            get => constructors;
-            set => constructors = value;
-        }
-
-        private ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> constructors;
+        public ObservableViewModelCollection<NodeGraphVM, ConstructorGraph> Constructors { get; set; }
 
         /// <summary>
         /// Specifiers for methods that this class can override.
@@ -73,10 +68,7 @@ namespace NetPrintsEditor.ViewModels
             MemberVisibility.Public,
         };
 
-        public ClassGraph Class
-        {
-            get; set;
-        }
+        public ClassGraph Class { get; set; }
 
         /// <summary>
         /// Generated code for the current class.
@@ -89,6 +81,8 @@ namespace NetPrintsEditor.ViewModels
 
         public ClassEditorVM(ClassGraph cls)
         {
+            MessengerInstance.Register<OpenGraphMessage>(this, OnOpenGraphReceived);
+
             Class = cls;
 
             codeTimer = new Timer(1000);
@@ -129,6 +123,65 @@ namespace NetPrintsEditor.ViewModels
 
             Variables = new ObservableViewModelCollection<MemberVariableVM, Variable>(
                 Class.Variables, v => new MemberVariableVM(v));
+        }
+
+        private void OnOpenGraphReceived(OpenGraphMessage msg)
+        {
+            OpenedGraph = new NodeGraphVM(msg.Graph);
+        }
+
+        public void OpenGraph(NodeGraph graph)
+        {
+            MessengerInstance.Send(new OpenGraphMessage(graph));
+        }
+
+        public void OpenClassGraph()
+        {
+            MessengerInstance.Send(new OpenGraphMessage(Class));
+        }
+
+        public void CreateConstructor(double gridCellSize)
+        {
+            var newConstructor = new ConstructorGraph()
+            {
+                Class = Class,
+                Visibility = MemberVisibility.Public,
+            };
+
+            newConstructor.EntryNode.PositionX = gridCellSize * 4;
+            newConstructor.EntryNode.PositionY = gridCellSize * 4;
+
+            Class.Constructors.Add(newConstructor);
+
+            OpenGraph(newConstructor);
+        }
+
+        public void CreateMethod(string name, double gridCellSize)
+        {
+            var newMethod = new MethodGraph(name)
+            {
+                Class = Class,
+            };
+
+            newMethod.EntryNode.PositionX = gridCellSize * 4;
+            newMethod.EntryNode.PositionY = gridCellSize * 4;
+            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + gridCellSize * 15;
+            newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
+            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
+
+            Class.Methods.Add(newMethod);
+
+            OpenGraph(newMethod);
+        }
+
+        public void CreateOverrideMethod(MethodSpecifier methodSpecifier)
+        {
+            MethodGraph methodGraph = GraphUtil.AddOverrideMethod(Class, methodSpecifier);
+
+            if (methodGraph != null)
+            {
+                OpenGraph(methodGraph);
+            }
         }
     }
 }

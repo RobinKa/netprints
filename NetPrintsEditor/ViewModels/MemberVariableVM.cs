@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrintsEditor.Messages;
 using System;
 using System.Collections.Generic;
 
@@ -159,6 +160,16 @@ namespace NetPrintsEditor.ViewModels
         public void RemoveSetter()
         {
             Setter = null;
+        }
+
+        public void OpenGetterGraph()
+        {
+            MessengerInstance.Send(new OpenGraphMessage(Getter));
+        }
+
+        public void OpenSetterGraph()
+        {
+            MessengerInstance.Send(new OpenGraphMessage(Setter));
         }
     }
 }

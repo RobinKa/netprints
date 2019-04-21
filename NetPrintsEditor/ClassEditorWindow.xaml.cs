@@ -3,6 +3,7 @@ using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Controls;
+using NetPrintsEditor.Messages;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.ComponentModel;
@@ -34,10 +35,9 @@ namespace NetPrintsEditor
 
         private void OnMethodDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is NodeGraphVM method
-                && EditorCommands.OpenMethod.CanExecute(method))
+            if (sender is FrameworkElement element && element.DataContext is NodeGraphVM graphViewModel)
             {
-                EditorCommands.OpenMethod.Execute(method);
+                ViewModel.OpenGraph(graphViewModel.Graph);
             }
         }
 
@@ -79,18 +79,6 @@ namespace NetPrintsEditor
         }
 
         #region Commands
-        // Open method
-
-        private void CommandOpenMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ViewModel != null && e.Parameter is NodeGraphVM;
-        }
-
-        private void CommandOpenMethod_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            methodEditor.Graph = (NodeGraphVM)e.Parameter;
-        }
-
         // Select variable
 
         private void CommandSelectVariable_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -104,73 +92,6 @@ namespace NetPrintsEditor
             {
                 viewerTabControl.SelectedIndex = 1;
                 variableViewer.DataContext = v;
-            }
-        }
-
-        // Add Method
-
-        private void CommandAddMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ViewModel != null && e.Parameter is string;
-        }
-
-        private void CommandAddMethod_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var newMethod = new MethodGraph(e.Parameter as string)
-            {
-                Class = ViewModel.Class,
-            };
-
-            newMethod.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
-            newMethod.EntryNode.PositionY = MethodEditorControl.GridCellSize * 4;
-            newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + MethodEditorControl.GridCellSize * 15;
-            newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
-            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
-
-            ViewModel.Class.Methods.Add(newMethod);
-            methodEditor.Graph = ViewModel.Methods.Single(m => m.Graph == newMethod);
-        }
-
-        // Add constructor
-
-        private void CommandAddConstructor_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ViewModel != null && e.Parameter is string;
-        }
-
-        private void CommandAddConstructor_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            var newConstructor = new ConstructorGraph()
-            {
-                Class = ViewModel.Class,
-                Visibility = MemberVisibility.Public,
-            };
-
-            newConstructor.EntryNode.PositionX = MethodEditorControl.GridCellSize * 4;
-            newConstructor.EntryNode.PositionY = MethodEditorControl.GridCellSize * 4;
-
-            ViewModel.Class.Constructors.Add(newConstructor);
-            methodEditor.Graph = ViewModel.Constructors.Single(m => m.Graph == newConstructor);
-        }
-
-        // Override method
-
-        private void CommandOverrideMethod_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ViewModel != null && e.Parameter is MethodSpecifier methodSpecifier
-                && !ViewModel.Methods.Any(m => m.Name == methodSpecifier.Name)
-                && (methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual)
-                 || methodSpecifier.Modifiers.HasFlag(MethodModifiers.Override)
-                 || methodSpecifier.Modifiers.HasFlag(MethodModifiers.Abstract));
-        }
-
-        private void CommandOverrideMethod_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            MethodGraph method = GraphUtil.AddOverrideMethod(ViewModel.Class, (MethodSpecifier)e.Parameter);
-
-            if (method != null)
-            {
-                methodEditor.Graph = ViewModel.Methods.Single(m => m.Graph == method);
             }
         }
 
@@ -468,13 +389,13 @@ namespace NetPrintsEditor
         private void AddMethodButton_Click(object sender, RoutedEventArgs e)
         {
             string uniqueName = NetPrintsUtil.GetUniqueName("Method", ViewModel.Methods.Select(m => m.Name).ToList());
-            undoRedoStack.DoCommand(NetPrintsCommands.AddMethod, uniqueName);
+            ViewModel.CreateMethod(uniqueName, MethodEditorControl.GridCellSize);
         }
 
         // Add Constructor Button
         private void AddConstructorButton_Click(object sender, RoutedEventArgs e)
         {
-            undoRedoStack.DoCommand(NetPrintsCommands.AddConstructor, ViewModel.Name);
+            ViewModel.CreateConstructor(MethodEditorControl.GridCellSize);
         }
 
         // Add Variable Button
@@ -491,7 +412,7 @@ namespace NetPrintsEditor
                 var methodSpecifier = e.AddedItems[0] as MethodSpecifier;
                 if (methodSpecifier != null)
                 {
-                    undoRedoStack.DoCommand(NetPrintsCommands.OverrideMethod, methodSpecifier);
+                    ViewModel.CreateOverrideMethod(methodSpecifier);
                 }
             }
 
@@ -546,15 +467,7 @@ namespace NetPrintsEditor
             viewerTabControl.SelectedIndex = 0;
             classViewer.DataContext = ViewModel;
 
-            var graphVM = new NodeGraphVM(ViewModel.Class)
-            {
-                Class = ViewModel
-            };
-
-            if (EditorCommands.OpenMethod.CanExecute(graphVM))
-            {
-                EditorCommands.OpenMethod.Execute(graphVM);
-            }
+            ViewModel.OpenClassGraph();
         }
 
         private void OnSaveButtonClicked(object sender, RoutedEventArgs e)

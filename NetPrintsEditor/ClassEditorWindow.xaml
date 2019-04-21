@@ -13,11 +13,8 @@
         Icon="NetPrintsLogo.ico"
         Height="720" Width="1280"
         x:Name="classWindow">
-    
+
     <Window.CommandBindings>
-        <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
-        <CommandBinding Command="cmds:NetPrintsCommands.AddConstructor" CanExecute="CommandAddConstructor_CanExecute" Executed="CommandAddConstructor_Execute" />
-        <CommandBinding Command="cmds:NetPrintsCommands.OverrideMethod" CanExecute="CommandOverrideMethod_CanExecute" Executed="CommandOverrideMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveVariable" CanExecute="CommandRemoveVariable_CanExecute" Executed="CommandRemoveVariable_Execute" />
@@ -30,7 +27,6 @@
         <CommandBinding Command="cmds:NetPrintsCommands.AddSetter" CanExecute="CommandAddSetter_CanExecute" Executed="CommandAddSetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveGetter" CanExecute="CommandRemoveGetter_CanExecute" Executed="CommandRemoveGetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveSetter" CanExecute="CommandRemoveSetter_CanExecute" Executed="CommandRemoveSetter_Execute" />
-        <CommandBinding Command="cmds:EditorCommands.OpenMethod" CanExecute="CommandOpenMethod_CanExecute" Executed="CommandOpenMethod_Execute" />
         <CommandBinding Command="cmds:EditorCommands.SelectVariable" CanExecute="CommandSelectVariable_CanExecute" Executed="CommandSelectVariable_Execute" />
         <CommandBinding Command="cmds:EditorCommands.OpenVariableGetSet" CanExecute="CommandOpenVariableGetSet_CanExecute" Executed="CommandOpenVariableGetSet_Execute" />
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
@@ -196,7 +192,7 @@
                     <RowDefinition Height="24" />
                 </Grid.RowDefinitions>
                 
-                <Controls:MethodEditorControl x:Name="methodEditor" />
+                <Controls:MethodEditorControl x:Name="methodEditor" Graph="{Binding OpenedGraph}" />
 
                 <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 

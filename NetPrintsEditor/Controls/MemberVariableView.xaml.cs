@@ -57,18 +57,12 @@ namespace NetPrintsEditor.Controls
 
         private void OnGetterClicked(object sender, MouseButtonEventArgs e)
         {
-            if (EditorCommands.OpenMethod.CanExecute(ViewModel.Variable.GetterMethod))
-            {
-                EditorCommands.OpenMethod.Execute(ViewModel.Variable.GetterMethod);
-            }
+            ViewModel.OpenGetterGraph();
         }
 
         private void OnSetterClicked(object sender, MouseButtonEventArgs e)
         {
-            if (EditorCommands.OpenMethod.CanExecute(ViewModel.Variable.SetterMethod))
-            {
-                EditorCommands.OpenMethod.Execute(ViewModel.Variable.SetterMethod);
-            }
+            ViewModel.OpenSetterGraph();
         }
 
         private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)
