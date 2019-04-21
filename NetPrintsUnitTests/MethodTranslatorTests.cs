@@ -46,7 +46,7 @@ namespace NetPrints.Tests
 
             for (int i = 0; i < argTypeNodes.Count; i++)
             {
-                stringLengthMethod.EntryNode.AddArgument();
+                ((MethodEntryNode)stringLengthMethod.EntryNode).AddArgument();
                 GraphUtil.ConnectTypePins(argTypeNodes[i].OutputTypePins[0], stringLengthMethod.EntryNode.InputTypePins[i]);
             }
 
@@ -91,7 +91,7 @@ namespace NetPrints.Tests
 
             for (int i = 0; i < argTypeNodes.Count; i++)
             {
-                ifElseMethod.EntryNode.AddArgument();
+                ((MethodEntryNode)ifElseMethod.EntryNode).AddArgument();
                 GraphUtil.ConnectTypePins(argTypeNodes[i].OutputTypePins[0], ifElseMethod.EntryNode.InputTypePins[i]);
             }
 
@@ -145,19 +145,19 @@ namespace NetPrints.Tests
         [TestMethod]
         public void TestStringLengthTranslation()
         {
-            string translated = methodTranslator.Translate(stringLengthMethod, true, false);
+            string translated = methodTranslator.Translate(stringLengthMethod, true);
         }
 
         [TestMethod]
         public void TestIfElseTranslation()
         {
-            string translated = methodTranslator.Translate(ifElseMethod, true, false);
+            string translated = methodTranslator.Translate(ifElseMethod, true);
         }
 
         [TestMethod]
         public void TestForLoopTranslation()
         {
-            string translated = methodTranslator.Translate(forLoopMethod, true, false);
+            string translated = methodTranslator.Translate(forLoopMethod, true);
         }
     }
 }

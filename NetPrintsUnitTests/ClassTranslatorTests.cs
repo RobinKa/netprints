@@ -93,7 +93,6 @@ namespace NetPrints.Tests
             {
                 Name = "TestClass",
                 Namespace = "TestNamespace",
-                SuperType = TypeSpecifier.FromType<object>()
             };
 
             CreateStringLengthMethod();
