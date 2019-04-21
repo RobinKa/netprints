@@ -31,8 +31,10 @@ namespace NetPrintsEditor
         {
             ReflectionProvider = new MemoizedReflectionProvider(new ReflectionProvider(assemblyPaths, sourcePaths, sources));
 
-            // Cache static types
-            NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes());
+            // Cache static types.
+            // Needs to be done on UI thread since it is an observable collection to
+            // which we bind.
+            Current.Dispatcher.Invoke(() => NonStaticTypes.ReplaceRange(ReflectionProvider.GetNonStaticTypes()));
         }
 
         protected override void OnStartup(StartupEventArgs e)
