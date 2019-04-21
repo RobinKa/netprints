@@ -17,8 +17,8 @@ namespace NetPrints.Graph
             get { return IsStatic ? InputDataPins[0] : InputDataPins[1]; }
         }
 
-        public VariableSetterNode(Method method, VariableSpecifier variable)
-            : base(method, variable)
+        public VariableSetterNode(NodeGraph graph, VariableSpecifier variable)
+            : base(graph, variable)
         {
             AddInputExecPin("Exec");
             AddOutputExecPin("Exec");

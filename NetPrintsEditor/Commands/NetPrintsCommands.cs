@@ -14,21 +14,6 @@ namespace NetPrintsEditor.Commands
     public static class NetPrintsCommands
     {
         /// <summary>
-        /// Command for adding a method to a class.
-        /// </summary>
-        public static readonly RoutedUICommand AddMethod = new RoutedUICommand(nameof(AddMethod), nameof(AddMethod), typeof(NetPrintsCommands));
-
-        /// <summary>
-        /// Command for adding a constructor to a class.
-        /// </summary>
-        public static readonly RoutedUICommand AddConstructor = new RoutedUICommand(nameof(AddConstructor), nameof(AddConstructor), typeof(NetPrintsCommands));
-
-        /// <summary>
-        /// Command for adding an override method to a class.
-        /// </summary>
-        public static readonly RoutedUICommand OverrideMethod = new RoutedUICommand(nameof(OverrideMethod), nameof(OverrideMethod), typeof(NetPrintsCommands));
-
-        /// <summary>
         /// Command for removing a method from a class.
         /// </summary>
         public static readonly RoutedUICommand RemoveMethod = new RoutedUICommand(nameof(RemoveMethod), nameof(RemoveMethod), typeof(NetPrintsCommands));
@@ -62,11 +47,6 @@ namespace NetPrintsEditor.Commands
         /// Command for adding a node to a method.
         /// </summary>
         public static readonly RoutedUICommand AddNode = new RoutedUICommand(nameof(AddNode), nameof(AddNode), typeof(NetPrintsCommands));
-
-        /// <summary>
-        /// Command for selecting a node within a method.
-        /// </summary>
-        public static readonly RoutedUICommand SelectNode = new RoutedUICommand(nameof(SelectNode), nameof(SelectNode), typeof(NetPrintsCommands));
 
         /// <summary>
         /// Command for changing the overload of a node.
@@ -110,19 +90,20 @@ namespace NetPrintsEditor.Commands
         public class AddNodeParameters
         {
             public Type NodeType;
-            public Method Method;
+            public NodeGraph Graph;
             public double PositionX;
             public double PositionY;
             public object[] ConstructorParameters;
 
-            public AddNodeParameters(Type nodeType, Method method, double posX, double posY, params object[] constructorParameters)
+            public AddNodeParameters(Type nodeType, NodeGraph graph, double posX, double posY, params object[] constructorParameters)
             {
                 if (!nodeType.IsSubclassOf(typeof(Node)) || nodeType.IsAbstract)
                 {
                     throw new ArgumentException("Invalid type for node");
                 }
 
-                Type[] constructorParamTypes = (new Type[] { typeof(Method) }).Concat
+                // TODO: Get MethodGraph / ConstructorGraph is graph is one of them.
+                Type[] constructorParamTypes = (new Type[] { typeof(NodeGraph) }).Concat
                     (constructorParameters.Select(p => p.GetType()))
                     .ToArray();
 
@@ -132,7 +113,7 @@ namespace NetPrintsEditor.Commands
                 }
 
                 NodeType = nodeType;
-                Method = method;
+                Graph = graph;
                 PositionX = posX;
                 PositionY = posY;
                 ConstructorParameters = constructorParameters;
@@ -161,10 +142,7 @@ namespace NetPrintsEditor.Commands
 
         public static Dictionary<ICommand, MakeUndoCommandDelegate> MakeUndoCommand = new Dictionary<ICommand, MakeUndoCommandDelegate>()
         {
-            { AddMethod, (p) => new Tuple<ICommand, object>(RemoveMethod, p) },
-            { AddConstructor, (p) => new Tuple<ICommand, object>(RemoveMethod, p) },
-            { OverrideMethod, (p) => new Tuple<ICommand, object>(RemoveMethod, (p as MethodSpecifier)?.Name) },
-            { RemoveMethod, (p) => new Tuple<ICommand, object>(AddMethod, p) },
+            { RemoveMethod, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             { AddVariable, (p) => new Tuple<ICommand, object>(RemoveVariable, p) },
             { RemoveVariable, (p) => new Tuple<ICommand, object>(AddVariable, p) },
             {
@@ -175,7 +153,7 @@ namespace NetPrintsEditor.Commands
                         var np = p as SetNodePositionParameters;
 
                         SetNodePositionParameters undoParams = new SetNodePositionParameters(
-                            np.Node, np.Node.PositionX, np.Node.PositionY);
+                            np.Node, np.Node.Node.PositionX, np.Node.Node.PositionY);
 
                         return new Tuple<ICommand, object>(SetNodePosition, undoParams);
                     }
@@ -185,7 +163,6 @@ namespace NetPrintsEditor.Commands
             },
             { ConnectPins, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             { AddNode, (p) => new Tuple<ICommand, object>(DoNothing, p) },
-            { SelectNode, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             {
                 ChangeNodeOverload, (p) =>
                 {

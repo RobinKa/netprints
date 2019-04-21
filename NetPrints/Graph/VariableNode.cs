@@ -82,8 +82,8 @@ namespace NetPrints.Graph
         [DataMember(Name = "FieldOrProperty")]
         public VariableSpecifier Variable { get; private set; }
 
-        protected VariableNode(Method method, VariableSpecifier variable)
-            : base(method)
+        protected VariableNode(NodeGraph graph, VariableSpecifier variable)
+            : base(graph)
         {
             Variable = variable;
 

@@ -31,7 +31,7 @@ namespace NetPrints.Graph
             if (oldVariable != null)
             {
                 // Try to find the variable in the class
-                Variable = Method.Class.Variables.FirstOrDefault(newVar => newVar.Class.FullName == oldTargetType.Name && newVar.Name == oldVariable.Name)?.Specifier;
+                Variable = Graph.Class.Variables.FirstOrDefault(newVar => newVar.Class.FullName == oldTargetType.Name && newVar.Name == oldVariable.Name)?.Specifier;
 
                 // If it was not found recreate it
                 if (Variable is null)

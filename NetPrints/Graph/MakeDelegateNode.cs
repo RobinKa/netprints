@@ -39,8 +39,8 @@ namespace NetPrints.Graph
             get => MethodSpecifier.Modifiers.HasFlag(MethodModifiers.Static);
         }
 
-        public MakeDelegateNode(Method method, MethodSpecifier methodSpecifier)
-            : base(method)
+        public MakeDelegateNode(NodeGraph graph, MethodSpecifier methodSpecifier)
+            : base(graph)
         {
             MethodSpecifier = methodSpecifier;
 

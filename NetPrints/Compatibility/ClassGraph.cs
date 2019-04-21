@@ -5,7 +5,7 @@ using NetPrints.Graph;
 
 namespace NetPrints.Core
 {
-    public partial class Class
+    public partial class ClassGraph
     {
         [Obsolete]
         [OnDeserialized]
@@ -42,7 +42,7 @@ namespace NetPrints.Core
             // Fix old saves not having constructors
             if (Constructors is null)
             {
-                Constructors = new ObservableRangeCollection<Method>();
+                Constructors = new ObservableRangeCollection<ConstructorGraph>();
             }
         }
 
@@ -58,6 +58,11 @@ namespace NetPrints.Core
             {
                 Variables = new ObservableRangeCollection<Variable>(value.Select(oldVar => new Variable(this, oldVar.Name, oldVar.VariableType, null, null, oldVar.Modifiers) { Visibility = oldVar.Visibility }));
             }
+        }
+
+        public ClassGraph()
+        {
+            _ = new ClassReturnNode(this);
         }
     }
 }

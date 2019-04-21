@@ -68,8 +68,8 @@ namespace NetPrints.Graph
             get { return OutputDataPins[0]; }
         }
 
-        public ForLoopNode(Method method)
-            : base(method)
+        public ForLoopNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputExecPin("Exec");
             AddInputExecPin("Continue");

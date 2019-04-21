@@ -47,7 +47,7 @@
 
             <Border x:Name="boxSelectionBorder" Background="#3300FF00" BorderThickness="1" BorderBrush="#FF00CC00" CornerRadius="1" Visibility="Hidden" />
 
-            <ItemsControl Panel.ZIndex="0" x:Name="nodeList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.Nodes}">
+            <ItemsControl Panel.ZIndex="0" x:Name="nodeList" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Graph.Nodes}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
@@ -56,7 +56,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:NodeControl Node="{Binding}" />
+                        <local:NodeControl />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
@@ -67,7 +67,7 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
 
-            <ItemsControl Panel.ZIndex="-1" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Method.AllPins}">
+            <ItemsControl Panel.ZIndex="-1" ItemsSource="{Binding ElementName=methodEditorWindow, Path=Graph.AllPins}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
@@ -107,7 +107,7 @@
                                              MouseLeave="OnVariableGetSetMouseLeave" OnVariableGetSet="OnVariableSetClicked" />
         </Canvas>
 
-        <Label Content="{Binding ElementName=methodEditorWindow, Path=Method.Name}" FontWeight="Bold"
+        <Label Content="{Binding ElementName=methodEditorWindow, Path=Graph.Name}" FontWeight="Bold"
                FontSize="32" VerticalContentAlignment="Bottom" IsHitTestVisible="False" Background="Transparent" Foreground="#CCEEEEEE" />
     </Grid>
 </UserControl>

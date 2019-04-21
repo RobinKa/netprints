@@ -1,16 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using NetPrintsEditor.Compilation;
+using GalaSoft.MvvmLight;
+using NetPrints.Core;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class CompilationReferenceVM : INotifyPropertyChanged
+    public class CompilationReferenceVM : ViewModelBase
     {
-        public bool ShowIncludeInCompilationCheckBox
-        {
-            get => Reference is SourceDirectoryReference;
-        }
+        public bool ShowIncludeInCompilationCheckBox =>
+            Reference is SourceDirectoryReference;
 
         public bool IncludeInCompilation
         {
@@ -20,7 +17,6 @@ namespace NetPrintsEditor.ViewModels
                 if (Reference is SourceDirectoryReference sourceDirectoryReference)
                 {
                     sourceDirectoryReference.IncludeInCompilation = value;
-                    OnPropertyChanged();
                 }
                 else
                 {
@@ -35,14 +31,5 @@ namespace NetPrintsEditor.ViewModels
         {
             Reference = compilationReference;
         }
-
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
     }
 }

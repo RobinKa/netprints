@@ -17,9 +17,9 @@ namespace NetPrintsEditor.Controls
             InitializeComponent();
         }
 
-        public VariableVM Variable
+        public MemberVariableVM ViewModel
         {
-            get => DataContext as VariableVM;
+            get => DataContext as MemberVariableVM;
         }
 
         private void OnRemoveVariableClicked(object sender, RoutedEventArgs e)
@@ -29,9 +29,9 @@ namespace NetPrintsEditor.Controls
 
         private void OnVariableClicked(object sender, MouseButtonEventArgs e)
         {
-            if (EditorCommands.SelectVariable.CanExecute(Variable))
+            if (EditorCommands.SelectVariable.CanExecute(ViewModel))
             {
-                EditorCommands.SelectVariable.Execute(Variable);
+                EditorCommands.SelectVariable.Execute(ViewModel);
             }
         }
 
@@ -57,22 +57,12 @@ namespace NetPrintsEditor.Controls
 
         private void OnGetterClicked(object sender, MouseButtonEventArgs e)
         {
-            Variable.GetterMethod.Class = ProjectVM.Instance.Classes.Single(cls => cls.Class == Variable.Variable.Class);
-
-            if (EditorCommands.OpenMethod.CanExecute(Variable.GetterMethod))
-            {
-                EditorCommands.OpenMethod.Execute(Variable.GetterMethod);
-            }
+            ViewModel.OpenGetterGraph();
         }
 
         private void OnSetterClicked(object sender, MouseButtonEventArgs e)
         {
-            Variable.SetterMethod.Class = ProjectVM.Instance.Classes.Single(cls => cls.Class == Variable.Variable.Class);
-
-            if (EditorCommands.OpenMethod.CanExecute(Variable.SetterMethod))
-            {
-                EditorCommands.OpenMethod.Execute(Variable.SetterMethod);
-            }
+            ViewModel.OpenSetterGraph();
         }
 
         private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)

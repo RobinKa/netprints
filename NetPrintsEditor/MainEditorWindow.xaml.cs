@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using System.Threading.Tasks;
+using NetPrints.Core;
 
 namespace NetPrintsEditor
 {
@@ -17,22 +18,19 @@ namespace NetPrintsEditor
     /// </summary>
     public partial class MainEditorWindow : MetroWindow
     {
-        public static DependencyProperty ProjectProperty = DependencyProperty.Register(
-            nameof(Project), typeof(ProjectVM), typeof(MainEditorWindow));
+        private readonly Dictionary<ClassEditorVM, ClassEditorWindow> classEditorWindows = new Dictionary<ClassEditorVM, ClassEditorWindow>();
 
-        public ProjectVM Project
+        private MainEditorVM ViewModel
         {
-            get => (ProjectVM)GetValue(ProjectProperty);
-            set => SetValue(ProjectProperty, value);
+            get => DataContext as MainEditorVM;
+            set => DataContext = value;
         }
-
-        private readonly Dictionary<ClassVM, ClassEditorWindow> classEditorWindows = new Dictionary<ClassVM, ClassEditorWindow>();
 
         public MainEditorWindow()
         {
             InitializeComponent();
 
-            Project = new ProjectVM(null);
+            DataContext = new MainEditorVM(null);
 
             if (App.StartupArguments?.Length == 1 && App.StartupArguments[0] != null)
             {
@@ -40,7 +38,7 @@ namespace NetPrintsEditor
             }
         }
 
-        private void OpenOrCreateClassEditorWindow(ClassVM cls)
+        private void OpenOrCreateClassEditorWindow(ClassEditorVM cls)
         {
             if (classEditorWindows.ContainsKey(cls))
             {
@@ -67,7 +65,11 @@ namespace NetPrintsEditor
             {
                 // Create new window
 
-                ClassEditorWindow wnd = new ClassEditorWindow(cls);
+                ClassEditorWindow wnd = new ClassEditorWindow()
+                {
+                    DataContext = cls
+                };
+
                 wnd.Closed += (w, ea) => classEditorWindows.Remove(cls);
                 classEditorWindows.Add(cls, wnd);
                 wnd.WindowState = WindowState.Maximized;
@@ -87,15 +89,15 @@ namespace NetPrintsEditor
         #region UI Events
         private void OnClassButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ClassVM cls)
+            if (sender is Button button && button.DataContext is ClassGraph classGraph)
             {
-                OpenOrCreateClassEditorWindow(cls);
+                OpenOrCreateClassEditorWindow(new ClassEditorVM(classGraph));
             }
         }
 
         private void OnRemoveClassButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ClassVM cls)
+            if (sender is Button button && button.DataContext is ClassEditorVM cls)
             {
                 if (classEditorWindows.ContainsKey(cls))
                 {
@@ -103,7 +105,7 @@ namespace NetPrintsEditor
                     classEditorWindows.Remove(cls);
                 }
 
-                Project.Classes.Remove(cls);
+                ViewModel.Project.Classes.Remove(cls.Class);
             }
         }
 
@@ -116,7 +118,7 @@ namespace NetPrintsEditor
 
         private void NewClassButtonClicked(object sender, RoutedEventArgs e)
         {
-            _ = Project.CreateNewClass();
+            _ = ViewModel.Project.CreateNewClass();
         }
 
         private void ExistingClassButtonClicked(object sender, RoutedEventArgs e)
@@ -130,7 +132,7 @@ namespace NetPrintsEditor
             {
                 try
                 {
-                    ClassVM existingClass = Project.AddExistingClass(openFileDialog.FileName);
+                    ClassGraph existingClass = ViewModel.Project.AddExistingClass(openFileDialog.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -148,7 +150,7 @@ namespace NetPrintsEditor
 
             try
             {
-                Project = await Task.Run(() => ProjectVM.LoadFromPath(path));
+                ViewModel = await Task.Run(() => new MainEditorVM(Project.LoadFromPath(path)));
                 await overlay.CloseAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -200,7 +202,7 @@ namespace NetPrintsEditor
         private bool PromptProjectSave()
         {
             // Open the save dialog if no path is set yet
-            if (Project.Path == null)
+            if (ViewModel.Project.Path == null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog()
                 {
@@ -208,18 +210,18 @@ namespace NetPrintsEditor
                     AddExtension = true,
                     Filter = "Project Files (*.netpp)|*.netpp",
                     OverwritePrompt = true,
-                    FileName = $"{Project.Name}.netpp"
+                    FileName = $"{ViewModel.Project.Name}.netpp"
                 };
 
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    Project.Path = saveFileDialog.FileName;
+                    ViewModel.Project.Path = saveFileDialog.FileName;
                 }
             }
 
-            if (Project.Path != null)
+            if (ViewModel.Project.Path != null)
             {
-                Project.Save();
+                ViewModel.Project.Save();
                 return true;
             }
 
@@ -228,8 +230,8 @@ namespace NetPrintsEditor
 
         private void OnCreateProjectClicked(object sender, RoutedEventArgs e)
         {
-            ProjectVM oldProject = Project;
-            Project = ProjectVM.CreateNew("MyProject", "MyNamespace");
+            MainEditorVM oldViewModel = ViewModel;
+            ViewModel = new MainEditorVM(Project.CreateNew("MyProject", "MyNamespace"));
 
             if (PromptProjectSave())
             {
@@ -238,42 +240,46 @@ namespace NetPrintsEditor
             else
             {
                 // Restore old project if we didn't create a new one.
-                Project = oldProject;
+                ViewModel = oldViewModel;
             }
 
-            if (Project?.Project != null)
+            if (ViewModel?.Project != null)
             {
-                Project.Name = Path.GetFileNameWithoutExtension(Project.Path);
+                ViewModel.Project.Name = Path.GetFileNameWithoutExtension(ViewModel.Project.Path);
             }
         }
 
         private void OnCompileButtonClicked(object sender, RoutedEventArgs e)
         {
-            Project.CompileProject();
+            ViewModel.Project.CompileProject();
         }
 
         private void OnRunButtonClicked(object sender, RoutedEventArgs e)
         {
-            Project.PropertyChanged += OnProjectPropertyChangedWhileCompiling;
-            Project.CompileProject();
+            ViewModel.PropertyChanged += OnProjectPropertyChangedWhileCompiling;
+            ViewModel.Project.CompileProject();
         }
 
         private void OnProjectPropertyChangedWhileCompiling(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Project.IsCompiling) && !Project.IsCompiling)
+            if (e.PropertyName == nameof(ViewModel.Project.IsCompiling) && !ViewModel.Project.IsCompiling)
             {
-                Project.PropertyChanged -= OnProjectPropertyChangedWhileCompiling;
+                ViewModel.PropertyChanged -= OnProjectPropertyChangedWhileCompiling;
 
-                if (Project.LastCompilationSucceeded)
+                if (ViewModel.Project.LastCompilationSucceeded)
                 {
-                    Project.RunProject();
+                    ViewModel.Project.RunProject();
                 }
             }
         }
 
         private async void OnReferencesButtonClicked(object sender, RoutedEventArgs e)
         {
-            var referenceListWindow = new ReferenceListWindow(Project);
+            var referenceListWindow = new ReferenceListWindow()
+            {
+                DataContext = new ReferenceListViewModel(ViewModel.Project)
+            };
+
             referenceListWindow.CloseButton.Click += async (sender, e) => await this.HideMetroDialogAsync(referenceListWindow).ConfigureAwait(false);
 
             await this.ShowMetroDialogAsync(referenceListWindow).ConfigureAwait(false);

@@ -7,24 +7,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetPrintsEditor"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
-        xmlns:ModelsAlias="clr-namespace:NetPrintsEditor.Models"
+        xmlns:npc="clr-namespace:NetPrints.Core;assembly=NetPrints"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Width="800" Height="600"
         Icon="NetPrintsLogo.ico"
-        Title="{Binding ElementName=mainEditorWindow, Path=Project.Name}"
+        Title="{Binding Project.Name}"
         x:Name="mainEditorWindow">
 
     <!-- https://stackoverflow.com/a/6145957/4332314 -->
     <Window.Resources>
         <ObjectDataProvider x:Key="ProjectCompilationOutputItems" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="ModelsAlias:ProjectCompilationOutput"/>
+                <x:Type TypeName="npc:ProjectCompilationOutput"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="BinaryTypeItems" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="ModelsAlias:BinaryType"/>
+                <x:Type TypeName="npc:BinaryType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
@@ -40,8 +40,8 @@
                     </Grid.RowDefinitions>
 
                     <Button Grid.Row="0" Style="{StaticResource MetroFlatButton}" Margin="4" Content="Create Project" Click="OnCreateProjectClicked" FontSize="12"/>
-                    <Button Grid.Row="1" Style="{StaticResource MetroFlatButton}" Margin="4"  Content="Open Project" Click="OnOpenProjectClicked" FontSize="12"/>
-                    <Button Grid.Row="2" Style="{StaticResource MetroFlatButton}" Margin="4"  IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" FontSize="12"/>
+                    <Button Grid.Row="1" Style="{StaticResource MetroFlatButton}" Margin="4" Content="Open Project" Click="OnOpenProjectClicked" FontSize="12"/>
+                    <Button Grid.Row="2" Style="{StaticResource MetroFlatButton}" Margin="4" IsEnabled="{Binding IsProjectOpen}" Content="Save Project" Click="OnSaveProjectClicked" FontSize="12"/>
                 </Grid>
             </mah:Flyout>
 
@@ -61,9 +61,9 @@
 
                         <ComboBox Grid.Row="0" Grid.Column="1"
                             FontSize="12" Margin="4" 
-                            IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
+                            IsEnabled="{Binding IsProjectOpen}"
                             ItemsSource="{Binding Source={StaticResource ProjectCompilationOutputItems}}"
-                            SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.CompilationOutput}"/>
+                            SelectedItem="{Binding Project.CompilationOutput}"/>
                     </Grid>
                     
                     <Grid Grid.Row="1" ToolTip="Type of binary to output.">
@@ -75,9 +75,9 @@
 
                         <ComboBox Grid.Row="0" Grid.Column="1"
                             FontSize="12" Margin="4" 
-                            IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}"
+                            IsEnabled="{Binding IsProjectOpen}"
                             ItemsSource="{Binding Source={StaticResource BinaryTypeItems}}"
-                            SelectedItem="{Binding ElementName=mainEditorWindow, Path=Project.OutputBinaryType}"/>
+                            SelectedItem="{Binding Project.OutputBinaryType}"/>
                     </Grid>
                 </Grid>
             </mah:Flyout>
@@ -108,20 +108,20 @@
                     Content="Project" Click="OnProjectButtonClicked" FontWeight="Bold" FontSize="16" />
 
             <Button Grid.Column="1" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
-                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="References" Click="OnReferencesButtonClicked" FontWeight="Bold" FontSize="16"/>
+                    IsEnabled="{Binding IsProjectOpen}" Content="References" Click="OnReferencesButtonClicked" FontWeight="Bold" FontSize="16"/>
             
             <Button Grid.Column="2" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
-                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Settings" Click="OnSettingsButtonClicked" FontWeight="Bold" FontSize="16"/>
+                    IsEnabled="{Binding IsProjectOpen}" Content="Settings" Click="OnSettingsButtonClicked" FontWeight="Bold" FontSize="16"/>
 
             <Button Grid.Column="3" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
                     ToolTipService.ShowOnDisabled="True"
                     ToolTip="Compiles the project and outputs the source code if chosen."
-                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontWeight="Bold" FontSize="16" />
+                    IsEnabled="{Binding CanCompile}" Content="Compile" Click="OnCompileButtonClicked" FontWeight="Bold" FontSize="16" />
 
             <Button Grid.Column="4" Margin="4" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="100" Height="100"
                     ToolTipService.ShowOnDisabled="True"
                     ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
-                    IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.CanCompileAndRun}" Content="Run" Click="OnRunButtonClicked" FontWeight="Bold" FontSize="16" />
+                    IsEnabled="{Binding CanCompileAndRun}" Content="Run" Click="OnRunButtonClicked" FontWeight="Bold" FontSize="16" />
         </Grid>
 
         <Label Grid.Row="2" Content="Classes" Margin="5,10,5,0" FontSize="24" HorizontalAlignment="Center" />
@@ -131,12 +131,12 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Style="{StaticResource MetroFlatButton}" Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="16" />
-            <Button Grid.Column="1" Style="{StaticResource MetroFlatButton}" Margin="4" IsEnabled="{Binding ElementName=mainEditorWindow, Path=Project.IsProjectOpen}" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="16" />
+            <Button Grid.Column="0" Style="{StaticResource MetroFlatButton}" Margin="4" IsEnabled="{Binding IsProjectOpen}" Content="New Class" Click="NewClassButtonClicked" FontSize="16" />
+            <Button Grid.Column="1" Style="{StaticResource MetroFlatButton}" Margin="4" IsEnabled="{Binding IsProjectOpen}" Content="Existing Class" Click="ExistingClassButtonClicked" FontSize="16" />
         </Grid>
 
         <ScrollViewer Margin="5,0,5,5" Grid.Row="4" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="classList" ItemsSource="{Binding ElementName=mainEditorWindow, Path=Project.Classes}">
+            <ItemsControl x:Name="classList" ItemsSource="{Binding Project.Classes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>

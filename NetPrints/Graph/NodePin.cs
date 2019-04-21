@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using PropertyChanged;
+using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
 {
@@ -12,6 +13,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(NodeOutputExecPin))]
     [KnownType(typeof(NodeInputTypePin))]
     [KnownType(typeof(NodeOutputTypePin))]
+    [AddINotifyPropertyChangedInterface]
     public abstract class NodePin
     {
         /// <summary>

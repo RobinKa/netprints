@@ -7,16 +7,15 @@
              xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
-             d:DesignHeight="120" d:DesignWidth="220" x:Name="nodeWindow">
+             d:DesignHeight="120" d:DesignWidth="220">
 
     <UserControl.RenderTransform>
         <TranslateTransform 
-            X="{Binding ElementName=nodeWindow, Path=Node.PositionX}"
-            Y="{Binding ElementName=nodeWindow, Path=Node.PositionY}" />
+            X="{Binding Node.PositionX}"
+            Y="{Binding Node.PositionY}" />
     </UserControl.RenderTransform>
 
     <UserControl.Resources>
-        <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Collapsed" />
         <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" True="Collapsed" False="Visible" />
         <converters:BoolToDoubleConverter x:Key="BoolToDouble" True="56" False="224" />
@@ -24,8 +23,8 @@
     </UserControl.Resources>
 
     <Grid MinWidth="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=BoolToDouble}}"
-          Cursor="Hand" ToolTip="{Binding ElementName=nodeWindow, Path=Node.ToolTip}">
-        <Rectangle Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}" StrokeThickness="2" Fill="#AA202020">
+          Cursor="Hand" ToolTip="{Binding ToolTip}">
+        <Rectangle Stroke="{Binding BorderBrush}" StrokeThickness="2" Fill="#AA202020">
             <Rectangle.Effect>
                 <DropShadowEffect/>
             </Rectangle.Effect>
@@ -38,7 +37,7 @@
             </Grid.RowDefinitions>
                
             <Rectangle Height="46" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}"
-                       Fill="{Binding ElementName=nodeWindow, Path=Node.Brush}" Stroke="{Binding ElementName=nodeWindow, Path=Node.BorderBrush}"
+                       Fill="{Binding Brush}" Stroke="{Binding BorderBrush}"
                        StrokeThickness="2" />
 
             <Grid Height="46" Visibility="{Binding IsRerouteNode, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
@@ -48,11 +47,11 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <ComboBox x:Name="nodeVariants" Margin="2" Width="16" Grid.Column="0" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.Overloads, Mode=OneWay}" 
+                <ComboBox x:Name="nodeVariants" Margin="2" Width="16" Grid.Column="0" ItemsSource="{Binding Overloads, Mode=OneWay}" 
                     ToolTip="Overloads"
-                    SelectionChanged="NodeVariants_SelectionChanged" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowOverloads, Converter={StaticResource ResourceKey=BoolToVis}}" />
+                    SelectionChanged="NodeVariants_SelectionChanged" Visibility="{Binding ShowOverloads, Converter={StaticResource ResourceKey=BoolToVis}}" />
                 
-                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding ElementName=nodeWindow, Path=Node.Label}" Padding="10, 10"
+                <Label x:Name="nodeLabel" Grid.Column="1" Content="{Binding Label}" Padding="10, 10"
                        FontWeight="SemiBold" FontSize="18" Foreground="#FFEEEEEE" BorderThickness="0" HorizontalContentAlignment="Center">
                     <Label.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="4"/>
@@ -60,9 +59,9 @@
                 </Label>
 
                 <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="10" HorizontalAlignment="Right"
-                            Visibility="{Binding ElementName=nodeWindow, Path=Node.CanSetPure, Converter={StaticResource ResourceKey=BoolToVis}}">
+                            Visibility="{Binding CanSetPure, Converter={StaticResource ResourceKey=BoolToVis}}">
                     <Label Content="Pure" />
-                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding ElementName=nodeWindow, Path=Node.IsPure, Mode=TwoWay}" />
+                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsPure, Mode=TwoWay}" />
                 </StackPanel>
             </Grid>
 
@@ -73,74 +72,74 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <ItemsControl x:Name="inputExecPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputExecPins}"  Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                    <ItemsControl x:Name="inputExecPinList" ItemsSource="{Binding InputExecPins}"  Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="inputDataPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputDataPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                    <ItemsControl x:Name="inputDataPinList" ItemsSource="{Binding InputDataPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="inputTypePinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.InputTypePins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                    <ItemsControl x:Name="inputTypePinList" ItemsSource="{Binding InputTypePins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
+                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="{Binding ShowLeftPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
                         <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsPlusClicked"
-                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.LeftPlusToolTip}">
+                                ToolTip="{Binding LeftPlusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Plus" />
                         </Button>
                         <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnLeftPinsMinusClicked"
-                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.LeftMinusToolTip}">
+                                ToolTip="{Binding LeftMinusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Minus" />
                         </Button>
                     </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
-                    <ItemsControl x:Name="outputExecPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputExecPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
+                    <ItemsControl x:Name="outputExecPinList" ItemsSource="{Binding OutputExecPins}" Background="#00000000" Foreground="#00000000" BorderBrush="#00000000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="outputDataPinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputDataPins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
+                    <ItemsControl x:Name="outputDataPinList" ItemsSource="{Binding OutputDataPins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl x:Name="outputTypePinList" ItemsSource="{Binding ElementName=nodeWindow, Path=Node.OutputTypePins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
+                    <ItemsControl x:Name="outputTypePinList" ItemsSource="{Binding OutputTypePins}" Background="#00000000" BorderBrush="#00000000" Foreground="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Pin="{Binding}" Height="28" />
+                                <local:PinControl ParentNodeControl="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NodeControl}}" Height="28" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=nodeWindow, Path=Node.ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ShowRightPinButtons, Converter={StaticResource ResourceKey=BoolToVis}}">
                         <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsPlusClicked"
-                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.RightPlusToolTip}">
+                                ToolTip="{Binding RightPlusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Plus" />
                         </Button>
                         <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="2" Width="24" Height="24" Click="OnRightPinsMinusClicked"
-                                ToolTip="{Binding ElementName=nodeWindow, Path=Node.RightMinusToolTip}">
+                                ToolTip="{Binding RightMinusToolTip}">
                             <iconPacks:PackIconMaterial Kind="Minus" />
                         </Button>
                     </StackPanel>

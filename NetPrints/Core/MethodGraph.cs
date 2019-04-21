@@ -35,18 +35,8 @@ namespace NetPrints.Core
     /// Method type. Contains common things usually associated with methods such as its arguments and its name.
     /// </summary>
     [DataContract]
-    public partial class Method
+    public partial class MethodGraph : ExecutionGraph
     {
-        /// <summary>
-        /// Entry node of this method where execution starts.
-        /// </summary>
-        [DataMember]
-        public EntryNode EntryNode
-        {
-            get;
-            private set;
-        }
-
         /// <summary>
         /// Return node of this method that when executed will return from the method.
         /// </summary>
@@ -64,40 +54,11 @@ namespace NetPrints.Core
         }
 
         /// <summary>
-        /// Name of the method without any prefixes.
+        /// Ordered return types this method returns.
         /// </summary>
-        [DataMember]
-        public string Name
+        public IEnumerable<BaseType> ReturnTypes
         {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Collection of nodes in this method.
-        /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<Node> Nodes
-        {
-            get;
-            private set;
-        } = new ObservableRangeCollection<Node>();
-
-        /// <summary>
-        /// Ordered argument types this method takes.
-        /// </summary>
-        public IEnumerable<BaseType> ArgumentTypes
-        {
-            get => EntryNode != null ? EntryNode.InputTypePins.Select(pin => pin.InferredType?.Value ?? TypeSpecifier.FromType<object>()).ToList() : new List<BaseType>();
-        }
-
-        /// <summary>
-        /// Ordered argument types with their names this method takes.
-        /// </summary>
-        public IEnumerable<Named<BaseType>> NamedArgumentTypes
-        {
-            get => EntryNode != null ? EntryNode.InputTypePins.Zip(EntryNode.OutputDataPins, (type, data) => (type, data))
-                .Select(pair => new Named<BaseType>(pair.data.Name, pair.type.InferredType?.Value ?? TypeSpecifier.FromType<object>())).ToList() : new List<Named<BaseType>>();
+            get => MainReturnNode?.InputTypePins?.Select(pin => pin.InferredType?.Value ?? TypeSpecifier.FromType<object>())?.ToList() ?? new List<BaseType>();
         }
 
         /// <summary>
@@ -109,11 +70,13 @@ namespace NetPrints.Core
         }
 
         /// <summary>
-        /// Ordered return types this method returns.
+        /// Name of the method without any prefixes.
         /// </summary>
-        public IEnumerable<BaseType> ReturnTypes
+        [DataMember]
+        public string Name
         {
-            get => MainReturnNode?.InputTypePins?.Select(pin => pin.InferredType?.Value ?? TypeSpecifier.FromType<object>())?.ToList() ?? new List<BaseType>();
+            get;
+            set;
         }
 
         /// <summary>
@@ -127,33 +90,21 @@ namespace NetPrints.Core
         } = MethodModifiers.None;
 
         /// <summary>
-        /// Visibility of this method.
+        /// Method entry node where this method graph's execution starts.
         /// </summary>
-        [DataMember]
-        public MemberVisibility Visibility
+        public MethodEntryNode MethodEntryNode
         {
-            get;
-            set;
-        } = MemberVisibility.Private;
-
-        /// <summary>
-        /// Class this method is contained in.
-        /// </summary>
-        [DataMember]
-        public Class Class
-        {
-            get;
-            set;
+            get => (MethodEntryNode)EntryNode;
         }
 
         /// <summary>
         /// Creates a method given its name.
         /// </summary>
         /// <param name="name">Name for the method.</param>
-        public Method(string name)
+        public MethodGraph(string name)
         {
             Name = name;
-            EntryNode = new EntryNode(this);
+            EntryNode = new MethodEntryNode(this);
             new ReturnNode(this);
         }
 
@@ -191,6 +142,11 @@ namespace NetPrints.Core
 
                 iterations++;
             }
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

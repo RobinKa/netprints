@@ -9,15 +9,6 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class VariableEditorControl : UserControl
     {
-        public static DependencyProperty VariableProperty = DependencyProperty.Register(
-            nameof(Variable), typeof(VariableVM), typeof(VariableEditorControl));
-
-        public VariableVM Variable
-        {
-            get => (VariableVM)GetValue(VariableProperty);
-            set => SetValue(VariableProperty, value);
-        }
-
         public VariableEditorControl()
         {
             InitializeComponent();

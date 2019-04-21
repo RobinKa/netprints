@@ -9,28 +9,23 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     x:Class="NetPrintsEditor.ClassEditorWindow"
         mc:Ignorable="d"
-        Title="{Binding RelativeSource={RelativeSource Self}, Path=Class.Name}" 
+        Title="{Binding Class.Name}" 
         Icon="NetPrintsLogo.ico"
         Height="720" Width="1280"
         x:Name="classWindow">
-    
+
     <Window.CommandBindings>
-        <CommandBinding Command="cmds:NetPrintsCommands.AddMethod" CanExecute="CommandAddMethod_CanExecute" Executed="CommandAddMethod_Executed" />
-        <CommandBinding Command="cmds:NetPrintsCommands.AddConstructor" CanExecute="CommandAddConstructor_CanExecute" Executed="CommandAddConstructor_Execute" />
-        <CommandBinding Command="cmds:NetPrintsCommands.OverrideMethod" CanExecute="CommandOverrideMethod_CanExecute" Executed="CommandOverrideMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveVariable" CanExecute="CommandRemoveVariable_CanExecute" Executed="CommandRemoveVariable_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.ConnectPins" CanExecute="CommandConnectPins_CanExecute" Executed="CommandConnectPins_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddNode" CanExecute="CommandAddNode_CanExecute" Executed="CommandAddNode_Executed"/>
-        <CommandBinding Command="cmds:NetPrintsCommands.SelectNode" CanExecute="CommandSelectNode_CanExecute" Executed="CommandSelectNode_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.ChangeNodeOverload" CanExecute="CommandChangeNodeOverload_CanExecute" Executed="CommandChangeNodeOverload_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddGetter" CanExecute="CommandAddGetter_CanExecute" Executed="CommandAddGetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddSetter" CanExecute="CommandAddSetter_CanExecute" Executed="CommandAddSetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveGetter" CanExecute="CommandRemoveGetter_CanExecute" Executed="CommandRemoveGetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveSetter" CanExecute="CommandRemoveSetter_CanExecute" Executed="CommandRemoveSetter_Execute" />
-        <CommandBinding Command="cmds:EditorCommands.OpenMethod" CanExecute="CommandOpenMethod_CanExecute" Executed="CommandOpenMethod_Execute" />
         <CommandBinding Command="cmds:EditorCommands.SelectVariable" CanExecute="CommandSelectVariable_CanExecute" Executed="CommandSelectVariable_Execute" />
         <CommandBinding Command="cmds:EditorCommands.OpenVariableGetSet" CanExecute="CommandOpenVariableGetSet_CanExecute" Executed="CommandOpenVariableGetSet_Execute" />
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
@@ -55,12 +50,12 @@
             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton"
                     ToolTipService.ShowOnDisabled="True"
                     ToolTip="Compiles the project and outputs the source code if chosen."
-                    IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompile}" Margin="5" Content="Compile"
+                    IsEnabled="{Binding Project.CanCompile}" Margin="5" Content="Compile"
                     FontWeight="Bold" FontSize="16" Click="OnCompileButtonClicked"/>
             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton"
                     ToolTipService.ShowOnDisabled="True"
                     ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
-                    IsEnabled="{Binding ElementName=classWindow, Path=Class.Project.CanCompileAndRun}"
+                    IsEnabled="{Binding Class.Project.CanCompileAndRun}"
                     Margin="5" Content="Run" FontWeight="Bold" FontSize="16" Click="OnRunButtonClicked" />
             <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton"
                     ToolTip="Edit the properties of this class."
@@ -98,7 +93,7 @@
 
                     <Label Grid.Row="0" Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding ElementName=classWindow, Path=Class.Methods}">
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Methods}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -124,7 +119,7 @@
                     <ComboBox x:Name="overrideMethodBox" HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16"
                               Text="Override a method"
                               IsReadOnly="True" IsEditable="True"
-                              ItemsSource="{Binding ElementName=classWindow, Path=Class.OverridableMethods}"
+                              ItemsSource="{Binding OverridableMethods}"
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
                 </Grid>
 
@@ -139,7 +134,7 @@
 
                     <Label Grid.Row="0" Content="Constructors" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding ElementName=classWindow, Path=Class.Constructors}">
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Constructors}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -174,7 +169,7 @@
 
                     <Label Content="Variables" FontSize="24px" HorizontalContentAlignment="Center" />
 
-                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding ElementName=classWindow, Path=Class.Variables}">
+                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding Variables}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Controls:MemberVariableView DataContext="{Binding}" />
@@ -196,13 +191,13 @@
                     <RowDefinition Height="24" />
                 </Grid.RowDefinitions>
                 
-                <Controls:MethodEditorControl x:Name="methodEditor" />
+                <Controls:MethodEditorControl x:Name="methodEditor" Graph="{Binding OpenedGraph}" />
 
                 <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
-                <ListView Grid.Row="2" ItemsSource="{Binding ElementName=classWindow, Path=Class.Project.LastCompileErrors}" />
+                <ListView Grid.Row="2" ItemsSource="{Binding Project.LastCompileErrors}" />
 
-                <Label Grid.Row="3" Content="{Binding ElementName=classWindow, Path=Class.Project.CompilationMessage}" />
+                <Label Grid.Row="3" Content="{Binding Project.CompilationMessage}" />
             </Grid>
 
 
@@ -220,11 +215,11 @@
                 </TabItem>
                 
                 <TabItem>
-                    <Controls:VariableEditorControl x:Name="variableViewer" />
+                    <Controls:VariableEditorControl DataContext="{x:Null}" x:Name="variableViewer" />
                 </TabItem>
 
                 <TabItem>
-                    <Controls:MethodPropertyEditorControl x:Name="methodViewer" />
+                    <Controls:MethodPropertyEditorControl DataContext="{x:Null}" x:Name="methodViewer" />
                 </TabItem>
             </TabControl>
         </Grid>

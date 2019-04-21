@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using PropertyChanged;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace NetPrints.Graph
         public delegate void ObservableValueChangedEventHandler(object sender, EventArgs eventArgs);
 
         [DataMember]
+        [DoNotNotify]
         public T Value
         {
             get => value;
@@ -57,8 +59,8 @@ namespace NetPrints.Graph
         [DataMember]
         private ObservableValue<BaseType> constructedType;
 
-        public TypeNode(Method method, BaseType type)
-            : base(method)
+        public TypeNode(NodeGraph graph, BaseType type)
+            : base(graph)
         {
             Type = type;
 

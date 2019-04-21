@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NetPrints.Graph;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -44,12 +46,20 @@ namespace NetPrints.Core
     }
 
     /// <summary>
-    /// Class type. Contains methods, attributes and other common things usually associated
+    /// Class graph type. Contains methods, attributes and other common things usually associated
     /// with classes.
     /// </summary>
     [DataContract]
-    public partial class Class
+    public partial class ClassGraph : NodeGraph
     {
+        /// <summary>
+        /// Return node of this class that receives the metadata for it.
+        /// </summary>
+        public ClassReturnNode ReturnNode
+        {
+            get => Nodes.OfType<ClassReturnNode>().Single();
+        }
+
         /// <summary>
         /// Properties of this class.
         /// </summary>
@@ -60,19 +70,29 @@ namespace NetPrints.Core
         /// Methods of this class.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<Method> Methods { get; set; } = new ObservableRangeCollection<Method>();
+        public ObservableRangeCollection<MethodGraph> Methods { get; set; } = new ObservableRangeCollection<MethodGraph>();
 
         /// <summary>
         /// Constructors of this class.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<Method> Constructors { get; set; } = new ObservableRangeCollection<Method>();
+        public ObservableRangeCollection<ConstructorGraph> Constructors { get; set; } = new ObservableRangeCollection<ConstructorGraph>();
 
         /// <summary>
         /// Base / super type of this class. The ultimate base type of all classes is System.Object.
         /// </summary>
-        [DataMember]
-        public TypeSpecifier SuperType { get; set; } = TypeSpecifier.FromType<object>();
+        public TypeSpecifier SuperType
+        {
+            get => (TypeSpecifier)ReturnNode.SuperTypePin.InferredType?.Value ?? TypeSpecifier.FromType<object>();
+        }
+
+        /// <summary>
+        /// Type this class inherits from and interfaces this class implements.
+        /// </summary>
+        public IEnumerable<TypeSpecifier> AllBaseTypes
+        {
+            get => new[] { SuperType }.Concat(ReturnNode.InterfacePins.Select(pin => (TypeSpecifier)pin.InferredType?.Value ?? TypeSpecifier.FromType<object>()));
+        }
 
         /// <summary>
         /// Namespace this class is in.
@@ -119,10 +139,6 @@ namespace NetPrints.Core
         {
             get => new TypeSpecifier(FullName, SuperType.IsEnum, SuperType.IsInterface,
                 DeclaredGenericArguments.Cast<BaseType>().ToList());
-        }
-
-        public Class()
-        {
         }
     }
 }

@@ -64,8 +64,8 @@ namespace NetPrints.Graph
             get => CastTypePin.InferredType?.Value ?? TypeSpecifier.FromType<object>();
         }
 
-        public ExplicitCastNode(Method method)
-            : base(method)
+        public ExplicitCastNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputTypePin("Type");
             AddInputDataPin("Object", TypeSpecifier.FromType<object>());

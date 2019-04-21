@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using PropertyChanged;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -11,11 +12,13 @@ namespace NetPrints.Graph
     /// </summary>
     [DataContract]
     [KnownType(typeof(CallMethodNode))]
-    [KnownType(typeof(EntryNode))]
+    [KnownType(typeof(MethodEntryNode))]
+    [KnownType(typeof(ConstructorEntryNode))]
     [KnownType(typeof(ForLoopNode))]
     [KnownType(typeof(IfElseNode))]
     [KnownType(typeof(LiteralNode))]
     [KnownType(typeof(ReturnNode))]
+    [KnownType(typeof(ClassReturnNode))]
     [KnownType(typeof(VariableGetterNode))]
     [KnownType(typeof(VariableSetterNode))]
     [KnownType(typeof(ConstructorNode))]
@@ -27,6 +30,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(TypeNode))]
     [KnownType(typeof(MakeArrayTypeNode))]
     [KnownType(typeof(ThrowNode))]
+    [AddINotifyPropertyChangedInterface]
     public abstract class Node
     {
         /// <summary>
@@ -154,21 +158,30 @@ namespace NetPrints.Graph
         }
 
         /// <summary>
-        /// Method this node is contained in.
+        /// Method graph this node is contained in.
+        /// Null if the graph is not a MethodGraph.
+        /// </summary>
+        public MethodGraph MethodGraph
+        {
+            get => Graph as MethodGraph;
+        }
+
+        /// <summary>
+        /// Graph this node is contained in.
         /// </summary>
         [DataMember]
-        public Method Method
+        public NodeGraph Graph
         {
             get;
             private set;
         }
 
-        protected Node(Method method)
+        protected Node(NodeGraph graph)
         {
-            Method = method;
-            method.Nodes.Add(this);
+            Graph = graph;
+            Graph.Nodes.Add(this);
 
-            Name = NetPrintsUtil.GetUniqueName(GetType().Name, method.Nodes.Select(n => n.Name).ToList());
+            Name = NetPrintsUtil.GetUniqueName(GetType().Name, Graph.Nodes.Select(n => n.Name).ToList());
         }
 
         public override string ToString()

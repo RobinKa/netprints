@@ -11,13 +11,10 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class NodeControl : UserControl
     {
-        public static DependencyProperty NodeProperty = DependencyProperty.Register(
-            nameof(NetPrints.Graph.Node), typeof(NodeVM), typeof(NodeControl));
-
         public NodeVM Node
         {
-            get => GetValue(NodeProperty) as NodeVM;
-            set => SetValue(NodeProperty, value);
+            get => DataContext as NodeVM;
+            set => DataContext = value;
         }
 
         public NodeControl()
@@ -39,7 +36,7 @@ namespace NetPrintsEditor.Controls
 
             if (!Node.IsSelected)
             {
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
+                Node.Select();
             }
 
             Node.DragStart();
@@ -64,7 +61,7 @@ namespace NetPrintsEditor.Controls
 
             if (!dragged)
             {
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.SelectNode, Node);
+                Node.Select();
             }
 
             e.Handled = true;

@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using System.Linq;
 using System.Text;
 
 namespace NetPrints.Translator
@@ -11,14 +12,14 @@ namespace NetPrints.Translator
         private const string CLASS_TEMPLATE =
             @"namespace %Namespace%
             {
-                %ClassModifiers%class %ClassName%%GenericArguments% : %SuperType%
+                %ClassModifiers%class %ClassName%%GenericArguments% : %BaseTypes%
                 {
                     %Content%
                 }
             }";
 
         private const string CLASS_TEMPLATE_NO_NAMESPACE =
-            @"%ClassModifiers%class %ClassName%%GenericArguments% : %SuperType%
+            @"%ClassModifiers%class %ClassName%%GenericArguments% : %BaseTypes%
             {
                 %Content%
             }";
@@ -31,14 +32,14 @@ namespace NetPrints.Translator
                 %Set%
             }";
 
-        private readonly MethodTranslator methodTranslator = new MethodTranslator();
+        private readonly ExecutionGraphTranslator methodTranslator = new ExecutionGraphTranslator();
 
         /// <summary>
         /// Translates a class into C#.
         /// </summary>
         /// <param name="c">Class to translate.</param>
         /// <returns>C# code for the class.</returns>
-        public string TranslateClass(Class c)
+        public string TranslateClass(ClassGraph c)
         {
             StringBuilder content = new StringBuilder();
 
@@ -47,12 +48,12 @@ namespace NetPrints.Translator
                 content.AppendLine(TranslateVariable(v));
             }
 
-            foreach (Method constructor in c.Constructors)
+            foreach (ConstructorGraph constructor in c.Constructors)
             {
                 content.AppendLine(TranslateConstructor(constructor));
             }
 
-            foreach (Method m in c.Methods)
+            foreach (MethodGraph m in c.Methods)
             {
                 content.AppendLine(TranslateMethod(m));
             }
@@ -87,12 +88,14 @@ namespace NetPrints.Translator
                 genericArguments = "<" + string.Join(", ", c.DeclaredGenericArguments) + ">";
             }
 
+            string baseTypes = string.Join(", ", c.AllBaseTypes);
+
             string generatedCode = (string.IsNullOrWhiteSpace(c.Namespace) ? CLASS_TEMPLATE_NO_NAMESPACE : CLASS_TEMPLATE)
                 .Replace("%Namespace%", c.Namespace)
                 .Replace("%ClassModifiers%", modifiers.ToString())
                 .Replace("%ClassName%", c.Name)
                 .Replace("%GenericArguments%", genericArguments)
-                .Replace("%SuperType%", c.SuperType.FullCodeName)
+                .Replace("%BaseTypes%", baseTypes)
                 .Replace("%Content%", content.ToString());
 
             return TranslatorUtil.FormatCode(generatedCode);
@@ -140,7 +143,7 @@ namespace NetPrints.Translator
 
                 if (variable.GetterMethod != null)
                 {
-                    string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false, false);
+                    string getterMethodCode = methodTranslator.Translate(variable.GetterMethod, false);
                     string visibilityPrefix = variable.GetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.GetterMethod.Visibility]} " : "";
 
                     output = output.Replace("%Get%", $"{visibilityPrefix}get\n{getterMethodCode}");
@@ -152,7 +155,7 @@ namespace NetPrints.Translator
 
                 if (variable.SetterMethod != null)
                 {
-                    string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false, false);
+                    string setterMethodCode = methodTranslator.Translate(variable.SetterMethod, false);
                     string visibilityPrefix = variable.SetterMethod.Visibility != variable.Visibility ? $"{TranslatorUtil.VisibilityTokens[variable.SetterMethod.Visibility]} " : "";
 
                     output = output.Replace("%Set%", $"{visibilityPrefix}set\n{setterMethodCode}");
@@ -178,14 +181,14 @@ namespace NetPrints.Translator
         /// </summary>
         /// <param name="m">Method to translate.</param>
         /// <returns>C# code for the method.</returns>
-        public string TranslateMethod(Method m)
+        public string TranslateMethod(MethodGraph m)
         {
-            return methodTranslator.Translate(m, true, false);
+            return methodTranslator.Translate(m, true);
         }
 
-        public string TranslateConstructor(Method m)
+        public string TranslateConstructor(ConstructorGraph m)
         {
-            return methodTranslator.Translate(m, true, true);
+            return methodTranslator.Translate(m, true);
         }
     }
 }

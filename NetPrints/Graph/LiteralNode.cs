@@ -33,8 +33,8 @@ namespace NetPrints.Graph
         [DataMember]
         public TypeSpecifier LiteralType { get; private set; }
 
-        public LiteralNode(Method method, TypeSpecifier literalType)
-            : base(method)
+        public LiteralNode(NodeGraph graph, TypeSpecifier literalType)
+            : base(graph)
         {
             LiteralType = literalType;
 
@@ -83,11 +83,12 @@ namespace NetPrints.Graph
         /// Creates a literal node and gives it an unconnected value.
         /// </summary>
         /// <typeparam name="T">Type of the unconnected value.</typeparam>
+        /// <param name="graph">Graph to add the node to.</param>
         /// <param name="val">Value when the input pin is unconnected.</param>
         /// <returns>Literal node with the specified unconnected value.</returns>
-        public static LiteralNode WithValue<T>(Method method, T val)
+        public static LiteralNode WithValue<T>(NodeGraph graph, T val)
         {
-            LiteralNode node = new LiteralNode(method, TypeSpecifier.FromType<T>());
+            LiteralNode node = new LiteralNode(graph, TypeSpecifier.FromType<T>());
             node.InputValuePin.UnconnectedValue = val;
             return node;
         }

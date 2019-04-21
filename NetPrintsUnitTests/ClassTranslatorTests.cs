@@ -12,15 +12,15 @@ namespace NetPrints.Tests
     public class ClassTranslatorTests
     {
         private ClassTranslator classTranslator;
-        private Method stringLengthMethod;
-        private Method mainMethod;
+        private MethodGraph stringLengthMethod;
+        private MethodGraph mainMethod;
 
-        private Class cls;
+        private ClassGraph cls;
 
         public void CreateStringLengthMethod()
         {
             // Create method
-            stringLengthMethod = new Method("StringLength")
+            stringLengthMethod = new MethodGraph("StringLength")
             {
                 Class = cls,
                 Modifiers = MethodModifiers.None
@@ -54,7 +54,7 @@ namespace NetPrints.Tests
 
         public void CreateMainMethod()
         {
-            mainMethod = new Method("Main")
+            mainMethod = new MethodGraph("Main")
             {
                 Class = cls,
                 Modifiers = MethodModifiers.Static
@@ -89,7 +89,7 @@ namespace NetPrints.Tests
         {
             classTranslator = new ClassTranslator();
 
-            cls = new Class()
+            cls = new ClassGraph()
             {
                 Name = "TestClass",
                 Namespace = "TestNamespace",

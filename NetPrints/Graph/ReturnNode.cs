@@ -20,8 +20,8 @@ namespace NetPrints.Graph
             get { return InputExecPins[0]; }
         }
 
-        public ReturnNode(Method method)
-            : base(method)
+        public ReturnNode(MethodGraph graph)
+            : base(graph)
         {
             AddInputExecPin("Exec");
 
@@ -33,13 +33,13 @@ namespace NetPrints.Graph
         /// </summary>
         private void ReplicateMainNodeInputTypes()
         {
-            if (this == Method.MainReturnNode)
+            if (this == MethodGraph.MainReturnNode)
             {
                 return;
             }
 
             // Get new return types
-            NodeInputDataPin[] mainInputPins = Method.MainReturnNode.InputDataPins.ToArray();
+            NodeInputDataPin[] mainInputPins = MethodGraph.MainReturnNode.InputDataPins.ToArray();
 
             var oldConnections = new Dictionary<int, NodeOutputDataPin>();
 
@@ -74,7 +74,7 @@ namespace NetPrints.Graph
         /// </summary>
         private void UpdateMainNodeInputTypes()
         {
-            if (this != Method.MainReturnNode)
+            if (this != MethodGraph.MainReturnNode)
             {
                 return;
             }
@@ -93,7 +93,7 @@ namespace NetPrints.Graph
 
         public void AddReturnType()
         {
-            if (this != Method.MainReturnNode)
+            if (this != MethodGraph.MainReturnNode)
             {
                 throw new InvalidOperationException("Can only add return types on the main return node.");
             }
@@ -106,7 +106,7 @@ namespace NetPrints.Graph
 
         public void RemoveReturnType()
         {
-            if (this != Method.MainReturnNode)
+            if (this != MethodGraph.MainReturnNode)
             {
                 throw new InvalidOperationException("Can only remove return types on the main return node.");
             }
@@ -126,16 +126,16 @@ namespace NetPrints.Graph
 
         private void SetupSecondaryNodeEvents()
         {
-            if (Method.MainReturnNode != null)
+            if (MethodGraph.MainReturnNode != null)
             {
-                if (this == Method.MainReturnNode)
+                if (this == MethodGraph.MainReturnNode)
                 {
                     UpdateMainNodeInputTypes();
                 }
                 else
                 {
-                    Method.MainReturnNode.InputDataPins.CollectionChanged += (sender, e) => ReplicateMainNodeInputTypes();
-                    Method.MainReturnNode.InputTypeChanged += (sender, e) => ReplicateMainNodeInputTypes();
+                    MethodGraph.MainReturnNode.InputDataPins.CollectionChanged += (sender, e) => ReplicateMainNodeInputTypes();
+                    MethodGraph.MainReturnNode.InputTypeChanged += (sender, e) => ReplicateMainNodeInputTypes();
                     ReplicateMainNodeInputTypes();
                 }
             }

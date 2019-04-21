@@ -296,7 +296,7 @@ namespace NetPrints.Graph
                 throw new ArgumentException("Pin or its connected pin were null");
             }
 
-            var rerouteNode = RerouteNode.MakeData(pin.Node.Method, new Tuple<BaseType, BaseType>[]
+            var rerouteNode = RerouteNode.MakeData(pin.Node.Graph, new Tuple<BaseType, BaseType>[]
             {
                 new Tuple<BaseType, BaseType>(pin.PinType, pin.IncomingPin.PinType)
             });
@@ -319,7 +319,7 @@ namespace NetPrints.Graph
                 throw new ArgumentException("Pin or its connected pin were null");
             }
 
-            var rerouteNode = RerouteNode.MakeExecution(pin.Node.Method, 1);
+            var rerouteNode = RerouteNode.MakeExecution(pin.Node.Graph, 1);
 
             GraphUtil.ConnectExecPins(rerouteNode.OutputExecPins[0], pin.OutgoingPin);
             GraphUtil.ConnectExecPins(pin, rerouteNode.InputExecPins[0]);
@@ -339,7 +339,7 @@ namespace NetPrints.Graph
                 throw new ArgumentException("Pin or its connected pin were null");
             }
 
-            var rerouteNode = RerouteNode.MakeType(pin.Node.Method, 1);
+            var rerouteNode = RerouteNode.MakeType(pin.Node.Graph, 1);
 
             GraphUtil.ConnectTypePins(pin.IncomingPin, rerouteNode.InputTypePins[0]);
             GraphUtil.ConnectTypePins(rerouteNode.OutputTypePins[0], pin);
@@ -352,17 +352,17 @@ namespace NetPrints.Graph
         /// creates any type nodes it takes as generic arguments and
         /// connects them.
         /// </summary>
-        /// <param name="method">Method to add the type nodes to.</param>
+        /// <param name="graph">Graph to add the type nodes to.</param>
         /// <param name="type">Specifier for the type the type node should output.</param>
         /// <param name="x">X position of the created type node.</param>
         /// <param name="y">Y position of the created type node.</param>
         /// <returns>Type node outputting the given type.</returns>
-        public static TypeNode CreateNestedTypeNode(Method method, BaseType type, double x, double y)
+        public static TypeNode CreateNestedTypeNode(NodeGraph graph, BaseType type, double x, double y)
         {
             const double offsetX = -308;
             const double offsetY = -112;
 
-            var typeNode = new TypeNode(method, type)
+            var typeNode = new TypeNode(graph, type)
             {
                 PositionX = x,
                 PositionY = y,
@@ -372,7 +372,7 @@ namespace NetPrints.Graph
             // them to it.
             if (type is TypeSpecifier typeSpecifier)
             {
-                IEnumerable<TypeNode> genericArgNodes = typeSpecifier.GenericArguments.Select(arg => CreateNestedTypeNode(method, arg, x + offsetX, y + offsetY * (typeSpecifier.GenericArguments.IndexOf(arg) + 1)));
+                IEnumerable<TypeNode> genericArgNodes = typeSpecifier.GenericArguments.Select(arg => CreateNestedTypeNode(graph, arg, x + offsetX, y + offsetY * (typeSpecifier.GenericArguments.IndexOf(arg) + 1)));
 
                 foreach (TypeNode genericArgNode in genericArgNodes)
                 {
@@ -390,7 +390,7 @@ namespace NetPrints.Graph
         /// <param name="cls">Class to add the method to.</param>
         /// <param name="methodSpecifier">Method specifier for the method to override.</param>
         /// <returns>Method in the class that represents the overriding method.</returns>
-        public static Method AddOverrideMethod(Class cls, MethodSpecifier methodSpecifier)
+        public static MethodGraph AddOverrideMethod(ClassGraph cls, MethodSpecifier methodSpecifier)
         {
             if (cls.Methods.Any(m => m.Name == methodSpecifier.Name)
                 || !(methodSpecifier.Modifiers.HasFlag(MethodModifiers.Virtual)
@@ -406,7 +406,7 @@ namespace NetPrints.Graph
             modifiers |= MethodModifiers.Override;
 
             // Create method
-            Method newMethod = new Method(methodSpecifier.Name)
+            MethodGraph newMethod = new MethodGraph(methodSpecifier.Name)
             {
                 Class = cls,
                 Modifiers = modifiers,
@@ -425,7 +425,7 @@ namespace NetPrints.Graph
             // Add generic arguments
             for (var i = 0; i < methodSpecifier.GenericArguments.Count; i++)
             {
-                newMethod.EntryNode.AddGenericArgument();
+                newMethod.MethodEntryNode.AddGenericArgument();
             }
 
             const int offsetX = -308;
@@ -437,7 +437,7 @@ namespace NetPrints.Graph
                 BaseType argType = methodSpecifier.Parameters[i].Value;
                 TypeNode argTypeNode = CreateNestedTypeNode(newMethod, argType, newMethod.EntryNode.PositionX + offsetX, newMethod.EntryNode.PositionY + offsetY * (i+1));
 
-                newMethod.EntryNode.AddArgument();
+                newMethod.MethodEntryNode.AddArgument();
 
                 ConnectTypePins(argTypeNode.OutputTypePins[0], newMethod.EntryNode.InputTypePins[i]);
             }

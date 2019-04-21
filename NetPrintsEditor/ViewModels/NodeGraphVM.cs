@@ -1,6 +1,8 @@
-﻿using NetPrints.Core;
+﻿using GalaSoft.MvvmLight;
+using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Controls;
+using NetPrintsEditor.Messages;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -9,12 +11,12 @@ using System.Runtime.CompilerServices;
 
 namespace NetPrintsEditor.ViewModels
 {
-    public class MethodVM : INotifyPropertyChanged
+    public class NodeGraphVM : ViewModelBase
     {
         public IEnumerable<NodeVM> SelectedNodes
         {
             get => selectedNodes;
-            set
+            private set
             {
                 if (selectedNodes != value)
                 {
@@ -37,113 +39,70 @@ namespace NetPrintsEditor.ViewModels
                             node.IsSelected = true;
                         }
                     }
-
-                    OnPropertyChanged();
                 }
             }
         }
 
-        private IEnumerable<NodeVM> selectedNodes = null;
+        private IEnumerable<NodeVM> selectedNodes = new NodeVM[0];
 
         public string Name
         {
-            get => method.Name;
+            get => graph is MethodGraph methodGraph ? methodGraph.Name : graph.ToString();
             set
             {
-                if (method.Name != value)
+                if (graph is MethodGraph methodGraph && methodGraph.Name != value)
                 {
-                    method.Name = value;
-                    OnPropertyChanged();
+                    methodGraph.Name = value;
                 }
             }
         }
 
-        public bool IsConstructor
-        {
-            get => method.Name == Class.Name;
-        }
+        public bool IsConstructor => graph is ConstructorGraph;
 
-        public ObservableViewModelCollection<NodeVM, Node> Nodes
-        {
-            get => nodes;
-            set
-            {
-                if (nodes != value)
-                {
-                    nodes = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        public ObservableViewModelCollection<NodeVM, Node> Nodes { get; set; }
 
-        private ObservableViewModelCollection<NodeVM, Node> nodes;
+        public IEnumerable<BaseType> ArgumentTypes =>
+            graph is ExecutionGraph execGraph ? execGraph.ArgumentTypes : null;
 
-        public IEnumerable<BaseType> ArgumentTypes
-        {
-            get => method.ArgumentTypes;
-        }
+        public IEnumerable<Named<BaseType>> NamedArgumentTypes =>
+            graph is ExecutionGraph execGraph ? execGraph.NamedArgumentTypes : null;
 
-        public IEnumerable<Named<BaseType>> NamedArgumentTypes
-        {
-            get => method.NamedArgumentTypes;
-        }
+        public IEnumerable<BaseType> ReturnTypes =>
+            graph is MethodGraph methodGraph ? methodGraph.ReturnTypes : null;
 
-        public IEnumerable<BaseType> ReturnTypes
-        {
-            get => method.ReturnTypes;
-        }
-
-        public ClassVM Class
-        {
-            get => classVM;
-            set
-            {
-                if (classVM != value)
-                {
-                    classVM = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private ClassVM classVM;
+        public ClassEditorVM Class { get; set; }
 
         public MethodModifiers Modifiers
         {
-            get => method.Modifiers;
+            get => graph is MethodGraph methodGraph ? methodGraph.Modifiers : MethodModifiers.None;
             set
             {
-                if (method.Modifiers != value)
+                if (graph is MethodGraph methodGraph && methodGraph.Modifiers != value)
                 {
-                    method.Modifiers = value;
-                    OnPropertyChanged();
+                    methodGraph.Modifiers = value;
                 }
             }
         }
 
         public MemberVisibility Visibility
         {
-            get => method.Visibility;
+            get => graph is ExecutionGraph execGraph ? execGraph.Visibility : MemberVisibility.Invalid;
             set
             {
-                if (method.Visibility != value)
+                if (graph is ExecutionGraph execGraph && execGraph.Visibility != value)
                 {
-                    method.Visibility = value;
-                    OnPropertyChanged();
+                    execGraph.Visibility = value;
                 }
             }
         }
 
-        public IEnumerable<MemberVisibility> PossibleVisibilities
+        public IEnumerable<MemberVisibility> PossibleVisibilities => new[]
         {
-            get => new[]
-                {
-                    MemberVisibility.Internal,
-                    MemberVisibility.Private,
-                    MemberVisibility.Protected,
-                    MemberVisibility.Public,
-                };
-        }
+            MemberVisibility.Internal,
+            MemberVisibility.Private,
+            MemberVisibility.Protected,
+            MemberVisibility.Public,
+        };
 
         /*
         Scenarios:
@@ -229,7 +188,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var selectedNode in SelectedNodes)
                 {
-                    nodeStartPositions.Add(selectedNode, (selectedNode.PositionX, selectedNode.PositionY));
+                    nodeStartPositions.Add(selectedNode, (selectedNode.Node.PositionX, selectedNode.Node.PositionY));
                 }
             }
         }
@@ -244,8 +203,8 @@ namespace NetPrintsEditor.ViewModels
             {
                 foreach (var selectedNode in SelectedNodes)
                 {
-                    selectedNode.PositionX -= selectedNode.PositionX % MethodEditorControl.GridCellSize;
-                    selectedNode.PositionY -= selectedNode.PositionY % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionX -= selectedNode.Node.PositionX % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionY -= selectedNode.Node.PositionY % MethodEditorControl.GridCellSize;
                 }
             }
         }
@@ -264,8 +223,8 @@ namespace NetPrintsEditor.ViewModels
                 foreach (var selectedNode in SelectedNodes)
                 {
                     // Set position by taking total delta and adding it to the initial position
-                    selectedNode.PositionX = nodeStartPositions[selectedNode].X + nodeDragAccumX - nodeDragAccumX % MethodEditorControl.GridCellSize;
-                    selectedNode.PositionY = nodeStartPositions[selectedNode].Y + nodeDragAccumY - nodeDragAccumY % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionX = nodeStartPositions[selectedNode].X + nodeDragAccumX - nodeDragAccumX % MethodEditorControl.GridCellSize;
+                    selectedNode.Node.PositionY = nodeStartPositions[selectedNode].Y + nodeDragAccumY - nodeDragAccumY % MethodEditorControl.GridCellSize;
                 }
             }
         }
@@ -387,14 +346,14 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public Method Method
+        public NodeGraph Graph
         {
-            get => method;
+            get => graph;
             set
             {
-                if (method != value)
+                if (graph != value)
                 {
-                    if (method != null)
+                    if (graph != null)
                     {
                         Nodes.CollectionChanged -= OnNodeCollectionChanged;
                         Nodes.ToList().ForEach(n => SetupNodeEvents(n, false));
@@ -402,14 +361,13 @@ namespace NetPrintsEditor.ViewModels
                         Nodes.ToList().ForEach(n => SetupNodeConnections(n, false));
                     }
 
-                    method = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(AllPins));
-                    OnPropertyChanged(nameof(Visibility));
+                    graph = value;
+                    RaisePropertyChanged(nameof(AllPins));
+                    RaisePropertyChanged(nameof(Visibility));
 
-                    Nodes = new ObservableViewModelCollection<NodeVM, Node>(Method.Nodes, n => new NodeVM(n));
+                    Nodes = new ObservableViewModelCollection<NodeVM, Node>(Graph.Nodes, n => new NodeVM(n));
 
-                    if (method != null)
+                    if (graph != null)
                     {
                         Nodes.CollectionChanged += OnNodeCollectionChanged;
                         Nodes.ToList().ForEach(n => SetupNodeEvents(n, true));
@@ -421,6 +379,8 @@ namespace NetPrintsEditor.ViewModels
                 }
             }
         }
+
+        private NodeGraph graph;
 
         private void OnNodeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -440,7 +400,7 @@ namespace NetPrintsEditor.ViewModels
                 addedNodes.ToList().ForEach(n => SetupNodeConnections(n, true));
             }
 
-            OnPropertyChanged(nameof(AllPins));
+            RaisePropertyChanged(nameof(AllPins));
         }
 
         private void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -467,7 +427,7 @@ namespace NetPrintsEditor.ViewModels
                 addedPins.ToList().ForEach(p => SetupPinEvents(p, true));
             }
 
-            OnPropertyChanged(nameof(AllPins));
+            RaisePropertyChanged(nameof(AllPins));
         }
 
         private void OnInputDataPinIncomingPinChanged(NodeInputDataPin pin, NodeOutputDataPin oldPin, NodeOutputDataPin newPin)
@@ -508,7 +468,7 @@ namespace NetPrintsEditor.ViewModels
             {
                 List<NodePinVM> pins = new List<NodePinVM>();
 
-                if (Method != null)
+                if (Graph != null)
                 {
                     foreach (NodeVM node in Nodes)
                     {
@@ -525,20 +485,38 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        private Method method;
-
-        public MethodVM(Method method)
+        /// <summary>
+        /// Sends a message to deselect all nodes and select the given nodes.
+        /// </summary>
+        /// <param name="nodes">Nodes to be selected.</param>
+        public void SelectNodes(IEnumerable<NodeVM> nodes)
         {
-            Method = method;
+            MessengerInstance.Send(new NodeSelectionMessage(nodes, true));
         }
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        /// <summary>
+        /// Sends a message to deselect all nodes.
+        /// </summary>
+        public void DeselectNodes()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            MessengerInstance.Send(NodeSelectionMessage.DeselectAll);
         }
-        #endregion
+
+        public NodeGraphVM(NodeGraph graph)
+        {
+            Graph = graph;
+
+            MessengerInstance.Register<NodeSelectionMessage>(this, OnNodeSelectionReceived);
+        }
+
+        private void OnNodeSelectionReceived(NodeSelectionMessage msg)
+        {
+            if (msg.DeselectPrevious)
+            {
+                SelectedNodes = new NodeVM[0] { };
+            }
+
+            SelectedNodes = SelectedNodes.Concat(msg.Nodes).Distinct();
+        }
     }
 }

@@ -84,10 +84,10 @@ namespace NetPrints.Graph
         /// <summary>
         /// Creates a new node representing the creation of an array.
         /// </summary>
-        /// <param name="method">Method the node is part of.</param>
+        /// <param name="graph">Graph the node is part of.</param>
         /// <param name="elementType">Type specifier for the elements of the array.</param>
-        public MakeArrayNode(Method method)
-            : base(method)
+        public MakeArrayNode(NodeGraph graph)
+            : base(graph)
         {
             AddInputTypePin("ElementType");
             AddOutputDataPin("Array", ArrayType);

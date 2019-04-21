@@ -131,7 +131,7 @@ namespace NetPrintsEditor.Controls
                 }
                 else if (data.Value is MakeDelegateTypeInfo makeDelegateTypeInfo)
                 {
-                    var methods = ProjectVM.Instance.ReflectionProvider.GetMethods(
+                    var methods = App.ReflectionProvider.GetMethods(
                         new Reflection.ReflectionProviderMethodQuery()
                         .WithType(makeDelegateTypeInfo.Type)
                         .WithVisibleFrom(makeDelegateTypeInfo.FromType));
@@ -192,7 +192,7 @@ namespace NetPrintsEditor.Controls
 
                             // Get all public constructors for the type
                             IEnumerable<ConstructorSpecifier> constructors =
-                                ProjectVM.Instance.ReflectionProvider.GetConstructors(selectedType);
+                                App.ReflectionProvider.GetConstructors(selectedType);
 
                             if (constructors?.Any() == true)
                             {

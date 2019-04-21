@@ -1,6 +1,5 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
-using NetPrintsEditor.Compilation;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Globalization;
@@ -12,17 +11,17 @@ namespace NetPrintsEditor.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Method method)
+            if (value is NodeGraph graph)
             {
-                return new MethodVM(method);
+                return new NodeGraphVM(graph);
             }
             else if (value is Node node)
             {
                 return new NodeVM(node);
             }
-            else if (value is Class cls)
+            else if (value is ClassGraph cls)
             {
-                return new ClassVM(cls);
+                return new ClassEditorVM(cls);
             }
             else if (value is NodePin pin)
             {

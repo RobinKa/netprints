@@ -157,15 +157,15 @@ namespace NetPrints.Translator
         }
 
         /// <summary>
-        /// Gets all nodes contained in a method.
+        /// Gets all nodes contained in a graph.
         /// </summary>
-        /// <param name="method">Method containing the nodes.</param>
-        /// <returns>Nodes contained in the method.</returns>
-        public static IEnumerable<Node> GetAllNodesInMethod(Method method)
+        /// <param name="graph">Graph containing the nodes.</param>
+        /// <returns>Nodes contained in the graph.</returns>
+        public static IEnumerable<Node> GetAllNodesInExecGraph(ExecutionGraph graph)
         {
             HashSet<Node> nodes = new HashSet<Node>();
 
-            AddAllNodes(method.EntryNode, ref nodes);
+            AddAllNodes(graph.EntryNode, ref nodes);
 
             return nodes;
         }
@@ -184,15 +184,15 @@ namespace NetPrints.Translator
         }
 
         /// <summary>
-        /// Gets all execution contained nodes in a method
+        /// Gets all execution contained nodes in a graph
         /// </summary>
-        /// <param name="method">Method containing the execution nodes.</param>
-        /// <returns>Execution nodes contained in them ethod.</returns>
-        public static IEnumerable<Node> GetExecNodesInMethod(Method method)
+        /// <param name="graph">Graph containing the execution nodes.</param>
+        /// <returns>Execution nodes contained in the graph.</returns>
+        public static IEnumerable<Node> GetExecNodesInExecGraph(ExecutionGraph graph)
         {
             HashSet<Node> nodes = new HashSet<Node>();
 
-            AddExecNodes(method.EntryNode, ref nodes);
+            AddExecNodes(graph.EntryNode, ref nodes);
 
             return nodes;
         }

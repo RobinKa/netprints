@@ -22,14 +22,14 @@ namespace NetPrintsEditor.Controls
     {
         public const double GridCellSize = 28;
 
-        public MethodVM Method
+        public NodeGraphVM Graph
         {
-            get => GetValue(MethodProperty) as MethodVM;
+            get => GetValue(MethodProperty) as NodeGraphVM;
             set => SetValue(MethodProperty, value);
         }
 
         public static DependencyProperty MethodProperty = DependencyProperty.Register(
-            nameof(Method), typeof(MethodVM), typeof(MethodEditorControl));
+            nameof(Graph), typeof(NodeGraphVM), typeof(MethodEditorControl));
 
         public static DependencyProperty SuggestionsProperty = DependencyProperty.Register(
             nameof(Suggestions), typeof(IEnumerable<SearchableComboBoxItem>), typeof(MethodEditorControl));
@@ -76,11 +76,11 @@ namespace NetPrintsEditor.Controls
             // Use current mouse position if position is not set
             Point pos = position ?? Mouse.GetPosition(drawCanvas);
 
-            Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf = ProjectVM.Instance.ReflectionProvider.TypeSpecifierIsSubclassOf;
+            Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf = App.ReflectionProvider.TypeSpecifierIsSubclassOf;
 
             variableGetSet.VariableSpecifier = variableSpecifier;
-            variableGetSet.CanGet = NetPrintsUtil.IsVisible(Method.Class.Type, variableSpecifier.DeclaringType, variableSpecifier.GetterVisibility, isSubclassOf);
-            variableGetSet.CanSet = NetPrintsUtil.IsVisible(Method.Class.Type, variableSpecifier.DeclaringType, variableSpecifier.SetterVisibility, isSubclassOf);
+            variableGetSet.CanGet = NetPrintsUtil.IsVisible(Graph.Class.Type, variableSpecifier.DeclaringType, variableSpecifier.GetterVisibility, isSubclassOf);
+            variableGetSet.CanSet = NetPrintsUtil.IsVisible(Graph.Class.Type, variableSpecifier.DeclaringType, variableSpecifier.SetterVisibility, isSubclassOf);
 
             Canvas.SetLeft(variableGetSet, pos.X - variableGetSet.Width / 2);
             Canvas.SetTop(variableGetSet, pos.Y - variableGetSet.Height / 2);
@@ -111,7 +111,7 @@ namespace NetPrintsEditor.Controls
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(VariableSetterNode), Method.Method, position.X, position.Y,
+                    typeof(VariableSetterNode), Graph.Graph, position.X, position.Y,
                     variableSpecifier
                 ));
             }
@@ -122,7 +122,7 @@ namespace NetPrintsEditor.Controls
 
                 UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                 (
-                    typeof(VariableGetterNode), Method.Method, position.X, position.Y,
+                    typeof(VariableGetterNode), Graph.Graph, position.X, position.Y,
                     variableSpecifier
                 ));
             }
@@ -132,11 +132,11 @@ namespace NetPrintsEditor.Controls
 
         private void OnGridDrop(object sender, DragEventArgs e)
         {
-            if (Method != null)
+            if (Graph != null)
             {
-                if (e.Data.GetDataPresent(typeof(VariableVM)))
+                if (e.Data.GetDataPresent(typeof(MemberVariableVM)))
                 {
-                    VariableVM variable = e.Data.GetData(typeof(VariableVM)) as VariableVM;
+                    MemberVariableVM variable = e.Data.GetData(typeof(MemberVariableVM)) as MemberVariableVM;
 
                     ShowVariableGetSet(variable.Specifier, e.GetPosition(drawCanvas));
 
@@ -161,35 +161,38 @@ namespace NetPrintsEditor.Controls
                         if (odp.PinType.Value is TypeSpecifier pinTypeSpec)
                         {
                             // Add make delegate
-                            AddSuggestionsWithCategory("NetPrints", new[] { new MakeDelegateTypeInfo(pinTypeSpec, Method.Class.Type) });
+                            AddSuggestionsWithCategory("NetPrints", new[] { new MakeDelegateTypeInfo(pinTypeSpec, Graph.Class.Type) });
 
                             // Add variables and methods of the pin type
                             AddSuggestionsWithCategory("Pin Variables",
-                                ProjectVM.Instance.ReflectionProvider.GetVariables(
+                                App.ReflectionProvider.GetVariables(
                                     new ReflectionProviderVariableQuery()
                                         .WithType(pinTypeSpec)
-                                        .WithVisibleFrom(Method.Class.Type)
+                                        .WithVisibleFrom(Graph.Class.Type)
                                         .WithStatic(false)));
 
-                            AddSuggestionsWithCategory("Pin Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            AddSuggestionsWithCategory("Pin Methods", App.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
-                                    .WithVisibleFrom(Method.Class.Type)
+                                    .WithVisibleFrom(Graph.Class.Type)
                                     .WithStatic(false)
                                     .WithType(pinTypeSpec)));
 
-                            // Add methods of the super type that can accept the pin type as argument
-                            AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
-                                new ReflectionProviderMethodQuery()
-                                    .WithVisibleFrom(Method.Class.Type)
-                                    .WithStatic(false)
-                                    .WithArgumentType(pinTypeSpec)
-                                    .WithType(Method.Class.SuperType)));
+                            // Add methods of the base types that can accept the pin type as argument
+                            foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                            {
+                                AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                                    new ReflectionProviderMethodQuery()
+                                        .WithVisibleFrom(Graph.Class.Type)
+                                        .WithStatic(false)
+                                        .WithArgumentType(pinTypeSpec)
+                                        .WithType(baseType)));
+                            }
 
                             // Add static functions taking the type of the pin
-                            AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithArgumentType(pinTypeSpec)
-                                    .WithVisibleFrom(Method.Class.Type)
+                                    .WithVisibleFrom(Graph.Class.Type)
                                     .WithStatic(true)));
                         }
                     }
@@ -197,18 +200,21 @@ namespace NetPrintsEditor.Controls
                     {
                         if (idp.PinType.Value is TypeSpecifier pinTypeSpec)
                         {
-                            // Variables of base class that inherit from needed type
-                            AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
-                                new ReflectionProviderVariableQuery()
-                                    .WithType(Method.Class.SuperType)
-                                    .WithVisibleFrom(Method.Class.Type)
-                                    .WithVariableType(pinTypeSpec, true)));
+                            // Variables of base classes that inherit from needed type
+                            foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                            {
+                                AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
+                                    new ReflectionProviderVariableQuery()
+                                        .WithType(baseType)
+                                        .WithVisibleFrom(Graph.Class.Type)
+                                        .WithVariableType(pinTypeSpec, true)));
+                            }
 
                             // Add static functions returning the type of the pin
-                            AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                            AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                                 new ReflectionProviderMethodQuery()
                                     .WithStatic(true)
-                                    .WithVisibleFrom(Method.Class.Type)
+                                    .WithVisibleFrom(Graph.Class.Type)
                                     .WithReturnType(pinTypeSpec)));
                         }
                     }
@@ -218,58 +224,64 @@ namespace NetPrintsEditor.Controls
 
                         AddSuggestionsWithCategory("NetPrints", builtInNodes);
 
-                        AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
-                            new ReflectionProviderMethodQuery()
-                                .WithType(Method.Class.SuperType)
-                                .WithStatic(false)
-                                .WithVisibleFrom(Method.Class.Type)));
+                        foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                        {
+                            AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                                new ReflectionProviderMethodQuery()
+                                    .WithType(baseType)
+                                    .WithStatic(false)
+                                    .WithVisibleFrom(Graph.Class.Type)));
+                        }
 
-                        AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                        AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
-                                .WithVisibleFrom(Method.Class.Type)));
+                                .WithVisibleFrom(Graph.Class.Type)));
                     }
                     else if (pin.Pin is NodeInputExecPin ixp)
                     {
                         AddSuggestionsWithCategory("NetPrints", builtInNodes);
 
-                        AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                        foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                        {
+                            AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
-                                .WithType(Method.Class.SuperType)
+                                .WithType(baseType)
                                 .WithStatic(false)
-                                .WithVisibleFrom(Method.Class.Type)));
+                                .WithVisibleFrom(Graph.Class.Type)));
+                        }
 
-                        AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                        AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                             new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
-                                .WithVisibleFrom(Method.Class.Type)));
+                                .WithVisibleFrom(Graph.Class.Type)));
                     }
                     else if (pin.Pin is NodeInputTypePin itp)
                     {
                         // TODO: Consider static types
-                        AddSuggestionsWithCategory("Types", ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes());
+                        AddSuggestionsWithCategory("Types", App.ReflectionProvider.GetNonStaticTypes());
                     }
                     else if (pin.Pin is NodeOutputTypePin otp)
                     {
                         if (otp.InferredType.Value is TypeSpecifier typeSpecifier)
                         {
-                            AddSuggestionsWithCategory("Pin Static Methods", ProjectVM.Instance.ReflectionProvider
+                            AddSuggestionsWithCategory("Pin Static Methods", App.ReflectionProvider
                                 .GetMethods(new ReflectionProviderMethodQuery()
                                     .WithType(typeSpecifier)
                                     .WithStatic(true)
-                                    .WithVisibleFrom(Method.Class.Type)));
+                                    .WithVisibleFrom(Graph.Class.Type)));
                         }
 
                         // Types with type parameters
-                        AddSuggestionsWithCategory("Generic Types", ProjectVM.Instance.ReflectionProvider.GetNonStaticTypes()
+                        AddSuggestionsWithCategory("Generic Types", App.ReflectionProvider.GetNonStaticTypes()
                             .Where(t => t.GenericArguments.Any()));
 
                         // Public static methods that have type parameters
-                        AddSuggestionsWithCategory("Generic Static Methods", ProjectVM.Instance.ReflectionProvider
+                        AddSuggestionsWithCategory("Generic Static Methods", App.ReflectionProvider
                             .GetMethods(new ReflectionProviderMethodQuery()
                                 .WithStatic(true)
                                 .WithHasGenericArguments(true)
-                                .WithVisibleFrom(Method.Class.Type)));
+                                .WithVisibleFrom(Graph.Class.Type)));
                     }
                     else
                     {
@@ -284,10 +296,10 @@ namespace NetPrintsEditor.Controls
 
                     e.Handled = true;
                 }
-                else if (e.Data.GetDataPresent(typeof(MethodVM)))
+                else if (e.Data.GetDataPresent(typeof(NodeGraphVM)))
                 {
                     Point mousePosition = e.GetPosition(methodEditorWindow);
-                    MethodVM method = e.Data.GetData(typeof(MethodVM)) as MethodVM;
+                    NodeGraphVM method = e.Data.GetData(typeof(NodeGraphVM)) as NodeGraphVM;
 
                     if (method.IsConstructor)
                     {
@@ -302,7 +314,7 @@ namespace NetPrintsEditor.Controls
 
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
-                            typeof(ConstructorNode), Method.Method, mousePosition.X, mousePosition.Y,
+                            typeof(ConstructorNode), Graph.Graph, mousePosition.X, mousePosition.Y,
                             constructorSpecifier
                         ));
                     }
@@ -320,7 +332,7 @@ namespace NetPrintsEditor.Controls
 
                         UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
                         (
-                            typeof(CallMethodNode), Method.Method, mousePosition.X, mousePosition.Y,
+                            typeof(CallMethodNode), Graph.Graph, mousePosition.X, mousePosition.Y,
                             methodSpecifier,
                             Array.Empty<GenericType>()
                         ));
@@ -335,9 +347,9 @@ namespace NetPrintsEditor.Controls
         {
             e.Effects = DragDropEffects.None;
 
-            if (Method != null)
+            if (Graph != null)
             {
-                if (e.Data.GetDataPresent(typeof(VariableVM)))
+                if (e.Data.GetDataPresent(typeof(MemberVariableVM)))
                 {
                     e.Effects = DragDropEffects.Copy;
                     e.Handled = true;
@@ -351,7 +363,7 @@ namespace NetPrintsEditor.Controls
                     e.Effects = DragDropEffects.Link;
                     e.Handled = true;
                 }
-                else if (e.Data.GetDataPresent(typeof(MethodVM)))
+                else if (e.Data.GetDataPresent(typeof(NodeGraphVM)))
                 {
                     e.Effects = DragDropEffects.Copy;
                     e.Handled = true;
@@ -368,32 +380,35 @@ namespace NetPrintsEditor.Controls
                 suggestions = suggestions.Concat(newSuggestions.Select(suggestion => (category, suggestion)));
             }
 
-            if (Method != null)
+            if (Graph != null)
             {
                 AddSuggestionsWithCategory("NetPrints", builtInNodes);
 
                 // Get properties and methods of base class.
-                AddSuggestionsWithCategory("This Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
+                foreach (var baseType in Graph.Class.Class.AllBaseTypes)
+                {
+                    AddSuggestionsWithCategory("This Variables", App.ReflectionProvider.GetVariables(
                     new ReflectionProviderVariableQuery()
-                        .WithVisibleFrom(Method.Class.Type)
-                        .WithType(Method.Class.SuperType)
+                        .WithVisibleFrom(Graph.Class.Type)
+                        .WithType(baseType)
                         .WithStatic(false)));
 
-                AddSuggestionsWithCategory("This Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
-                    new ReflectionProviderMethodQuery()
-                        .WithType(Method.Class.SuperType)
-                        .WithVisibleFrom(Method.Class.Type)
-                        .WithStatic(false)));
+                    AddSuggestionsWithCategory("This Methods", App.ReflectionProvider.GetMethods(
+                        new ReflectionProviderMethodQuery()
+                            .WithType(baseType)
+                            .WithVisibleFrom(Graph.Class.Type)
+                            .WithStatic(false)));
+                }
 
-                AddSuggestionsWithCategory("Static Methods", ProjectVM.Instance.ReflectionProvider.GetMethods(
+                AddSuggestionsWithCategory("Static Methods", App.ReflectionProvider.GetMethods(
                     new ReflectionProviderMethodQuery()
                         .WithStatic(true)
-                        .WithVisibleFrom(Method.Class.Type)));
+                        .WithVisibleFrom(Graph.Class.Type)));
 
-                AddSuggestionsWithCategory("Static Variables", ProjectVM.Instance.ReflectionProvider.GetVariables(
+                AddSuggestionsWithCategory("Static Variables", App.ReflectionProvider.GetVariables(
                     new ReflectionProviderVariableQuery()
                         .WithStatic(true)
-                        .WithVisibleFrom(Method.Class.Type)));
+                        .WithVisibleFrom(Graph.Class.Type)));
             }
             else
             {
@@ -423,9 +438,9 @@ namespace NetPrintsEditor.Controls
             set
             {
                 drawCanvasScale = value;
-                if (Method != null)
+                if (Graph != null)
                 {
-                    Method.NodeDragScale = 1 / drawCanvasScale;
+                    Graph.NodeDragScale = 1 / drawCanvasScale;
                 }
             }
         }
@@ -437,7 +452,7 @@ namespace NetPrintsEditor.Controls
 
         private void SelectWithinRectangle(Rect rectangle)
         {
-            if (Method != null)
+            if (Graph != null)
             {
                 var selectedNodes = new List<NodeVM>();
 
@@ -448,8 +463,8 @@ namespace NetPrintsEditor.Controls
                     var nodeControl = (ContentPresenter)nodeList.ItemContainerGenerator.ContainerFromIndex(i);
                     NodeVM node = (NodeVM)nodeControl.Content;
 
-                    double nodeX = node.PositionX;
-                    double nodeY = node.PositionY;
+                    double nodeX = node.Node.PositionX;
+                    double nodeY = node.Node.PositionY;
                     double nodeWidth = nodeControl.ActualWidth;
                     double nodeHeight = nodeControl.ActualHeight;
 
@@ -459,16 +474,16 @@ namespace NetPrintsEditor.Controls
                     }
                 }
 
-                Method.SelectedNodes = selectedNodes;
+                Graph.SelectNodes(selectedNodes);
             }
         }
 
         private void OnDrawCanvasLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
             // Deselect node
-            if (Method?.SelectedNodes != null)
+            if (Graph?.SelectedNodes != null)
             {
-                Method.SelectedNodes = null;
+                Graph.DeselectNodes();
             }
 
             boxSelect = true;

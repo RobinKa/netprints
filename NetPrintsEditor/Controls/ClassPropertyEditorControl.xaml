@@ -9,7 +9,7 @@
             xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
             xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
             mc:Ignorable="d" 
-            d:DesignHeight="300" d:DesignWidth="300" x:Name="wnd">
+            d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converters:ClassModifierConverter x:Key="classModifierConverter" />
 
@@ -33,12 +33,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Label FontSize="24px" HorizontalContentAlignment="Center">
-            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding ElementName=wnd, Path=Class.Name}" />
+            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
         </Label>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -54,36 +53,29 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Content="Name" />
-            <TextBox Grid.Column="1" Text="{Binding Class.Name, ElementName=wnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Column="1" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="1" Content="Namespace" />
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Class.Namespace, ElementName=wnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Namespace, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="2" Content="Visibility" />
             <ComboBox Grid.Row="2" Grid.Column="1"
-                      SelectedItem="{Binding Path=Class.Visibility, ElementName=wnd}"
-                      ItemsSource="{Binding Path=Class.PossibleVisibilities, ElementName=wnd}"/>
+                      SelectedItem="{Binding Visibility}"
+                      ItemsSource="{Binding PossibleVisibilities}"/>
 
             <Label Grid.Row="3" Content="Sealed" />
-            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Sealed}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Sealed}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="4" Content="Abstract" />
-            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Abstract}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Abstract}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="5" Content="Static" />
-            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Static}}" VerticalContentAlignment="Center" />
+            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Static}}" VerticalContentAlignment="Center" />
 
             <Label Grid.Row="6" Content="Partial" />
-            <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding ElementName=wnd, Path=Class.Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Partial}}" VerticalContentAlignment="Center" />
-            
-            <Label Grid.Row="7" Content="Base Type" />
-            <ComboBox Grid.Row="7" Grid.Column="1"
-                      IsEditable="True"
-                      Text="{Binding Class.SuperType, ElementName=wnd, Mode=OneWay}" 
-                      SelectedItem="{Binding Class.SuperType, ElementName=wnd, Mode=TwoWay}" 
-                      ItemsSource="{Binding Source={x:Static npevm:ProjectVM.Instance}, Path=NonStaticTypes}"/>
+            <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding Modifiers, Converter={StaticResource classModifierConverter}, ConverterParameter={x:Static npc:ClassModifiers.Partial}}" VerticalContentAlignment="Center" />
 
-            <TextBox Margin="4" Grid.Row="8" Grid.ColumnSpan="2" Text="{Binding ElementName=wnd, Path=Class.GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
+            <TextBox Margin="4" Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding GeneratedCode}" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" />
         </Grid>
     </Grid>
 </UserControl>
