@@ -28,12 +28,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <CollectionViewSource x:Key="itemsSource" Source="{Binding ElementName=ctrl, Path=Items}">
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="Category" />
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
     </UserControl.Resources>
     
     <Border BorderBrush="#FF222222" Background="#DD333333" BorderThickness="2" CornerRadius="4">
@@ -45,7 +39,7 @@
 
             <TextBox Background="Transparent" x:Name="searchText" TextChanged="OnSearchTextChanged" />
 
-            <DataGrid Background="Transparent" x:Name="searchList" Grid.Row="1" ItemsSource="{Binding Source={StaticResource itemsSource}}"
+            <DataGrid Background="Transparent" x:Name="searchList" Grid.Row="1"
                 HeadersVisibility="None" Foreground="#FFC9C9C9" AutoGenerateColumns="False" IsReadOnly="True"
                 VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                 VirtualizingPanel.IsVirtualizing="True"

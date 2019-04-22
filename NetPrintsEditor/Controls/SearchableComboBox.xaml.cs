@@ -6,6 +6,7 @@ using NetPrintsEditor.Dialogs;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -48,11 +49,27 @@ namespace NetPrintsEditor.Controls
             set
             {
                 SetValue(ItemsProperty, value);
+                UpdateItems();
+            }
+        }
 
-                if (searchList.Items.CanFilter)
+        private ListCollectionView ListView
+        {
+            get => searchList.ItemsSource as ListCollectionView;
+            set => searchList.ItemsSource = value;
+        }
+
+        private void UpdateItems()
+        {
+            if (Items != null)
+            {
+                ListView = new ListCollectionView(Items.ToList());
+                ListView.GroupDescriptions.Add(new PropertyGroupDescription("Category"));
+                if (ListView.CanFilter)
                 {
-                    searchList.Items.Filter = Filter;
+                    ListView.Filter = Filter;
                 }
+                searchList.ItemsSource = ListView;
             }
         }
 
@@ -62,10 +79,9 @@ namespace NetPrintsEditor.Controls
 
             suggestionConverter = new SuggestionListConverter();
 
-            if (searchList.Items.CanFilter)
-            {
-                searchList.Items.Filter = Filter;
-            }
+            // Setup items changed event
+            var descriptor = DependencyPropertyDescriptor.FromProperty(ItemsProperty, typeof(SearchableComboBox));
+            descriptor.AddValueChanged(this, (sender, e) => UpdateItems());
         }
 
         private bool Filter(object item)
@@ -89,10 +105,7 @@ namespace NetPrintsEditor.Controls
 
         private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (searchList.ItemsSource != null)
-            {
-                CollectionViewSource.GetDefaultView(searchList.ItemsSource).Refresh();
-            }
+            ListView?.Refresh();
         }
 
         private void OnListItemSelected(object sender, MouseButtonEventArgs e)
