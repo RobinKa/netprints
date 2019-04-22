@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NetPrints.Translator
 {
@@ -43,6 +44,7 @@ namespace NetPrints.Translator
             { typeof(ConstructorNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateConstructorNode(node as ConstructorNode) } },
             { typeof(ExplicitCastNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateExplicitCastNode(node as ExplicitCastNode) } },
             { typeof(ThrowNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateThrowNode(node as ThrowNode) } },
+            { typeof(AwaitNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateAwaitNode(node as AwaitNode) } },
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
@@ -190,6 +192,11 @@ namespace NetPrints.Translator
             if (methodGraph != null)
             {
                 // Write modifiers
+                if (methodGraph.Modifiers.HasFlag(MethodModifiers.Async))
+                {
+                    builder.Append("async ");
+                }
+
                 if (methodGraph.Modifiers.HasFlag(MethodModifiers.Static))
                 {
                     builder.Append("static ");
@@ -704,6 +711,24 @@ namespace NetPrints.Translator
             builder.AppendLine($"throw {GetPinIncomingValue(node.ExceptionPin)};");
         }
 
+        public void TranslateAwaitNode(AwaitNode node)
+        {
+            if (!node.IsPure)
+            {
+                // Translate all the pure nodes this node depends on in
+                // the correct order
+                TranslateDependentPureNodes(node);
+            }
+
+            // Store result if task has a return value.
+            if (node.ResultPin != null)
+            {
+                builder.Append($"{GetOrCreatePinName(node.ResultPin)} = ");
+            }
+
+            builder.AppendLine($"await {GetPinIncomingValue(node.TaskPin)};");
+        }
+
         public void TranslateVariableSetterNode(VariableSetterNode node)
         {
             // Translate all the pure nodes this node depends on in
@@ -772,7 +797,15 @@ namespace NetPrints.Translator
             }
             else if (node.InputDataPins.Count == 1)
             {
-                builder.AppendLine($"return {GetPinIncomingValue(node.InputDataPins[0])};");
+                // Special case for async functions returning Task (no return value)
+                if (node.InputDataPins[0].PinType == TypeSpecifier.FromType<Task>())
+                {
+                    builder.AppendLine("return;");
+                }
+                else
+                {
+                    builder.AppendLine($"return {GetPinIncomingValue(node.InputDataPins[0])};");
+                }
             }
             else
             {

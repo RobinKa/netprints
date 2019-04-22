@@ -18,6 +18,7 @@ namespace NetPrints.Core
         Static = 32,
         Virtual = 64,
         Override = 128,
+        Async = 256,
 
         // DEPRECATED
         // Moved to MethodVisibility

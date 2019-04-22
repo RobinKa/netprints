@@ -334,6 +334,16 @@ namespace NetPrintsEditor.Controls
                             0
                         ));
                     }
+                    else if (t == TypeSpecifier.FromType<AwaitNode>())
+                    {
+                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        (
+                            typeof(AwaitNode),
+                            null,
+                            0,
+                            0
+                        ));
+                    }
                     else
                     {
                         // Build a type node

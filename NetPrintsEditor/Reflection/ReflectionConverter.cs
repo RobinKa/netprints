@@ -156,6 +156,11 @@ namespace NetPrintsEditor.Reflection
                 modifiers |= MethodModifiers.Override;
             }
 
+            if (method.IsAsync)
+            {
+                modifiers |= MethodModifiers.Async;
+            }
+
             BaseType[] returnTypes = method.ReturnsVoid ?
                 new BaseType[] { } :
                 new BaseType[] { BaseTypeSpecifierFromSymbol(method.ReturnType) };

@@ -28,6 +28,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -56,6 +57,9 @@
 
             <Label Visibility="{Binding IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="6" Content="Override" />
             <CheckBox Visibility="{Binding IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="6" Grid.Column="1" IsChecked="{Binding Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Override}}" VerticalContentAlignment="Center" />
+
+            <Label Visibility="{Binding IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="7" Content="Async" />
+            <CheckBox Visibility="{Binding IsConstructor, Converter={StaticResource InvBoolToVis}}" Grid.Row="7" Grid.Column="1" IsChecked="{Binding Modifiers, Converter={StaticResource methodModifierConverter}, ConverterParameter={x:Static npc:MethodModifiers.Async}}" VerticalContentAlignment="Center" />
         </Grid>
     </StackPanel>
 </UserControl>

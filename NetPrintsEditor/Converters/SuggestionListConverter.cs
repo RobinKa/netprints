@@ -95,6 +95,11 @@ namespace NetPrintsEditor.Converters
                     text = "Throw";
                     iconPath = "Throw_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<AwaitNode>())
+                {
+                    text = "Await";
+                    iconPath = "Task_16x.png";
+                }
                 else
                 {
                     text = t.FullCodeName;
