@@ -5,6 +5,7 @@ using NetPrintsEditor.Controls;
 using NetPrintsEditor.Dialogs;
 using NetPrintsEditor.Messages;
 using NetPrintsEditor.Reflection;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -23,21 +24,52 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public NodePin SuggestionPin { get; set; }
 
-        private readonly List<object> builtInNodes = new List<object>()
+        private readonly Dictionary<Type, List<object>> builtInNodes = new Dictionary<Type, List<object>>()
         {
-            TypeSpecifier.FromType<ForLoopNode>(),
-            TypeSpecifier.FromType<IfElseNode>(),
-            TypeSpecifier.FromType<ConstructorNode>(),
-            TypeSpecifier.FromType<TypeOfNode>(),
-            TypeSpecifier.FromType<ExplicitCastNode>(),
-            TypeSpecifier.FromType<ReturnNode>(),
-            TypeSpecifier.FromType<MakeArrayNode>(),
-            TypeSpecifier.FromType<LiteralNode>(),
-            TypeSpecifier.FromType<TypeNode>(),
-            TypeSpecifier.FromType<MakeArrayTypeNode>(),
-            TypeSpecifier.FromType<ThrowNode>(),
-            TypeSpecifier.FromType<AwaitNode>(),
+            [typeof(MethodGraph)] = new List<object>()
+            {
+                TypeSpecifier.FromType<ForLoopNode>(),
+                TypeSpecifier.FromType<IfElseNode>(),
+                TypeSpecifier.FromType<ConstructorNode>(),
+                TypeSpecifier.FromType<TypeOfNode>(),
+                TypeSpecifier.FromType<ExplicitCastNode>(),
+                TypeSpecifier.FromType<ReturnNode>(),
+                TypeSpecifier.FromType<MakeArrayNode>(),
+                TypeSpecifier.FromType<LiteralNode>(),
+                TypeSpecifier.FromType<TypeNode>(),
+                TypeSpecifier.FromType<MakeArrayTypeNode>(),
+                TypeSpecifier.FromType<ThrowNode>(),
+                TypeSpecifier.FromType<AwaitNode>(),
+            },
+            [typeof(ConstructorGraph)] = new List<object>()
+            {
+                TypeSpecifier.FromType<ForLoopNode>(),
+                TypeSpecifier.FromType<IfElseNode>(),
+                TypeSpecifier.FromType<ConstructorNode>(),
+                TypeSpecifier.FromType<TypeOfNode>(),
+                TypeSpecifier.FromType<ExplicitCastNode>(),
+                TypeSpecifier.FromType<MakeArrayNode>(),
+                TypeSpecifier.FromType<LiteralNode>(),
+                TypeSpecifier.FromType<TypeNode>(),
+                TypeSpecifier.FromType<MakeArrayTypeNode>(),
+                TypeSpecifier.FromType<ThrowNode>(),
+            },
+            [typeof(ClassGraph)] = new List<object>()
+            {
+                TypeSpecifier.FromType<TypeNode>(),
+                TypeSpecifier.FromType<MakeArrayTypeNode>(),
+            },
         };
+
+        private List<object> GetBuiltInNodes(NodeGraph graph)
+        {
+            if (builtInNodes.TryGetValue(graph.GetType(), out var nodes))
+            {
+                return nodes;
+            }
+
+            return new List<object>();
+        }
 
         public void UpdateSuggestions()
         {
@@ -117,7 +149,7 @@ namespace NetPrintsEditor.ViewModels
                 {
                     GraphUtil.DisconnectOutputExecPin(oxp);
 
-                    AddSuggestionsWithCategory("NetPrints", builtInNodes);
+                    AddSuggestionsWithCategory("NetPrints", GetBuiltInNodes(Graph));
 
                     foreach (var baseType in Graph.Class.AllBaseTypes)
                     {
@@ -135,7 +167,7 @@ namespace NetPrintsEditor.ViewModels
                 }
                 else if (SuggestionPin is NodeInputExecPin ixp)
                 {
-                    AddSuggestionsWithCategory("NetPrints", builtInNodes);
+                    AddSuggestionsWithCategory("NetPrints", GetBuiltInNodes(Graph));
 
                     foreach (var baseType in Graph.Class.AllBaseTypes)
                     {
@@ -186,10 +218,10 @@ namespace NetPrintsEditor.ViewModels
             }
             else
             {
+                AddSuggestionsWithCategory("NetPrints", GetBuiltInNodes(Graph));
+
                 if (Graph is ExecutionGraph)
                 {
-                    AddSuggestionsWithCategory("NetPrints", builtInNodes);
-
                     // Get properties and methods of base class.
                     foreach (var baseType in Graph.Class.AllBaseTypes)
                     {
