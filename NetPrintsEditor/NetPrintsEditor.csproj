@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ClassEditorWindow.xaml" />
+    <None Remove="Controls\GraphEditorView.xaml" />
     <None Remove="Controls\MemberVariableView.xaml" />
     <None Remove="NetPrintsLogo.ico" />
     <None Remove="ReferenceListWindow.xaml" />

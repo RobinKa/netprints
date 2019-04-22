@@ -136,9 +136,9 @@ namespace NetPrintsEditor
                 viewerTabControl.SelectedIndex = 0;
             }
 
-            if (methodEditor.Graph?.Graph == memberVariableVM.Getter || methodEditor.Graph?.Graph == memberVariableVM.Setter)
+            if (graphEditor.Graph?.Graph == memberVariableVM.Getter || graphEditor.Graph?.Graph == memberVariableVM.Setter)
             {
-                methodEditor.Graph = null;
+                graphEditor.Graph = null;
             }
 
             ViewModel.Class.Variables.Remove(memberVariableVM.Variable);
@@ -204,7 +204,7 @@ namespace NetPrintsEditor
 
         private void CommandAddNode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is AddNodeParameters p && (p.Graph != null || methodEditor.Graph != null);
+            e.CanExecute = e.Parameter is AddNodeParameters p && (p.Graph != null || graphEditor.Graph != null);
         }
 
         private void CommandAddNode_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -213,10 +213,10 @@ namespace NetPrintsEditor
 
             if (p.Graph == null)
             {
-                p.Graph = methodEditor.Graph.Graph;
-                Point mouseLoc = Mouse.GetPosition(methodEditor.methodEditorWindow.drawCanvas);
-                p.PositionX = mouseLoc.X - mouseLoc.X % MethodEditorControl.GridCellSize;
-                p.PositionY = mouseLoc.Y - mouseLoc.Y % MethodEditorControl.GridCellSize;
+                p.Graph = graphEditor.Graph.Graph;
+                Point mouseLoc = Mouse.GetPosition(graphEditor.graphEditorWindow.drawCanvas);
+                p.PositionX = mouseLoc.X - mouseLoc.X % GraphEditorView.GridCellSize;
+                p.PositionY = mouseLoc.Y - mouseLoc.Y % GraphEditorView.GridCellSize;
             }
 
             // Make sure the node will on the canvas
@@ -233,13 +233,16 @@ namespace NetPrintsEditor
 
             // If the node was created as part of a suggestion, connect it
             // to the relevant node pin.
-            if (methodEditor?.SuggestionPin != null)
+            if (graphEditor?.Graph?.SuggestionPin != null)
             {
-                methodEditor.SuggestionPin.ConnectRelevant(node);
-                methodEditor.SuggestionPin = null;
+                GraphUtil.ConnectRelevantPins(graphEditor.Graph.SuggestionPin,
+                    node,App.ReflectionProvider.TypeSpecifierIsSubclassOf,
+                    App.ReflectionProvider.HasImplicitCast);
+
+                graphEditor.Graph.SuggestionPin = null;
             }
 
-            methodEditor.grid.ContextMenu.IsOpen = false;
+            graphEditor.grid.ContextMenu.IsOpen = false;
         }
 
         // Open Variable Get / Set
@@ -251,7 +254,7 @@ namespace NetPrintsEditor
 
         private void CommandOpenVariableGetSet_Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            methodEditor.ShowVariableGetSet((VariableSpecifier)e.Parameter);
+            graphEditor.ShowVariableGetSet((VariableSpecifier)e.Parameter);
         }
 
         // Change node overload
@@ -325,12 +328,12 @@ namespace NetPrintsEditor
             // Delete the currently selected node in the currently open method.
             // Only delete the node if it is not an entry or the main return node.
 
-            if (methodEditor?.Graph?.SelectedNodes != null)
+            if (graphEditor?.Graph?.SelectedNodes != null)
             {
-                foreach (var selectedNode in methodEditor.Graph.SelectedNodes)
+                foreach (var selectedNode in graphEditor.Graph.SelectedNodes)
                 {
                     if (!(selectedNode.Node is MethodEntryNode) && !(selectedNode.Node is ClassReturnNode)
-                        && selectedNode.Node != (methodEditor.Graph.Graph as MethodGraph)?.MainReturnNode)
+                        && selectedNode.Node != (graphEditor.Graph.Graph as MethodGraph)?.MainReturnNode)
                     {
                         // Remove the node from its method
                         // This will trigger the correct events in MethodVM
@@ -341,7 +344,7 @@ namespace NetPrintsEditor
                 }
 
                 // TODO: Use own VM instead of method editor graph vm
-                methodEditor.Graph.DeselectNodes();
+                graphEditor.Graph.DeselectNodes();
             }
         }
 
@@ -361,13 +364,13 @@ namespace NetPrintsEditor
         private void AddMethodButton_Click(object sender, RoutedEventArgs e)
         {
             string uniqueName = NetPrintsUtil.GetUniqueName("Method", ViewModel.Methods.Select(m => m.Name).ToList());
-            ViewModel.CreateMethod(uniqueName, MethodEditorControl.GridCellSize);
+            ViewModel.CreateMethod(uniqueName, GraphEditorView.GridCellSize);
         }
 
         // Add Constructor Button
         private void AddConstructorButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CreateConstructor(MethodEditorControl.GridCellSize);
+            ViewModel.CreateConstructor(GraphEditorView.GridCellSize);
         }
 
         // Add Variable Button
@@ -412,9 +415,9 @@ namespace NetPrintsEditor
                     viewerTabControl.SelectedIndex = 0;
                 }
 
-                if (methodEditor.Graph.Graph == m.Graph)
+                if (graphEditor.Graph.Graph == m.Graph)
                 {
-                    methodEditor.Graph = null;
+                    graphEditor.Graph = null;
                 }
 
                 if (m.Graph is MethodGraph methodGraph && ViewModel.Class.Methods.Contains(methodGraph))
@@ -426,12 +429,6 @@ namespace NetPrintsEditor
                     ViewModel.Class.Constructors.Remove(constructorGraph);
                 }
             }
-        }
-
-        private void OnMethodEditorClicked(object sender, MouseButtonEventArgs e)
-        {
-            viewerTabControl.SelectedIndex = 0;
-            classViewer.DataContext = ViewModel;
         }
 
         private void OnClassPropertiesClicked(object sender, RoutedEventArgs e)

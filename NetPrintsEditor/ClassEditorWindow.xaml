@@ -191,7 +191,7 @@
                     <RowDefinition Height="24" />
                 </Grid.RowDefinitions>
                 
-                <Controls:MethodEditorControl x:Name="methodEditor" Graph="{Binding OpenedGraph}" />
+                <Controls:GraphEditorView x:Name="graphEditor" DataContext="{Binding OpenedGraph}" />
 
                 <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 

@@ -457,5 +457,94 @@ namespace NetPrints.Graph
 
             return newMethod;
         }
+
+        /// <summary>
+        /// Connects a pin to the first possible pin of the passed node.
+        /// </summary>
+        /// <param name="pin">Pin to connect</param>
+        /// <param name="node">Node to connect the pin to.</param>
+        public static void ConnectRelevantPins(NodePin pin, Node node, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf,
+            Func<TypeSpecifier, TypeSpecifier, bool> hasImplicitCast)
+        {
+            if (pin is NodeInputExecPin ixp)
+            {
+                GraphUtil.ConnectExecPins(node.OutputExecPins[0], ixp);
+            }
+            else if (pin is NodeOutputExecPin oxp)
+            {
+                GraphUtil.ConnectExecPins(oxp, node.InputExecPins[0]);
+            }
+            else if (pin is NodeInputDataPin idp)
+            {
+                foreach (var otherOtp in node.OutputDataPins)
+                {
+                    if (GraphUtil.CanConnectNodePins(otherOtp, idp,isSubclassOf, hasImplicitCast))
+                    {
+                        GraphUtil.ConnectDataPins(otherOtp, idp);
+
+                        // Connect exec pins if possible.
+                        // Also forward the previous connection through the new node.
+                        if (pin.Node.InputExecPins.Count > 0 && node.OutputExecPins.Count > 0)
+                        {
+                            var oldConnected = pin.Node.InputExecPins[0].IncomingPins.FirstOrDefault();
+
+                            if (oldConnected != null)
+                            {
+                                GraphUtil.DisconnectOutputExecPin(oldConnected);
+                            }
+
+                            GraphUtil.ConnectExecPins(node.OutputExecPins[0], pin.Node.InputExecPins[0]);
+
+                            if (oldConnected != null && node.InputExecPins.Count > 0)
+                            {
+                                GraphUtil.ConnectExecPins(oldConnected, node.InputExecPins[0]);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+            else if (pin is NodeOutputDataPin odp)
+            {
+                foreach (var otherIdp in node.InputDataPins)
+                {
+                    if (GraphUtil.CanConnectNodePins(odp, otherIdp, isSubclassOf, hasImplicitCast))
+                    {
+                        GraphUtil.ConnectDataPins(odp, otherIdp);
+
+                        // Connect exec pins if possible.
+                        // Also forward the previous connection through the new node.
+                        if (node.InputExecPins.Count > 0 && pin.Node.OutputExecPins.Count > 0)
+                        {
+                            var oldConnected = pin.Node.OutputExecPins[0].OutgoingPin;
+
+                            GraphUtil.ConnectExecPins(pin.Node.OutputExecPins[0], node.InputExecPins[0]);
+
+                            if (oldConnected != null && node.OutputExecPins.Count > 0)
+                            {
+                                GraphUtil.ConnectExecPins(node.OutputExecPins[0], oldConnected);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+            else if (pin is NodeInputTypePin itp)
+            {
+                if (node.OutputTypePins.Count > 0)
+                {
+                    GraphUtil.ConnectTypePins(node.OutputTypePins[0], itp);
+                }
+            }
+            else if (pin is NodeOutputTypePin otp)
+            {
+                if (node.InputTypePins.Count > 0)
+                {
+                    GraphUtil.ConnectTypePins(otp, node.InputTypePins[0]);
+                }
+            }
+        }
     }
 }
