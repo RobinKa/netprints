@@ -16,7 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CSharpRuleSet.ruleset = CSharpRuleSet.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsCLI", "NetPrintsCLI\NetPrintsCLI.csproj", "{141EFA2F-E182-4767-8641-27840507EF8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetPrintsCLI", "NetPrintsCLI\NetPrintsCLI.csproj", "{141EFA2F-E182-4767-8641-27840507EF8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetPrintsVSIX", "NetPrintsVSIX\NetPrintsVSIX.csproj", "{F67E1137-28AA-44BD-A173-ECE01D50DC44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{141EFA2F-E182-4767-8641-27840507EF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{141EFA2F-E182-4767-8641-27840507EF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{141EFA2F-E182-4767-8641-27840507EF8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F67E1137-28AA-44BD-A173-ECE01D50DC44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F67E1137-28AA-44BD-A173-ECE01D50DC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F67E1137-28AA-44BD-A173-ECE01D50DC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F67E1137-28AA-44BD-A173-ECE01D50DC44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
