@@ -47,6 +47,7 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="NetPrintsEditorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NetPrintsVSIXPackage.cs" />
     <Compile Include="UserControl1.xaml.cs">
