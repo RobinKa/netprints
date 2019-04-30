@@ -24,16 +24,6 @@ namespace NetPrintsVSIX
                                         uint itemid, IntPtr punkDocDataExisting, out IntPtr ppunkDocView, out IntPtr ppunkDocData,
                                         out string pbstrEditorCaption, out Guid pguidCmdUI, out int pgrfCDW)
         {
-            /*ppunkDocView = IntPtr.Zero;
-            ppunkDocData = IntPtr.Zero;
-            pbstrEditorCaption = "";
-            pguidCmdUI = Guid.Empty;
-            pgrfCDW = 0;
-
-            System.Diagnostics.Process.Start(Environment.GetEnvironmentVariable(BinaryPathEnvVar), pszMkDocument);
-
-            return VSConstants.S_OK;*/
-
             // Initialize to null
             ppunkDocView = IntPtr.Zero;
             ppunkDocData = IntPtr.Zero;

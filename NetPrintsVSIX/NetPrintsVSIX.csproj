@@ -79,6 +79,7 @@
     <ProjectReference Include="..\NetPrintsEditor\NetPrintsEditor.csproj">
       <Project>{d967186e-1d97-4ced-bc7b-de5fba3d5989}</Project>
       <Name>NetPrintsEditor</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\NetPrints\NetPrints.csproj">
       <Project>{9f33e024-e65f-4954-9df2-a1a26d68c0ad}</Project>

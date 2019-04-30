@@ -10,18 +10,29 @@
     mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <mah:MetroWindow.Resources>
-        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MetroComboBox}">
-            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True"
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <!-- Accent and AppTheme setting -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Emerald.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MetroComboBox}">
+                <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsItemsHost="True"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
                                 VirtualizationMode="Recycling" />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </mah:MetroWindow.Resources>
     <Grid>
         <iconPacks:PackIconMaterial Kind="Minus" />
