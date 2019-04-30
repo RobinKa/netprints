@@ -1,0 +1,224 @@
+﻿<UserControl
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"        
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
+        xmlns:Controls="clr-namespace:NetPrintsEditor.Controls"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    x:Class="NetPrintsEditor.ClassEditorView"
+        mc:Ignorable="d"
+        x:Name="classWindow">
+
+    <UserControl.CommandBindings>
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveVariable" CanExecute="CommandRemoveVariable_CanExecute" Executed="CommandRemoveVariable_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.ConnectPins" CanExecute="CommandConnectPins_CanExecute" Executed="CommandConnectPins_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddNode" CanExecute="CommandAddNode_CanExecute" Executed="CommandAddNode_Executed"/>
+        <CommandBinding Command="cmds:NetPrintsCommands.ChangeNodeOverload" CanExecute="CommandChangeNodeOverload_CanExecute" Executed="CommandChangeNodeOverload_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddGetter" CanExecute="CommandAddGetter_CanExecute" Executed="CommandAddGetter_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.AddSetter" CanExecute="CommandAddSetter_CanExecute" Executed="CommandAddSetter_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveGetter" CanExecute="CommandRemoveGetter_CanExecute" Executed="CommandRemoveGetter_Execute" />
+        <CommandBinding Command="cmds:NetPrintsCommands.RemoveSetter" CanExecute="CommandRemoveSetter_CanExecute" Executed="CommandRemoveSetter_Execute" />
+        <CommandBinding Command="cmds:EditorCommands.SelectVariable" CanExecute="CommandSelectVariable_CanExecute" Executed="CommandSelectVariable_Execute" />
+        <CommandBinding Command="cmds:EditorCommands.OpenVariableGetSet" CanExecute="CommandOpenVariableGetSet_CanExecute" Executed="CommandOpenVariableGetSet_Execute" />
+        <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
+        <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="ApplicationCommands.Delete" Executed="CommandDelete_Executed" />
+    </UserControl.CommandBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton"
+                    ToolTipService.ShowOnDisabled="True"
+                    ToolTip="Compiles the project and outputs the source code if chosen."
+                    IsEnabled="{Binding Project.CanCompile}" Margin="5" Content="Compile"
+                    FontWeight="Bold" FontSize="16" Click="OnCompileButtonClicked"/>
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton"
+                    ToolTipService.ShowOnDisabled="True"
+                    ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
+                    IsEnabled="{Binding Class.Project.CanCompileAndRun}"
+                    Margin="5" Content="Run" FontWeight="Bold" FontSize="16" Click="OnRunButtonClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton"
+                    ToolTip="Edit the properties of this class."
+                    Margin="5" Content="Class" FontWeight="Bold" FontSize="16" Click="OnClassPropertiesClicked" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="3" x:Name="saveButton" Margin="5"
+                    ToolTip="Saves the project and all its classes."
+                    Content="Save" FontWeight="Bold" FontSize="16" Click="OnSaveButtonClicked" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
+
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Methods}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
+                                            ToolTip="Remove method">
+                                        <iconPacks:PackIconMaterial Kind="Minus" />
+                                    </Button>
+                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </Label>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
+
+                    <ComboBox x:Name="overrideMethodBox" HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16"
+                              Text="Override a method"
+                              IsReadOnly="True" IsEditable="True"
+                              ItemsSource="{Binding OverridableMethods}"
+                              SelectionChanged="OverrideMethodBox_SelectionChanged" />
+                </Grid>
+
+                <GridSplitter Grid.Row="1" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Content="Constructors" FontSize="24px" HorizontalContentAlignment="Center" />
+
+                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Constructors}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
+                                            ToolTip="Remove constructor">
+                                        <iconPacks:PackIconMaterial Kind="Minus" />
+                                    </Button>
+                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </Label>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Row="2" Content="Create Constructor" Click="AddConstructorButton_Click" FontSize="16" />
+                </Grid>
+
+                <GridSplitter Grid.Row="3" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+                <Grid Grid.Row="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Variables" FontSize="24px" HorizontalContentAlignment="Center" />
+
+                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding Variables}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Controls:MemberVariableView DataContext="{Binding}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Row="2" Content="Create Variable" Click="AddVariableButton_Click" FontSize="16" />
+                </Grid>
+            </Grid>
+
+            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="150" />
+                    <RowDefinition Height="24" />
+                </Grid.RowDefinitions>
+                
+                <Controls:GraphEditorView x:Name="graphEditor" DataContext="{Binding OpenedGraph}" />
+
+                <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+                <ListView Grid.Row="2" ItemsSource="{Binding Project.LastCompileErrors}" />
+
+                <Label Grid.Row="3" Content="{Binding Project.CompilationMessage}" />
+            </Grid>
+
+
+            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+
+            <TabControl x:Name="viewerTabControl" Grid.Column="5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                    </Style>
+                </TabControl.ItemContainerStyle>
+
+                <TabItem>
+                    <Controls:ClassPropertyEditorControl x:Name="classViewer" />
+                </TabItem>
+                
+                <TabItem>
+                    <Controls:VariableEditorControl DataContext="{x:Null}" x:Name="variableViewer" />
+                </TabItem>
+
+                <TabItem>
+                    <Controls:MethodPropertyEditorControl DataContext="{x:Null}" x:Name="methodViewer" />
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</UserControl>

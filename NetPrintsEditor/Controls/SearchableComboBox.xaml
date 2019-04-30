@@ -10,24 +10,6 @@
     <UserControl.Resources>
         <converters:SuggestionListConverter x:Key="converter" />
 
-        <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MetroDataGrid}">
-            <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-            <Setter Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="True" />
-            <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True" />
-
-            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel
-                                IsVirtualizing="True"
-                                IsItemsHost="True"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                VirtualizationMode="Recycling" />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </UserControl.Resources>
     
     <Border BorderBrush="#FF222222" Background="#DD333333" BorderThickness="2" CornerRadius="4">
@@ -52,13 +34,13 @@
                 </DataGrid.Columns>
 
                 <DataGrid.RowStyle>
-                    <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+                    <Style TargetType="{x:Type DataGridRow}">
                         <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItemSelected" />
                     </Style>
                 </DataGrid.RowStyle>
                 
                 <DataGrid.CellStyle>
-                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MetroDataGridCell}">
+                    <Style TargetType="{x:Type DataGridCell}">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type DataGridCell}">

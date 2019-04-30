@@ -369,8 +369,10 @@ namespace NetPrintsEditor.Reflection
             if (foundType != null)
             {
                 // Make array
-                while (arrayRanks.TryPop(out int arrayRank))
+                //while (arrayRanks.TryPop(out int arrayRank))
+                while (arrayRanks.Count > 0)
                 {
+                    int arrayRank = arrayRanks.Pop();
                     foundType = compilation.CreateArrayTypeSymbol(foundType, arrayRank);
                 }
             }

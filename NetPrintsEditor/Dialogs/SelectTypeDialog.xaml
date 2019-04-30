@@ -12,18 +12,6 @@
         Title="Select Type" Height="100" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
 
     <Window.Resources>
-        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MetroComboBox}">
-            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                VirtualizationMode="Recycling" />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Window.Resources>
     
     <Grid>

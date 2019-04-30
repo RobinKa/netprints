@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyName>NetPrintsEditor</AssemblyName>
     <UseWPF>True</UseWPF>
     <StartupObject>NetPrintsEditor.App</StartupObject>
@@ -10,8 +10,10 @@
     <Copyright>Robin Kahlow 2018</Copyright>
     <ApplicationIcon>NetPrintsLogo.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>../CSharpRuleSet.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="ClassEditorView.xaml" />
     <None Remove="ClassEditorWindow.xaml" />
     <None Remove="Controls\GraphEditorView.xaml" />
     <None Remove="Controls\MemberVariableView.xaml" />
@@ -33,7 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0262" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="3.0.0-alpha0137" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="3.0.0-alpha0146" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.0.0" />
     <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
     <PackageReference Include="PropertyChanged.Fody" Version="2.6.1" />
@@ -41,6 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetPrints\NetPrints.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="NetPrintsLogo.ico">
@@ -64,11 +69,19 @@
     <Resource Include="Resources\Convert_16x.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="ClassEditorView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="ClassEditorWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\MemberVariableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="ClassEditorView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

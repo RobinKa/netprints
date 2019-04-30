@@ -4,7 +4,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:NetPrintsEditor.Controls"
-            xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="NetPrintsEditor.Controls.ClassPropertyEditorControl"
+            x:Class="NetPrintsEditor.Controls.ClassPropertyEditorControl"
             xmlns:npc="clr-namespace:NetPrints.Core;assembly=NetPrints"
             xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
             xmlns:npevm="clr-namespace:NetPrintsEditor.ViewModels"
@@ -13,18 +13,6 @@
     <UserControl.Resources>
         <converters:ClassModifierConverter x:Key="classModifierConverter" />
 
-        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MetroComboBox}">
-            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                VirtualizationMode="Recycling" />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </UserControl.Resources>
     
     <Grid>
