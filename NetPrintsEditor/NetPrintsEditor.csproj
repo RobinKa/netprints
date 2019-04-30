@@ -13,7 +13,6 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="ClassEditorView.xaml" />
     <None Remove="ClassEditorWindow.xaml" />
     <None Remove="Controls\GraphEditorView.xaml" />
     <None Remove="Controls\MemberVariableView.xaml" />
@@ -69,19 +68,11 @@
     <Resource Include="Resources\Convert_16x.png" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="ClassEditorView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="ClassEditorWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\MemberVariableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="ClassEditorView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 </Project>

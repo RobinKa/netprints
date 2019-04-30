@@ -20,6 +20,9 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class GraphEditorView : UserControl
     {
+        public Grid Grid => grid;
+        public Canvas DrawCanvas => graphEditorWindow.drawCanvas;
+
         public const double GridCellSize = 28;
 
         public NodeGraphVM Graph

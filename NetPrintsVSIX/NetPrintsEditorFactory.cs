@@ -9,7 +9,7 @@ using System.Security.Permissions;
 
 namespace NetPrintsVSIX
 {
-    [ProvideEditorExtension(typeof(NetPrintsEditorFactory), ".netpp", 32)]
+    [ProvideEditorExtension(typeof(NetPrintsEditorFactory), ".netpc", 32)]
     public class NetPrintsEditorFactory : IVsEditorFactory, IDisposable
     {
         private const string BinaryPathEnvVar = "NETPRINTSEDITOR";
@@ -53,31 +53,25 @@ namespace NetPrintsVSIX
 
             MahApps.Metro.Controls.MetroWindow y = null;
 
-            // Load the project
-            NetPrints.Core.Project project = NetPrints.Core.Project.LoadFromPath(pszMkDocument);
-
-            package.ReplaceProjectReferences(project);
+            // Load the class
+            var cls = NetPrints.Serialization.SerializationHelper.LoadClass(pszMkDocument);
 
             // Setup the reflection provider
             {
-                var references = project.References;
-
                 // Add referenced assemblies
-                var assemblyPaths = references.OfType<AssemblyReference>().Select(assemblyRef => assemblyRef.AssemblyPath);
+                var assemblyPaths = package.GetAssemblyReferences().Select(assemblyRef => assemblyRef.AssemblyPath);
 
-                // Add source files
-                var sourcePaths = references.OfType<SourceDirectoryReference>().SelectMany(directoryRef => directoryRef.SourceFilePaths);
+                // TODO: Get .cs files
+                var sourcePaths = new string[0];
 
                 // Add our own sources
-                var sources = project.GenerateClassSources();
+                var sources = package.GetGeneratedCode();
 
                 NetPrintsEditor.App.ReloadReflectionProvider(assemblyPaths, sourcePaths, sources);
             }
 
-            var cls = project.Classes[0];
-
             // Create the class editor view
-            var classWindow = new NetPrintsEditor.ClassEditorView()
+            var classWindow = new ClassEditorView()
             {
                 DataContext = new NetPrintsEditor.ViewModels.ClassEditorVM(cls)
             };

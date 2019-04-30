@@ -11,6 +11,8 @@ using System.Linq;
 using NetPrints.Core;
 using VSLangProj;
 using System.IO;
+using NetPrints.Translator;
+using System.Collections.Generic;
 
 namespace NetPrintsVSIX
 {
@@ -97,6 +99,49 @@ namespace NetPrintsVSIX
             project.References.ReplaceRange(assemblyReferences);
         }
 
+        public IEnumerable<AssemblyReference> GetAssemblyReferences()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            return dte.Solution.Projects
+                .OfType<EnvDTE.Project>()
+                .Select(proj => proj.Object)
+                .OfType<VSProject>()
+                .SelectMany(proj => proj.References
+                    .OfType<Reference>()
+                    .Cast<VSLangProj80.Reference3>()
+                    .Where(r => r.Path != null && File.Exists(r.Path))
+                    .Select(r => new AssemblyReference(r.Path)));
+        }
+
+        public void CompileNetPrintsClass(string path, string outputPath)
+        {
+            ClassTranslator classTranslator = new ClassTranslator();
+
+            ClassGraph classGraph = NetPrints.Serialization.SerializationHelper.LoadClass(path);
+            string translated = classTranslator.TranslateClass(classGraph);
+
+            File.WriteAllText(outputPath, translated);
+        }
+
+        public IEnumerable<string> GetGeneratedCode()
+        {
+            ClassTranslator classTranslator = new ClassTranslator();
+
+            foreach (var project in dte.Solution.Projects.OfType<EnvDTE.Project>())
+            {
+                foreach (var projectItem in project.ProjectItems.OfType<EnvDTE.ProjectItem>())
+                {
+                    string fullPath = projectItem.Properties.Item("FullPath")?.Value as string;
+                    if (fullPath != null && fullPath.EndsWith(".netpc"))
+                    {
+                        ClassGraph classGraph = NetPrints.Serialization.SerializationHelper.LoadClass(fullPath);
+                        yield return classTranslator.TranslateClass(classGraph);
+                    }
+                }
+            }
+        }
+
         public int UpdateSolution_Begin(ref int pfCancelUpdate)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -106,19 +151,11 @@ namespace NetPrintsVSIX
                 foreach (var projectItem in project.ProjectItems.OfType<EnvDTE.ProjectItem>())
                 {
                     string fullPath = projectItem.Properties.Item("FullPath")?.Value as string;
-                    if (fullPath != null && fullPath.EndsWith(".netpp"))
+                    if (fullPath != null && fullPath.EndsWith(".netpc"))
                     {
-                        try
-                        {
-                            NetPrints.Core.Project netPrintsProject = NetPrints.Core.Project.LoadFromPath(fullPath);
-                            ReplaceProjectReferences(netPrintsProject);
-                            netPrintsProject.CompileProject();
-                        }
-                        catch
-                        {
-                            pfCancelUpdate = 1;
-                            return VSConstants.E_FAIL;
-                        }
+                        string outputPath = Path.Combine(Path.ChangeExtension(fullPath, ".cs"));
+
+                        CompileNetPrintsClass(fullPath, outputPath);
                     }
                 }
             }

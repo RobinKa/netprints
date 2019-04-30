@@ -47,6 +47,9 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ClassEditorView.xaml.cs">
+      <DependentUpon>ClassEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NetPrintsEditorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NetPrintsVSIXPackage.cs" />
@@ -75,6 +78,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.200" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.1.1080" />
+    <PackageReference Include="PropertyChanged.Fody">
+      <Version>3.0.1-beta.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetPrintsEditor\NetPrintsEditor.csproj">
@@ -88,6 +94,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ClassEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UserControl1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

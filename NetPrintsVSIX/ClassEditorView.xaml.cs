@@ -1,4 +1,6 @@
 ﻿using MahApps.Metro.Controls;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
@@ -13,12 +15,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
 
-namespace NetPrintsEditor
+namespace NetPrintsVSIX
 {
     /// <summary>
     /// Interaction logic for ClassEditorWindow.xaml
     /// </summary>
-    public partial class ClassEditorView : UserControl
+    public partial class ClassEditorView : UserControl, IVsPersistDocData2, IPersistFileFormat
     {
         public ClassEditorVM ViewModel
         {
@@ -182,8 +184,8 @@ namespace NetPrintsEditor
 
             e.CanExecute = e.Parameter is ConnectPinsParameters cp
                 && GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin,
-                (a, b) => App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
-                (a, b) => App.ReflectionProvider.HasImplicitCast(a, b));
+                (a, b) => NetPrintsEditor.App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
+                (a, b) => NetPrintsEditor.App.ReflectionProvider.HasImplicitCast(a, b));
         }
 
         private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)
@@ -214,7 +216,7 @@ namespace NetPrintsEditor
             if (p.Graph == null)
             {
                 p.Graph = graphEditor.Graph.Graph;
-                Point mouseLoc = Mouse.GetPosition(graphEditor.graphEditorWindow.drawCanvas);
+                Point mouseLoc = Mouse.GetPosition(graphEditor.DrawCanvas);
                 p.PositionX = mouseLoc.X - mouseLoc.X % GraphEditorView.GridCellSize;
                 p.PositionY = mouseLoc.Y - mouseLoc.Y % GraphEditorView.GridCellSize;
             }
@@ -236,13 +238,13 @@ namespace NetPrintsEditor
             if (graphEditor?.Graph?.SuggestionPin != null)
             {
                 GraphUtil.ConnectRelevantPins(graphEditor.Graph.SuggestionPin,
-                    node,App.ReflectionProvider.TypeSpecifierIsSubclassOf,
-                    App.ReflectionProvider.HasImplicitCast);
+                    node, NetPrintsEditor.App.ReflectionProvider.TypeSpecifierIsSubclassOf,
+                    NetPrintsEditor.App.ReflectionProvider.HasImplicitCast);
 
                 graphEditor.Graph.SuggestionPin = null;
             }
 
-            graphEditor.grid.ContextMenu.IsOpen = false;
+            graphEditor.Grid.ContextMenu.IsOpen = false;
         }
 
         // Open Variable Get / Set
@@ -445,6 +447,116 @@ namespace NetPrintsEditor
             // we could get issues like the project still referencing the
             // old class if the project isn't saved.
             ViewModel.Project.Save();
+        }
+
+        public int GetGuidEditorType(out Guid pClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int IsDocDataDirty(out int pfDirty)
+        {
+            pfDirty = 1;
+            return VSConstants.S_OK;
+        }
+
+        public int SetUntitledDocPath(string pszDocDataPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int LoadDocData(string pszMkDocument) => VSConstants.S_OK;
+
+        public int SaveDocData(VSSAVEFLAGS dwSave, out string pbstrMkDocumentNew, out int pfSaveCanceled)
+        {
+            string path = $"{ViewModel.Class.FullName}.netpc";
+
+            NetPrints.Serialization.SerializationHelper.SaveClass(ViewModel.Class, path);
+
+            pbstrMkDocumentNew = path;
+            pfSaveCanceled = 0;
+
+            return VSConstants.S_OK;
+        }
+
+        public int Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int OnRegisterDocData(uint docCookie, IVsHierarchy pHierNew, uint itemidNew)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int RenameDocData(uint grfAttribs, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int IsDocDataReloadable(out int pfReloadable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ReloadDocData(uint grfFlags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int SetDocDataDirty(int fDirty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int IsDocDataReadOnly(out int pfReadOnly)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int SetDocDataReadOnly(int fReadOnly)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetClassID(out Guid pClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int IsDirty(out int pfIsDirty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int InitNew(uint nFormatIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Load(string pszFilename, uint grfMode, int fReadOnly)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Save(string pszFilename, int fRemember, uint nFormatIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int SaveCompleted(string pszFilename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetCurFile(out string ppszFilename, out uint pnFormatIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetFormatList(out string ppszFormatList)
+        {
+            throw new NotImplementedException();
         }
     }
 }
