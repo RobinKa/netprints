@@ -118,6 +118,15 @@ namespace NetPrintsVSIX
                     .Select(r => new AssemblyReference(r.Path)));
         }
 
+        public IEnumerable<SourceDirectoryReference> GetSourceDirectoryReferences()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            return dte.Solution.Projects
+                .OfType<EnvDTE.Project>()
+                .Select(proj => new SourceDirectoryReference(Path.GetDirectoryName(proj.FileName)));
+        }
+
         public IEnumerable<string> GetGeneratedCode()
         {
             ClassTranslator classTranslator = new ClassTranslator();

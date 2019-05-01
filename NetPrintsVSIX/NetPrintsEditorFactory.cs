@@ -69,8 +69,8 @@ namespace NetPrintsVSIX
                 // Add referenced assemblies
                 var assemblyPaths = package.GetAssemblyReferences().Select(assemblyRef => assemblyRef.AssemblyPath);
 
-                // TODO: Get .cs files
-                var sourcePaths = new string[0];
+                // Get source files in projects
+                var sourcePaths = package.GetSourceDirectoryReferences().SelectMany(sourceRef => sourceRef.SourceFilePaths);
 
                 // Add our own sources
                 var sources = package.GetGeneratedCode();
