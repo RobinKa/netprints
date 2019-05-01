@@ -21,6 +21,22 @@ namespace NetPrintsVSIX
             package = pkg;
         }
 
+        /// <summary>
+        /// Needed so some references get added correctly.
+        /// </summary>
+        private void UselessIncludeFunction()
+        {
+            // Reference these just because otherwise mah metro won't get included correctly.
+            UserControl1 ctl = new UserControl1();
+
+            MahApps.Metro.IconPacks.PackIconMaterial x = new MahApps.Metro.IconPacks.PackIconMaterial()
+            {
+                Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Minus
+            };
+
+            MahApps.Metro.Controls.MetroWindow y = null;
+        }
+
         [EnvironmentPermission(SecurityAction.Demand, Unrestricted = true)]
         public int CreateEditorInstance(uint grfCreateDoc, string pszMkDocument, string pszPhysicalView, IVsHierarchy pvHier,
                                         uint itemid, IntPtr punkDocDataExisting, out IntPtr ppunkDocView, out IntPtr ppunkDocData,
@@ -43,15 +59,7 @@ namespace NetPrintsVSIX
                 return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
             }
 
-            // Reference these just because otherwise mah metro won't get included correctly.
-            UserControl1 ctl = new UserControl1();
-
-            MahApps.Metro.IconPacks.PackIconMaterial x = new MahApps.Metro.IconPacks.PackIconMaterial()
-            {
-                Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Minus
-            };
-
-            MahApps.Metro.Controls.MetroWindow y = null;
+            UselessIncludeFunction();
 
             // Load the class
             var cls = NetPrints.Serialization.SerializationHelper.LoadClass(pszMkDocument);

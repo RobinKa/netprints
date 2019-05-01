@@ -114,16 +114,6 @@ namespace NetPrintsVSIX
                     .Select(r => new AssemblyReference(r.Path)));
         }
 
-        public void CompileNetPrintsClass(string path, string outputPath)
-        {
-            ClassTranslator classTranslator = new ClassTranslator();
-
-            ClassGraph classGraph = NetPrints.Serialization.SerializationHelper.LoadClass(path);
-            string translated = classTranslator.TranslateClass(classGraph);
-
-            File.WriteAllText(outputPath, translated);
-        }
-
         public IEnumerable<string> GetGeneratedCode()
         {
             ClassTranslator classTranslator = new ClassTranslator();
@@ -155,7 +145,7 @@ namespace NetPrintsVSIX
                     {
                         string outputPath = Path.Combine(Path.ChangeExtension(fullPath, ".cs"));
 
-                        CompileNetPrintsClass(fullPath, outputPath);
+                        NetPrintsVSIXUtil.CompileNetPrintsClass(fullPath, outputPath);
                     }
                 }
             }

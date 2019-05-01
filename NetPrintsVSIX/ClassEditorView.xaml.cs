@@ -9,6 +9,7 @@ using NetPrintsEditor.Messages;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -449,6 +450,14 @@ namespace NetPrintsVSIX
             ViewModel.Project.Save();
         }
 
+        #region Persistence
+        // TODO: Move these out of the view / DI the implementation
+
+        /// <summary>
+        /// Path where the class is stored.
+        /// </summary>
+        private string classPath;
+
         public int GetGuidEditorType(out Guid pClassID)
         {
             throw new NotImplementedException();
@@ -465,15 +474,21 @@ namespace NetPrintsVSIX
             throw new NotImplementedException();
         }
 
-        public int LoadDocData(string pszMkDocument) => VSConstants.S_OK;
+        public int LoadDocData(string pszMkDocument)
+        {
+            classPath = pszMkDocument;
+            return VSConstants.S_OK;
+        }
 
         public int SaveDocData(VSSAVEFLAGS dwSave, out string pbstrMkDocumentNew, out int pfSaveCanceled)
         {
-            string path = $"{ViewModel.Class.FullName}.netpc";
+            NetPrints.Serialization.SerializationHelper.SaveClass(ViewModel.Class, classPath);
 
-            NetPrints.Serialization.SerializationHelper.SaveClass(ViewModel.Class, path);
+            // Generate C# code
+            // TODO: Move this out of view
+            NetPrintsVSIXUtil.CompileNetPrintsClass(classPath, Path.ChangeExtension(classPath, ".cs"));
 
-            pbstrMkDocumentNew = path;
+            pbstrMkDocumentNew = classPath;
             pfSaveCanceled = 0;
 
             return VSConstants.S_OK;
@@ -491,7 +506,10 @@ namespace NetPrintsVSIX
 
         public int RenameDocData(uint grfAttribs, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
         {
-            throw new NotImplementedException();
+            classPath = pszMkDocumentNew;
+            // TODO: Delete old files?
+
+            return VSConstants.S_OK;
         }
 
         public int IsDocDataReloadable(out int pfReloadable)
@@ -558,5 +576,6 @@ namespace NetPrintsVSIX
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }
