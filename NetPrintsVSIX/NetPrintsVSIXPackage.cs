@@ -37,6 +37,10 @@ namespace NetPrintsVSIX
     [Guid(NetPrintsVSIXPackage.PackageGuidString)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideEditorFactory(typeof(NetPrintsEditorFactory), 106)]
+    [ProvideEditorLogicalView(typeof(NetPrintsEditorFactory), "{7651a703-06e5-11d1-8ebd-00a0c90f26ea}")]
+    [ProvideEditorExtension(typeof(NetPrintsEditorFactory), ".netpc", 32,
+              ProjectGuid = "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}",
+              NameResourceID = 106)]
     public sealed class NetPrintsVSIXPackage : AsyncPackage, IVsUpdateSolutionEvents
     {
         /// <summary>

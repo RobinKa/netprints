@@ -418,7 +418,7 @@ namespace NetPrintsVSIX
                     viewerTabControl.SelectedIndex = 0;
                 }
 
-                if (graphEditor.Graph.Graph == m.Graph)
+                if (graphEditor.Graph?.Graph == m.Graph)
                 {
                     graphEditor.Graph = null;
                 }
@@ -458,6 +458,9 @@ namespace NetPrintsVSIX
         /// </summary>
         private string classPath;
 
+        private bool dirty;
+        private bool initialGeneratedCodeChanged;
+
         public int GetGuidEditorType(out Guid pClassID)
         {
             throw new NotImplementedException();
@@ -465,7 +468,7 @@ namespace NetPrintsVSIX
 
         public int IsDocDataDirty(out int pfDirty)
         {
-            pfDirty = 1;
+            pfDirty = dirty ? 1 : 0;
             return VSConstants.S_OK;
         }
 
@@ -477,7 +480,25 @@ namespace NetPrintsVSIX
         public int LoadDocData(string pszMkDocument)
         {
             classPath = pszMkDocument;
+
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
             return VSConstants.S_OK;
+        }
+
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ViewModel.GeneratedCode))
+            {
+                if (initialGeneratedCodeChanged)
+                {
+                    dirty = true;
+                }
+                else
+                {
+                    initialGeneratedCodeChanged = true;
+                }
+            }
         }
 
         public int SaveDocData(VSSAVEFLAGS dwSave, out string pbstrMkDocumentNew, out int pfSaveCanceled)
@@ -487,6 +508,7 @@ namespace NetPrintsVSIX
             // Generate C# code
             // TODO: Move this out of view
             NetPrintsVSIXUtil.CompileNetPrintsClass(classPath, Path.ChangeExtension(classPath, ".cs"));
+            dirty = false;
 
             pbstrMkDocumentNew = classPath;
             pfSaveCanceled = 0;
@@ -544,7 +566,8 @@ namespace NetPrintsVSIX
 
         public int IsDirty(out int pfIsDirty)
         {
-            throw new NotImplementedException();
+            pfIsDirty = dirty ? 1 : 0;
+            return VSConstants.S_OK;
         }
 
         public int InitNew(uint nFormatIndex)

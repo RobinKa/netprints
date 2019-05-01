@@ -14,9 +14,13 @@ namespace NetPrintsVSIX
     {
         public static void CompileNetPrintsClass(string path, string outputPath)
         {
+            CompileNetPrintsClass(SerializationHelper.LoadClass(path), outputPath);
+        }
+
+        public static void CompileNetPrintsClass(ClassGraph classGraph, string outputPath)
+        {
             ClassTranslator classTranslator = new ClassTranslator();
 
-            ClassGraph classGraph = SerializationHelper.LoadClass(path);
             string translated = classTranslator.TranslateClass(classGraph);
 
             File.WriteAllText(outputPath, translated);
