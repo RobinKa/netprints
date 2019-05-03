@@ -3,6 +3,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrints.Serialization;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Controls;
 using NetPrintsEditor.Messages;
@@ -16,7 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
 
-namespace NetPrintsVSIX
+namespace NetPrints.VSIX
 {
     /// <summary>
     /// Interaction logic for ClassEditorWindow.xaml
@@ -503,11 +504,11 @@ namespace NetPrintsVSIX
 
         public int SaveDocData(VSSAVEFLAGS dwSave, out string pbstrMkDocumentNew, out int pfSaveCanceled)
         {
-            NetPrints.Serialization.SerializationHelper.SaveClass(ViewModel.Class, classPath);
+            SerializationHelper.SaveClass(ViewModel.Class, classPath);
 
             // Generate C# code
             // TODO: Move this out of view
-            NetPrintsVSIXUtil.CompileNetPrintsClass(classPath, Path.ChangeExtension(classPath, ".cs"));
+            CompilationUtil.CompileNetPrintsClass(classPath, Path.ChangeExtension(classPath, ".cs"));
             dirty = false;
 
             pbstrMkDocumentNew = classPath;
@@ -518,12 +519,12 @@ namespace NetPrintsVSIX
 
         public int Close()
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int OnRegisterDocData(uint docCookie, IVsHierarchy pHierNew, uint itemidNew)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int RenameDocData(uint grfAttribs, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
@@ -536,32 +537,37 @@ namespace NetPrintsVSIX
 
         public int IsDocDataReloadable(out int pfReloadable)
         {
-            throw new NotImplementedException();
+            pfReloadable = 0;
+
+            return VSConstants.S_OK;
         }
 
         public int ReloadDocData(uint grfFlags)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int SetDocDataDirty(int fDirty)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int IsDocDataReadOnly(out int pfReadOnly)
         {
-            throw new NotImplementedException();
+            pfReadOnly = 0;
+
+            return VSConstants.S_OK;
         }
 
         public int SetDocDataReadOnly(int fReadOnly)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int GetClassID(out Guid pClassID)
         {
-            throw new NotImplementedException();
+            pClassID = Guid.Empty;
+            return VSConstants.S_OK;
         }
 
         public int IsDirty(out int pfIsDirty)
@@ -572,32 +578,37 @@ namespace NetPrintsVSIX
 
         public int InitNew(uint nFormatIndex)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int Load(string pszFilename, uint grfMode, int fReadOnly)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int Save(string pszFilename, int fRemember, uint nFormatIndex)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int SaveCompleted(string pszFilename)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int GetCurFile(out string ppszFilename, out uint pnFormatIndex)
         {
-            throw new NotImplementedException();
+            ppszFilename = classPath;
+            pnFormatIndex = 0;
+
+            return VSConstants.S_OK;
         }
 
         public int GetFormatList(out string ppszFormatList)
         {
-            throw new NotImplementedException();
+            ppszFormatList = null;
+
+            return VSConstants.S_OK;
         }
         #endregion
     }

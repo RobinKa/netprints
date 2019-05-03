@@ -13,8 +13,9 @@ using VSLangProj;
 using System.IO;
 using NetPrints.Translator;
 using System.Collections.Generic;
+using System.Windows;
 
-namespace NetPrintsVSIX
+namespace NetPrints.VSIX
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -34,7 +35,8 @@ namespace NetPrintsVSIX
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(NetPrintsVSIXPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
+    [ProvideBindingPath]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideEditorFactory(typeof(NetPrintsEditorFactory), 106)]
     [ProvideEditorLogicalView(typeof(NetPrintsEditorFactory), "{7651a703-06e5-11d1-8ebd-00a0c90f26ea}")]
@@ -52,6 +54,22 @@ namespace NetPrintsVSIX
         private uint solutionBuildManagerCookie;
 
         private DTE2 dte;
+
+        /*private void AddMetroResources()
+        {
+            void AddResourceDict(string s)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+                {
+                    Source = new Uri(s, UriKind.Absolute),
+                });
+            }
+
+            AddResourceDict(@"pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml");
+            AddResourceDict(@"pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml");
+            AddResourceDict(@"pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Emerald.xaml");
+            AddResourceDict(@"pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml");
+        }*/
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -158,7 +176,7 @@ namespace NetPrintsVSIX
                     {
                         string outputPath = Path.Combine(Path.ChangeExtension(fullPath, ".cs"));
 
-                        NetPrintsVSIXUtil.CompileNetPrintsClass(fullPath, outputPath);
+                        CompilationUtil.CompileNetPrintsClass(fullPath, outputPath);
                     }
                 }
             }

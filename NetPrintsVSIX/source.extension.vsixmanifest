@@ -2,8 +2,8 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="NetPrintsVSIX.986e9ab6-273a-404d-9d4f-ec678aa2ff87" Version="0.1" Language="en-US" Publisher="Robin Kahlow" />
-        <DisplayName>NetPrintsVSIX</DisplayName>
-        <Description xml:space="preserve">NetPrints VSIX</Description>
+        <DisplayName>NetPrints</DisplayName>
+        <Description xml:space="preserve">NetPrints visual programming language extension.</Description>
         <MoreInfo>https://github.com/RobinKa/netprints</MoreInfo>
         <License>LICENSE.txt</License>
         <Icon>NetPrintsLogo.png</Icon>

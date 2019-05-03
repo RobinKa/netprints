@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-namespace NetPrintsVSIX
+namespace NetPrints.VSIX
 {
     [ProvideEditorExtension(typeof(NetPrintsEditorFactory), ".netpc", 32)]
     public class NetPrintsEditorFactory : IVsEditorFactory, IDisposable
@@ -19,22 +19,6 @@ namespace NetPrintsVSIX
         public NetPrintsEditorFactory(NetPrintsVSIXPackage pkg)
         {
             package = pkg;
-        }
-
-        /// <summary>
-        /// Needed so some references get added correctly.
-        /// </summary>
-        private void UselessIncludeFunction()
-        {
-            // Reference these just because otherwise mah metro won't get included correctly.
-            UserControl1 ctl = new UserControl1();
-
-            MahApps.Metro.IconPacks.PackIconMaterial x = new MahApps.Metro.IconPacks.PackIconMaterial()
-            {
-                Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.Minus
-            };
-
-            MahApps.Metro.Controls.MetroWindow y = null;
         }
 
         [EnvironmentPermission(SecurityAction.Demand, Unrestricted = true)]
@@ -58,8 +42,6 @@ namespace NetPrintsVSIX
             {
                 return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
             }
-
-            UselessIncludeFunction();
 
             // Load the class
             var cls = NetPrints.Serialization.SerializationHelper.LoadClass(pszMkDocument);

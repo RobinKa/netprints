@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetPrintsVSIX
+namespace NetPrints.VSIX
 {
-    public static class NetPrintsVSIXUtil
+    public static class CompilationUtil
     {
         public static void CompileNetPrintsClass(string path, string outputPath)
         {
