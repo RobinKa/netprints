@@ -99,7 +99,6 @@
                         </GroupStyle.ContainerStyle>
                     </GroupStyle>
                 </DataGrid.GroupStyle>
-
             </DataGrid>
         </Grid>
     </Border>

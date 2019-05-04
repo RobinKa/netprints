@@ -44,11 +44,6 @@ namespace NetPrintsEditor.Commands
         public static readonly RoutedUICommand DoNothing = new RoutedUICommand(nameof(DoNothing), nameof(DoNothing), typeof(NetPrintsCommands));
 
         /// <summary>
-        /// Command for adding a node to a method.
-        /// </summary>
-        public static readonly RoutedUICommand AddNode = new RoutedUICommand(nameof(AddNode), nameof(AddNode), typeof(NetPrintsCommands));
-
-        /// <summary>
         /// Command for changing the overload of a node.
         /// </summary>
         public static readonly RoutedUICommand ChangeNodeOverload = new RoutedUICommand(nameof(ChangeNodeOverload), nameof(ChangeNodeOverload), typeof(NetPrintsCommands));
@@ -84,39 +79,6 @@ namespace NetPrintsEditor.Commands
                 Node = node;
                 NewPositionX = newPositionX;
                 NewPositionY = newPositionY;
-            }
-        }
-
-        public class AddNodeParameters
-        {
-            public Type NodeType;
-            public NodeGraph Graph;
-            public double PositionX;
-            public double PositionY;
-            public object[] ConstructorParameters;
-
-            public AddNodeParameters(Type nodeType, NodeGraph graph, double posX, double posY, params object[] constructorParameters)
-            {
-                if (!nodeType.IsSubclassOf(typeof(Node)) || nodeType.IsAbstract)
-                {
-                    throw new ArgumentException("Invalid type for node");
-                }
-
-                // TODO: Get MethodGraph / ConstructorGraph is graph is one of them.
-                Type[] constructorParamTypes = (new Type[] { typeof(NodeGraph) }).Concat
-                    (constructorParameters.Select(p => p.GetType()))
-                    .ToArray();
-
-                if (nodeType.GetConstructor(constructorParamTypes) == null)
-                {
-                    throw new ArgumentException($"Invalid parameters for constructor of {nodeType.FullName}");
-                }
-
-                NodeType = nodeType;
-                Graph = graph;
-                PositionX = posX;
-                PositionY = posY;
-                ConstructorParameters = constructorParameters;
             }
         }
 
@@ -162,7 +124,6 @@ namespace NetPrintsEditor.Commands
                 }
             },
             { ConnectPins, (p) => new Tuple<ICommand, object>(DoNothing, p) },
-            { AddNode, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             {
                 ChangeNodeOverload, (p) =>
                 {

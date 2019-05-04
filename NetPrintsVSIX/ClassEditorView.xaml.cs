@@ -204,51 +204,6 @@ namespace NetPrints.VSIX
             }
         }
 
-        // Add node
-
-        private void CommandAddNode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = e.Parameter is AddNodeParameters p && (p.Graph != null || graphEditor.Graph != null);
-        }
-
-        private void CommandAddNode_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            AddNodeParameters p = e.Parameter as AddNodeParameters;
-
-            if (p.Graph == null)
-            {
-                p.Graph = graphEditor.Graph.Graph;
-                Point mouseLoc = Mouse.GetPosition(graphEditor.DrawCanvas);
-                p.PositionX = mouseLoc.X - mouseLoc.X % GraphEditorView.GridCellSize;
-                p.PositionY = mouseLoc.Y - mouseLoc.Y % GraphEditorView.GridCellSize;
-            }
-
-            // Make sure the node will on the canvas
-            if (p.PositionX < 0)
-                p.PositionX = 0;
-
-            if (p.PositionY < 0)
-                p.PositionY = 0;
-
-            object[] parameters = new object[] { p.Graph }.Concat(p.ConstructorParameters).ToArray();
-            Node node = Activator.CreateInstance(p.NodeType, parameters) as Node;
-            node.PositionX = p.PositionX;
-            node.PositionY = p.PositionY;
-
-            // If the node was created as part of a suggestion, connect it
-            // to the relevant node pin.
-            if (graphEditor?.Graph?.SuggestionPin != null)
-            {
-                GraphUtil.ConnectRelevantPins(graphEditor.Graph.SuggestionPin,
-                    node, NetPrintsEditor.App.ReflectionProvider.TypeSpecifierIsSubclassOf,
-                    NetPrintsEditor.App.ReflectionProvider.HasImplicitCast);
-
-                graphEditor.Graph.SuggestionPin = null;
-            }
-
-            graphEditor.Grid.ContextMenu.IsOpen = false;
-        }
-
         // Open Variable Get / Set
 
         private void CommandOpenVariableGetSet_CanExecute(object sender, CanExecuteRoutedEventArgs e)
