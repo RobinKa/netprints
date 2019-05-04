@@ -41,14 +41,14 @@ namespace NetPrintsEditor.ViewModels
         public string SearchText { get; set; } = "";
         private string[] splitSearchText = new string[0];
 
-        public event EventHandler OnItemsChanged;
+        public event EventHandler ItemsChanged;
 
         public SuggestionListVM()
         {
 
         }
 
-        public void ItemsChanged() => OnItemsChanged?.Invoke(this, EventArgs.Empty);
+        public void OnItemsChanged() => ItemsChanged?.Invoke(this, EventArgs.Empty);
 
         public bool ItemFilter(object item)
         {

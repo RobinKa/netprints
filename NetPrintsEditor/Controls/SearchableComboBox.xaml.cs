@@ -45,13 +45,13 @@ namespace NetPrintsEditor.Controls
         {
             if (e.OldValue != null && e.OldValue is SuggestionListVM oldVM)
             {
-                oldVM.OnItemsChanged -= OnItemsChanged;
+                oldVM.ItemsChanged -= OnItemsChanged;
             }
 
             if (e.NewValue != null && e.NewValue is SuggestionListVM newVM)
             {
                 UpdateItems();
-                newVM.OnItemsChanged += OnItemsChanged;
+                newVM.ItemsChanged += OnItemsChanged;
             }
         }
 
