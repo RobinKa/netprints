@@ -46,7 +46,7 @@ namespace NetPrints.Core
             }
             else if (isSubclassOf(fromType, type))
             {
-                return visibility.HasFlag(MemberVisibility.ProtectedOrPublic);
+                return visibility.HasFlag(MemberVisibility.Protected) || visibility.HasFlag(MemberVisibility.Public);
             }
 
             return visibility.HasFlag(MemberVisibility.Public);
