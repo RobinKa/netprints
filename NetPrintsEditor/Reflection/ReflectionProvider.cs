@@ -131,7 +131,7 @@ namespace NetPrintsEditor.Reflection
             // at the time of writing. However MaxValue - 1 (as defined in the newer versions
             // see https://github.com/dotnet/roslyn/blob/472276accaf70a8356747dc7111cfb6231871077/src/Compilers/CSharp/Portable/LanguageVersion.cs#L135
             // seems to work.
-            LanguageVersion previewVersion = (LanguageVersion)(int.MaxValue - 1);
+            const LanguageVersion previewVersion = (LanguageVersion)(int.MaxValue - 1);
 
             // Return a syntax tree of our source code
             return CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(languageVersion: previewVersion));

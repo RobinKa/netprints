@@ -140,5 +140,10 @@ namespace NetPrints.Core
             get => new TypeSpecifier(FullName, SuperType.IsEnum, SuperType.IsInterface,
                 DeclaredGenericArguments.Cast<BaseType>().ToList());
         }
+
+        public ClassGraph()
+        {
+            _ = new ClassReturnNode(this);
+        }
     }
 }
