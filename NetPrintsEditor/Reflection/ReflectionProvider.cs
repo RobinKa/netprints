@@ -125,6 +125,18 @@ namespace NetPrintsEditor.Reflection
             return (compilationResults, stream);
         }
 
+        private static SyntaxTree ParseSyntaxTree(string source)
+        {
+            // LanguageVersion.Preview is not defined in the Roslyn version used
+            // at the time of writing. However MaxValue - 1 (as defined in the newer versions
+            // see https://github.com/dotnet/roslyn/blob/472276accaf70a8356747dc7111cfb6231871077/src/Compilers/CSharp/Portable/LanguageVersion.cs#L135
+            // seems to work.
+            LanguageVersion previewVersion = (LanguageVersion)(int.MaxValue - 1);
+
+            // Return a syntax tree of our source code
+            return CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(languageVersion: previewVersion));
+        }
+
         /// <summary>
         /// Creates a ReflectionProvider given paths to assemblies and source files.
         /// </summary>
@@ -159,7 +171,7 @@ namespace NetPrintsEditor.Reflection
 
             // Create syntax trees from sources
             sources = sources.Concat(sourcePaths.Select(path => File.ReadAllText(path))).Distinct();
-            var syntaxTrees = sources.Select(source => SyntaxFactory.ParseSyntaxTree(source));
+            var syntaxTrees = sources.Select(source => ParseSyntaxTree(source));
 
             compilation = CSharpCompilation.Create("C", syntaxTrees, assemblyReferences, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
