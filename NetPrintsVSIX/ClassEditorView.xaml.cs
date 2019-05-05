@@ -417,6 +417,8 @@ namespace NetPrints.VSIX
         private bool dirty;
         private bool initialGeneratedCodeChanged;
 
+        public Action ReloadReflectionProvider { get; set; }
+
         public int GetGuidEditorType(out Guid pClassID)
         {
             throw new NotImplementedException();
@@ -465,6 +467,8 @@ namespace NetPrints.VSIX
             // TODO: Move this out of view
             CompilationUtil.CompileNetPrintsClass(classPath, Path.ChangeExtension(classPath, ".cs"));
             dirty = false;
+
+            ReloadReflectionProvider?.Invoke();
 
             pbstrMkDocumentNew = classPath;
             pfSaveCanceled = 0;

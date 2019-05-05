@@ -46,24 +46,13 @@ namespace NetPrints.VSIX
             // Load the class
             var cls = NetPrints.Serialization.SerializationHelper.LoadClass(pszMkDocument);
 
-            // Setup the reflection provider
-            {
-                // Add referenced assemblies
-                var assemblyPaths = package.GetAssemblyReferences().Select(assemblyRef => assemblyRef.AssemblyPath);
-
-                // Get source files in projects
-                var sourcePaths = package.GetSourceDirectoryReferences().SelectMany(sourceRef => sourceRef.SourceFilePaths);
-
-                // Add our own sources
-                var sources = package.GetGeneratedCode();
-
-                NetPrintsEditor.App.ReloadReflectionProvider(assemblyPaths, sourcePaths, sources);
-            }
+            ReloadReflection();
 
             // Create the class editor view
             var classWindow = new ClassEditorView()
             {
-                DataContext = new NetPrintsEditor.ViewModels.ClassEditorVM(cls)
+                DataContext = new NetPrintsEditor.ViewModels.ClassEditorVM(cls),
+                ReloadReflectionProvider = ReloadReflection
             };
 
             ppunkDocView = Marshal.GetIUnknownForObject(classWindow);
@@ -71,6 +60,20 @@ namespace NetPrints.VSIX
             pbstrEditorCaption = "";
 
             return VSConstants.S_OK;
+        }
+
+        private void ReloadReflection()
+        {
+            // Add referenced assemblies
+            var assemblyPaths = package.GetAssemblyReferences().Select(assemblyRef => assemblyRef.AssemblyPath);
+
+            // Get source files in projects
+            var sourcePaths = package.GetSourceDirectoryReferences().SelectMany(sourceRef => sourceRef.SourceFilePaths);
+
+            // Add our own sources
+            var sources = package.GetGeneratedCode();
+
+            NetPrintsEditor.App.ReloadReflectionProvider(assemblyPaths, sourcePaths, sources);
         }
 
         public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider psp)
