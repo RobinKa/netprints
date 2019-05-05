@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -14,7 +15,7 @@ namespace NetPrints.Core
         {
             get
             {
-                return Directory.GetFiles(SourceDirectory, "*.cs", SearchOption.AllDirectories);
+                return Directory.GetFiles(SourceDirectory, "*.cs", SearchOption.AllDirectories).Where(p => !p.Contains("obj" + Path.DirectorySeparatorChar) && !p.Contains("bin" + Path.DirectorySeparatorChar));
             }
         }
 
