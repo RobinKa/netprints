@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AssemblyName>NetPrintsEditor</AssemblyName>
     <UseWPF>True</UseWPF>
     <StartupObject>NetPrintsEditor.App</StartupObject>
