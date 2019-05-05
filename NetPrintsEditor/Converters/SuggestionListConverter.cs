@@ -2,6 +2,7 @@
 using NetPrints.Graph;
 using NetPrintsEditor.Controls;
 using NetPrintsEditor.Dialogs;
+using NetPrintsEditor.ViewModels;
 using System;
 using System.Globalization;
 using System.Reflection;

@@ -709,7 +709,8 @@ namespace NetPrintsEditor.ViewModels
         {
             // HACK: call UpdateOverloads() here because for some reason it is not
             //       updated correctly.
-            if (!e.PropertyName.Contains("overload", StringComparison.OrdinalIgnoreCase))
+            //if (!e.PropertyName.Contains("overload", StringComparison.OrdinalIgnoreCase))
+            if (!e.PropertyName.Contains("Overload"))
             {
                 UpdateOverloads();
             }

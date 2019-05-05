@@ -112,9 +112,6 @@ namespace NetPrints.Core
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            // Compatibility
-            FixVisibility(context);
-
             // Call Node.OnMethodDeserialized until the types don't change anymore
             // or a max iteration was reached.
             // TODO: Sort nodes by depth and propagate in order instead of

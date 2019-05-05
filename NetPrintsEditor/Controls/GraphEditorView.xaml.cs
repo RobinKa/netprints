@@ -2,6 +2,7 @@
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Dialogs;
+using NetPrintsEditor.Messages;
 using NetPrintsEditor.Reflection;
 using NetPrintsEditor.ViewModels;
 using System;
@@ -20,6 +21,9 @@ namespace NetPrintsEditor.Controls
     /// </summary>
     public partial class GraphEditorView : UserControl
     {
+        public Grid Grid => grid;
+        public Canvas DrawCanvas => graphEditorWindow.drawCanvas;
+
         public const double GridCellSize = 28;
 
         public NodeGraphVM Graph
@@ -31,6 +35,26 @@ namespace NetPrintsEditor.Controls
         public GraphEditorView()
         {
             InitializeComponent();
+
+            DataContextChanged += OnDataContextChanged;
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is NodeGraphVM oldGraphVM)
+            {
+                oldGraphVM.OnHideContextMenu -= OnHideContextMenu;
+            }
+
+            if (e.NewValue is NodeGraphVM newGraphVM)
+            {
+                newGraphVM.OnHideContextMenu += OnHideContextMenu;
+            }
+        }
+
+        private void OnHideContextMenu(object sender, EventArgs e)
+        {
+            grid.ContextMenu.IsOpen = false;
         }
 
         public void ShowVariableGetSet(VariableSpecifier variableSpecifier, Point? position = null)
@@ -73,10 +97,10 @@ namespace NetPrintsEditor.Controls
                 // VariableSetterNode(Method method, TypeSpecifier targetType, 
                 // string variableName, TypeSpecifier variableType) 
 
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                Graph.AddNode(new AddNodeMessage
                 (
                     typeof(VariableSetterNode), Graph.Graph, position.X, position.Y,
-                    variableSpecifier
+                    null, variableSpecifier
                 ));
             }
             else
@@ -84,10 +108,10 @@ namespace NetPrintsEditor.Controls
                 // VariableGetterNode(Method method, TypeSpecifier targetType, 
                 // string variableName, TypeSpecifier variableType) 
 
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                Graph.AddNode(new AddNodeMessage
                 (
                     typeof(VariableGetterNode), Graph.Graph, position.X, position.Y,
-                    variableSpecifier
+                    null, variableSpecifier
                 ));
             }
 
@@ -109,7 +133,9 @@ namespace NetPrintsEditor.Controls
                 else if (e.Data.GetDataPresent(typeof(NodePinVM)))
                 {
                     Graph.SuggestionPin = ((NodePinVM)e.Data.GetData(typeof(NodePinVM))).Pin;
-                    Graph.UpdateSuggestions();
+
+                    var mousePos = Mouse.GetPosition(drawCanvas);
+                    Graph.UpdateSuggestions(mousePos.X, mousePos.Y);
 
                     // Open the context menu
                     grid.ContextMenu.PlacementTarget = grid;
@@ -119,7 +145,7 @@ namespace NetPrintsEditor.Controls
                 }
                 else if (e.Data.GetDataPresent(typeof(NodeGraphVM)))
                 {
-                    Point mousePosition = e.GetPosition(graphEditorWindow);
+                    Point position = e.GetPosition(graphEditorWindow);
                     NodeGraphVM method = e.Data.GetData(typeof(NodeGraphVM)) as NodeGraphVM;
 
                     if (method.IsConstructor)
@@ -133,10 +159,10 @@ namespace NetPrintsEditor.Controls
                             method.Class.Type
                         );
 
-                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        Graph.AddNode(new AddNodeMessage
                         (
-                            typeof(ConstructorNode), Graph.Graph, mousePosition.X, mousePosition.Y,
-                            constructorSpecifier
+                            typeof(ConstructorNode), Graph.Graph, position.X, position.Y,
+                            null, constructorSpecifier
                         ));
                     }
                     else
@@ -151,11 +177,10 @@ namespace NetPrintsEditor.Controls
                             method.Modifiers, method.Visibility,
                             method.Class.Type, Array.Empty<BaseType>());
 
-                        UndoRedoStack.Instance.DoCommand(NetPrintsCommands.AddNode, new NetPrintsCommands.AddNodeParameters
+                        Graph.AddNode(new AddNodeMessage
                         (
-                            typeof(CallMethodNode), Graph.Graph, mousePosition.X, mousePosition.Y,
-                            methodSpecifier,
-                            Array.Empty<GenericType>()
+                            typeof(CallMethodNode), Graph.Graph, position.X, position.Y,
+                            null, methodSpecifier, Array.Empty<GenericType>()
                         ));
                     }
 
@@ -195,7 +220,8 @@ namespace NetPrintsEditor.Controls
         private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             Graph.SuggestionPin = null;
-            Graph.UpdateSuggestions();
+            var mousePos = Mouse.GetPosition(drawCanvas);
+            Graph.UpdateSuggestions(mousePos.X, mousePos.Y);
         }
 
         #region DrawCanvas dragging and scaling

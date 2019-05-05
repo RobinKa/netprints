@@ -1,20 +1,31 @@
-﻿<mah:MetroWindow
-        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"        
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:cmds="clr-namespace:NetPrintsEditor.Commands"
-        xmlns:Controls="clr-namespace:NetPrintsEditor.Controls"
+﻿<UserControl
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"        
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cmds="clr-namespace:NetPrintsEditor.Commands;assembly=NetPrintsEditor"
+    xmlns:Controls="clr-namespace:NetPrintsEditor.Controls;assembly=NetPrintsEditor"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    x:Class="NetPrintsEditor.ClassEditorWindow"
-        mc:Ignorable="d"
-        Title="{Binding Class.Name}" 
-        Icon="NetPrintsLogo.ico"
-        Height="720" Width="1280"
-        x:Name="classWindow">
+    x:Class="NetPrints.VSIX.ClassEditorView"
+    mc:Ignorable="d"
+    Background="{DynamicResource WindowBackgroundBrush}"
+    x:Name="classWindow">
 
-    <Window.CommandBindings>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <!-- Accent and AppTheme setting -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Emerald.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.CommandBindings>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveVariable" CanExecute="CommandRemoveVariable_CanExecute" Executed="CommandRemoveVariable_Execute" />
@@ -30,7 +41,7 @@
         <CommandBinding Command="ApplicationCommands.Undo" Executed="CommandUndo_Executed" />
         <CommandBinding Command="ApplicationCommands.Redo" Executed="CommandBinding_Executed" />
         <CommandBinding Command="ApplicationCommands.Delete" Executed="CommandDelete_Executed" />
-    </Window.CommandBindings>
+    </UserControl.CommandBindings>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -40,28 +51,13 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition />
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" x:Name="compileButton"
-                    ToolTipService.ShowOnDisabled="True"
-                    ToolTip="Compiles the project and outputs the source code if chosen."
-                    IsEnabled="{Binding Project.CanCompile}" Margin="5" Content="Compile"
-                    FontWeight="Bold" FontSize="16" Click="OnCompileButtonClicked"/>
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="1" x:Name="runButton"
-                    ToolTipService.ShowOnDisabled="True"
-                    ToolTip="Compile and run the project. Only enabled for executable projects that output binaries. Requires a static Main method."
-                    IsEnabled="{Binding Class.Project.CanCompileAndRun}"
-                    Margin="5" Content="Run" FontWeight="Bold" FontSize="16" Click="OnRunButtonClicked" />
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="2" x:Name="classPropertiesButton"
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="0" x:Name="classPropertiesButton"
                     ToolTip="Edit the properties of this class."
                     Margin="5" Content="Class" FontWeight="Bold" FontSize="16" Click="OnClassPropertiesClicked" />
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="3" x:Name="saveButton" Margin="5"
-                    ToolTip="Saves the project and all its classes."
-                    Content="Save" FontWeight="Bold" FontSize="16" Click="OnSaveButtonClicked" />
         </Grid>
 
         <Grid Grid.Row="1">
@@ -223,4 +219,4 @@
             </TabControl>
         </Grid>
     </Grid>
-</mah:MetroWindow>
+</UserControl>

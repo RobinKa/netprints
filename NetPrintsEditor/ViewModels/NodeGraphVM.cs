@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrintsEditor.Commands;
 using NetPrintsEditor.Controls;
 using NetPrintsEditor.Dialogs;
 using NetPrintsEditor.Messages;
@@ -16,7 +17,11 @@ namespace NetPrintsEditor.ViewModels
 {
     public class NodeGraphVM : ViewModelBase
     {
-        public IEnumerable<SearchableComboBoxItem> Suggestions { get; private set; }
+        public IEnumerable<SearchableComboBoxItem> Suggestions
+        {
+            get => SuggestionViewModel.Items;
+            private set => SuggestionViewModel.Items = value;
+        }
 
         /// <summary>
         /// Pin that was dragged to generate suggestions.
@@ -61,6 +66,10 @@ namespace NetPrintsEditor.ViewModels
             },
         };
 
+        public SuggestionListVM SuggestionViewModel { get; } = new SuggestionListVM();
+
+        public event EventHandler OnHideContextMenu;
+
         private List<object> GetBuiltInNodes(NodeGraph graph)
         {
             if (builtInNodes.TryGetValue(graph.GetType(), out var nodes))
@@ -71,8 +80,14 @@ namespace NetPrintsEditor.ViewModels
             return new List<object>();
         }
 
-        public void UpdateSuggestions()
+        public void UpdateSuggestions(double mouseX, double mouseY)
         {
+            SuggestionViewModel.Graph = Graph;
+            SuggestionViewModel.PositionX = mouseX;
+            SuggestionViewModel.PositionY = mouseY;
+            SuggestionViewModel.SuggestionPin = SuggestionPin;
+            SuggestionViewModel.HideContextMenu = () => OnHideContextMenu?.Invoke(this, EventArgs.Empty);
+
             // Show all relevant methods for the type of the pin
             IEnumerable<(string, object)> suggestions = new (string, object)[0];
 
@@ -751,6 +766,7 @@ namespace NetPrintsEditor.ViewModels
             Graph = graph;
 
             MessengerInstance.Register<NodeSelectionMessage>(this, OnNodeSelectionReceived);
+            MessengerInstance.Register<AddNodeMessage>(this, OnAddNodeReceived);
         }
 
         private void OnNodeSelectionReceived(NodeSelectionMessage msg)
@@ -762,5 +778,36 @@ namespace NetPrintsEditor.ViewModels
 
             SelectedNodes = SelectedNodes.Concat(msg.Nodes).Distinct();
         }
+
+        private void OnAddNodeReceived(AddNodeMessage msg)
+        {
+            if (!msg.Handled && msg.Graph == Graph)
+            {
+                msg.Handled = true;
+
+                // Make sure the node will be on the canvas
+                if (msg.PositionX < 0)
+                    msg.PositionX = 0;
+
+                if (msg.PositionY < 0)
+                    msg.PositionY = 0;
+
+                object[] parameters = new object[] { msg.Graph }.Concat(msg.ConstructorParameters).ToArray();
+                Node node = Activator.CreateInstance(msg.NodeType, parameters) as Node;
+                node.PositionX = msg.PositionX;
+                node.PositionY = msg.PositionY;
+
+                // If the node was created as part of a suggestion, connect it
+                // to the relevant node pin.
+                if (msg.SuggestionPin != null)
+                {
+                    GraphUtil.ConnectRelevantPins(msg.SuggestionPin,
+                        node, App.ReflectionProvider.TypeSpecifierIsSubclassOf,
+                        App.ReflectionProvider.HasImplicitCast);
+                }
+            }
+        }
+
+        public void AddNode(AddNodeMessage msg) => OnAddNodeReceived(msg);
     }
 }

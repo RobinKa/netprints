@@ -1,24 +1,28 @@
 ﻿using MahApps.Metro.Controls;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrints.Serialization;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Controls;
 using NetPrintsEditor.Messages;
 using NetPrintsEditor.ViewModels;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static NetPrintsEditor.Commands.NetPrintsCommands;
 
-namespace NetPrintsEditor
+namespace NetPrints.VSIX
 {
     /// <summary>
     /// Interaction logic for ClassEditorWindow.xaml
     /// </summary>
-    public partial class ClassEditorWindow : MetroWindow
+    public partial class ClassEditorView : UserControl, IVsPersistDocData2, IPersistFileFormat
     {
         public ClassEditorVM ViewModel
         {
@@ -28,7 +32,7 @@ namespace NetPrintsEditor
 
         private readonly UndoRedoStack undoRedoStack = UndoRedoStack.Instance;
 
-        public ClassEditorWindow()
+        public ClassEditorView()
         {
             InitializeComponent();
         }
@@ -182,8 +186,8 @@ namespace NetPrintsEditor
 
             e.CanExecute = e.Parameter is ConnectPinsParameters cp
                 && GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin,
-                (a, b) => App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
-                (a, b) => App.ReflectionProvider.HasImplicitCast(a, b));
+                (a, b) => NetPrintsEditor.App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
+                (a, b) => NetPrintsEditor.App.ReflectionProvider.HasImplicitCast(a, b));
         }
 
         private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)
@@ -370,7 +374,7 @@ namespace NetPrintsEditor
                     viewerTabControl.SelectedIndex = 0;
                 }
 
-                if (graphEditor.Graph.Graph == m.Graph)
+                if (graphEditor.Graph?.Graph == m.Graph)
                 {
                     graphEditor.Graph = null;
                 }
@@ -401,5 +405,170 @@ namespace NetPrintsEditor
             // old class if the project isn't saved.
             ViewModel.Project.Save();
         }
+
+        #region Persistence
+        // TODO: Move these out of the view / DI the implementation
+
+        /// <summary>
+        /// Path where the class is stored.
+        /// </summary>
+        private string classPath;
+
+        private bool dirty;
+        private bool initialGeneratedCodeChanged;
+
+        public Action ReloadReflectionProvider { get; set; }
+
+        public int GetGuidEditorType(out Guid pClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int IsDocDataDirty(out int pfDirty)
+        {
+            pfDirty = dirty ? 1 : 0;
+            return VSConstants.S_OK;
+        }
+
+        public int SetUntitledDocPath(string pszDocDataPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int LoadDocData(string pszMkDocument)
+        {
+            classPath = pszMkDocument;
+
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+            return VSConstants.S_OK;
+        }
+
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ViewModel.GeneratedCode))
+            {
+                if (initialGeneratedCodeChanged)
+                {
+                    dirty = true;
+                }
+                else
+                {
+                    initialGeneratedCodeChanged = true;
+                }
+            }
+        }
+
+        public int SaveDocData(VSSAVEFLAGS dwSave, out string pbstrMkDocumentNew, out int pfSaveCanceled)
+        {
+            SerializationHelper.SaveClass(ViewModel.Class, classPath);
+
+            // Generate C# code
+            // TODO: Move this out of view
+            CompilationUtil.CompileNetPrintsClass(classPath, Path.ChangeExtension(classPath, ".cs"));
+            dirty = false;
+
+            ReloadReflectionProvider?.Invoke();
+
+            pbstrMkDocumentNew = classPath;
+            pfSaveCanceled = 0;
+
+            return VSConstants.S_OK;
+        }
+
+        public int Close()
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnRegisterDocData(uint docCookie, IVsHierarchy pHierNew, uint itemidNew)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int RenameDocData(uint grfAttribs, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
+        {
+            classPath = pszMkDocumentNew;
+            // TODO: Delete old files?
+
+            return VSConstants.S_OK;
+        }
+
+        public int IsDocDataReloadable(out int pfReloadable)
+        {
+            pfReloadable = 0;
+
+            return VSConstants.S_OK;
+        }
+
+        public int ReloadDocData(uint grfFlags)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int SetDocDataDirty(int fDirty)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int IsDocDataReadOnly(out int pfReadOnly)
+        {
+            pfReadOnly = 0;
+
+            return VSConstants.S_OK;
+        }
+
+        public int SetDocDataReadOnly(int fReadOnly)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int GetClassID(out Guid pClassID)
+        {
+            pClassID = Guid.Empty;
+            return VSConstants.S_OK;
+        }
+
+        public int IsDirty(out int pfIsDirty)
+        {
+            pfIsDirty = dirty ? 1 : 0;
+            return VSConstants.S_OK;
+        }
+
+        public int InitNew(uint nFormatIndex)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int Load(string pszFilename, uint grfMode, int fReadOnly)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int Save(string pszFilename, int fRemember, uint nFormatIndex)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int SaveCompleted(string pszFilename)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int GetCurFile(out string ppszFilename, out uint pnFormatIndex)
+        {
+            ppszFilename = classPath;
+            pnFormatIndex = 0;
+
+            return VSConstants.S_OK;
+        }
+
+        public int GetFormatList(out string ppszFormatList)
+        {
+            ppszFormatList = null;
+
+            return VSConstants.S_OK;
+        }
+        #endregion
     }
 }
