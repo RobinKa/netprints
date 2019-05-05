@@ -17,6 +17,7 @@ Version 0.0.7 of the standalone editor can be found [here](https://github.com/Ro
 
 # Target Frameworks
 Until version 0.0.7 .NET Core 3.0 was required. Since then the projects target the frameworks in the table below.
+
 | Project | Target |
 |--|--|
 | NetPrints | .NET Standard 2.0 |
