@@ -19,6 +19,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
         <Grid Grid.Row="0">
@@ -72,6 +73,10 @@
                     <TextBlock Text="Set" TextTrimming="CharacterEllipsis" />
                 </Label>
             </Grid>
+        </Grid>
+
+        <Grid Grid.Row="3" Margin="20,0,0,0">
+            <Button Click="OnOpenTypeGraphClicked" Content="Open type graph" />
         </Grid>
     </Grid>
 </UserControl>

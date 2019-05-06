@@ -1,5 +1,7 @@
-﻿using PropertyChanged;
+﻿using NetPrints.Graph;
+using PropertyChanged;
 using System;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -57,11 +59,17 @@ namespace NetPrints.Core
         /// <summary>
         /// Specifier for the type of the variable.
         /// </summary>
-        [DataMember]
-        public TypeSpecifier Type
+        public TypeSpecifier Type => TypeGraph.ReturnType;
+
+        [DataMember(Name="Type", EmitDefaultValue = false, IsRequired = false)]
+        private TypeSpecifier OldType
         {
-            get;
-            set;
+            get => null;
+            set
+            {
+                TypeGraph = new TypeGraph();
+                GraphUtil.CreateNestedTypeNode(TypeGraph, value, 500, 500);
+            }
         }
 
         /// <summary>
@@ -79,6 +87,16 @@ namespace NetPrints.Core
         /// </summary>
         [DataMember]
         public MethodGraph SetterMethod
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Graph specifying the type of this variable.
+        /// </summary>
+        [DataMember]
+        public TypeGraph TypeGraph
         {
             get;
             set;
@@ -151,20 +169,36 @@ namespace NetPrints.Core
         /// <summary>
         /// Creates a PropertySpecifier.
         /// </summary>
+        /// <param name="cls">Graph the variable is a part of.</param>
         /// <param name="name">Name of the property.</param>
         /// <param name="type">Specifier for the type of this property.</param>
         /// <param name="getter">Get method for the property. Can be null if there is none.</param>
         /// <param name="setter">Set method for the property. Can be null if there is none.</param>
-        /// <param name="declaringType">Specifier for the type the property is contained in.</param>
+        /// <param name="modifiers">Modifiers of the variable.</param>
         public Variable(ClassGraph cls, string name, TypeSpecifier type, MethodGraph getter,
             MethodGraph setter, VariableModifiers modifiers)
         {
             Class = cls;
             Name = name;
-            Type = type;
             GetterMethod = getter;
             SetterMethod = setter;
             Modifiers = modifiers;
+
+            // Create a type graph with the type as its return type.
+            TypeGraph = new TypeGraph();
+            NodeOutputTypePin typePin = GraphUtil.CreateNestedTypeNode(TypeGraph, type, 500, 300).OutputTypePins[0];
+            TypeGraph.ReturnNode.PositionX = 800;
+            TypeGraph.ReturnNode.PositionY = 300;
+            GraphUtil.ConnectTypePins(typePin, TypeGraph.ReturnNode.TypePin);
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            if (TypeGraph is null)
+            {
+                TypeGraph = new TypeGraph();
+            }
         }
     }
 }

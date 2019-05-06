@@ -65,6 +65,11 @@ namespace NetPrintsEditor.Controls
             ViewModel.OpenSetterGraph();
         }
 
+        private void OnOpenTypeGraphClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.OpenTypeGraph();
+        }
+
         private void OnMouseMoveTryDrag(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && sender is FrameworkElement element

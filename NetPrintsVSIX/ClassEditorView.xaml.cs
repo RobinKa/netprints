@@ -291,7 +291,9 @@ namespace NetPrints.VSIX
             {
                 foreach (var selectedNode in graphEditor.Graph.SelectedNodes)
                 {
-                    if (!(selectedNode.Node is MethodEntryNode) && !(selectedNode.Node is ClassReturnNode)
+                    if (!(selectedNode.Node is MethodEntryNode)
+                        && !(selectedNode.Node is ClassReturnNode)
+                        && !(selectedNode.Node is TypeReturnNode)
                         && selectedNode.Node != (graphEditor.Graph.Graph as MethodGraph)?.MainReturnNode)
                     {
                         // Remove the node from its method

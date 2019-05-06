@@ -7,6 +7,7 @@ namespace NetPrints.Core
     [KnownType(typeof(MethodGraph))]
     [KnownType(typeof(ConstructorGraph))]
     [KnownType(typeof(ClassGraph))]
+    [KnownType(typeof(TypeGraph))]
     public abstract class NodeGraph
     {
         /// <summary>

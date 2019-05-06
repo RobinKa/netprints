@@ -32,6 +32,7 @@ namespace NetPrints.Graph
     [KnownType(typeof(ThrowNode))]
     [KnownType(typeof(AwaitNode))]
     [KnownType(typeof(TernaryNode))]
+    [KnownType(typeof(TypeReturnNode))]
     [AddINotifyPropertyChangedInterface]
     public abstract class Node
     {

@@ -9,11 +9,7 @@ namespace NetPrintsEditor.ViewModels
 {
     public class MemberVariableVM : ViewModelBase
     {
-        public TypeSpecifier Type
-        {
-            get => Variable.Type;
-            set => Variable.Type = value;
-        }
+        public TypeSpecifier Type => Variable.Type;
 
         public string Name
         {
@@ -170,6 +166,11 @@ namespace NetPrintsEditor.ViewModels
         public void OpenSetterGraph()
         {
             MessengerInstance.Send(new OpenGraphMessage(Setter));
+        }
+
+        public void OpenTypeGraph()
+        {
+            MessengerInstance.Send(new OpenGraphMessage(Variable.TypeGraph));
         }
     }
 }
