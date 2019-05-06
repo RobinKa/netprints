@@ -45,6 +45,7 @@ namespace NetPrints.Translator
             { typeof(ExplicitCastNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateExplicitCastNode(node as ExplicitCastNode) } },
             { typeof(ThrowNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateThrowNode(node as ThrowNode) } },
             { typeof(AwaitNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateAwaitNode(node as AwaitNode) } },
+            { typeof(TernaryNode), new List<NodeTypeHandler> { (translator, node) => translator.TranslateTernaryNode(node as TernaryNode) } },
 
             { typeof(ForLoopNode), new List<NodeTypeHandler> {
                 (translator, node) => translator.TranslateStartForLoopNode(node as ForLoopNode),
@@ -727,6 +728,26 @@ namespace NetPrints.Translator
             }
 
             builder.AppendLine($"await {GetPinIncomingValue(node.TaskPin)};");
+        }
+
+        public void TranslateTernaryNode(TernaryNode node)
+        {
+            if (!node.IsPure)
+            {
+                // Translate all the pure nodes this node depends on in
+                // the correct order
+                TranslateDependentPureNodes(node);
+            }
+
+            builder.Append($"{GetOrCreatePinName(node.OutputObjectPin)} = ");
+            builder.Append($"{GetPinIncomingValue(node.ConditionPin)} ? ");
+            builder.Append($"{GetPinIncomingValue(node.TrueObjectPin)} : ");
+            builder.AppendLine($"{GetPinIncomingValue(node.FalseObjectPin)};");
+
+            if (!node.IsPure)
+            {
+                WriteGotoOutputPinIfNecessary(node.OutputExecPins.Single(), node.InputExecPins.Single());
+            }
         }
 
         public void TranslateVariableSetterNode(VariableSetterNode node)

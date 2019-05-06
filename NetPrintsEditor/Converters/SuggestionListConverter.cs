@@ -101,6 +101,11 @@ namespace NetPrintsEditor.Converters
                     text = "Await";
                     iconPath = "Task_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<TernaryNode>())
+                {
+                    text = "Ternary";
+                    iconPath = "ConditionalRule_16x.png";
+                }
                 else
                 {
                     text = t.FullCodeName;

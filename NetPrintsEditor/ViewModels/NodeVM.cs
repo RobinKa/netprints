@@ -48,6 +48,9 @@ namespace NetPrintsEditor.ViewModels
         private static readonly SolidColorBrush ThrowBrush =
             new SolidColorBrush(Color.FromArgb(0xFF, 0xBB, 0x20, 0x20));
 
+        private static readonly SolidColorBrush TernaryBrush =
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x40, 0x3A, 0x3A));
+
         /// <summary>
         /// Brush for the header of the node.
         /// </summary>
@@ -101,6 +104,10 @@ namespace NetPrintsEditor.ViewModels
                 else if (Node is ThrowNode)
                 {
                     return ThrowBrush;
+                }
+                else if (Node is TernaryNode)
+                {
+                    return TernaryBrush;
                 }
 
                 return DefaultNodeBrush;

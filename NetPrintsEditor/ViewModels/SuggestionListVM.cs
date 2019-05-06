@@ -188,6 +188,11 @@ namespace NetPrintsEditor.ViewModels
                     // ThrowNode(Method method)
                     AddNode<ThrowNode>();
                 }
+                else if (t == TypeSpecifier.FromType<TernaryNode>())
+                {
+                    // TernaryNode(NodeGraph graph)
+                    AddNode<TernaryNode>();
+                }
                 else if (t == TypeSpecifier.FromType<LiteralNode>())
                 {
                     SelectTypeDialog selectTypeDialog = new SelectTypeDialog();
