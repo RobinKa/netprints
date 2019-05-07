@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace NetPrintsEditor.Reflection
 {
@@ -188,6 +189,25 @@ namespace NetPrintsEditor.Reflection
             documentationUtil = new DocumentationUtil(compilation);
         }
 
+        /// <summary>
+        /// Gets all classes declared in the compilation's syntax trees.
+        /// Useful for when they can not be compiled into assemblies because
+        /// of errors and we still want their symbols.
+        /// </summary>
+        private IEnumerable<INamedTypeSymbol> GetSyntaxTreeTypes()
+        {
+            foreach (var syntaxTree in compilation.SyntaxTrees)
+            {
+                var model = compilation.GetSemanticModel(syntaxTree, true);
+                var classSyntaxes = syntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>();
+                var classes = classSyntaxes.Select(syntax => model.GetDeclaredSymbol(syntax));
+                foreach (var cls in classes)
+                {
+                    yield return cls;
+                }
+            }
+        }
+
         private IEnumerable<INamedTypeSymbol> GetTypeNestedTypes(INamedTypeSymbol typeSymbol)
         {
             var typeMembers = typeSymbol.GetTypeMembers();
@@ -203,8 +223,8 @@ namespace NetPrintsEditor.Reflection
 
         private IEnumerable<INamedTypeSymbol> GetValidTypes()
         {
-            return compilation.SourceModule.ReferencedAssemblySymbols.SelectMany(module =>
-                GetNamespaceTypes(module.GlobalNamespace));
+            return compilation.SourceModule.ReferencedAssemblySymbols.SelectMany(module => GetNamespaceTypes(module.GlobalNamespace))
+                .Concat(GetSyntaxTreeTypes());
         }
 
         private IEnumerable<INamedTypeSymbol> GetValidTypes(string name)
@@ -213,7 +233,9 @@ namespace NetPrintsEditor.Reflection
             {
                 try { return module.GetTypeByMetadataName(name); }
                 catch { return null; }
-            }).Where(t => t != null);
+            })
+            .Where(t => t != null)
+            .Concat(GetSyntaxTreeTypes().Where(t => t.GetFullName() == name)); // TODO: Correct full name
         }
 
         #region IReflectionProvider
