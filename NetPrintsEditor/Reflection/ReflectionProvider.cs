@@ -85,20 +85,22 @@ namespace NetPrintsEditor.Reflection
 
         public static bool IsSubclassOf(this ITypeSymbol symbol, ITypeSymbol cls)
         {
-            ITypeSymbol candidateBaseType = symbol;
-
             // If cls is an interface type, check if the interface is implemented
             // TODO: Currently only checking full name and type parameter count for interfaces.
-            if (candidateBaseType != null && cls.TypeKind == TypeKind.Interface
-                && candidateBaseType.AllInterfaces.Any(interf =>
-                    cls is INamedTypeSymbol namedCls
-                    && interf.GetFullName() == cls.GetFullName()
-                    && interf.TypeParameters.Length == namedCls.TypeParameters.Length))
+            if (symbol != null && cls.TypeKind == TypeKind.Interface && cls is INamedTypeSymbol namedCls)
             {
-                return true;
+                bool IsSameInterface(INamedTypeSymbol a, INamedTypeSymbol b)
+                {
+                    return a.GetFullName() == b.GetFullName() && a.TypeParameters.Length == b.TypeParameters.Length;
+                }
+
+                return (symbol is INamedTypeSymbol namedSymbol && IsSameInterface(namedSymbol, namedCls))
+                    || symbol.AllInterfaces.Any(interf =>
+                        cls is INamedTypeSymbol namedCls && IsSameInterface(interf, namedCls));
             }
 
             // Traverse base types to find out if symbol inherits from cls
+            ITypeSymbol candidateBaseType = symbol;
             while (candidateBaseType != null)
             {
                 if (candidateBaseType == cls)
