@@ -346,7 +346,15 @@ namespace NetPrints.Core
                     // Translate the class to C#
                     ClassTranslator classTranslator = new ClassTranslator();
 
-                    string code = classTranslator.TranslateClass(cls);
+                    string code;
+                    try
+                    {
+                        code = classTranslator.TranslateClass(cls);
+                    }
+                    catch (Exception ex)
+                    {
+                        code = ex.ToString();
+                    }
 
                     string[] directories = cls.FullName.Split('.');
                     directories = directories
@@ -443,7 +451,15 @@ namespace NetPrints.Core
                 // Translate the class to C#
                 ClassTranslator classTranslator = new ClassTranslator();
 
-                string code = classTranslator.TranslateClass(cls);
+                string code;
+                try
+                {
+                    code = classTranslator.TranslateClass(cls);
+                }
+                catch (Exception ex)
+                {
+                    code = ex.ToString();
+                }
 
                 classSources.Add(code);
             });
