@@ -81,6 +81,9 @@ namespace NetPrints.Graph
             AddInputDataPin("MaxIndex", TypeSpecifier.FromType<int>());
 
             AddOutputDataPin("Index", TypeSpecifier.FromType<int>());
+
+            InitialIndexPin.UsesExplicitDefaultValue = true;
+            InitialIndexPin.ExplicitDefaultValue = 0;
         }
 
         public override string ToString()
