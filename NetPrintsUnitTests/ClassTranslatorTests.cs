@@ -64,7 +64,7 @@ namespace NetPrints.Tests
                 MethodModifiers.None, MemberVisibility.Public, TypeSpecifier.FromType<string>(), Array.Empty<BaseType>());
             //MethodSpecifier writeConsoleSpecifier = typeof(Console).GetMethods().Single(m => m.Name == "WriteLine" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
             TypeSpecifier stringType = TypeSpecifier.FromType<string>();
-            MethodSpecifier writeConsoleSpecifier = new MethodSpecifier("WriteLine", new MethodParameter[] { new MethodParameter("argName", stringType, MethodParameterPassType.Default) }, new BaseType[0],
+            MethodSpecifier writeConsoleSpecifier = new MethodSpecifier("WriteLine", new MethodParameter[] { new MethodParameter("argName", stringType, MethodParameterPassType.Default, false, null) }, new BaseType[0],
                 MethodModifiers.None, MemberVisibility.Public, TypeSpecifier.FromType(typeof(Console)), new BaseType[0]);
 
             // Create nodes

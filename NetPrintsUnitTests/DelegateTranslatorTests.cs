@@ -42,8 +42,8 @@ namespace NetPrints.Tests
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
                 new MethodParameter[]
                 {
-                    new MethodParameter("arg1", TypeSpecifier.FromType<int>(), MethodParameterPassType.Default),
-                    new MethodParameter("arg2", TypeSpecifier.FromType<string>(), MethodParameterPassType.Default)
+                    new MethodParameter("arg1", TypeSpecifier.FromType<int>(), MethodParameterPassType.Default, false, null),
+                    new MethodParameter("arg2", TypeSpecifier.FromType<string>(), MethodParameterPassType.Default, false, null)
                 },
                 new BaseType[] { TypeSpecifier.FromType<float>() },
                 MethodModifiers.Static, MemberVisibility.Public,
