@@ -23,10 +23,34 @@ namespace NetPrints.Core
             private set;
         }
 
-        public MethodParameter(string name, BaseType type, MethodParameterPassType passType)
+        /// <summary>
+        /// Whether the parameter has an explicit default value.
+        /// </summary>
+        [DataMember]
+        public bool HasExplicitDefaultValue
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Explicit default value for the parameter.
+        /// Only valid when HasExplicitDefaultValue is true.
+        /// </summary>
+        [DataMember]
+        public object ExplicitDefaultValue
+        {
+            get;
+            private set;
+        }
+
+        public MethodParameter(string name, BaseType type, MethodParameterPassType passType,
+            bool hasExplicitDefaultValue, object explicitDefaultValue)
             : base(name, type)
         {
             PassType = passType;
+            HasExplicitDefaultValue = hasExplicitDefaultValue;
+            ExplicitDefaultValue = explicitDefaultValue;
         }
     }
 

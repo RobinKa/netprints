@@ -64,12 +64,12 @@ namespace NetPrintsEditor.Reflection
         {
             IEnumerable<MethodParameter> parameters = new[]
             {
-                    new MethodParameter("a", argType, MethodParameterPassType.Default),
+                new MethodParameter("a", argType, MethodParameterPassType.Default, false, null),
             };
 
             if (!unary)
             {
-                parameters = parameters.Concat(new[] { new MethodParameter("b", argType, MethodParameterPassType.Default) });
+                parameters = parameters.Concat(new[] { new MethodParameter("b", argType, MethodParameterPassType.Default, false, null) });
             }
 
             all.Add(new MethodSpecifier(opName, parameters, new[] { returnType }, MethodModifiers.Static, MemberVisibility.Public, returnType, new BaseType[0]));

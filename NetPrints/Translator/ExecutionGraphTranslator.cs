@@ -109,9 +109,14 @@ namespace NetPrints.Translator
                 {
                     return TranslatorUtil.ObjectToLiteral(pin.UnconnectedValue, (TypeSpecifier)pin.PinType.Value);
                 }
+                else if (pin.UsesExplicitDefaultValue)
+                {
+                    return null;
+                }
                 else
                 {
-                    return $"default({pin.PinType.Value.FullCodeName})";
+                    throw new Exception($"Input data pin {pin} on {pin.Node} was unconnected without an explicit default or unconnected value.");
+                    //return $"default({pin.PinType.Value.FullCodeName})";
                 }
             }
             else
@@ -512,6 +517,8 @@ namespace NetPrints.Translator
             // into operator symbols. Otherwise just call the method normally.
             if (OperatorUtil.TryGetOperatorInfo(node.MethodSpecifier, out OperatorInfo operatorInfo))
             {
+                Debug.Assert(!argumentNames.Any(a => a is null));
+
                 if (operatorInfo.Unary)
                 {
                     if (argumentNames.Count() != 1)
@@ -561,32 +568,49 @@ namespace NetPrints.Translator
                     }
                 }
 
-                // Prefix with "out" / "ref" / "in"
                 string[] argNameArray = argumentNames.ToArray();
                 Debug.Assert(argNameArray.Length == node.MethodSpecifier.Parameters.Count);
 
-                for (int i = 0; i < node.MethodSpecifier.Parameters.Count; i++)
+                bool prependArgumentName = argNameArray.Any(a => a is null);
+
+                List<string> arguments = new List<string>();
+
+                foreach ((var argName, var methodParameter) in argNameArray.Zip(node.MethodSpecifier.Parameters, Tuple.Create))
                 {
-                    MethodParameterPassType passType = node.MethodSpecifier.Parameters[i].PassType;
-                    switch (passType)
+                    // null means use default value
+                    if (!(argName is null))
                     {
-                        case MethodParameterPassType.Out:
-                            argNameArray[i] = "out " + argNameArray[i];
-                            break;
-                        case MethodParameterPassType.Reference:
-                            argNameArray[i] = "ref " + argNameArray[i];
-                            break;
-                        case MethodParameterPassType.In:
-                            // Don't pass with in as it could break implicit casts.
-                            // argNameArray[i] = "in " + argNameArray[i];
-                            break;
-                        default:
-                            break;
+                        string argument = argName;
+
+                        // Prepend with argument name if wanted
+                        if (prependArgumentName)
+                        {
+                            argument = $"{methodParameter.Name}: {argument}";
+                        }
+
+                        // Prefix with "out" / "ref" / "in"
+                        switch (methodParameter.PassType)
+                        {
+                            case MethodParameterPassType.Out:
+                                argument = "out " + argument;
+                                break;
+                            case MethodParameterPassType.Reference:
+                                argument = "ref " + argument;
+                                break;
+                            case MethodParameterPassType.In:
+                                // Don't pass with in as it could break implicit casts.
+                                // argument = "in " + argument;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        arguments.Add(argument);
                     }
                 }
 
                 // Write the method call
-                builder.AppendLine($"{node.BoundMethodName}({string.Join(", ", argNameArray)});");
+                builder.AppendLine($"{node.BoundMethodName}({string.Join(", ", arguments)});");
             }
 
             // Assign the real variables from the temporary tuple
@@ -651,7 +675,51 @@ namespace NetPrints.Translator
 
             // Write constructor arguments
             var argumentNames = GetPinIncomingValues(node.ArgumentPins);
-            builder.AppendLine($"({string.Join(", ", argumentNames)});");
+            //builder.AppendLine($"({string.Join(", ", argumentNames)});");
+
+            string[] argNameArray = argumentNames.ToArray();
+            Debug.Assert(argNameArray.Length == node.ConstructorSpecifier.Arguments.Count);
+
+            bool prependArgumentName = argNameArray.Any(a => a is null);
+
+            List<string> arguments = new List<string>();
+
+            foreach ((var argName, var constructorParameter) in argNameArray.Zip(node.ConstructorSpecifier.Arguments, Tuple.Create))
+            {
+                // null means use default value
+                if (!(argName is null))
+                {
+                    string argument = argName;
+
+                    // Prepend with argument name if wanted
+                    if (prependArgumentName)
+                    {
+                        argument = $"{constructorParameter.Name}: {argument}";
+                    }
+
+                    // Prefix with "out" / "ref" / "in"
+                    switch (constructorParameter.PassType)
+                    {
+                        case MethodParameterPassType.Out:
+                            argument = "out " + argument;
+                            break;
+                        case MethodParameterPassType.Reference:
+                            argument = "ref " + argument;
+                            break;
+                        case MethodParameterPassType.In:
+                            // Don't pass with in as it could break implicit casts.
+                            // argument = "in " + argument;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    arguments.Add(argument);
+                }
+            }
+
+            // Write the method call
+            builder.AppendLine($"({string.Join(", ", arguments)});");
 
             if (!node.IsPure)
             {

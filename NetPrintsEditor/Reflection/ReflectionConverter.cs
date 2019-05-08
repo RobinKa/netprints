@@ -122,7 +122,8 @@ namespace NetPrintsEditor.Reflection
 
         public static MethodParameter MethodParameterFromSymbol(in IParameterSymbol paramSymbol)
         {
-            return new MethodParameter(paramSymbol.Name, BaseTypeSpecifierFromSymbol(paramSymbol.Type), refKindToPassType[paramSymbol.RefKind]);
+            return new MethodParameter(paramSymbol.Name, BaseTypeSpecifierFromSymbol(paramSymbol.Type), refKindToPassType[paramSymbol.RefKind],
+                paramSymbol.HasExplicitDefaultValue, paramSymbol.HasExplicitDefaultValue ? paramSymbol.ExplicitDefaultValue : null);
         }
 
         public static MethodSpecifier MethodSpecifierFromSymbol(IMethodSymbol method)
@@ -244,7 +245,7 @@ namespace NetPrintsEditor.Reflection
         public static ConstructorSpecifier ConstructorSpecifierFromSymbol(IMethodSymbol constructorMethodSymbol)
         {
             return new ConstructorSpecifier(
-                constructorMethodSymbol.Parameters.Select(p => NamedBaseTypeSpecifierFromSymbol(p)),
+                constructorMethodSymbol.Parameters.Select(p => MethodParameterFromSymbol(p)),
                 TypeSpecifierFromSymbol(constructorMethodSymbol.ContainingType));
         }
     }

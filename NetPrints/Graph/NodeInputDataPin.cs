@@ -79,6 +79,20 @@ namespace NetPrints.Graph
 
         private object unconnectedValue;
 
+        [DataMember]
+        public object ExplicitDefaultValue
+        {
+            get;
+            set;
+        }
+
+        [DataMember]
+        public bool UsesExplicitDefaultValue
+        {
+            get;
+            set;
+        }
+
         public NodeInputDataPin(Node node, string name, ObservableValue<BaseType> pinType)
             : base(node, name, pinType)
         {

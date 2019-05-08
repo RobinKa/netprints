@@ -175,9 +175,17 @@ namespace NetPrints.Graph
 
             AddExceptionPins();
 
-            foreach (Named<BaseType> argument in MethodSpecifier.Parameters)
+            foreach (var argument in MethodSpecifier.Parameters)
             {
                 AddInputDataPin(argument.Name, argument.Value);
+
+                // Set default parameter value if set
+                if (argument.HasExplicitDefaultValue)
+                {
+                    var newPin = InputDataPins.Last();
+                    newPin.UsesExplicitDefaultValue = true;
+                    newPin.ExplicitDefaultValue = argument.ExplicitDefaultValue;
+                }
             }
 
             foreach (BaseType returnType in MethodSpecifier.ReturnTypes)
