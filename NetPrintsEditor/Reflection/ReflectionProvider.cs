@@ -85,10 +85,20 @@ namespace NetPrintsEditor.Reflection
 
         public static bool IsSubclassOf(this ITypeSymbol symbol, ITypeSymbol cls)
         {
-            // Traverse base types to find out if symbol inherits from cls
-
             ITypeSymbol candidateBaseType = symbol;
 
+            // If cls is an interface type, check if the interface is implemented
+            // TODO: Currently only checking full name and type parameter count for interfaces.
+            if (candidateBaseType != null && cls.TypeKind == TypeKind.Interface
+                && candidateBaseType.AllInterfaces.Any(interf =>
+                    cls is INamedTypeSymbol namedCls
+                    && interf.GetFullName() == cls.GetFullName()
+                    && interf.TypeParameters.Length == namedCls.TypeParameters.Length))
+            {
+                return true;
+            }
+
+            // Traverse base types to find out if symbol inherits from cls
             while (candidateBaseType != null)
             {
                 if (candidateBaseType == cls)
@@ -117,6 +127,7 @@ namespace NetPrintsEditor.Reflection
     {
         private readonly CSharpCompilation compilation;
         private readonly DocumentationUtil documentationUtil;
+        private readonly List<IMethodSymbol> extensionMethods;
 
         private static (EmitResult, Stream) CompileInMemory(CSharpCompilation compilation)
         {
@@ -185,6 +196,8 @@ namespace NetPrintsEditor.Reflection
                 assemblyReferences = assemblyReferences.Concat(new[] { MetadataReference.CreateFromStream(stream) });
                 compilation = CSharpCompilation.Create("C", references: assemblyReferences);
             }
+
+            extensionMethods = new List<IMethodSymbol>(GetValidTypes().SelectMany(t => t.GetMethods().Where(m => m.IsExtensionMethod)));
 
             documentationUtil = new DocumentationUtil(compilation);
         }
@@ -489,6 +502,11 @@ namespace NetPrintsEditor.Reflection
                 }
 
                 methodSymbols = type.GetMethods();
+
+                var extensions = extensionMethods.Where(m => type.IsSubclassOf(m.Parameters[0].Type)).ToList();
+
+                // Add applicable extension methods
+                methodSymbols = methodSymbols.Concat(extensions);
             }
             else
             {
