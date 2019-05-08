@@ -58,6 +58,7 @@ namespace NetPrints.Translator
             { typeof(MakeDelegateNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeDelegateNode(node as MakeDelegateNode) } },
             { typeof(TypeOfNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateTypeOfNode(node as TypeOfNode) } },
             { typeof(MakeArrayNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateMakeArrayNode(node as MakeArrayNode) } },
+            { typeof(DefaultNode), new List<NodeTypeHandler> { (translator, node) => translator.PureTranslateDefaultNode(node as DefaultNode) } },
         };
 
         private int GetNextStateId()
@@ -1081,6 +1082,10 @@ namespace NetPrints.Translator
 
                 builder.AppendLine("};");
             }
+        }
+        public void PureTranslateDefaultNode(DefaultNode node)
+        {
+            builder.AppendLine($"{GetOrCreatePinName(node.DefaultValuePin)} = default({node.Type.FullCodeName});");
         }
 
         public void TranslateRerouteNode(RerouteNode node)

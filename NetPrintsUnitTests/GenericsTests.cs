@@ -32,8 +32,13 @@ namespace NetPrintsUnitTests
 
             // Add open list parameter
             TypeNode listTypeNode = new TypeNode(openMethod, listType);
+
             openMethod.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(listTypeNode.OutputTypePins[0], openMethod.MainReturnNode.InputTypePins[0]);
+
+            DefaultNode defaultNode = new DefaultNode(openMethod);
+            GraphUtil.ConnectTypePins(listTypeNode.OutputTypePins[0], defaultNode.TypePin);
+            GraphUtil.ConnectDataPins(defaultNode.DefaultValuePin, openMethod.MainReturnNode.InputDataPins[0]);
 
             GraphUtil.ConnectExecPins(openMethod.EntryNode.InitialExecutionPin, openMethod.ReturnNodes.First().ReturnPin);
 
@@ -53,6 +58,10 @@ namespace NetPrintsUnitTests
             TypeNode closedListTypeNode = new TypeNode(closedMethod, closedListType);
             closedMethod.MainReturnNode.AddReturnType();
             GraphUtil.ConnectTypePins(closedListTypeNode.OutputTypePins[0], closedMethod.MainReturnNode.InputTypePins[0]);
+
+            DefaultNode closedDefaultNode = new DefaultNode(closedMethod);
+            GraphUtil.ConnectTypePins(closedListTypeNode.OutputTypePins[0], closedDefaultNode.TypePin);
+            GraphUtil.ConnectDataPins(closedDefaultNode.DefaultValuePin, closedMethod.MainReturnNode.InputDataPins[0]);
 
             GraphUtil.ConnectExecPins(closedMethod.EntryNode.InitialExecutionPin, closedMethod.ReturnNodes.First().ReturnPin);
 

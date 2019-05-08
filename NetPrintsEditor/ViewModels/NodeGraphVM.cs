@@ -46,6 +46,7 @@ namespace NetPrintsEditor.ViewModels
                 TypeSpecifier.FromType<ThrowNode>(),
                 TypeSpecifier.FromType<AwaitNode>(),
                 TypeSpecifier.FromType<TernaryNode>(),
+                TypeSpecifier.FromType<DefaultNode>(),
             },
             [typeof(ConstructorGraph)] = new List<object>()
             {
@@ -60,6 +61,7 @@ namespace NetPrintsEditor.ViewModels
                 TypeSpecifier.FromType<MakeArrayTypeNode>(),
                 TypeSpecifier.FromType<ThrowNode>(),
                 TypeSpecifier.FromType<TernaryNode>(),
+                TypeSpecifier.FromType<DefaultNode>(),
             },
             [typeof(ClassGraph)] = new List<object>()
             {

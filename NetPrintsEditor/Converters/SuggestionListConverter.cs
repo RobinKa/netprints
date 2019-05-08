@@ -106,6 +106,11 @@ namespace NetPrintsEditor.Converters
                     text = "Ternary";
                     iconPath = "ConditionalRule_16x.png";
                 }
+                else if (t == TypeSpecifier.FromType<DefaultNode>())
+                {
+                    text = "Default";
+                    iconPath = "None_16x.png";
+                }
                 else
                 {
                     text = t.FullCodeName;

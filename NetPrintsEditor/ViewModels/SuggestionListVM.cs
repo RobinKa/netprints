@@ -233,6 +233,10 @@ namespace NetPrintsEditor.ViewModels
                 {
                     AddNode<AwaitNode>();
                 }
+                else if (t == TypeSpecifier.FromType<DefaultNode>())
+                {
+                    AddNode<DefaultNode>();
+                }
                 else
                 {
                     // Build a type node
