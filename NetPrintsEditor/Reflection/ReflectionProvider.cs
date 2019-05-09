@@ -117,7 +117,7 @@ namespace NetPrintsEditor.Reflection
         public static string GetFullName(this ITypeSymbol typeSymbol)
         {
             string fullName = typeSymbol.MetadataName;
-            if (typeSymbol.ContainingNamespace != null)
+            if (typeSymbol.ContainingNamespace != null && !typeSymbol.ContainingNamespace.IsGlobalNamespace)
             {
                 fullName = $"{typeSymbol.ContainingNamespace.MetadataName}.{fullName}";
             }

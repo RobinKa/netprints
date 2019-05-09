@@ -53,7 +53,7 @@ namespace NetPrintsEditor.Reflection
                 }
 
                 typeName = nestedPrefix + type.Name.Split('`').First();
-                if (type.ContainingNamespace != null)
+                if (type.ContainingNamespace != null && !type.ContainingNamespace.IsGlobalNamespace)
                 {
                     typeName = type.ContainingNamespace + "." + typeName;
                 }
