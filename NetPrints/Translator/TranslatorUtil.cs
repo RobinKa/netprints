@@ -58,6 +58,13 @@ namespace NetPrints.Translator
             {
                 return $"{type}.{obj}";
             }
+
+            // Null
+            if (obj is null)
+            {
+                return "null";
+            }
+
             // Put quotes around string literals
             if (type == TypeSpecifier.FromType<string>())
             {

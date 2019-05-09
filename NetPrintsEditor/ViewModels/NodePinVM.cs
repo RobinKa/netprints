@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using NetPrints.Core;
 using NetPrints.Graph;
+using NetPrints.Translator;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,13 @@ namespace NetPrintsEditor.ViewModels
                             int paramIndex = callMethodNode.ArgumentPins.IndexOf(inputDataPin);
                             if (paramIndex >= 0)
                             {
+                                var parameter = callMethodNode.MethodSpecifier.Parameters[paramIndex];
+
+                                if (parameter.HasExplicitDefaultValue)
+                                {
+                                    toolTip += $"{Environment.NewLine}Default: {TranslatorUtil.ObjectToLiteral(parameter.ExplicitDefaultValue, TypeSpecifier.FromType(parameter.ExplicitDefaultValue?.GetType() ?? typeof(object)))}";
+                                }
+
                                 documentation = App.ReflectionProvider.GetMethodParameterDocumentation(callMethodNode.MethodSpecifier, paramIndex);
                             }
                         }
