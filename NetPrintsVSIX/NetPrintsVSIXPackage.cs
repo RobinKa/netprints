@@ -142,6 +142,7 @@ namespace NetPrints.VSIX
 
             return dte.Solution.Projects
                 .OfType<EnvDTE.Project>()
+                .Where(proj => File.Exists(proj.FileName))
                 .Select(proj => new SourceDirectoryReference(Path.GetDirectoryName(proj.FileName)));
         }
 
@@ -153,7 +154,7 @@ namespace NetPrints.VSIX
             {
                 foreach (var projectItem in project.ProjectItems.OfType<EnvDTE.ProjectItem>())
                 {
-                    string fullPath = projectItem.Properties.Item("FullPath")?.Value as string;
+                    string fullPath = projectItem.Properties?.Item("FullPath")?.Value as string;
                     if (fullPath != null && fullPath.EndsWith(".netpc"))
                     {
                         ClassGraph classGraph = NetPrints.Serialization.SerializationHelper.LoadClass(fullPath);
