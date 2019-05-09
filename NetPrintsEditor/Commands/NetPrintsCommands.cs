@@ -29,16 +29,6 @@ namespace NetPrintsEditor.Commands
         public static readonly RoutedUICommand RemoveVariable = new RoutedUICommand(nameof(RemoveVariable), nameof(RemoveVariable), typeof(NetPrintsCommands));
 
         /// <summary>
-        /// Command for setting the position of a node.
-        /// </summary>
-        public static readonly RoutedUICommand SetNodePosition = new RoutedUICommand(nameof(SetNodePosition), nameof(SetNodePosition), typeof(NetPrintsCommands));
-
-        /// <summary>
-        /// Command for connecting two pins.
-        /// </summary>
-        public static readonly RoutedUICommand ConnectPins = new RoutedUICommand(nameof(ConnectPins), nameof(ConnectPins), typeof(NetPrintsCommands));
-
-        /// <summary>
         /// Command that does nothing. Currently used in undoing when no undo is implemented.
         /// </summary>
         public static readonly RoutedUICommand DoNothing = new RoutedUICommand(nameof(DoNothing), nameof(DoNothing), typeof(NetPrintsCommands));
@@ -68,26 +58,6 @@ namespace NetPrintsEditor.Commands
         /// </summary>
         public static readonly RoutedUICommand RemoveSetter = new RoutedUICommand(nameof(RemoveSetter), nameof(RemoveSetter), typeof(NetPrintsCommands));
 
-        public class SetNodePositionParameters
-        {
-            public NodeVM Node;
-            public double NewPositionX;
-            public double NewPositionY;
-
-            public SetNodePositionParameters(NodeVM node, double newPositionX, double newPositionY)
-            {
-                Node = node;
-                NewPositionX = newPositionX;
-                NewPositionY = newPositionY;
-            }
-        }
-
-        public class ConnectPinsParameters
-        {
-            public NodePinVM PinA;
-            public NodePinVM PinB;
-        }
-
         public class ChangeNodeOverloadParameters
         {
             public NodeVM Node;
@@ -107,23 +77,6 @@ namespace NetPrintsEditor.Commands
             { RemoveMethod, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             { AddVariable, (p) => new Tuple<ICommand, object>(RemoveVariable, p) },
             { RemoveVariable, (p) => new Tuple<ICommand, object>(AddVariable, p) },
-            {
-                SetNodePosition, (p) =>
-                {
-                    if (p is SetNodePositionParameters)
-                    {
-                        var np = p as SetNodePositionParameters;
-
-                        SetNodePositionParameters undoParams = new SetNodePositionParameters(
-                            np.Node, np.Node.Node.PositionX, np.Node.Node.PositionY);
-
-                        return new Tuple<ICommand, object>(SetNodePosition, undoParams);
-                    }
-
-                    throw new ArgumentException("Expected parameters of type SetNodePositionParameters");
-                }
-            },
-            { ConnectPins, (p) => new Tuple<ICommand, object>(DoNothing, p) },
             {
                 ChangeNodeOverload, (p) =>
                 {

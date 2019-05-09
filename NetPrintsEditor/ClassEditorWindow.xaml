@@ -18,8 +18,6 @@
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveMethod" CanExecute="CommandRemoveMethod_CanExecute" Executed="CommandRemoveMethod_Executed" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddVariable" CanExecute="CommandAddVariable_CanExecute" Executed="CommandAddVariable_Execute"/>
         <CommandBinding Command="cmds:NetPrintsCommands.RemoveVariable" CanExecute="CommandRemoveVariable_CanExecute" Executed="CommandRemoveVariable_Execute" />
-        <CommandBinding Command="cmds:NetPrintsCommands.SetNodePosition" CanExecute="CommandSetNodePosition_CanExecute" Executed="CommandSetNodePosition_Execute" />
-        <CommandBinding Command="cmds:NetPrintsCommands.ConnectPins" CanExecute="CommandConnectPins_CanExecute" Executed="CommandConnectPins_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.ChangeNodeOverload" CanExecute="CommandChangeNodeOverload_CanExecute" Executed="CommandChangeNodeOverload_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddGetter" CanExecute="CommandAddGetter_CanExecute" Executed="CommandAddGetter_Execute" />
         <CommandBinding Command="cmds:NetPrintsCommands.AddSetter" CanExecute="CommandAddSetter_CanExecute" Executed="CommandAddSetter_Execute" />

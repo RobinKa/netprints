@@ -570,5 +570,21 @@ namespace NetPrintsEditor.ViewModels
                 throw new Exception("Can't add reroute node for invalid pin type");
             }
         }
+        
+        /// <summary>
+        /// Connects this pin to another pin.
+        /// </summary>
+        /// <param name="other">Pin to connect to.</param>
+        public void ConnectTo(NodePinVM other)
+        {
+            if (Pin is NodeInputDataPin || Pin is NodeOutputExecPin || Pin is NodeInputTypePin)
+            {
+                ConnectedPin = other;
+            }
+            else
+            {
+                other.ConnectedPin = this;
+            }
+        }
     }
 }

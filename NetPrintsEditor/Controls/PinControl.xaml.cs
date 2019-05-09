@@ -94,14 +94,9 @@ namespace NetPrintsEditor.Controls
             if (e.Data.GetDataPresent(typeof(NodePinVM)))
             {
                 // Another pin was dropped on this pin, link it
+                NodePinVM droppedPin = (NodePinVM)e.Data.GetData(typeof(NodePinVM));
 
-                NodePinVM droppedPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
-
-                UndoRedoStack.Instance.DoCommand(NetPrintsCommands.ConnectPins, new NetPrintsCommands.ConnectPinsParameters()
-                {
-                    PinA = droppedPin,
-                    PinB = Pin
-                });
+                droppedPin.ConnectTo(Pin);
 
                 e.Handled = true;
             }
@@ -115,7 +110,7 @@ namespace NetPrintsEditor.Controls
             {
                 // Another pin is being hovered over this one, see if it can be linked to this pin
 
-                NodePinVM draggingPin = e.Data.GetData(typeof(NodePinVM)) as NodePinVM;
+                NodePinVM draggingPin = (NodePinVM)e.Data.GetData(typeof(NodePinVM));
 
                 if (GraphUtil.CanConnectNodePins(draggingPin.Pin, Pin.Pin,
                     (a, b) => App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),

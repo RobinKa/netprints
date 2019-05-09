@@ -148,62 +148,6 @@ namespace NetPrints.VSIX
             ViewModel.Class.Variables.Remove(memberVariableVM.Variable);
         }
 
-        // Move node
-
-        private void CommandSetNodePosition_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = e.Parameter is SetNodePositionParameters p
-                && FindNodeVMFromSetNodePositionParameters(p) != null;
-        }
-
-        private void CommandSetNodePosition_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            SetNodePositionParameters p = e.Parameter as SetNodePositionParameters;
-            NodeVM nodeVM = FindNodeVMFromSetNodePositionParameters(p);
-            nodeVM.Node.PositionX = p.NewPositionX;
-            nodeVM.Node.PositionY = p.NewPositionY;
-        }
-
-        public NodeVM FindNodeVMFromSetNodePositionParameters(SetNodePositionParameters p)
-        {
-            if (p.Node != null)
-            {
-                return p.Node;
-            }
-
-            // Find closed by name
-            NodeVM node = ViewModel.Methods.FirstOrDefault(m => m.Name == p.Node.Method.Name)?.
-                Nodes.FirstOrDefault(n => n.Name == p.Node.Name);
-
-            return node;
-        }
-
-        // Connect pins
-
-        private void CommandConnectPins_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            ConnectPinsParameters xcp = e.Parameter as ConnectPinsParameters;
-
-            e.CanExecute = e.Parameter is ConnectPinsParameters cp
-                && GraphUtil.CanConnectNodePins(cp.PinA.Pin, cp.PinB.Pin,
-                (a, b) => NetPrintsEditor.App.ReflectionProvider.TypeSpecifierIsSubclassOf(a, b),
-                (a, b) => NetPrintsEditor.App.ReflectionProvider.HasImplicitCast(a, b));
-        }
-
-        private void CommandConnectPins_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            ConnectPinsParameters cp = e.Parameter as ConnectPinsParameters;
-
-            if (cp.PinA.Pin is NodeInputDataPin || cp.PinA.Pin is NodeOutputExecPin || cp.PinA.Pin is NodeInputTypePin)
-            {
-                cp.PinA.ConnectedPin = cp.PinB;
-            }
-            else
-            {
-                cp.PinB.ConnectedPin = cp.PinA;
-            }
-        }
-
         // Open Variable Get / Set
 
         private void CommandOpenVariableGetSet_CanExecute(object sender, CanExecuteRoutedEventArgs e)
