@@ -154,5 +154,10 @@ namespace NetPrintsEditor.Controls
                 e.Handled = true;
             }
         }
+
+        private void OnClearUnconnectedValue(object sender, MouseButtonEventArgs e)
+        {
+            Pin.ClearUnconnectedValue();
+        }
     }
 }

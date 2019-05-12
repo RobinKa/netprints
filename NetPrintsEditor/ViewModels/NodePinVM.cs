@@ -222,6 +222,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
+        public string UnconnectedTextWatermark =>
+            ShowUnconnectedValue && Pin is NodeInputDataPin idp && idp.UsesExplicitDefaultValue && idp.UnconnectedValue is null ?
+                idp.ExplicitDefaultValue?.ToString() ?? "null" :
+                null;
+
         public bool ShowUnconnectedValue
         {
             get => Pin is NodeInputDataPin p && p.UsesUnconnectedValue && !IsConnected
@@ -368,9 +373,11 @@ namespace NetPrintsEditor.ViewModels
 
         public bool ShowDefaultValueIndicator => pin is NodeInputDataPin idp && idp.UsesExplicitDefaultValue;
 
-        public Brush DefaultValueIndicatorBrush => pin is NodeInputDataPin idp && idp.IncomingPin is null ?
-            new SolidColorBrush(Color.FromArgb(0xFF, 0x10, 0xEE, 0xFF)) :
-            new SolidColorBrush(Color.FromArgb(0x7F, 0x10, 0xEE, 0xFF));
+        public Brush DefaultValueIndicatorBrush =>
+            pin is NodeInputDataPin idp
+            && (idp.IncomingPin is null && (!idp.UsesUnconnectedValue || idp.UnconnectedValue is null)) ?
+                new SolidColorBrush(Color.FromArgb(0xFF, 0x10, 0xEE, 0xFF)) :
+                new SolidColorBrush(Color.FromArgb(0x7F, 0x10, 0xEE, 0xFF));
 
         public Point AbsolutePosition => new Point(
             Node.PositionX + NodeRelativePosition.X,
@@ -586,6 +593,30 @@ namespace NetPrintsEditor.ViewModels
             else
             {
                 other.ConnectedPin = this;
+            }
+        }
+
+        private void OnPinChanged()
+        {
+            pin.PropertyChanged += OnPinPropertyChanged;
+
+            // TODO: Remove old event
+        }
+
+        private void OnPinPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (Pin is NodeInputDataPin idp && e.PropertyName == nameof(idp.UnconnectedValue))
+            {
+                RaisePropertyChanged(nameof(UnconnectedTextWatermark));
+                RaisePropertyChanged(nameof(DefaultValueIndicatorBrush));
+            }
+        }
+
+        public void ClearUnconnectedValue()
+        {
+            if (Pin is NodeInputDataPin idp && idp.UsesUnconnectedValue)
+            {
+                idp.UnconnectedValue = null;
             }
         }
     }

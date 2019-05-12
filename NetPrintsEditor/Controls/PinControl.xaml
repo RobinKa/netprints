@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:NetPrintsEditor.Controls"
              xmlns:converters="clr-namespace:NetPrintsEditor.Converters"
              mc:Ignorable="d" 
@@ -81,14 +82,18 @@
 
         <Grid x:Name="unconnectedContainer" Grid.Column="1">
             <TextBox Text="{Binding UnconnectedValue, Mode=TwoWay}"
-                        Visibility="{Binding ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
+                Visibility="{Binding ShowUnconnectedValue, Converter={StaticResource ResourceKey=BoolToVis}}"
+                MouseUp="OnClearUnconnectedValue"
+                mah:TextBoxHelper.Watermark="{Binding UnconnectedTextWatermark}" />
 
             <ComboBox Visibility="{Binding ShowEnumValue, Converter={StaticResource ResourceKey=BoolToVis}}" 
-                        SelectedItem="{Binding UnconnectedValue}"
-                        ItemsSource="{Binding PossibleEnumNames}" />
+                MouseUp="OnClearUnconnectedValue"
+                SelectedItem="{Binding UnconnectedValue}"
+                ItemsSource="{Binding PossibleEnumNames}" />
 
             <CheckBox IsChecked="{Binding UnconnectedValue, Mode=TwoWay}"
-                        Visibility="{Binding ShowBooleanValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
+                MouseUp="OnClearUnconnectedValue"
+                Visibility="{Binding ShowBooleanValue, Converter={StaticResource ResourceKey=BoolToVis}}" />
         </Grid>
         
         <Grid x:Name="labelContainer" Grid.Column="2" Visibility="{Binding IsRerouteNodePin, Converter={StaticResource ResourceKey=InverseBoolToVis}}">
