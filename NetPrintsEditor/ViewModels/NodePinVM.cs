@@ -360,28 +360,21 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public bool ShowRectangle
-        {
-            get => pin is NodeExecPin;
-        }
+        public bool ShowRectangle => pin is NodeExecPin;
 
-        public bool ShowCircle
-        {
-            get => pin is NodeDataPin;
-        }
+        public bool ShowCircle => pin is NodeDataPin;
 
-        public bool ShowTriangle
-        {
-            get => pin is NodeTypePin;
-        }
+        public bool ShowTriangle => pin is NodeTypePin;
 
-        public Point AbsolutePosition
-        {
-            // Node abs + Node->PinCenter
-            get => new Point(
-                Node.PositionX + NodeRelativePosition.X,
-                Node.PositionY + NodeRelativePosition.Y);
-        }
+        public bool ShowDefaultValueIndicator => pin is NodeInputDataPin idp && idp.UsesExplicitDefaultValue;
+
+        public Brush DefaultValueIndicatorBrush => pin is NodeInputDataPin idp && idp.IncomingPin is null ?
+            new SolidColorBrush(Color.FromArgb(0xFF, 0x10, 0xEE, 0xFF)) :
+            new SolidColorBrush(Color.FromArgb(0x7F, 0x10, 0xEE, 0xFF));
+
+        public Point AbsolutePosition => new Point(
+            Node.PositionX + NodeRelativePosition.X,
+            Node.PositionY + NodeRelativePosition.Y);
 
         public Point NodeRelativePosition
         {
@@ -457,6 +450,7 @@ namespace NetPrintsEditor.ViewModels
                     RaisePropertyChanged(nameof(ShowEnumValue));
                     RaisePropertyChanged(nameof(PossibleEnumNames));
                     RaisePropertyChanged(nameof(FillBrush));
+                    RaisePropertyChanged(nameof(DefaultValueIndicatorBrush));
                     OnConnectionPositionUpdate();
 
                     if (connectedPin != null)

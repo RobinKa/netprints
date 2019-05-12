@@ -68,6 +68,15 @@
                     </Style>
                 </Polygon.Style>
             </Polygon>
+
+            <Polygon 
+                Width="14" Height="14"
+                IsHitTestVisible="False"
+                Points="0,0 6,7 0,14" 
+                Visibility="{Binding ShowDefaultValueIndicator, Converter={StaticResource ResourceKey=BoolToVis}}"
+                Fill="{Binding DefaultValueIndicatorBrush}"
+                StrokeThickness="1">
+            </Polygon>
         </Canvas>
 
         <Grid x:Name="unconnectedContainer" Grid.Column="1">
