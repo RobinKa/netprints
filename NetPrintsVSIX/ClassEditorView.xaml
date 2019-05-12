@@ -42,179 +42,191 @@
     </UserControl.CommandBindings>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="250"/>
+        </Grid.ColumnDefinitions>
+
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition />
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Grid.Column="0" x:Name="classPropertiesButton"
+            <Button Grid.Row="0" x:Name="classPropertiesButton"
                     ToolTip="Edit the properties of this class."
-                    Margin="5" Content="Class" FontWeight="Bold" FontSize="16" Click="OnClassPropertiesClicked" />
-        </Grid>
+                    Margin="4"
+                    Width="32" Height="32" HorizontalAlignment="Left"
+                    Click="OnClassPropertiesClicked">
+                <iconPacks:PackIconMaterial Kind="Settings" />
+            </Button>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition/>
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="250"/>
-            </Grid.ColumnDefinitions>
-
-            <Grid>
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="0.2*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="1" Content="Methods" FontSize="24px" FontWeight="Regular" HorizontalContentAlignment="Center" />
+                    <Button Grid.Column="2" Click="AddMethodButton_Click" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="28" Height="28">
+                        <iconPacks:PackIconMaterial Kind="Plus" />
+                    </Button>
+                </Grid>
 
-                    <Label Grid.Row="0" Content="Methods" FontSize="24px" HorizontalContentAlignment="Center" />
-
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Methods}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
+                <ListView HorizontalContentAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Methods}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
                                             ToolTip="Remove method">
-                                        <iconPacks:PackIconMaterial Kind="Minus" />
-                                    </Button>
-                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
-                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
-                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                    </Label>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                                    <iconPacks:PackIconMaterial Kind="Minus" />
+                                </Button>
+                                <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="Light">
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
 
-                    <Button Grid.Row="2" Content="Create Method" Click="AddMethodButton_Click" FontSize="16" />
-
-                    <ComboBox x:Name="overrideMethodBox" HorizontalContentAlignment="Stretch" Grid.Row="3" FontSize="16"
+                <ComboBox x:Name="overrideMethodBox" HorizontalContentAlignment="Stretch" Grid.Row="1" FontSize="16"
                               Text="Override a method"
                               IsReadOnly="True" IsEditable="True"
                               ItemsSource="{Binding OverridableMethods}"
                               SelectionChanged="OverrideMethodBox_SelectionChanged" />
-                </Grid>
-
-                <GridSplitter Grid.Row="1" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
-
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Label Grid.Row="0" Content="Constructors" FontSize="24px" HorizontalContentAlignment="Center" />
-
-                    <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Constructors}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
-                                            ToolTip="Remove constructor">
-                                        <iconPacks:PackIconMaterial Kind="Minus" />
-                                    </Button>
-                                    <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
-                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="SemiBold">
-                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                    </Label>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-
-                    <Button Grid.Row="2" Content="Create Constructor" Click="AddConstructorButton_Click" FontSize="16" />
-                </Grid>
-
-                <GridSplitter Grid.Row="3" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
-
-                <Grid Grid.Row="4">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Label Content="Variables" FontSize="24px" HorizontalContentAlignment="Center" />
-
-                    <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding Variables}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Controls:MemberVariableView DataContext="{Binding}" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-
-                    <Button Grid.Row="2" Content="Create Variable" Click="AddVariableButton_Click" FontSize="16" />
-                </Grid>
             </Grid>
 
-            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <GridSplitter Grid.Row="2" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
-            <Grid Grid.Column="2">
+            <Grid Grid.Row="3">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition />
-                    <RowDefinition Height="5" />
-                    <RowDefinition Height="150" />
-                    <RowDefinition Height="24" />
                 </Grid.RowDefinitions>
-                
-                <Controls:GraphEditorView x:Name="graphEditor" DataContext="{Binding OpenedGraph}" />
 
-                <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="0.2*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="1" Content="Constructors" FontSize="24px" FontWeight="Regular" HorizontalContentAlignment="Center" />
+                    <Button Grid.Column="2" Click="AddConstructorButton_Click" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="28" Height="28">
+                        <iconPacks:PackIconMaterial Kind="Plus" />
+                    </Button>
+                </Grid>
 
-                <ListView Grid.Row="2" ItemsSource="{Binding Project.LastCompileErrors}" />
-
-                <Label Grid.Row="3" Content="{Binding Project.CompilationMessage}" />
+                <ListView HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding Constructors}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Margin="4" Width="22" Height="22" Click="OnRemoveMethodClicked"
+                                            ToolTip="Remove constructor">
+                                    <iconPacks:PackIconMaterial Kind="Minus" />
+                                </Button>
+                                <Label Grid.Column="1"  PreviewMouseLeftButtonDown="OnMethodClicked" MouseMove="OnMouseMoveTryDrag"
+                                           MouseDoubleClick="OnMethodDoubleClick" FontSize="14" FontWeight="Light">
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
 
+            <GridSplitter Grid.Row="4" Background="{DynamicResource AccentColorBrush}" Height="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 
-            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+            <Grid Grid.Row="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-            <TabControl x:Name="viewerTabControl" Grid.Column="5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <TabControl.ItemContainerStyle>
-                    <Style TargetType="{x:Type TabItem}">
-                        <Setter Property="Visibility" Value="Hidden" />
-                    </Style>
-                </TabControl.ItemContainerStyle>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="0.2*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="1" Content="Variables" FontSize="24px" FontWeight="Regular" HorizontalContentAlignment="Center" />
+                    <Button Grid.Column="2" Click="AddVariableButton_Click" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="28" Height="28">
+                        <iconPacks:PackIconMaterial Kind="Plus" />
+                    </Button>
+                </Grid>
 
-                <TabItem>
-                    <Controls:ClassPropertyEditorControl x:Name="classViewer" />
-                </TabItem>
-                
-                <TabItem>
-                    <Controls:VariableEditorControl DataContext="{x:Null}" x:Name="variableViewer" />
-                </TabItem>
-
-                <TabItem>
-                    <Controls:MethodPropertyEditorControl DataContext="{x:Null}" x:Name="methodViewer" />
-                </TabItem>
-            </TabControl>
+                <ListView HorizontalContentAlignment="Stretch"  Grid.Row="1" x:Name="variableList" ItemsSource="{Binding Variables}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Controls:MemberVariableView DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
+
+        <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="150" />
+                <RowDefinition Height="24" />
+            </Grid.RowDefinitions>
+
+            <Controls:GraphEditorView x:Name="graphEditor" DataContext="{Binding OpenedGraph}" />
+
+            <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+            <ListView Grid.Row="2" ItemsSource="{Binding Project.LastCompileErrors}" />
+
+            <Label Grid.Row="3" Content="{Binding Project.CompilationMessage}" />
+        </Grid>
+
+
+        <GridSplitter Background="{DynamicResource AccentColorBrush}" Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+
+        <TabControl x:Name="viewerTabControl" Grid.Column="5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Visibility" Value="Hidden" />
+                </Style>
+            </TabControl.ItemContainerStyle>
+
+            <TabItem>
+                <Controls:ClassPropertyEditorControl x:Name="classViewer" />
+            </TabItem>
+
+            <TabItem>
+                <Controls:VariableEditorControl DataContext="{x:Null}" x:Name="variableViewer" />
+            </TabItem>
+
+            <TabItem>
+                <Controls:MethodPropertyEditorControl DataContext="{x:Null}" x:Name="methodViewer" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>
