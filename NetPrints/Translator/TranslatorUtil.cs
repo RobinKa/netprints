@@ -140,9 +140,9 @@ namespace NetPrints.Translator
 
             foreach (NodeOutputExecPin pin in node.OutputExecPins)
             {
-                if (pin.OutgoingPin != null && !nodes.Contains(pin.OutgoingPin.Node))
+                if (pin.OutgoingExecPin != null && !nodes.Contains(pin.OutgoingExecPin.Node))
                 {
-                    AddAllNodes(pin.OutgoingPin.Node, ref nodes);
+                    AddAllNodes(pin.OutgoingExecPin.Node, ref nodes);
                 }
             }
 
@@ -183,9 +183,9 @@ namespace NetPrints.Translator
 
             foreach (NodeOutputExecPin pin in node.OutputExecPins)
             {
-                if (pin.OutgoingPin != null && !nodes.Contains(pin.OutgoingPin.Node))
+                if (pin.OutgoingExecPin != null && !nodes.Contains(pin.OutgoingExecPin.Node))
                 {
-                    AddExecNodes(pin.OutgoingPin.Node, ref nodes);
+                    AddExecNodes(pin.OutgoingExecPin.Node, ref nodes);
                 }
             }
         }

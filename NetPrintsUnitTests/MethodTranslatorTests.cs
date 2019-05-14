@@ -47,7 +47,7 @@ namespace NetPrints.Tests
             for (int i = 0; i < argTypeNodes.Count; i++)
             {
                 ((MethodEntryNode)stringLengthMethod.EntryNode).AddArgument();
-                GraphUtil.ConnectTypePins(argTypeNodes[i].OutputTypePins[0], stringLengthMethod.EntryNode.InputTypePins[i]);
+                GraphUtil.ConnectPins(argTypeNodes[i].OutputTypePins[0], stringLengthMethod.EntryNode.InputTypePins[i]);
             }
 
             // Add return types
@@ -59,7 +59,7 @@ namespace NetPrints.Tests
             for (int i = 0; i < returnTypeNodes.Count; i++)
             {
                 stringLengthMethod.MainReturnNode.AddReturnType();
-                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], stringLengthMethod.MainReturnNode.InputTypePins[i]);
+                GraphUtil.ConnectPins(returnTypeNodes[i].OutputTypePins[0], stringLengthMethod.MainReturnNode.InputTypePins[i]);
             }
 
             // Create nodes
@@ -67,11 +67,11 @@ namespace NetPrints.Tests
                 MemberVisibility.Public,MemberVisibility.Public, TypeSpecifier.FromType<string>(), VariableModifiers.None));
 
             // Connect node execs
-            GraphUtil.ConnectExecPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNodes.First().ReturnPin);
+            GraphUtil.ConnectPins(stringLengthMethod.EntryNode.InitialExecutionPin, stringLengthMethod.ReturnNodes.First().ReturnPin);
 
             // Connect node data
-            GraphUtil.ConnectDataPins(stringLengthMethod.EntryNode.OutputDataPins[0], getLengthNode.InputDataPins[0]);
-            GraphUtil.ConnectDataPins(getLengthNode.OutputDataPins[0], stringLengthMethod.ReturnNodes.First().InputDataPins[0]);
+            GraphUtil.ConnectPins(stringLengthMethod.EntryNode.OutputDataPins[0], getLengthNode.InputDataPins[0]);
+            GraphUtil.ConnectPins(getLengthNode.OutputDataPins[0], stringLengthMethod.ReturnNodes.First().InputDataPins[0]);
         }
         
         public void CreateIfElseMethod()
@@ -92,7 +92,7 @@ namespace NetPrints.Tests
             for (int i = 0; i < argTypeNodes.Count; i++)
             {
                 ((MethodEntryNode)ifElseMethod.EntryNode).AddArgument();
-                GraphUtil.ConnectTypePins(argTypeNodes[i].OutputTypePins[0], ifElseMethod.EntryNode.InputTypePins[i]);
+                GraphUtil.ConnectPins(argTypeNodes[i].OutputTypePins[0], ifElseMethod.EntryNode.InputTypePins[i]);
             }
 
             // Add return types
@@ -104,7 +104,7 @@ namespace NetPrints.Tests
             for (int i = 0; i < returnTypeNodes.Count; i++)
             {
                 ifElseMethod.MainReturnNode.AddReturnType();
-                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], ifElseMethod.MainReturnNode.InputTypePins[i]);
+                GraphUtil.ConnectPins(returnTypeNodes[i].OutputTypePins[0], ifElseMethod.MainReturnNode.InputTypePins[i]);
             }
 
             // Create nodes
@@ -112,14 +112,14 @@ namespace NetPrints.Tests
             LiteralNode literalNode = LiteralNode.WithValue(ifElseMethod, 123);
 
             // Connect exec nodes
-            GraphUtil.ConnectExecPins(ifElseMethod.EntryNode.InitialExecutionPin, ifElseNode.ExecutionPin);
-            GraphUtil.ConnectExecPins(ifElseNode.TruePin, ifElseMethod.ReturnNodes.First().ReturnPin);
-            GraphUtil.ConnectExecPins(ifElseNode.FalsePin, ifElseMethod.ReturnNodes.First().ReturnPin);
+            GraphUtil.ConnectPins(ifElseMethod.EntryNode.InitialExecutionPin, ifElseNode.ExecutionPin);
+            GraphUtil.ConnectPins(ifElseNode.TruePin, ifElseMethod.ReturnNodes.First().ReturnPin);
+            GraphUtil.ConnectPins(ifElseNode.FalsePin, ifElseMethod.ReturnNodes.First().ReturnPin);
 
             // Connect node data
-            GraphUtil.ConnectDataPins(ifElseMethod.EntryNode.OutputDataPins[1], ifElseNode.ConditionPin);
-            GraphUtil.ConnectDataPins(ifElseMethod.EntryNode.OutputDataPins[0], ifElseMethod.ReturnNodes.First().InputDataPins[0]);
-            GraphUtil.ConnectDataPins(literalNode.ValuePin, ifElseMethod.ReturnNodes.First().InputDataPins[0]);
+            GraphUtil.ConnectPins(ifElseMethod.EntryNode.OutputDataPins[1], ifElseNode.ConditionPin);
+            GraphUtil.ConnectPins(ifElseMethod.EntryNode.OutputDataPins[0], ifElseMethod.ReturnNodes.First().InputDataPins[0]);
+            GraphUtil.ConnectPins(literalNode.ValuePin, ifElseMethod.ReturnNodes.First().InputDataPins[0]);
         }
 
         public void CreateForLoopMethod()
@@ -135,11 +135,11 @@ namespace NetPrints.Tests
             ForLoopNode forLoopNode = new ForLoopNode(forLoopMethod);
             
             // Connect exec nodes
-            GraphUtil.ConnectExecPins(forLoopMethod.EntryNode.InitialExecutionPin, forLoopNode.ExecutionPin);
-            GraphUtil.ConnectExecPins(forLoopNode.CompletedPin, forLoopMethod.ReturnNodes.First().ReturnPin);
+            GraphUtil.ConnectPins(forLoopMethod.EntryNode.InitialExecutionPin, forLoopNode.ExecutionPin);
+            GraphUtil.ConnectPins(forLoopNode.CompletedPin, forLoopMethod.ReturnNodes.First().ReturnPin);
 
             // Connect node data
-            GraphUtil.ConnectDataPins(maxIndexLiteralNode.ValuePin, forLoopNode.MaxIndexPin);
+            GraphUtil.ConnectPins(maxIndexLiteralNode.ValuePin, forLoopNode.MaxIndexPin);
         }
 
         [TestMethod]

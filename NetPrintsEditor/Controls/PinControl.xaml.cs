@@ -96,7 +96,7 @@ namespace NetPrintsEditor.Controls
                 // Another pin was dropped on this pin, link it
                 NodePinVM droppedPin = (NodePinVM)e.Data.GetData(typeof(NodePinVM));
 
-                droppedPin.ConnectTo(Pin);
+                GraphUtil.ConnectPins(droppedPin.Pin, Pin.Pin);
 
                 e.Handled = true;
             }

@@ -1,4 +1,5 @@
 ﻿using NetPrints.Core;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -29,11 +30,11 @@ namespace NetPrints.Graph
 
             if (pure)
             {
-                GraphUtil.DisconnectInputExecPin(InputExecPins[0]);
-                InputExecPins.RemoveAt(0);
-
-                GraphUtil.DisconnectOutputExecPin(OutputExecPins[0]);
-                OutputExecPins.RemoveAt(0);
+                GraphUtil.DisconnectPin(InputExecPins[0]);
+                Pins.Remove(Pins.First(pin => pin is NodeInputExecPin));
+                
+                GraphUtil.DisconnectPin(OutputExecPins[0]);
+                Pins.Remove(Pins.First(pin => pin is NodeOutputExecPin));
             }
             else if (!pure)
             {

@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -7,7 +8,7 @@ namespace NetPrints.Graph
     /// Abstract class for type pins.
     /// </summary>
     [DataContract]
-    public abstract class NodeTypePin : NodePin
+    public abstract class NodeTypePin : NodePin, INodeTypePin
     {
         public abstract ObservableValue<BaseType> InferredType
         {

@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace NetPrints.Graph
         /// <param name="isSubclassOf">Function for determining whether one type is the subclass of another type.</param>
         /// <param name="swapped">Whether we want pinB to be the first pin and vice versa.</param>
         /// <returns></returns>
-        public static bool CanConnectNodePins(NodePin pinA, NodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, Func<TypeSpecifier, TypeSpecifier, bool> hasImplicitCast, bool swapped=false)
+        public static bool CanConnectNodePins(INodePin pinA, INodePin pinB, Func<TypeSpecifier, TypeSpecifier, bool> isSubclassOf, Func<TypeSpecifier, TypeSpecifier, bool> hasImplicitCast, bool swapped=false)
         {
             if (pinA is NodeInputExecPin && pinB is NodeOutputExecPin)
             {
@@ -85,203 +86,68 @@ namespace NetPrints.Graph
             return false;
         }
 
-        /// <summary>
-        /// Connects two node pins together. Makes sure any previous connections will be disconnected.
-        /// If the pin types are not compatible an ArgumentException will be thrown.
-        /// </summary>
-        /// <param name="pinA">First pin.</param>
-        /// <param name="pinB">Second pin.</param>
-        /// <param name="swapped">Whether we want pinB to be the first pin and vice versa.</param>
-        public static void ConnectNodePins(NodePin pinA, NodePin pinB, bool swapped=false)
+        public static void ConnectPins(INodePin pinA, INodePin pinB)
         {
-            if (pinA is NodeInputExecPin exA && pinB is NodeOutputExecPin exB)
+            // Connect from -> to
+            if (pinA.ConnectionType == NodePinConnectionType.Single)
             {
-                ConnectExecPins(exB, exA);
-            }
-            else if (pinA is NodeInputDataPin datA && pinB is NodeOutputDataPin datB)
-            {
-                ConnectDataPins(datB, datA);
-            }
-            else if (pinA is NodeInputTypePin typA && pinB is NodeOutputTypePin typB)
-            {
-                ConnectTypePins(typB, typA);
-            }
-            else if (!swapped)
-            {
-                ConnectNodePins(pinB, pinA, true);
+                // Remove other pins' connection to this pin
+                if (pinA.ConnectedPins.Count > 0)
+                {
+                    foreach (var otherPin in pinA.ConnectedPins)
+                    {
+                        otherPin.ConnectedPins.Clear();
+                    }
+                }
+
+                pinA.ConnectedPins.Replace(pinB);
             }
             else
             {
-                throw new ArgumentException("The passed pins can not be connected because their types are incompatible.");
+                pinA.ConnectedPins.Add(pinB);
+            }
+
+            // Connect to -> from
+            if (pinB.ConnectionType == NodePinConnectionType.Single)
+            {
+                // Remove other pins' connection to this pin
+                if (pinB.ConnectedPins.Count > 0)
+                {
+                    foreach (var otherPin in pinB.ConnectedPins)
+                    {
+                        otherPin.ConnectedPins.Clear();
+                    }
+                }
+
+                pinB.ConnectedPins.Replace(pinA);
+            }
+            else
+            {
+                pinB.ConnectedPins.Add(pinA);
             }
         }
 
-        /// <summary>
-        /// Connects two node execution pins. Removes any previous connection.
-        /// </summary>
-        /// <param name="fromPin">Output execution pin to connect.</param>
-        /// <param name="toPin">Input execution pin to connect.</param>
-        public static void ConnectExecPins(NodeOutputExecPin fromPin, NodeInputExecPin toPin)
+        public static void DisconnectPin(INodePin nodePin)
         {
-            // Remove from old pin if any
-            if (fromPin.OutgoingPin != null)
-            {
-                fromPin.OutgoingPin.IncomingPins.Remove(fromPin);
-            }
-
-            fromPin.OutgoingPin = toPin;
-            toPin.IncomingPins.Add(fromPin);
-        }
-
-        /// <summary>
-        /// Connects two node data pins. Removes any previous connection.
-        /// </summary>
-        /// <param name="fromPin">Output data pin to connect.</param>
-        /// <param name="toPin">Input data pin to connect.</param>
-        public static void ConnectDataPins(NodeOutputDataPin fromPin, NodeInputDataPin toPin)
-        {
-            // Remove from old pin if any
-            if (toPin.IncomingPin != null)
-            {
-                toPin.IncomingPin.OutgoingPins.Remove(toPin);
-            }
-
-            fromPin.OutgoingPins.Add(toPin);
-            toPin.IncomingPin = fromPin;
-        }
-
-        /// <summary>
-        /// Connects two node type pins. Removes any previous connection.
-        /// </summary>
-        /// <param name="fromPin">Output type pin to connect.</param>
-        /// <param name="toPin">Input type pin to connect.</param>
-        public static void ConnectTypePins(NodeOutputTypePin fromPin, NodeInputTypePin toPin)
-        {
-            // Remove from old pin if any
-            if (toPin.IncomingPin != null)
-            {
-                toPin.IncomingPin.OutgoingPins.Remove(toPin);
-            }
-
-            fromPin.OutgoingPins.Add(toPin);
-            toPin.IncomingPin = fromPin;
+            nodePin.ConnectedPins.Clear();
         }
 
         /// <summary>
         /// Disconnects all pins of a node.
         /// </summary>
         /// <param name="node">Node to have all its pins disconnected.</param>
-        public static void DisconnectNodePins(Node node)
+        public static void DisconnectNodePins(INode node)
         {
-            foreach (NodeInputDataPin pin in node.InputDataPins)
+            foreach (var pin in node.Pins)
             {
-                DisconnectInputDataPin(pin);
-            }
-
-            foreach (NodeOutputDataPin pin in node.OutputDataPins)
-            {
-                DisconnectOutputDataPin(pin);
-            }
-
-            foreach (NodeInputExecPin pin in node.InputExecPins)
-            {
-                DisconnectInputExecPin(pin);
-            }
-
-            foreach (NodeOutputExecPin pin in node.OutputExecPins)
-            {
-                DisconnectOutputExecPin(pin);
-            }
-
-            foreach (NodeInputTypePin pin in node.InputTypePins)
-            {
-                DisconnectInputTypePin(pin);
-            }
-
-            foreach (NodeOutputTypePin pin in node.OutputTypePins)
-            {
-                DisconnectOutputTypePin(pin);
+                DisconnectPin(pin);
             }
         }
 
-        public static void DisconnectPin(NodePin nodePin)
+        public static void DisconnectPins(INodePin a, INodePin b)
         {
-            if (nodePin is NodeInputDataPin idp)
-            {
-                DisconnectInputDataPin(idp);
-            }
-            else if (nodePin is NodeOutputDataPin odp)
-            {
-                DisconnectOutputDataPin(odp);
-            }
-            else if (nodePin is NodeInputExecPin ixp)
-            {
-                DisconnectInputExecPin(ixp);
-            }
-            else if (nodePin is NodeOutputExecPin oxp)
-            {
-                DisconnectOutputExecPin(oxp);
-            }
-            else if (nodePin is NodeInputTypePin itp)
-            {
-                DisconnectInputTypePin(itp);
-            }
-            else if (nodePin is NodeOutputTypePin otp)
-            {
-                DisconnectOutputTypePin(otp);
-            }
-            else
-            {
-                throw new NotImplementedException("Unknown pin type to disconnect.");
-            }
-        }
-
-        public static void DisconnectInputDataPin(NodeInputDataPin pin)
-        {
-            pin.IncomingPin?.OutgoingPins.Remove(pin);
-            pin.IncomingPin = null;
-        }
-
-        public static void DisconnectOutputDataPin(NodeOutputDataPin pin)
-        {
-            foreach(NodeInputDataPin outgoingPin in pin.OutgoingPins)
-            {
-                outgoingPin.IncomingPin = null;
-            }
-
-            pin.OutgoingPins.Clear();
-        }
-
-        public static void DisconnectInputTypePin(NodeInputTypePin pin)
-        {
-            pin.IncomingPin?.OutgoingPins.Remove(pin);
-            pin.IncomingPin = null;
-        }
-
-        public static void DisconnectOutputTypePin(NodeOutputTypePin pin)
-        {
-            foreach (NodeInputTypePin outgoingPin in pin.OutgoingPins)
-            {
-                outgoingPin.IncomingPin = null;
-            }
-
-            pin.OutgoingPins.Clear();
-        }
-
-        public static void DisconnectOutputExecPin(NodeOutputExecPin pin)
-        {
-            pin.OutgoingPin?.IncomingPins.Remove(pin);
-            pin.OutgoingPin = null;
-        }
-
-        public static void DisconnectInputExecPin(NodeInputExecPin pin)
-        {
-            foreach (NodeOutputExecPin incomingPin in pin.IncomingPins)
-            {
-                incomingPin.OutgoingPin = null;
-            }
-
-            pin.IncomingPins.Clear();
+            a.ConnectedPins.Remove(b);
+            b.ConnectedPins.Remove(a);
         }
 
         /// <summary>
@@ -301,8 +167,8 @@ namespace NetPrints.Graph
                 new Tuple<BaseType, BaseType>(pin.PinType, pin.IncomingPin.PinType)
             });
 
-            GraphUtil.ConnectDataPins(pin.IncomingPin, rerouteNode.InputDataPins[0]);
-            GraphUtil.ConnectDataPins(rerouteNode.OutputDataPins[0], pin);
+            GraphUtil.ConnectPins(pin.IncomingPin, rerouteNode.InputDataPins[0]);
+            GraphUtil.ConnectPins(rerouteNode.OutputDataPins[0], pin);
 
             return rerouteNode;
         }
@@ -314,15 +180,15 @@ namespace NetPrints.Graph
         /// <returns>Reroute node created for the execution pin.</returns>
         public static RerouteNode AddRerouteNode(NodeOutputExecPin pin)
         {
-            if (pin?.OutgoingPin == null)
+            if (pin?.OutgoingExecPin == null)
             {
                 throw new ArgumentException("Pin or its connected pin were null");
             }
 
             var rerouteNode = RerouteNode.MakeExecution(pin.Node.Graph, 1);
 
-            GraphUtil.ConnectExecPins(rerouteNode.OutputExecPins[0], pin.OutgoingPin);
-            GraphUtil.ConnectExecPins(pin, rerouteNode.InputExecPins[0]);
+            GraphUtil.ConnectPins(rerouteNode.OutputExecPins[0], pin.OutgoingExecPin);
+            GraphUtil.ConnectPins(pin, rerouteNode.InputExecPins[0]);
 
             return rerouteNode;
         }
@@ -341,8 +207,8 @@ namespace NetPrints.Graph
 
             var rerouteNode = RerouteNode.MakeType(pin.Node.Graph, 1);
 
-            GraphUtil.ConnectTypePins(pin.IncomingPin, rerouteNode.InputTypePins[0]);
-            GraphUtil.ConnectTypePins(rerouteNode.OutputTypePins[0], pin);
+            GraphUtil.ConnectPins(pin.IncomingPin, rerouteNode.InputTypePins[0]);
+            GraphUtil.ConnectPins(rerouteNode.OutputTypePins[0], pin);
 
             return rerouteNode;
         }
@@ -376,7 +242,7 @@ namespace NetPrints.Graph
 
                 foreach (TypeNode genericArgNode in genericArgNodes)
                 {
-                    GraphUtil.ConnectTypePins(genericArgNode.OutputTypePins[0], typeNode.InputTypePins[0]);
+                    GraphUtil.ConnectPins(genericArgNode.OutputTypePins[0], typeNode.InputTypePins[0]);
                 }
             }
 
@@ -420,7 +286,7 @@ namespace NetPrints.Graph
             newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
 
             // Connect entry and return node execution pins
-            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
+            GraphUtil.ConnectPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
 
             // Add generic arguments
             for (var i = 0; i < methodSpecifier.GenericArguments.Count; i++)
@@ -439,7 +305,7 @@ namespace NetPrints.Graph
 
                 newMethod.MethodEntryNode.AddArgument();
 
-                ConnectTypePins(argTypeNode.OutputTypePins[0], newMethod.EntryNode.InputTypePins[i]);
+                ConnectPins(argTypeNode.OutputTypePins[0], newMethod.EntryNode.InputTypePins[i]);
             }
 
             // Add return types, their type nodes and connect them
@@ -450,7 +316,7 @@ namespace NetPrints.Graph
 
                 newMethod.MainReturnNode.AddReturnType();
 
-                ConnectTypePins(returnTypeNode.OutputTypePins[0], newMethod.MainReturnNode.InputTypePins[i]);
+                ConnectPins(returnTypeNode.OutputTypePins[0], newMethod.MainReturnNode.InputTypePins[i]);
             }
 
             cls.Methods.Add(newMethod);
@@ -468,11 +334,11 @@ namespace NetPrints.Graph
         {
             if (pin is NodeInputExecPin ixp)
             {
-                GraphUtil.ConnectExecPins(node.OutputExecPins[0], ixp);
+                GraphUtil.ConnectPins(node.OutputExecPins[0], ixp);
             }
             else if (pin is NodeOutputExecPin oxp)
             {
-                GraphUtil.ConnectExecPins(oxp, node.InputExecPins[0]);
+                GraphUtil.ConnectPins(oxp, node.InputExecPins[0]);
             }
             else if (pin is NodeInputDataPin idp)
             {
@@ -480,24 +346,24 @@ namespace NetPrints.Graph
                 {
                     if (GraphUtil.CanConnectNodePins(otherOtp, idp,isSubclassOf, hasImplicitCast))
                     {
-                        GraphUtil.ConnectDataPins(otherOtp, idp);
+                        GraphUtil.ConnectPins(otherOtp, idp);
 
                         // Connect exec pins if possible.
                         // Also forward the previous connection through the new node.
                         if (pin.Node.InputExecPins.Count > 0 && node.OutputExecPins.Count > 0)
                         {
-                            var oldConnected = pin.Node.InputExecPins[0].IncomingPins.FirstOrDefault();
+                            var oldConnected = pin.Node.InputExecPins[0].IncomingExecutionPins.FirstOrDefault();
 
                             if (oldConnected != null)
                             {
-                                GraphUtil.DisconnectOutputExecPin(oldConnected);
+                                GraphUtil.DisconnectPin(oldConnected);
                             }
 
-                            GraphUtil.ConnectExecPins(node.OutputExecPins[0], pin.Node.InputExecPins[0]);
+                            GraphUtil.ConnectPins(node.OutputExecPins[0], pin.Node.InputExecPins[0]);
 
                             if (oldConnected != null && node.InputExecPins.Count > 0)
                             {
-                                GraphUtil.ConnectExecPins(oldConnected, node.InputExecPins[0]);
+                                GraphUtil.ConnectPins(oldConnected, node.InputExecPins[0]);
                             }
                         }
 
@@ -511,19 +377,19 @@ namespace NetPrints.Graph
                 {
                     if (GraphUtil.CanConnectNodePins(odp, otherIdp, isSubclassOf, hasImplicitCast))
                     {
-                        GraphUtil.ConnectDataPins(odp, otherIdp);
+                        GraphUtil.ConnectPins(odp, otherIdp);
 
                         // Connect exec pins if possible.
                         // Also forward the previous connection through the new node.
                         if (node.InputExecPins.Count > 0 && pin.Node.OutputExecPins.Count > 0)
                         {
-                            var oldConnected = pin.Node.OutputExecPins[0].OutgoingPin;
+                            var oldConnected = pin.Node.OutputExecPins[0].OutgoingExecPin;
 
-                            GraphUtil.ConnectExecPins(pin.Node.OutputExecPins[0], node.InputExecPins[0]);
+                            GraphUtil.ConnectPins(pin.Node.OutputExecPins[0], node.InputExecPins[0]);
 
                             if (oldConnected != null && node.OutputExecPins.Count > 0)
                             {
-                                GraphUtil.ConnectExecPins(node.OutputExecPins[0], oldConnected);
+                                GraphUtil.ConnectPins(node.OutputExecPins[0], oldConnected);
                             }
                         }
 
@@ -535,14 +401,14 @@ namespace NetPrints.Graph
             {
                 if (node.OutputTypePins.Count > 0)
                 {
-                    GraphUtil.ConnectTypePins(node.OutputTypePins[0], itp);
+                    GraphUtil.ConnectPins(node.OutputTypePins[0], itp);
                 }
             }
             else if (pin is NodeOutputTypePin otp)
             {
                 if (node.InputTypePins.Count > 0)
                 {
-                    GraphUtil.ConnectTypePins(otp, node.InputTypePins[0]);
+                    GraphUtil.ConnectPins(otp, node.InputTypePins[0]);
                 }
             }
         }

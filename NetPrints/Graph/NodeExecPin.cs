@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using NetPrints.Base;
+using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
 {
@@ -6,7 +7,7 @@ namespace NetPrints.Graph
     /// Abstract class for execution pins.
     /// </summary>
     [DataContract]
-    public abstract class NodeExecPin : NodePin
+    public abstract class NodeExecPin : NodePin, INodeExecutionPin
     {
         protected NodeExecPin(Node node, string name)
             : base(node, name)

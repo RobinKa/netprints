@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Dialogs;
@@ -475,18 +476,29 @@ namespace NetPrintsEditor.Controls
         private void CablePath_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var element = sender as FrameworkElement;
-            if (!(element?.DataContext is NodePinVM pin))
+            if (!(element?.DataContext is PinConnection conn))
             {
                 throw new Exception("Could not find cable's pin.");
             }
 
             if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
-                pin.AddRerouteNode();
+                if (conn.PinA is NodeInputDataPin idp)
+                {
+                    GraphUtil.AddRerouteNode(idp);
+                }
+                else if (conn.PinA is NodeInputTypePin itp)
+                {
+                    GraphUtil.AddRerouteNode(itp);
+                }
+                else if (conn.PinA is NodeOutputExecPin oep)
+                {
+                    GraphUtil.AddRerouteNode(oep);
+                }
             }
             else if (e.ChangedButton == MouseButton.Middle)
             {
-                pin.DisconnectAll();
+                GraphUtil.DisconnectPins(conn.PinA, conn.PinB);
             }
         }
 
