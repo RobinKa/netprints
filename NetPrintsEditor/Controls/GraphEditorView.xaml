@@ -69,7 +69,7 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
 
-            <ItemsControl Panel.ZIndex="-1" ItemsSource="{Binding Graph.Connections}">
+            <ItemsControl Panel.ZIndex="-1" ItemsSource="{Binding Connections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />

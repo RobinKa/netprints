@@ -71,6 +71,11 @@ namespace NetPrintsEditor.ViewModels
             },
         };
 
+        public ObservableRangeCollection<PinConnection> Connections => connectionTracker.Connections;
+
+        private GraphConnectionTracker connectionTracker;
+
+
         public SuggestionListVM SuggestionViewModel { get; } = new SuggestionListVM();
 
         public event EventHandler OnHideContextMenu;
@@ -476,6 +481,9 @@ namespace NetPrintsEditor.ViewModels
                         Nodes.CollectionChanged += OnNodeCollectionChanged;
                         Nodes.ToList().ForEach(n => SetupNodeEvents(n, true));
                     }
+
+                    connectionTracker = new GraphConnectionTracker(graph);
+                    RaisePropertyChanged(nameof(Connections));
                 }
             }
         }
