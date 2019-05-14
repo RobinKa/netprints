@@ -330,7 +330,7 @@ namespace NetPrints.Graph
             {
                 foreach (var otherOtp in node.OutputDataPins)
                 {
-                    if (GraphUtil.CanConnectNodePins(otherOtp, idp,isSubclassOf, hasImplicitCast))
+                    if (GraphUtil.CanConnectNodePins(otherOtp, idp, isSubclassOf, hasImplicitCast))
                     {
                         GraphUtil.ConnectPins(otherOtp, idp);
 
