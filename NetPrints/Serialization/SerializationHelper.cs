@@ -1,4 +1,7 @@
 ﻿using NetPrints.Core;
+using NetPrints.Graph;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 
@@ -10,6 +13,12 @@ namespace NetPrints.Serialization
         {
             PreserveObjectReferences = true,
             MaxItemsInObjectGraph = int.MaxValue,
+            KnownTypes = new Type[]
+            {
+                typeof(Node),
+                typeof(NodeGraph),
+                typeof(NodePin)
+            },
         });
 
         /// <summary>

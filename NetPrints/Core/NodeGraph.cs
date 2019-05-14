@@ -43,7 +43,7 @@ namespace NetPrints.Core
             set;
         }
 
-        public ObservableRangeCollection<PinConnection> Connections { get; } = new ObservableRangeCollection<PinConnection>();
+        public ObservableRangeCollection<PinConnection> Connections { get; private set; } = new ObservableRangeCollection<PinConnection>();
 
         public NodeGraph()
         {
@@ -51,19 +51,20 @@ namespace NetPrints.Core
         }
 
         [OnDeserialized]
-        private void OnDeserialized()
+        private void OnDeserialized(StreamingContext context)
         {
             SetupInitialConnections();
         }
 
         private void SetupInitialConnections()
         {
-            Connections.Clear();
+            if (Connections is null)
+            {
+                Connections = new ObservableRangeCollection<PinConnection>();
+            }
 
-            Connections.AddRange(Nodes.SelectMany(
-                node => node.Pins.SelectMany(
-                    pin => pin.ConnectedPins.Select(
-                        connPin =>new PinConnection((NodePin)pin, (NodePin)connPin)))));
+            OnNodeCollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, Nodes, 0));
+            Nodes.CollectionChanged += OnNodeCollectionChanged;
         }
 
         private void OnNodeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -108,7 +109,12 @@ namespace NetPrints.Core
         {
             if (e.OldItems != null)
             {
-                Connections.RemoveRange(Connections.Where(conn => e.OldItems.Contains(conn.PinA) || e.OldItems.Contains(conn.PinB)).ToArray());
+                var removedConnections = Connections.Where(conn =>
+                        (conn.PinA == fromPin && e.OldItems.Contains(conn.PinB))
+                        || (conn.PinB == fromPin && e.OldItems.Contains(conn.PinA)))
+                    .ToArray();
+
+                Connections.RemoveRange(removedConnections);
             }
 
             if (e.NewItems != null)
@@ -141,7 +147,11 @@ namespace NetPrints.Core
         {
             if (add)
             {
-                Connections.AddRange(pin.ConnectedPins.Select(toPin => new PinConnection((NodePin)pin, (NodePin)toPin)));
+                if (pin.ConnectionType == NodePinConnectionType.Single)
+                {
+                    Connections.AddRange(pin.ConnectedPins.Select(toPin => new PinConnection((NodePin)pin, (NodePin)toPin)));
+                }
+
                 pin.ConnectedPins.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) => OnPinConnectionsCollectionChanged(pin, sender, e);
             }
             else

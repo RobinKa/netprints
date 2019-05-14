@@ -2,6 +2,7 @@
 using NetPrints.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -88,47 +89,30 @@ namespace NetPrints.Graph
 
         public static void ConnectPins(INodePin pinA, INodePin pinB)
         {
-            // Connect from -> to
+            // Remove old connections for single connection pins
+
             if (pinA.ConnectionType == NodePinConnectionType.Single)
             {
-                // Remove other pins' connection to this pin
-                if (pinA.ConnectedPins.Count > 0)
-                {
-                    foreach (var otherPin in pinA.ConnectedPins)
-                    {
-                        otherPin.ConnectedPins.Clear();
-                    }
-                }
-
-                pinA.ConnectedPins.Replace(pinB);
-            }
-            else
-            {
-                pinA.ConnectedPins.Add(pinB);
+                DisconnectPin(pinA);
             }
 
-            // Connect to -> from
             if (pinB.ConnectionType == NodePinConnectionType.Single)
             {
-                // Remove other pins' connection to this pin
-                if (pinB.ConnectedPins.Count > 0)
-                {
-                    foreach (var otherPin in pinB.ConnectedPins)
-                    {
-                        otherPin.ConnectedPins.Clear();
-                    }
-                }
+                DisconnectPin(pinB);
+            }
 
-                pinB.ConnectedPins.Replace(pinA);
-            }
-            else
-            {
-                pinB.ConnectedPins.Add(pinA);
-            }
+            // Add new connections
+            pinA.ConnectedPins.Add(pinB);
+            pinB.ConnectedPins.Add(pinA);
         }
 
         public static void DisconnectPin(INodePin nodePin)
         {
+            foreach (var otherPin in nodePin.ConnectedPins)
+            {
+                otherPin.ConnectedPins.Remove(nodePin);
+            }
+
             nodePin.ConnectedPins.Clear();
         }
 
@@ -146,6 +130,8 @@ namespace NetPrints.Graph
 
         public static void DisconnectPins(INodePin a, INodePin b)
         {
+            Debug.Assert(a.ConnectedPins.Contains(b) && b.ConnectedPins.Contains(a), "Tried to disconnect two pins which don't connect to each other.");
+
             a.ConnectedPins.Remove(b);
             b.ConnectedPins.Remove(a);
         }

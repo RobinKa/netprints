@@ -47,32 +47,32 @@ namespace NetPrints.Graph
         /// Input data pins of this node.
         /// </summary>
 
-        public IObservableCollectionView<NodeInputDataPin> InputDataPins { get; }
+        public IObservableCollectionView<NodeInputDataPin> InputDataPins { get; private set; }
 
         /// <summary>
         /// Output data pins of this node.
         /// </summary>
-        public IObservableCollectionView<NodeOutputDataPin> OutputDataPins { get; }
+        public IObservableCollectionView<NodeOutputDataPin> OutputDataPins { get; private set; }
 
         /// <summary>
         /// Input execution pins of this node.
         /// </summary>
-        public IObservableCollectionView<NodeInputExecPin> InputExecPins { get; }
+        public IObservableCollectionView<NodeInputExecPin> InputExecPins { get; private set; }
 
         /// <summary>
         /// Output execution pins of this node.
         /// </summary>
-        public IObservableCollectionView<NodeOutputExecPin> OutputExecPins { get; }
+        public IObservableCollectionView<NodeOutputExecPin> OutputExecPins { get; private set; }
 
         /// <summary>
         /// Input type pins of this node.
         /// </summary>
-        public IObservableCollectionView<NodeInputTypePin> InputTypePins { get; }
+        public IObservableCollectionView<NodeInputTypePin> InputTypePins { get; private set; }
 
         /// <summary>
         /// Output type pins of this node.
         /// </summary>
-        public IObservableCollectionView<NodeOutputTypePin> OutputTypePins { get; }
+        public IObservableCollectionView<NodeOutputTypePin> OutputTypePins { get; private set; }
 
         /// <summary>
         /// Delegate for the event of a position change of a node.
@@ -185,6 +185,16 @@ namespace NetPrints.Graph
 
         protected Node(NodeGraph graph)
         {
+            SetupPinViews();
+
+            Name = NetPrintsUtil.GetUniqueName(GetType().Name, graph.Nodes.Select(n => n.Name).ToList());
+
+            Graph = graph;
+            Graph.Nodes.Add(this);
+        }
+
+        private void SetupPinViews()
+        {
             static bool isType<T>(object x) => x is T;
 
             InputDataPins = new FilteredObservableCollection<NodeInputDataPin, INodePin>(Pins, isType<NodeInputDataPin>);
@@ -193,11 +203,6 @@ namespace NetPrints.Graph
             OutputExecPins = new FilteredObservableCollection<NodeOutputExecPin, INodePin>(Pins, isType<NodeOutputExecPin>);
             InputTypePins = new FilteredObservableCollection<NodeInputTypePin, INodePin>(Pins, isType<NodeInputTypePin>);
             OutputTypePins = new FilteredObservableCollection<NodeOutputTypePin, INodePin>(Pins, isType<NodeOutputTypePin>);
-
-            Name = NetPrintsUtil.GetUniqueName(GetType().Name, graph.Nodes.Select(n => n.Name).ToList());
-
-            Graph = graph;
-            Graph.Nodes.Add(this);
         }
 
         public override string ToString()
@@ -295,6 +300,8 @@ namespace NetPrints.Graph
         [OnDeserialized]
         private void OnDeserializing(StreamingContext context)
         {
+            SetupPinViews();
+
             foreach (var inputTypePin in InputTypePins)
             {
                 if (inputTypePin.InferredType != null)

@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.ViewModels;
 using System;
@@ -30,6 +31,10 @@ namespace NetPrintsEditor.Converters
             else if (value is CompilationReference reference)
             {
                 return new CompilationReferenceVM(reference);
+            }
+            else if (value is PinConnection connection)
+            {
+                return new PinConnectionVM(connection);
             }
 
             throw new ArgumentException();

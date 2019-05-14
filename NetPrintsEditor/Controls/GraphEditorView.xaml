@@ -13,6 +13,7 @@
         <converters:BoolToDoubleConverter x:Key="FaintToOpacity" True="0.1" False="0.7" />
         <converters:BoolToDoubleConverter x:Key="FaintToThickness" True="2" False="4" />
         <converters:PointConverter x:Key="PointConverter" />
+        <converters:ModelToViewModelConverter x:Key="modelToViewModelConverter" />
     </UserControl.Resources>
 
     <Grid x:Name="grid" ClipToBounds="True" AllowDrop="True" DragOver="OnDragOver" Drop="OnGridDrop"
@@ -77,25 +78,28 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Path MouseDown="CablePath_MouseDown" MouseUp="CablePath_MouseUp" MouseEnter="CablePath_MouseEnter" MouseLeave="CablePath_MouseLeave"
-                              x:Name="cablePath" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="Pink" StrokeThickness="5">
+                        <Path x:Name="cablePath" DataContext="{Binding Converter={StaticResource modelToViewModelConverter}}"
+                              MouseDown="CablePath_MouseDown" MouseUp="CablePath_MouseUp" MouseEnter="CablePath_MouseEnter"
+                              MouseLeave="CablePath_MouseLeave"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stroke="{Binding Brush}"
+                              StrokeThickness="5" Opacity="0.7">
 
                             <!--
                                Visibility="{Binding IsCableVisible, Converter={StaticResource ResourceKey=BoolToVis}}"
-                              Stroke="{Binding BorderBrush}" StrokeThickness="{Binding IsFaint, Converter={StaticResource FaintToThickness}}"
+                              StrokeThickness="{Binding IsFaint, Converter={StaticResource FaintToThickness}}"
                               Opacity="{Binding IsFaint, Converter={StaticResource FaintToOpacity}}" -->
 
                             <Path.Data>
                                 <PathGeometry>
                                     <PathGeometry.Figures>
                                         <PathFigureCollection>
-                                            <PathFigure StartPoint="{Binding PointA, Converter={StaticResource PointConverter}}">
+                                            <PathFigure StartPoint="{Binding Connection.PointA, Converter={StaticResource PointConverter}}">
                                                 <PathFigure.Segments>
                                                     <PathSegmentCollection>
                                                         <BezierSegment 
-                                                                Point1="{Binding PointB, Converter={StaticResource PointConverter}}" 
-                                                                Point2="{Binding PointC, Converter={StaticResource PointConverter}}" 
-                                                                Point3="{Binding PointD, Converter={StaticResource PointConverter}}" />
+                                                                Point1="{Binding Connection.PointB, Converter={StaticResource PointConverter}}" 
+                                                                Point2="{Binding Connection.PointC, Converter={StaticResource PointConverter}}" 
+                                                                Point3="{Binding Connection.PointD, Converter={StaticResource PointConverter}}" />
                                                     </PathSegmentCollection>
                                                 </PathFigure.Segments>
                                             </PathFigure>

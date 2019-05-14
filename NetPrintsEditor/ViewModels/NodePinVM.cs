@@ -162,10 +162,7 @@ namespace NetPrintsEditor.ViewModels
             RaisePropertyChanged(nameof(ToolTip));
         }
 
-        public bool IsRerouteNodePin
-        {
-            get => Node is RerouteNode;
-        }
+        public bool IsRerouteNodePin => Node is RerouteNode;
 
         /// <summary>
         /// Disconnects the pin from all of its connections.
@@ -343,12 +340,7 @@ namespace NetPrintsEditor.ViewModels
             get
             {
                 // Check if the pin is connected to anything
-                if ((pin is NodeInputDataPin idp && idp.IncomingPin != null)
-                    || (pin is NodeOutputDataPin odp && odp.OutgoingPins.Count > 0)
-                    || (pin is NodeInputExecPin iep && iep.IncomingExecutionPins.Count > 0)
-                    || (pin is NodeOutputExecPin oep && oep.OutgoingExecPin != null)
-                    || (pin is NodeInputTypePin itp && itp.IncomingPin != null)
-                    || (pin is NodeOutputTypePin otp && otp.OutgoingTypePins.Count > 0))
+                if (pin.ConnectedPins.Count > 0)
                 {
                     return BorderBrush;
                 }
@@ -359,11 +351,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public bool ShowRectangle => pin is NodeExecPin;
+        public bool ShowRectangle => pin is INodeExecutionPin;
 
-        public bool ShowCircle => pin is NodeDataPin;
+        public bool ShowCircle => pin is INodeDataPin;
 
-        public bool ShowTriangle => pin is NodeTypePin;
+        public bool ShowTriangle => pin is INodeTypePin;
 
         public bool ShowDefaultValueIndicator => pin is NodeInputDataPin idp && idp.UsesExplicitDefaultValue;
 
@@ -401,83 +393,13 @@ namespace NetPrintsEditor.ViewModels
         private void OnConnectionPositionUpdate()
         {
             RaisePropertyChanged(nameof(NodeRelativePosition));
-            RaisePropertyChanged(nameof(ConnectedAbsolutePosition));
-            RaisePropertyChanged(nameof(ConnectedCP1));
-            RaisePropertyChanged(nameof(ConnectedCP2));
             RaisePropertyChanged(nameof(AbsolutePosition));
             OnAbsolutePositionChanged();
         }
 
-        private void OnConnectedPinPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Position) || e.PropertyName == nameof(NodeRelativePosition))
-            {
-                OnConnectionPositionUpdate();
-            }
-        }
+        public bool IsConnected => pin.ConnectedPins.Count > 0;
 
-        public bool IsConnected
-        {
-            get => pin.ConnectedPins.Count > 0;
-        }
-
-        public bool IsCableVisible
-        {
-            get => IsConnected || IsBeingConnected;
-        }
-
-        private void OnConnectedPinNodePositionChanged(Node node, double posX, double posY)
-        {
-            OnConnectionPositionUpdate();
-        }
-
-        private const double CPOffset = 100;
-
-        public Point ConnectedCP1
-        {
-            get
-            {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
-                {
-                    return new Point(AbsolutePosition.X + CPOffset, AbsolutePosition.Y);
-                }
-                else
-                {
-                    return new Point(AbsolutePosition.X - CPOffset, AbsolutePosition.Y);
-                }
-            }
-        }
-
-        public Point ConnectedCP2
-        {
-            get
-            {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
-                {
-                    return new Point(ConnectedAbsolutePosition.X - CPOffset, ConnectedAbsolutePosition.Y);
-                }
-                else
-                {
-                    return new Point(ConnectedAbsolutePosition.X + CPOffset, ConnectedAbsolutePosition.Y);
-                }
-            }
-        }
-
-        public Point ConnectedAbsolutePosition
-        {
-            get
-            {
-                if (IsBeingConnected)
-                {
-                    return ConnectingAbsolutePosition;
-                }
-                else
-                {
-                    return AbsolutePosition;
-                    // TODO: return IsConnected ? ConnectedPin.AbsolutePosition : AbsolutePosition;
-                }
-            }
-        }
+        public bool IsCableVisible => IsBeingConnected;
 
         private NodePin pin;
 
@@ -487,36 +409,6 @@ namespace NetPrintsEditor.ViewModels
         public NodePinVM(NodePin pin)
         {
             Pin = pin;
-        }
-
-        /// <summary>
-        /// Adds a reroute node for this pin. Only valid
-        /// for input data pins and output execution pins.
-        /// </summary>
-        public void AddRerouteNode()
-        {
-            if (Pin is NodeInputDataPin dataPin)
-            {
-                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(dataPin);
-                rerouteNode.PositionX = (Pin.Node.PositionX + dataPin.IncomingPin.Node.PositionX) / 2;
-                rerouteNode.PositionY = (Pin.Node.PositionY + dataPin.IncomingPin.Node.PositionY) / 2;
-            }
-            else if (Pin is NodeOutputExecPin execPin)
-            {
-                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(execPin);
-                rerouteNode.PositionX = (Pin.Node.PositionX + execPin.OutgoingExecPin.Node.PositionX) / 2;
-                rerouteNode.PositionY = (Pin.Node.PositionY + execPin.OutgoingExecPin.Node.PositionY) / 2;
-            }
-            else if (Pin is NodeInputTypePin typePin)
-            {
-                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(typePin);
-                rerouteNode.PositionX = (Pin.Node.PositionX + typePin.IncomingPin.Node.PositionX) / 2;
-                rerouteNode.PositionY = (Pin.Node.PositionY + typePin.IncomingPin.Node.PositionY) / 2;
-            }
-            else
-            {
-                throw new Exception("Can't add reroute node for invalid pin type");
-            }
         }
 
         private void OnPinChanged()
