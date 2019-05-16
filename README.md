@@ -2,8 +2,7 @@
 
 ### Master [![Build Status](https://travis-ci.org/RobinKa/netprints.svg?branch=master)](https://travis-ci.org/RobinKa/netprints) Latest [![Build Status](https://travis-ci.org/RobinKa/netprints.svg)](https://travis-ci.org/RobinKa/netprints)
 
-NetPrints is a visual programming language inspired by Unreal Engine 4's Blueprints which compiles into .NET binaries or alternatively C# source code. These can be used from any other .NET language (eg. C#) or used as standalone programs. Furthermore any .NET binaries (both .NET Framework and .NET Core, and ideally .NET Standard) can be referenced and used. Its goal is to support using anything that is made in C#. Furthermore it can be used directly within Visual Studio in any C# projects.
-
+NetPrints is a visual programming language inspired by Unreal Engine 4's Blueprints which compiles into .NET binaries or alternatively C# source code. These can be used from any other .NET language (eg. C#) or used as standalone programs. Furthermore any .NET binaries (both .NET Framework and .NET Core, and ideally .NET Standard) can be referenced and used. Its goal is to support using anything that is made in C#. Furthermore it can be used directly within Visual Studio in any C# projects (experimental).
 [Overview](https://github.com/RobinKa/netprints/wiki/Overview)
 
 [Use cases](https://github.com/RobinKa/netprints/wiki/Use-cases)
@@ -24,6 +23,9 @@ Until version 0.0.7 .NET Core 3.0 was required. Since then the projects target t
 | NetPrintsCLI | .NET Core 2.0, .NET Framework 4.6.1 |
 | NetPrintsEditor | .NET Framework 4.6.1 (targeting .NET Core 3.0 works too, but was disabled because of an issue with the VSIX) |
 | NetPrintsVSIX | .NET Framework 4.6.1 |
+
+# Visual Studio Extension Guide
+The Visual Studio extension is currently experimental and supports versions 2017 and 2019. New classes can be created within C# projects by adding a new item and selecting NetPrints class. This will add a `.netpc` file to the project. Currently it can be opened with the editor by right clicking the `.netpc` file, selecting open with and selecting `NetPrintsEditorFactory`. If you know how to make it the default editor for this extension please let me know in https://github.com/RobinKa/netprints/issues/77.
 
 # Standalone Editor Guide
 Any .NET binaries can be used with this editor. The recommended way to add new assembly references is installing them with NuGet (eg. from within Visual Studio or the command line) and referencing their .NET Standard reference libraries at `%UserProfile%/.nuget`. The hints for the included references should then appear within the editor. You can also add C# source directories which can either be used for reflection only (useful when you want to use NetPrints within Unity to access your existing scripts) or compiled into the output.
