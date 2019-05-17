@@ -9,7 +9,7 @@ namespace NetPrints.Graph
     /// Node representing the initial execution node of a method.
     /// </summary>
     [DataContract]
-    public class MethodEntryNode : ExecutionEntryNode
+    public class MethodEntryNode : ExecutionEntryNode, INodeInputButtons, INodeOutputButtons
     {
         public MethodEntryNode(MethodGraph graph)
             : base(graph)
@@ -46,11 +46,11 @@ namespace NetPrints.Graph
                 NodeOutputDataPin odpToRemove = OutputDataPins.Last();
                 NodeInputTypePin itpToRemove = InputTypePins.Last();
 
-                GraphUtil.DisconnectOutputDataPin(odpToRemove);
-                GraphUtil.DisconnectInputTypePin(itpToRemove);
+                GraphUtil.DisconnectPin(odpToRemove);
+                GraphUtil.DisconnectPin(itpToRemove);
 
-                OutputDataPins.Remove(odpToRemove);
-                InputTypePins.Remove(itpToRemove);
+                Pins.Remove(odpToRemove);
+                Pins.Remove(itpToRemove);
             }
         }
 
@@ -66,10 +66,18 @@ namespace NetPrints.Graph
             {
                 NodeOutputTypePin otpToRemove = OutputTypePins.Last();
 
-                GraphUtil.DisconnectOutputTypePin(otpToRemove);
+                GraphUtil.DisconnectPin(otpToRemove);
 
-                OutputTypePins.Remove(otpToRemove);
+                Pins.Remove(otpToRemove);
             }
         }
+
+        public void InputPlusClicked() => AddArgument();
+
+        public void InputMinusClicked() => RemoveArgument();
+
+        public void OutputPlusClicked() => AddGenericArgument();
+
+        public void OutputMinusClicked() => RemoveGenericArgument();
     }
 }

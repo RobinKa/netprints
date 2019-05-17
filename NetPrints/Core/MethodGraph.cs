@@ -1,4 +1,5 @@
-﻿using NetPrints.Graph;
+﻿using NetPrints.Base;
+using NetPrints.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,11 +129,13 @@ namespace NetPrints.Core
 
                 foreach (var node in Nodes)
                 {
-                    node.InputTypePins.ToList().ForEach(p => pinTypes.Add(p, p.InferredType?.Value));
+                    var inputTypePins = node.Pins.OfType<NodeTypePin>().ToList();
 
-                    node.OnMethodDeserialized();
+                    inputTypePins.ForEach(p => pinTypes.Add(p, p.InferredType?.Value));
 
-                    if (node.InputTypePins.Any(p => pinTypes[p] != p.InferredType?.Value))
+                    ((Node)node).OnMethodDeserialized();
+
+                    if (inputTypePins.Any(p => pinTypes[p] != p.InferredType?.Value))
                     {
                         anyTypeChanged = true;
                     }

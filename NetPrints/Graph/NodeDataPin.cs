@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -7,7 +8,7 @@ namespace NetPrints.Graph
     /// Abstract class for data pins.
     /// </summary>
     [DataContract]
-    public abstract class NodeDataPin : NodePin
+    public abstract class NodeDataPin : NodePin, INodeDataPin
     {
         /// <summary>
         /// Specifier for the type of this data pin.

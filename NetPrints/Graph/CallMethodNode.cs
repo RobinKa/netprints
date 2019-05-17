@@ -126,13 +126,13 @@ namespace NetPrints.Graph
         /// </summary>
         public bool HandlesExceptions
         {
-            get => !IsPure && OutputExecPins.Any(p => p.Name == CatchPinName) && CatchPin.OutgoingPin != null;
+            get => !IsPure && OutputExecPins.Any(p => p.Name == CatchPinName) && CatchPin.OutgoingExecPin != null;
         }
 
         /// <summary>
         /// List of node pins, one for each argument the method takes.
         /// </summary>
-        public IList<NodeInputDataPin> ArgumentPins
+        public IReadOnlyList<NodeInputDataPin> ArgumentPins
         {
             get
             {
@@ -218,12 +218,12 @@ namespace NetPrints.Graph
         /// </summary>
         private void UpdateExceptionPin()
         {
-            if (CatchPin?.OutgoingPin == null && ExceptionPin != null)
+            if (CatchPin?.OutgoingExecPin == null && ExceptionPin != null)
             {
-                GraphUtil.DisconnectOutputDataPin(ExceptionPin);
-                OutputDataPins.Remove(ExceptionPin);
+                GraphUtil.DisconnectPin(ExceptionPin);
+                Pins.Remove(ExceptionPin);
             }
-            else if (CatchPin?.OutgoingPin != null && ExceptionPin == null)
+            else if (CatchPin?.OutgoingExecPin != null && ExceptionPin == null)
             {
                 AddOutputDataPin(ExceptionPinName, TypeSpecifier.FromType<Exception>());
             }
@@ -244,8 +244,8 @@ namespace NetPrints.Graph
             {
                 // Remove catch pin. Exception pin gets automatically removed because
                 // of its pin changed ev ent.
-                GraphUtil.DisconnectOutputExecPin(CatchPin);
-                OutputExecPins.Remove(CatchPin);
+                GraphUtil.DisconnectPin(CatchPin);
+                Pins.Remove(CatchPin);
             }
             else
             {

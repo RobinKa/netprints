@@ -1,6 +1,9 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using PropertyChanged;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -35,43 +38,41 @@ namespace NetPrints.Graph
     [KnownType(typeof(TypeReturnNode))]
     [KnownType(typeof(DefaultNode))]
     [AddINotifyPropertyChangedInterface]
-    public abstract class Node
+    public abstract class Node : INode
     {
+        [DataMember]
+        public ObservableRangeCollection<INodePin> Pins { get; private set; } = new ObservableRangeCollection<INodePin>();
+
         /// <summary>
         /// Input data pins of this node.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeInputDataPin> InputDataPins { get; private set; } = new ObservableRangeCollection<NodeInputDataPin>();
+
+        public IObservableCollectionView<NodeInputDataPin> InputDataPins { get; private set; }
 
         /// <summary>
         /// Output data pins of this node.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeOutputDataPin> OutputDataPins { get; private set; } = new ObservableRangeCollection<NodeOutputDataPin>();
+        public IObservableCollectionView<NodeOutputDataPin> OutputDataPins { get; private set; }
 
         /// <summary>
         /// Input execution pins of this node.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeInputExecPin> InputExecPins { get; private set; } = new ObservableRangeCollection<NodeInputExecPin>();
+        public IObservableCollectionView<NodeInputExecPin> InputExecPins { get; private set; }
 
         /// <summary>
         /// Output execution pins of this node.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeOutputExecPin> OutputExecPins { get; private set; } = new ObservableRangeCollection<NodeOutputExecPin>();
+        public IObservableCollectionView<NodeOutputExecPin> OutputExecPins { get; private set; }
 
         /// <summary>
         /// Input type pins of this node.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeInputTypePin> InputTypePins { get; private set; } = new ObservableRangeCollection<NodeInputTypePin>();
+        public IObservableCollectionView<NodeInputTypePin> InputTypePins { get; private set; }
 
         /// <summary>
         /// Output type pins of this node.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeOutputTypePin> OutputTypePins { get; private set; } = new ObservableRangeCollection<NodeOutputTypePin>();
+        public IObservableCollectionView<NodeOutputTypePin> OutputTypePins { get; private set; }
 
         /// <summary>
         /// Delegate for the event of a position change of a node.
@@ -180,12 +181,28 @@ namespace NetPrints.Graph
             private set;
         }
 
+        INodeGraph INode.Graph => Graph;
+
         protected Node(NodeGraph graph)
         {
+            SetupPinViews();
+
+            Name = NetPrintsUtil.GetUniqueName(GetType().Name, graph.Nodes.Select(n => n.Name).ToList());
+
             Graph = graph;
             Graph.Nodes.Add(this);
+        }
 
-            Name = NetPrintsUtil.GetUniqueName(GetType().Name, Graph.Nodes.Select(n => n.Name).ToList());
+        private void SetupPinViews()
+        {
+            static bool isType<T>(object x) => x is T;
+
+            InputDataPins = new FilteredObservableCollection<NodeInputDataPin, INodePin>(Pins, isType<NodeInputDataPin>);
+            OutputDataPins = new FilteredObservableCollection<NodeOutputDataPin, INodePin>(Pins, isType<NodeOutputDataPin>);
+            InputExecPins = new FilteredObservableCollection<NodeInputExecPin, INodePin>(Pins, isType<NodeInputExecPin>);
+            OutputExecPins = new FilteredObservableCollection<NodeOutputExecPin, INodePin>(Pins, isType<NodeOutputExecPin>);
+            InputTypePins = new FilteredObservableCollection<NodeInputTypePin, INodePin>(Pins, isType<NodeInputTypePin>);
+            OutputTypePins = new FilteredObservableCollection<NodeOutputTypePin, INodePin>(Pins, isType<NodeOutputTypePin>);
         }
 
         public override string ToString()
@@ -200,7 +217,7 @@ namespace NetPrints.Graph
         /// <param name="pinType">Specifier for the type of this pin.</param>
         protected void AddInputDataPin(string pinName, ObservableValue<BaseType> pinType)
         {
-            InputDataPins.Add(new NodeInputDataPin(this, pinName, pinType));
+            Pins.Add(new NodeInputDataPin(this, pinName, pinType));
         }
 
         /// <summary>
@@ -210,7 +227,7 @@ namespace NetPrints.Graph
         /// <param name="pinType">Specifier for the type of this pin.</param>
         protected void AddOutputDataPin(string pinName, ObservableValue<BaseType> pinType)
         {
-            OutputDataPins.Add(new NodeOutputDataPin(this, pinName, pinType));
+            Pins.Add(new NodeOutputDataPin(this, pinName, pinType));
         }
 
         /// <summary>
@@ -219,7 +236,7 @@ namespace NetPrints.Graph
         /// <param name="pinName">Name of the pin.</param>
         protected void AddInputExecPin(string pinName)
         {
-            InputExecPins.Add(new NodeInputExecPin(this, pinName));
+            Pins.Add(new NodeInputExecPin(this, pinName));
         }
 
         /// <summary>
@@ -228,7 +245,7 @@ namespace NetPrints.Graph
         /// <param name="pinName">Name of the pin.</param>
         protected void AddOutputExecPin(string pinName)
         {
-            OutputExecPins.Add(new NodeOutputExecPin(this, pinName));
+            Pins.Add(new NodeOutputExecPin(this, pinName));
         }
 
         /// <summary>
@@ -239,7 +256,7 @@ namespace NetPrints.Graph
         {
             var typePin = new NodeInputTypePin(this, pinName);
             typePin.IncomingPinChanged += OnIncomingTypePinChanged;
-            InputTypePins.Add(typePin);
+            Pins.Add(typePin);
         }
 
         /// <summary>
@@ -249,7 +266,7 @@ namespace NetPrints.Graph
         /// <param name="getOutputTypeFunc">Function that generates the output type.</param>
         protected void AddOutputTypePin(string pinName, ObservableValue<BaseType> outputType)
         {
-            OutputTypePins.Add(new NodeOutputTypePin(this, pinName, outputType));
+            Pins.Add(new NodeOutputTypePin(this, pinName, outputType));
         }
 
         private void OnIncomingTypePinChanged(NodeInputTypePin pin, NodeOutputTypePin oldPin, NodeOutputTypePin newPin)
@@ -283,6 +300,8 @@ namespace NetPrints.Graph
         [OnDeserialized]
         private void OnDeserializing(StreamingContext context)
         {
+            SetupPinViews();
+
             foreach (var inputTypePin in InputTypePins)
             {
                 if (inputTypePin.InferredType != null)

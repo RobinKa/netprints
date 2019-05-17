@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using NetPrints.Base;
 using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrints.Translator;
@@ -105,13 +106,6 @@ namespace NetPrintsEditor.ViewModels
                 {
                     isBeingConnected = value;
 
-                    // Disconnect pin if its being connected
-                    // and is an IDP, OXP or ITP
-                    if (value && (Pin is NodeInputDataPin || Pin is NodeOutputExecPin || Pin is NodeInputTypePin))
-                    {
-                        ConnectedPin = null;
-                    }
-
                     RaisePropertyChanged();
                     RaisePropertyChanged(nameof(IsCableVisible));
                     OnConnectionPositionUpdate();
@@ -168,10 +162,7 @@ namespace NetPrintsEditor.ViewModels
             RaisePropertyChanged(nameof(ToolTip));
         }
 
-        public bool IsRerouteNodePin
-        {
-            get => Node is RerouteNode;
-        }
+        public bool IsRerouteNodePin => Node is RerouteNode;
 
         /// <summary>
         /// Disconnects the pin from all of its connections.
@@ -349,12 +340,7 @@ namespace NetPrintsEditor.ViewModels
             get
             {
                 // Check if the pin is connected to anything
-                if ((pin is NodeInputDataPin idp && idp.IncomingPin != null)
-                    || (pin is NodeOutputDataPin odp && odp.OutgoingPins.Count > 0)
-                    || (pin is NodeInputExecPin iep && iep.IncomingPins.Count > 0)
-                    || (pin is NodeOutputExecPin oep && oep.OutgoingPin != null)
-                    || (pin is NodeInputTypePin itp && itp.IncomingPin != null)
-                    || (pin is NodeOutputTypePin otp && otp.OutgoingPins.Count > 0))
+                if (pin.ConnectedPins.Count > 0)
                 {
                     return BorderBrush;
                 }
@@ -365,11 +351,11 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public bool ShowRectangle => pin is NodeExecPin;
+        public bool ShowRectangle => pin is INodeExecutionPin;
 
-        public bool ShowCircle => pin is NodeDataPin;
+        public bool ShowCircle => pin is INodeDataPin;
 
-        public bool ShowTriangle => pin is NodeTypePin;
+        public bool ShowTriangle => pin is INodeTypePin;
 
         public bool ShowDefaultValueIndicator => pin is NodeInputDataPin idp && idp.UsesExplicitDefaultValue;
 
@@ -382,6 +368,12 @@ namespace NetPrintsEditor.ViewModels
         public Point AbsolutePosition => new Point(
             Node.PositionX + NodeRelativePosition.X,
             Node.PositionY + NodeRelativePosition.Y);
+
+        private void OnAbsolutePositionChanged()
+        {
+            Pin.PositionX = AbsolutePosition.X;
+            Pin.PositionY = AbsolutePosition.Y;
+        }
 
         public Point NodeRelativePosition
         {
@@ -401,146 +393,15 @@ namespace NetPrintsEditor.ViewModels
         private void OnConnectionPositionUpdate()
         {
             RaisePropertyChanged(nameof(NodeRelativePosition));
-            RaisePropertyChanged(nameof(ConnectedAbsolutePosition));
-            RaisePropertyChanged(nameof(ConnectedCP1));
-            RaisePropertyChanged(nameof(ConnectedCP2));
             RaisePropertyChanged(nameof(AbsolutePosition));
+            OnAbsolutePositionChanged();
         }
 
-        // = Incoming pin for data input
-        // = Outgoing pin for exec output
-        // = Incoming pin for type input
-        // = null for rest
-        public NodePinVM ConnectedPin
-        {
-            get => connectedPin;
-            set
-            {
-                if (!(Pin is NodeOutputExecPin || Pin is NodeInputDataPin || Pin is NodeInputTypePin))
-                {
-                    throw new Exception("Can only set connected pin of NodeOutputExecPin and NodeInputDataPin");
-                }
+        public bool IsConnected => pin.ConnectedPins.Count > 0;
 
-                if (connectedPin != value)
-                {
-                    if (connectedPin != null)
-                    {
-                        connectedPin.Node.OnPositionChanged -= OnConnectedPinNodePositionChanged;
-                        connectedPin.PropertyChanged -= OnConnectedPinPropertyChanged;
-                    }
-
-                    if (value != null)
-                    {
-                        GraphUtil.ConnectNodePins(Pin, value.Pin);
-                    }
-                    else
-                    {
-                        if (Pin is NodeOutputExecPin oxp)
-                        {
-                            GraphUtil.DisconnectOutputExecPin(oxp);
-                        }
-                        else if (Pin is NodeInputDataPin idp)
-                        {
-                            GraphUtil.DisconnectInputDataPin(idp);
-                        }
-                        else if (Pin is NodeInputTypePin itp)
-                        {
-                            GraphUtil.DisconnectInputTypePin(itp);
-                        }
-                    }
-
-                    connectedPin = value;
-                    RaisePropertyChanged();
-                    RaisePropertyChanged(nameof(IsConnected));
-                    RaisePropertyChanged(nameof(IsCableVisible));
-                    RaisePropertyChanged(nameof(ShowUnconnectedValue));
-                    RaisePropertyChanged(nameof(ShowEnumValue));
-                    RaisePropertyChanged(nameof(PossibleEnumNames));
-                    RaisePropertyChanged(nameof(FillBrush));
-                    RaisePropertyChanged(nameof(DefaultValueIndicatorBrush));
-                    OnConnectionPositionUpdate();
-
-                    if (connectedPin != null)
-                    {
-                        connectedPin.Node.OnPositionChanged += OnConnectedPinNodePositionChanged;
-                        connectedPin.PropertyChanged += OnConnectedPinPropertyChanged;
-                    }
-                }
-            }
-        }
-
-        private void OnConnectedPinPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Position) || e.PropertyName == nameof(NodeRelativePosition))
-            {
-                OnConnectionPositionUpdate();
-            }
-        }
-
-        public bool IsConnected
-        {
-            get => connectedPin != null;
-        }
-
-        public bool IsCableVisible
-        {
-            get => IsConnected || IsBeingConnected;
-        }
-
-        private void OnConnectedPinNodePositionChanged(Node node, double posX, double posY)
-        {
-            OnConnectionPositionUpdate();
-        }
-
-        private const double CPOffset = 100;
-
-        public Point ConnectedCP1
-        {
-            get
-            {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
-                {
-                    return new Point(AbsolutePosition.X + CPOffset, AbsolutePosition.Y);
-                }
-                else
-                {
-                    return new Point(AbsolutePosition.X - CPOffset, AbsolutePosition.Y);
-                }
-            }
-        }
-
-        public Point ConnectedCP2
-        {
-            get
-            {
-                if (Pin is NodeOutputExecPin || Pin is NodeOutputDataPin || Pin is NodeOutputTypePin)
-                {
-                    return new Point(ConnectedAbsolutePosition.X - CPOffset, ConnectedAbsolutePosition.Y);
-                }
-                else
-                {
-                    return new Point(ConnectedAbsolutePosition.X + CPOffset, ConnectedAbsolutePosition.Y);
-                }
-            }
-        }
-
-        public Point ConnectedAbsolutePosition
-        {
-            get
-            {
-                if (IsBeingConnected)
-                {
-                    return ConnectingAbsolutePosition;
-                }
-                else
-                {
-                    return IsConnected ? ConnectedPin.AbsolutePosition : AbsolutePosition;
-                }
-            }
-        }
+        public bool IsCableVisible => IsBeingConnected;
 
         private NodePin pin;
-        private NodePinVM connectedPin;
 
         private double positionX;
         private double positionY;
@@ -548,52 +409,6 @@ namespace NetPrintsEditor.ViewModels
         public NodePinVM(NodePin pin)
         {
             Pin = pin;
-        }
-
-        /// <summary>
-        /// Adds a reroute node for this pin. Only valid
-        /// for input data pins and output execution pins.
-        /// </summary>
-        public void AddRerouteNode()
-        {
-            if (Pin is NodeInputDataPin dataPin)
-            {
-                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(dataPin);
-                rerouteNode.PositionX = (Pin.Node.PositionX + dataPin.IncomingPin.Node.PositionX) / 2;
-                rerouteNode.PositionY = (Pin.Node.PositionY + dataPin.IncomingPin.Node.PositionY) / 2;
-            }
-            else if (Pin is NodeOutputExecPin execPin)
-            {
-                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(execPin);
-                rerouteNode.PositionX = (Pin.Node.PositionX + execPin.OutgoingPin.Node.PositionX) / 2;
-                rerouteNode.PositionY = (Pin.Node.PositionY + execPin.OutgoingPin.Node.PositionY) / 2;
-            }
-            else if (Pin is NodeInputTypePin typePin)
-            {
-                RerouteNode rerouteNode = GraphUtil.AddRerouteNode(typePin);
-                rerouteNode.PositionX = (Pin.Node.PositionX + typePin.IncomingPin.Node.PositionX) / 2;
-                rerouteNode.PositionY = (Pin.Node.PositionY + typePin.IncomingPin.Node.PositionY) / 2;
-            }
-            else
-            {
-                throw new Exception("Can't add reroute node for invalid pin type");
-            }
-        }
-        
-        /// <summary>
-        /// Connects this pin to another pin.
-        /// </summary>
-        /// <param name="other">Pin to connect to.</param>
-        public void ConnectTo(NodePinVM other)
-        {
-            if (Pin is NodeInputDataPin || Pin is NodeOutputExecPin || Pin is NodeInputTypePin)
-            {
-                ConnectedPin = other;
-            }
-            else
-            {
-                other.ConnectedPin = this;
-            }
         }
 
         private void OnPinChanged()

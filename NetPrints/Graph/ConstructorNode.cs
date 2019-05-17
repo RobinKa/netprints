@@ -46,7 +46,7 @@ namespace NetPrints.Graph
         /// <summary>
         /// List of node pins, one for each argument the constructor takes.
         /// </summary>
-        public IList<NodeInputDataPin> ArgumentPins
+        public IReadOnlyList<NodeInputDataPin> ArgumentPins
         {
             get { return InputDataPins; }
         }

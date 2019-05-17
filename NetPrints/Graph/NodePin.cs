@@ -1,4 +1,8 @@
-﻿using PropertyChanged;
+﻿using NetPrints.Base;
+using NetPrints.Core;
+using PropertyChanged;
+using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -14,8 +18,11 @@ namespace NetPrints.Graph
     [KnownType(typeof(NodeInputTypePin))]
     [KnownType(typeof(NodeOutputTypePin))]
     [AddINotifyPropertyChangedInterface]
-    public abstract class NodePin
+    public abstract class NodePin : INodePin
     {
+        private double positionX;
+        private double positionY;
+
         /// <summary>
         /// Name of the pin.
         /// </summary>
@@ -35,6 +42,28 @@ namespace NetPrints.Graph
             get;
             private set;
         }
+
+        public double PositionX
+        {
+            get { return positionX; }
+            set { positionX = value; PositionChanged?.Invoke(this, EventArgs.Empty); }
+        }
+        public double PositionY
+        {
+            get { return positionY; }
+            set { positionY = value; PositionChanged?.Invoke(this, EventArgs.Empty); }
+        }
+
+        public event EventHandler PositionChanged;
+
+        INode INodePin.Node => Node;
+
+        public abstract NodePinConnectionType ConnectionType { get; }
+
+        public ObservableRangeCollection<INodePin> ConnectedPins => connectedPins;
+
+        [DataMember]
+        private ObservableRangeCollection<INodePin> connectedPins = new ObservableRangeCollection<INodePin>();
 
         protected NodePin(Node node, string name)
         {

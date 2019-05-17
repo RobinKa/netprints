@@ -1,5 +1,7 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -8,7 +10,7 @@ namespace NetPrints.Graph
     /// Node representing the creation of an array.
     /// </summary>
     [DataContract]
-    public class MakeArrayNode : Node
+    public class MakeArrayNode : Node, INodeInputButtons
     {
         /// <summary>
         /// Whether this node is in predefined-size
@@ -108,8 +110,8 @@ namespace NetPrints.Graph
             else
             {
                 // Remove size pin
-                GraphUtil.DisconnectInputDataPin(InputDataPins[0]);
-                InputDataPins.RemoveAt(0);
+                GraphUtil.DisconnectPin(InputDataPins[0]);
+                Pins.Remove(Pins.First(p => p is NodeDataPin));
             }
         }
 
@@ -127,34 +129,31 @@ namespace NetPrints.Graph
         /// <summary>
         /// Adds an input data pin for an array element.
         /// </summary>
-        public void AddElementPin()
-        {
-            AddInputDataPin($"Element{InputDataPins.Count}", ElementType);
-        }
-
+        public void AddElementPin() => AddInputDataPin($"Element{InputDataPins.Count}", ElementType);
+        
         /// <summary>
         /// Removes the last input data pin for an array element.
         /// Returns whether one was actually removed.
         /// </summary>
         /// <returns>Whether a pin was removed.</returns>
-        public bool RemoveElementPin()
+        public void RemoveElementPin()
         {
             if (InputDataPins.Count > 0)
             {
                 // TODO: Add method for removing pins on Node
                 NodeInputDataPin inputDataPin = InputDataPins[InputDataPins.Count - 1];
-                GraphUtil.DisconnectInputDataPin(inputDataPin);
-                InputDataPins.Remove(inputDataPin);
-
-                return true;
+                GraphUtil.DisconnectPin(inputDataPin);
+                Pins.Remove(inputDataPin);
             }
-
-            return false;
         }
 
         public override string ToString()
         {
             return $"Make {ElementType.Name} Array";
         }
+
+        public void InputPlusClicked() => AddElementPin();
+
+        public void InputMinusClicked() => RemoveElementPin();
     }
 }

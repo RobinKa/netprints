@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using NetPrints.Base;
+using NetPrints.Core;
+using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
 {
@@ -9,7 +11,7 @@ namespace NetPrints.Graph
     /// Pin which can be connected to an input execution pin to pass along execution.
     /// </summary>
     [DataContract]
-    public class NodeOutputExecPin : NodeExecPin
+    public class NodeOutputExecPin : NodeExecPin, INodeOutputPin
     {
         /// <summary>
         /// Called when the connected outgoing pin changed.
@@ -20,24 +22,12 @@ namespace NetPrints.Graph
         /// Connected input execution pin. Null if not connected.
         /// Can trigger OutgoingPinChanged when set.
         /// </summary>
-        [DataMember]
-        public NodeInputExecPin OutgoingPin
-        {
-            get => outgoingPin;
-            set
-            {
-                if (outgoingPin != value)
-                {
-                    var oldPin = outgoingPin;
+        
+        public NodeInputExecPin OutgoingExecPin => OutgoingPins.Count > 0 ? (NodeInputExecPin)OutgoingPins[0] : null;
 
-                    outgoingPin = value;
+        public IObservableCollectionView<INodeInputPin> OutgoingPins => ConnectedPins.ObservableOfType<INodeInputPin, INodePin>();
 
-                    OutgoingPinChanged?.Invoke(this, oldPin, outgoingPin);
-                }
-            }
-        }
-
-        private NodeInputExecPin outgoingPin;
+        public override NodePinConnectionType ConnectionType => NodePinConnectionType.Single;
 
         public NodeOutputExecPin(Node node, string name)
             : base(node, name)

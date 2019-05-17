@@ -167,7 +167,7 @@ namespace NetPrintsEditor.ViewModels
             newMethod.EntryNode.PositionY = gridCellSize * 4;
             newMethod.ReturnNodes.First().PositionX = newMethod.EntryNode.PositionX + gridCellSize * 15;
             newMethod.ReturnNodes.First().PositionY = newMethod.EntryNode.PositionY;
-            GraphUtil.ConnectExecPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
+            GraphUtil.ConnectPins(newMethod.EntryNode.InitialExecutionPin, newMethod.MainReturnNode.ReturnPin);
 
             Class.Methods.Add(newMethod);
 

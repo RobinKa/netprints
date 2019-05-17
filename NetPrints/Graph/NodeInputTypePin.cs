@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -10,7 +11,7 @@ namespace NetPrints.Graph
     /// Pin which can receive types.
     /// </summary>
     [DataContract]
-    public class NodeInputTypePin : NodeTypePin
+    public class NodeInputTypePin : NodeTypePin, INodeInputPin
     {
         /// <summary>
         /// Called when the node's incoming pin changed.
@@ -21,29 +22,16 @@ namespace NetPrints.Graph
         /// Incoming type pin for this pin. Null when not connected.
         /// Can trigger IncomingPinChanged when set.
         /// </summary>
-        [DataMember]
-        public NodeOutputTypePin IncomingPin
-        {
-            get => incomingPin;
-            set
-            {
-                if (incomingPin != value)
-                {
-                    var oldPin = incomingPin;
-
-                    incomingPin = value;
-
-                    IncomingPinChanged?.Invoke(this, oldPin, incomingPin);
-                }
-            }
-        }
+        public NodeOutputTypePin IncomingPin => IncomingPins.Count > 0 ? (NodeOutputTypePin)IncomingPins[0] : null;
 
         public override ObservableValue<BaseType> InferredType
         {
             get => IncomingPin?.InferredType;
         }
 
-        private NodeOutputTypePin incomingPin;
+        public IObservableCollectionView<INodeOutputPin> IncomingPins => ConnectedPins.ObservableOfType<INodeOutputPin, INodePin>();
+
+        public override NodePinConnectionType ConnectionType => NodePinConnectionType.Single;
 
         public NodeInputTypePin(Node node, string name)
             : base(node, name)
