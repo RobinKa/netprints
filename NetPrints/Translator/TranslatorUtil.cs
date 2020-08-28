@@ -99,6 +99,10 @@ namespace NetPrints.Translator
             {
                 return $"{obj}M";
             }
+            else if (type==TypeSpecifier.FromType<bool>())
+            {
+                return obj.ToString().ToLower();  //Bool false is converted to False, causing the issue in compilation
+            }
             else
             {
                 return obj.ToString();
