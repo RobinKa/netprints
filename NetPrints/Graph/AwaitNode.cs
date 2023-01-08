@@ -63,7 +63,7 @@ namespace NetPrints.Graph
                     // to determine if the types are still compatible.
                     foreach (var outgoingPin in ResultPin.OutgoingPins)
                     {
-                        GraphUtil.DisconnectOutputDataPin(ResultPin);
+                        GraphUtil.DisconnectPin(ResultPin);
                     }
                 }
                 else
@@ -76,8 +76,8 @@ namespace NetPrints.Graph
                 // Remove existing result pin if any
                 if (ResultPin != null)
                 {
-                    GraphUtil.DisconnectOutputDataPin(ResultPin);
-                    OutputDataPins.Remove(ResultPin);
+                    GraphUtil.DisconnectPin(ResultPin);
+                    Pins.Remove(ResultPin);
                 }
             }
         }

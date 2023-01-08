@@ -1,5 +1,7 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -11,7 +13,7 @@ namespace NetPrints.Graph
     /// Input data pin which can be connected to up to one output data pin to receive a value.
     /// </summary>
     [DataContract]
-    public class NodeInputDataPin : NodeDataPin
+    public class NodeInputDataPin : NodeDataPin, INodeInputPin
     {
         /// <summary>
         /// Called when the node's incoming pin changed.
@@ -22,22 +24,7 @@ namespace NetPrints.Graph
         /// Incoming data pin for this pin. Null when not connected.
         /// Can trigger IncomingPinChanged when set.
         /// </summary>
-        [DataMember]
-        public NodeOutputDataPin IncomingPin
-        {
-            get => incomingPin;
-            set
-            {
-                if (incomingPin != value)
-                {
-                    var oldPin = incomingPin;
-
-                    incomingPin = value;
-
-                    IncomingPinChanged?.Invoke(this, oldPin, incomingPin);
-                }
-            }
-        }
+        public NodeOutputDataPin IncomingPin => IncomingPins.Count > 0 ? (NodeOutputDataPin)IncomingPins[0] : null;
 
         /// <summary>
         /// Whether this pin uses its unconnected value to output a value
@@ -47,8 +34,6 @@ namespace NetPrints.Graph
         {
             get => PinType.Value is TypeSpecifier t && t.IsPrimitive;
         }
-
-        private NodeOutputDataPin incomingPin;
 
         /// <summary>
         /// Unconnected value of this pin when no pin is connected to it.
@@ -92,6 +77,10 @@ namespace NetPrints.Graph
             get;
             set;
         }
+
+        public IObservableCollectionView<INodeOutputPin> IncomingPins => ConnectedPins.ObservableOfType<INodeOutputPin, INodePin>();
+
+        public override NodePinConnectionType ConnectionType => NodePinConnectionType.Single;
 
         public NodeInputDataPin(Node node, string name, ObservableValue<BaseType> pinType)
             : base(node, name, pinType)

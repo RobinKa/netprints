@@ -8,7 +8,7 @@ using System.Text;
 namespace NetPrints.Graph
 {
     [DataContract]
-    public class ClassReturnNode : Node
+    public class ClassReturnNode : Node, INodeInputButtons
     {
         public NodeInputTypePin SuperTypePin
         {
@@ -26,20 +26,24 @@ namespace NetPrints.Graph
             AddInputTypePin("BaseType");
         }
 
-        public void AddInterfacePin()
+        public void AddArgument()
         {
             AddInputTypePin($"Interface{InputTypePins.Count}");
         }
 
-        public void RemoveInterfacePin()
+        public void RemoveArgument()
         {
             var interfacePin = InterfacePins.LastOrDefault();
 
             if (interfacePin != null)
             {
-                GraphUtil.DisconnectInputTypePin(interfacePin);
-                InputTypePins.Remove(interfacePin);
+                GraphUtil.DisconnectPin(interfacePin);
+                Pins.Remove(interfacePin);
             }
         }
+
+        public void InputPlusClicked() => AddArgument();
+
+        public void InputMinusClicked() => RemoveArgument();
     }
 }

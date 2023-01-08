@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using NetPrints.Graph;
 using NetPrintsEditor.Commands;
 using NetPrintsEditor.Dialogs;
@@ -475,32 +476,43 @@ namespace NetPrintsEditor.Controls
         private void CablePath_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var element = sender as FrameworkElement;
-            if (!(element?.DataContext is NodePinVM pin))
+            if (!(element?.DataContext is PinConnectionVM connViewModel))
             {
                 throw new Exception("Could not find cable's pin.");
             }
 
             if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
-                pin.AddRerouteNode();
+                if (connViewModel.Connection.PinA is NodeInputDataPin idp)
+                {
+                    GraphUtil.AddRerouteNode(idp);
+                }
+                else if (connViewModel.Connection.PinA is NodeInputTypePin itp)
+                {
+                    GraphUtil.AddRerouteNode(itp);
+                }
+                else if (connViewModel.Connection.PinA is NodeOutputExecPin oep)
+                {
+                    GraphUtil.AddRerouteNode(oep);
+                }
             }
             else if (e.ChangedButton == MouseButton.Middle)
             {
-                pin.DisconnectAll();
+                GraphUtil.DisconnectPins(connViewModel.Connection.PinA, connViewModel.Connection.PinB);
             }
         }
 
         private void CablePath_MouseUp(object sender, MouseButtonEventArgs e)
         {
             var element = sender as FrameworkElement;
-            if (!(element?.DataContext is NodePinVM pin))
+            if (!(element?.DataContext is PinConnectionVM connection))
             {
                 throw new Exception("Could not find cable's pin.");
             }
 
             if (e.ChangedButton == MouseButton.XButton1 && e.RightButton == MouseButtonState.Released)
             {
-                pin.IsFaint = !pin.IsFaint;
+                //connection.IsFaint = !connection.IsFaint;
             }
         }
     }

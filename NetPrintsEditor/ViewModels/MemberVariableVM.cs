@@ -107,7 +107,7 @@ namespace NetPrintsEditor.ViewModels
             method.MainReturnNode.PositionY = method.EntryNode.PositionY;
 
             // Connect entry and return node execution pins
-            GraphUtil.ConnectExecPins(method.EntryNode.InitialExecutionPin, method.MainReturnNode.ReturnPin);
+            GraphUtil.ConnectPins(method.EntryNode.InitialExecutionPin, method.MainReturnNode.ReturnPin);
 
             // Create return input pin with correct type
             // TODO: Make sure we can't delete type pins.
@@ -115,7 +115,7 @@ namespace NetPrintsEditor.ViewModels
             const int offsetY = -112;
             TypeNode returnTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.MainReturnNode.PositionX + offsetX, method.MainReturnNode.PositionY + offsetY);
             method.MainReturnNode.AddReturnType();
-            GraphUtil.ConnectTypePins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
+            GraphUtil.ConnectPins(returnTypeNode.OutputTypePins[0], method.MainReturnNode.InputTypePins[0]);
 
             Getter = method;
         }
@@ -140,7 +140,7 @@ namespace NetPrintsEditor.ViewModels
             method.MainReturnNode.PositionY = method.EntryNode.PositionY;
 
             // Connect entry and return node execution pins
-            GraphUtil.ConnectExecPins(method.EntryNode.InitialExecutionPin, method.MainReturnNode.ReturnPin);
+            GraphUtil.ConnectPins(method.EntryNode.InitialExecutionPin, method.MainReturnNode.ReturnPin);
 
             // Create argument output pin with correct type
             // TODO: Make sure we can't delete type pins.
@@ -148,7 +148,7 @@ namespace NetPrintsEditor.ViewModels
             const int offsetY = -112;
             TypeNode argTypeNode = GraphUtil.CreateNestedTypeNode(method, Type, method.EntryNode.PositionX + offsetX, method.EntryNode.PositionY + offsetY);
             method.MethodEntryNode.AddArgument();
-            GraphUtil.ConnectTypePins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
+            GraphUtil.ConnectPins(argTypeNode.OutputTypePins[0], method.EntryNode.InputTypePins[0]);
 
             Setter = method;
         }

@@ -94,13 +94,13 @@ namespace NetPrints.Graph
 
                 foreach (var execPin in outExecPins)
                 {
-                    GraphUtil.DisconnectOutputExecPin(execPin);
-                    OutputExecPins.Remove(execPin);
+                    GraphUtil.DisconnectPin(execPin);
+                    Pins.Remove(execPin);
                 }
 
                 var inExecPin = InputExecPins.Single(p => p.Name == "Exec");
-                GraphUtil.DisconnectInputExecPin(inExecPin);
-                InputExecPins.Remove(inExecPin);
+                GraphUtil.DisconnectPin(inExecPin);
+                Pins.Remove(inExecPin);
             }
             else
             {

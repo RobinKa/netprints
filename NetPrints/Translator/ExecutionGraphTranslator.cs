@@ -332,7 +332,7 @@ namespace NetPrints.Translator
             builder.AppendLine();
 
             // Start at node after method entry if necessary (id!=0)
-            if (graph.EntryNode.OutputExecPins[0].OutgoingPin != null && GetExecPinStateId(graph.EntryNode.OutputExecPins[0].OutgoingPin) != 0)
+            if (graph.EntryNode.OutputExecPins[0].OutgoingExecPin != null && GetExecPinStateId(graph.EntryNode.OutputExecPins[0].OutgoingExecPin) != 0)
             {
                 WriteGotoOutputPin(graph.EntryNode.OutputExecPins[0]);
             }
@@ -423,13 +423,13 @@ namespace NetPrints.Translator
 
         private void WriteGotoOutputPin(NodeOutputExecPin pin)
         {
-            if (pin.OutgoingPin == null)
+            if (pin.OutgoingExecPin == null)
             {
                 WriteGotoJumpStack();
             }
             else
             {
-                WriteGotoInputPin(pin.OutgoingPin);
+                WriteGotoInputPin(pin.OutgoingExecPin);
             }
         }
 
@@ -438,7 +438,7 @@ namespace NetPrints.Translator
             int fromId = GetExecPinStateId(fromPin);
             int nextId = fromId + 1;
 
-            if (pin.OutgoingPin == null)
+            if (pin.OutgoingExecPin == null)
             {
                 if (nextId != jumpStackStateId)
                 {
@@ -447,13 +447,13 @@ namespace NetPrints.Translator
             }
             else
             {
-                int toId = GetExecPinStateId(pin.OutgoingPin);
+                int toId = GetExecPinStateId(pin.OutgoingExecPin);
 
                 // Only write the goto if the next state is not
                 // the state we want to go to.
                 if (nextId != toId)
                 {
-                    WriteGotoInputPin(pin.OutgoingPin);
+                    WriteGotoInputPin(pin.OutgoingExecPin);
                 }
             }
         }
@@ -747,7 +747,7 @@ namespace NetPrints.Translator
                 // If failure pin is not connected write explicit cast that throws.
                 // Otherwise check if cast object is null and execute failure
                 // path if it is.
-                if (node.IsPure || node.CastFailedPin.OutgoingPin == null)
+                if (node.IsPure || node.CastFailedPin.OutgoingExecPin == null)
                 {
                     builder.AppendLine($"{outputName} = ({node.CastType.FullCodeNameUnbound}){pinToCastName};");
 
@@ -918,7 +918,7 @@ namespace NetPrints.Translator
             builder.AppendLine($"if ({conditionVar})");
             builder.AppendLine("{");
 
-            if (node.TruePin.OutgoingPin != null)
+            if (node.TruePin.OutgoingExecPin != null)
             {
                 WriteGotoOutputPinIfNecessary(node.TruePin, node.InputExecPins[0]);
             }
@@ -932,7 +932,7 @@ namespace NetPrints.Translator
             builder.AppendLine("else");
             builder.AppendLine("{");
 
-            if (node.FalsePin.OutgoingPin != null)
+            if (node.FalsePin.OutgoingExecPin != null)
             {
                 WriteGotoOutputPinIfNecessary(node.FalsePin, node.InputExecPins[0]);
             }
@@ -1083,6 +1083,7 @@ namespace NetPrints.Translator
                 builder.AppendLine("};");
             }
         }
+
         public void PureTranslateDefaultNode(DefaultNode node)
         {
             builder.AppendLine($"{GetOrCreatePinName(node.DefaultValuePin)} = default({node.Type.FullCodeName});");

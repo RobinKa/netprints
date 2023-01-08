@@ -36,7 +36,7 @@ namespace NetPrints.Tests
             for (int i = 0; i < returnTypeNodes.Count; i++)
             {
                 delegateMethod.MainReturnNode.AddReturnType();
-                GraphUtil.ConnectTypePins(returnTypeNodes[i].OutputTypePins[0], delegateMethod.MainReturnNode.InputTypePins[i]);
+                GraphUtil.ConnectPins(returnTypeNodes[i].OutputTypePins[0], delegateMethod.MainReturnNode.InputTypePins[i]);
             }
 
             MethodSpecifier delegateMethodSpecifier = new MethodSpecifier("TestMethod",
@@ -53,10 +53,10 @@ namespace NetPrints.Tests
             MakeDelegateNode makeDelegateNode = new MakeDelegateNode(delegateMethod, delegateMethodSpecifier);
 
             // Connect node execs
-            GraphUtil.ConnectExecPins(delegateMethod.EntryNode.InitialExecutionPin, delegateMethod.ReturnNodes.First().ReturnPin);
+            GraphUtil.ConnectPins(delegateMethod.EntryNode.InitialExecutionPin, delegateMethod.ReturnNodes.First().ReturnPin);
 
             // Connect node data
-            GraphUtil.ConnectDataPins(makeDelegateNode.OutputDataPins[0], delegateMethod.ReturnNodes.First().InputDataPins[0]);
+            GraphUtil.ConnectPins(makeDelegateNode.OutputDataPins[0], delegateMethod.ReturnNodes.First().InputDataPins[0]);
 
             string translated = methodTranslator.Translate(delegateMethod, true);
         }

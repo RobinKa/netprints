@@ -68,13 +68,13 @@ namespace NetPrints.Graph
 
             if (constructedType != InputValuePin.PinType.Value)
             {
-                GraphUtil.DisconnectInputDataPin(InputValuePin);
+                GraphUtil.DisconnectPin(InputValuePin);
                 InputValuePin.PinType.Value = constructedType;
             }
 
             if (constructedType != ValuePin.PinType.Value)
             {
-                GraphUtil.DisconnectOutputDataPin(ValuePin);
+                GraphUtil.DisconnectPin(ValuePin);
                 ValuePin.PinType.Value = constructedType;
             }
         }

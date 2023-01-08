@@ -1,4 +1,5 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace NetPrints.Graph
     /// Represents a node which returns from a method.
     /// </summary>
     [DataContract]
-    public class ReturnNode : Node
+    public class ReturnNode : Node, INodeInputButtons
     {
         /// <summary>
         /// Execution pin that returns from the method when executed.
@@ -52,10 +53,11 @@ namespace NetPrints.Graph
                     oldConnections.Add(i, pin.IncomingPin);
                 }
 
-                GraphUtil.DisconnectInputDataPin(pin);
+                GraphUtil.DisconnectPin(pin);
             }
 
-            InputDataPins.Clear();
+            // Remove old data pins
+            Pins.RemoveRange(Pins.Where(pin => pin is INodeInputPin && pin is INodeDataPin));
 
             foreach (NodeInputDataPin mainInputPin in mainInputPins)
             {
@@ -65,7 +67,7 @@ namespace NetPrints.Graph
             // Restore old connections
             foreach (var oldConn in oldConnections)
             {
-                GraphUtil.ConnectDataPins(oldConn.Value, InputDataPins[oldConn.Key]);
+                GraphUtil.ConnectPins(oldConn.Value, InputDataPins[oldConn.Key]);
             }
         }
 
@@ -116,11 +118,11 @@ namespace NetPrints.Graph
                 NodeInputDataPin idpToRemove = InputDataPins.Last();
                 NodeInputTypePin itpToRemove = InputTypePins.Last();
 
-                GraphUtil.DisconnectInputDataPin(idpToRemove);
-                GraphUtil.DisconnectInputTypePin(itpToRemove);
+                GraphUtil.DisconnectPin(idpToRemove);
+                GraphUtil.DisconnectPin(itpToRemove);
 
-                InputDataPins.Remove(idpToRemove);
-                InputTypePins.Remove(itpToRemove);
+                Pins.Remove(idpToRemove);
+                Pins.Remove(itpToRemove);
             }
         }
 
@@ -145,5 +147,9 @@ namespace NetPrints.Graph
         {
             return "Return";
         }
+
+        public void InputPlusClicked() => AddReturnType();
+
+        public void InputMinusClicked() => RemoveReturnType();
     }
 }

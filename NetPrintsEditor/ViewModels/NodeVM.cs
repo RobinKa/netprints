@@ -1,12 +1,12 @@
 ﻿using NetPrints.Core;
 using NetPrints.Graph;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Linq;
 using System;
 using GalaSoft.MvvmLight;
 using NetPrintsEditor.Messages;
+using NetPrints.Base;
 
 namespace NetPrintsEditor.ViewModels
 {
@@ -271,90 +271,13 @@ namespace NetPrintsEditor.ViewModels
             }
         }
 
-        public ObservableViewModelCollection<NodePinVM, NodeInputDataPin> InputDataPins
-        {
-            get => inputDataPins;
-            set
-            {
-                if (inputDataPins != value)
-                {
-                    inputDataPins = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public ObservableViewModelCollection<NodePinVM, NodeOutputDataPin> OutputDataPins
-        {
-            get => outputDataPins;
-            set
-            {
-                if (outputDataPins != value)
-                {
-                    outputDataPins = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public ObservableViewModelCollection<NodePinVM, NodeInputExecPin> InputExecPins
-        {
-            get => inputExecPins;
-            set
-            {
-                if (inputExecPins != value)
-                {
-                    inputExecPins = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public ObservableViewModelCollection<NodePinVM, NodeOutputExecPin> OutputExecPins
-        {
-            get => outputExecPins;
-            set
-            {
-                if (outputExecPins != value)
-                {
-                    outputExecPins = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public ObservableViewModelCollection<NodePinVM, NodeInputTypePin> InputTypePins
-        {
-            get => inputTypePins;
-            set
-            {
-                if (inputTypePins != value)
-                {
-                    inputTypePins = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> OutputTypePins
-        {
-            get => outputTypePins;
-            set
-            {
-                if (outputTypePins != value)
-                {
-                    outputTypePins = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        private ObservableViewModelCollection<NodePinVM, NodeInputDataPin> inputDataPins;
-        private ObservableViewModelCollection<NodePinVM, NodeOutputDataPin> outputDataPins;
-        private ObservableViewModelCollection<NodePinVM, NodeInputExecPin> inputExecPins;
-        private ObservableViewModelCollection<NodePinVM, NodeOutputExecPin> outputExecPins;
-        private ObservableViewModelCollection<NodePinVM, NodeInputTypePin> inputTypePins;
-        private ObservableViewModelCollection<NodePinVM, NodeOutputTypePin> outputTypePins;
+        public ObservableViewModelCollection<NodePinVM, INodePin> Pins { get; private set; }
+        public IObservableCollectionView<NodePinVM> InputExecPins { get; private set; }
+        public IObservableCollectionView<NodePinVM> OutputExecPins { get; private set; }
+        public IObservableCollectionView<NodePinVM> InputDataPins { get; private set; }
+        public IObservableCollectionView<NodePinVM> OutputDataPins { get; private set; }
+        public IObservableCollectionView<NodePinVM> InputTypePins { get; private set; }
+        public IObservableCollectionView<NodePinVM> OutputTypePins { get; private set; }
 
         public bool IsPure
         {
@@ -386,23 +309,13 @@ namespace NetPrintsEditor.ViewModels
                     {
                         node.InputTypeChanged += OnInputTypeChanged;
 
-                        InputDataPins = new ObservableViewModelCollection<NodePinVM, NodeInputDataPin>(
-                            Node.InputDataPins, p => new NodePinVM(p));
-
-                        OutputDataPins = new ObservableViewModelCollection<NodePinVM, NodeOutputDataPin>(
-                            Node.OutputDataPins, p => new NodePinVM(p));
-
-                        InputExecPins = new ObservableViewModelCollection<NodePinVM, NodeInputExecPin>(
-                            Node.InputExecPins, p => new NodePinVM(p));
-
-                        OutputExecPins = new ObservableViewModelCollection<NodePinVM, NodeOutputExecPin>(
-                            Node.OutputExecPins, p => new NodePinVM(p));
-
-                        InputTypePins = new ObservableViewModelCollection<NodePinVM, NodeInputTypePin>(
-                            Node.InputTypePins, p => new NodePinVM(p));
-
-                        OutputTypePins = new ObservableViewModelCollection<NodePinVM, NodeOutputTypePin>(
-                            Node.OutputTypePins, p => new NodePinVM(p));
+                        Pins = new ObservableViewModelCollection<NodePinVM, INodePin>(Node.Pins, p => new NodePinVM((NodePin)p));
+                        InputExecPins = Pins.ObservableWhere(pinViewModel => pinViewModel.Pin is NodeInputExecPin);
+                        OutputExecPins = Pins.ObservableWhere(pinViewModel => pinViewModel.Pin is NodeOutputExecPin);
+                        InputDataPins = Pins.ObservableWhere(pinViewModel => pinViewModel.Pin is NodeInputDataPin);
+                        OutputDataPins = Pins.ObservableWhere(pinViewModel => pinViewModel.Pin is NodeOutputDataPin);
+                        InputTypePins = Pins.ObservableWhere(pinViewModel => pinViewModel.Pin is NodeInputTypePin);
+                        OutputTypePins = Pins.ObservableWhere(pinViewModel => pinViewModel.Pin is NodeOutputTypePin);
                     }
 
                     UpdateOverloads();
@@ -520,8 +433,8 @@ namespace NetPrintsEditor.ViewModels
                 bool oldPurity = Node.IsPure;
                 if (!oldPurity)
                 {
-                    oldIncomingPins = Node.InputExecPins[0].IncomingPins.ToArray();
-                    oldOutgoingPin = Node.OutputExecPins[0].OutgoingPin;
+                    oldIncomingPins = Node.InputExecPins[0].IncomingExecutionPins.ToArray();
+                    oldOutgoingPin = Node.OutputExecPins[0].OutgoingExecPin;
                 }
 
                 // Disconnect the old node from other nodes and remove it
@@ -543,14 +456,14 @@ namespace NetPrintsEditor.ViewModels
                 {
                     if (oldOutgoingPin != null)
                     {
-                        GraphUtil.ConnectExecPins(newNode.OutputExecPins[0], oldOutgoingPin);
+                        GraphUtil.ConnectPins(newNode.OutputExecPins[0], oldOutgoingPin);
                     }
 
                     if (oldIncomingPins != null)
                     {
                         foreach (NodeOutputExecPin oldIncomingPin in oldIncomingPins)
                         {
-                            GraphUtil.ConnectExecPins(oldIncomingPin, newNode.InputExecPins[0]);
+                            GraphUtil.ConnectPins(oldIncomingPin, newNode.InputExecPins[0]);
                         }
                     }
                 }
@@ -576,7 +489,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool ShowLeftPinButtons
         {
-            get => node is MakeArrayNode || node is MethodEntryNode || (node is ReturnNode && node == Method.MainReturnNode) || node is ClassReturnNode;
+            get => node is INodeInputButtons;
         }
 
         /// <summary>
@@ -585,7 +498,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public bool ShowRightPinButtons
         {
-            get => node is MethodEntryNode;
+            get => node is INodeOutputButtons;
         }
 
         /// <summary>
@@ -593,22 +506,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void LeftPinsPlusClicked()
         {
-            if (node is MakeArrayNode makeArrayNode)
-            {
-                makeArrayNode.AddElementPin();
-            }
-            else if (node is MethodEntryNode entryNode)
-            {
-                entryNode.AddArgument();
-            }
-            else if (node is ReturnNode returnNode)
-            {
-                returnNode.AddReturnType();
-            }
-            else if (node is ClassReturnNode classReturnNode)
-            {
-                classReturnNode.AddInterfacePin();
-            }
+            (node as INodeInputButtons)?.InputPlusClicked();
         }
 
         /// <summary>
@@ -616,22 +514,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void LeftPinsMinusClicked()
         {
-            if (node is MakeArrayNode makeArrayNode)
-            {
-                makeArrayNode.RemoveElementPin();
-            }
-            else if (node is MethodEntryNode entryNode)
-            {
-                entryNode.RemoveArgument();
-            }
-            else if (node is ReturnNode returnNode)
-            {
-                returnNode.RemoveReturnType();
-            }
-            else if (node is ClassReturnNode classReturnNode)
-            {
-                classReturnNode.RemoveInterfacePin();
-            }
+            (node as INodeInputButtons)?.InputMinusClicked();
         }
 
         /// <summary>
@@ -639,10 +522,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void RightPinsPlusClicked()
         {
-            if (node is MethodEntryNode entryNode)
-            {
-                entryNode.AddGenericArgument();
-            }
+            (node as INodeOutputButtons)?.OutputPlusClicked();
         }
 
         /// <summary>
@@ -650,10 +530,7 @@ namespace NetPrintsEditor.ViewModels
         /// </summary>
         public void RightPinsMinusClicked()
         {
-            if (node is MethodEntryNode entryNode)
-            {
-                entryNode.RemoveGenericArgument();
-            }
+            (node as INodeOutputButtons)?.OutputMinusClicked();
         }
 
         private Node node;

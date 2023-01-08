@@ -1,4 +1,8 @@
-﻿using NetPrints.Graph;
+﻿using NetPrints.Base;
+using NetPrints.Graph;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Core
@@ -8,17 +12,17 @@ namespace NetPrints.Core
     [KnownType(typeof(ConstructorGraph))]
     [KnownType(typeof(ClassGraph))]
     [KnownType(typeof(TypeGraph))]
-    public abstract class NodeGraph
+    public abstract class NodeGraph : INodeGraph
     {
         /// <summary>
         /// Collection of nodes in this graph.
         /// </summary>
         [DataMember]
-        public ObservableRangeCollection<Node> Nodes
+        public ObservableRangeCollection<INode> Nodes
         {
             get;
             private set;
-        } = new ObservableRangeCollection<Node>();
+        } = new ObservableRangeCollection<INode>();
 
         /// <summary>
         /// Class this graph is contained in.

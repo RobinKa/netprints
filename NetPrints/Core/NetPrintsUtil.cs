@@ -1,10 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace NetPrints.Core
 {
     public static class NetPrintsUtil
     {
+        public static int IndexOf<T>(this IReadOnlyList<T> list, T element)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Equals(element))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public static FilteredObservableCollection<TFiltered, TOriginal> ObservableOfType<TFiltered, TOriginal>(this ObservableCollection<TOriginal> original) where TFiltered : TOriginal
+        {
+            return new FilteredObservableCollection<TFiltered, TOriginal>(original, item => item is TFiltered);
+        }
+
+        public static FilteredObservableCollection<T, T> ObservableWhere<T>(this ObservableCollection<T> observableCollection, Func<T, bool> predicate)
+        {
+            return new FilteredObservableCollection<T, T>(observableCollection, predicate);
+        }
+
         /// <summary>
         /// Returns the first name not already contained in a list of names by
         /// trying to generate a unique name based on the given name.

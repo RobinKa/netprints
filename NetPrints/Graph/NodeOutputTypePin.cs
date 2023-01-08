@@ -1,4 +1,6 @@
-﻿using NetPrints.Core;
+﻿using NetPrints.Base;
+using NetPrints.Core;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NetPrints.Graph
@@ -7,32 +9,29 @@ namespace NetPrints.Graph
     /// Pin which outputs a type. Can be connected to input type pins.
     /// </summary>
     [DataContract]
-    public class NodeOutputTypePin : NodeTypePin
+    public class NodeOutputTypePin : NodeTypePin, INodeOutputPin
     {
         /// <summary>
         /// Connected input data pins.
         /// </summary>
-        [DataMember]
-        public ObservableRangeCollection<NodeInputTypePin> OutgoingPins { get; private set; }
-            = new ObservableRangeCollection<NodeInputTypePin>();
-
-        public override ObservableValue<BaseType> InferredType
-        {
-            get => outputType;
-        }
+        public IObservableCollectionView<NodeInputTypePin> OutgoingTypePins => ConnectedPins.ObservableOfType<NodeInputTypePin, INodePin>();
 
         [DataMember]
-        private ObservableValue<BaseType> outputType;
+        public override ObservableValue<BaseType> InferredType { get; }
+
+        public IObservableCollectionView<INodeInputPin> OutgoingPins => ConnectedPins.ObservableOfType<INodeInputPin, INodePin>();
+
+        public override NodePinConnectionType ConnectionType => NodePinConnectionType.Multiple;
 
         public NodeOutputTypePin(Node node, string name, ObservableValue<BaseType> outputType)
             : base(node, name)
         {
-            this.outputType = outputType;
+            InferredType = outputType;
         }
 
         public override string ToString()
         {
-            return outputType.Value?.ShortName ?? "None";
+            return InferredType.Value?.ShortName ?? "None";
         }
     }
 }

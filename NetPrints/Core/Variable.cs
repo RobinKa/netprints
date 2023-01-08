@@ -189,7 +189,7 @@ namespace NetPrints.Core
             NodeOutputTypePin typePin = GraphUtil.CreateNestedTypeNode(TypeGraph, type, 500, 300).OutputTypePins[0];
             TypeGraph.ReturnNode.PositionX = 800;
             TypeGraph.ReturnNode.PositionY = 300;
-            GraphUtil.ConnectTypePins(typePin, TypeGraph.ReturnNode.TypePin);
+            GraphUtil.ConnectPins(typePin, TypeGraph.ReturnNode.TypePin);
         }
 
         [OnDeserialized]
